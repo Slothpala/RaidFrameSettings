@@ -1,0 +1,21 @@
+## Interface: 100007
+## Version: @project-version@
+## Title: RaidFrameSettings
+## Author: Slothpala
+## SavedVariables: RaidFrameSettingsDB
+## X-Curse-Project-ID: 688930
+
+#Libs
+embeds.xml
+
+#Config
+Main.lua
+Core.lua
+DB\DB.lua
+Options\Options.lua
+
+#Modules
+include_modules.xml
+
+
+

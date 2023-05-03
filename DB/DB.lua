@@ -62,6 +62,7 @@ local defaults = {
             BuffSize = {
                 width  = 18,
                 height = 18,
+                clean_icons = true,
             },
             DebuffSize = {
                 width  = 18,

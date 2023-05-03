@@ -532,6 +532,15 @@ local options = {
                             step = 1,
                             width = 1.2,
                         },
+                        clean_icons = {
+                            order = 3,
+                            type = "toggle",
+                            name = "use clean icons",
+                            -- and replace it with a 1pixel border #later
+                            desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                        },
                     },
                 },
                 DebuffSize = {

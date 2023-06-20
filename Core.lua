@@ -50,7 +50,7 @@ end
 
 local callback = function(event, frame, unit, previousUnit)
     if not TrackedUnits[unit] then return end
-    if unit == "player" and not frame.healthBar then return end --even with ignored playerFrames GetUnitFrame("player") always returned the _G.PlayerFrame.
+    if unit == "player" and not frame:GetDebugName():match("Compact") then return end --ignoring frames with LGF options table just wouldn't work for me
     if event == "FRAME_UNIT_ADDED" then
         Roster.FramePool[frame] = true
         Roster.Units[unit] = frame

@@ -12,8 +12,8 @@ local Range_disabled       = function() return not RaidFrameSettings.db.profile.
 local BuffSize_disabled    = function() return not RaidFrameSettings.db.profile.Module.BuffSize end
 local DebuffSize_disabled  = function() return not RaidFrameSettings.db.profile.Module.DebuffSize end
 local DispelColor_disabled = function() return not RaidFrameSettings.db.profile.Module.DispelColor end
-
-
+--LibDDI-1.0
+local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
 local options = {
     name = "Raid Frame Settings",
@@ -120,22 +120,36 @@ local options = {
                         statusbar = {
                             order = 2,
                             type = "select",
-                            dialogControl = "LSM30_Statusbar", 
-                            name = "Health Bar", 
-                            values = Media:HashTable("statusbar"), 
-                            get = "GetStatus",
-                            set = "SetStatus",
-                            width = 1.6,
+                            name = "Health Bar",
+                            values = statusbars,
+                            get = function()
+                                for i, v in next, statusbars do
+                                    if v == RaidFrameSettings.db.profile.HealthBars.Textures.statusbar then return i end
+                                end
+                            end,
+                            set = function(_, value)
+                                RaidFrameSettings.db.profile.HealthBars.Textures.statusbar  = statusbars[value]
+                                RaidFrameSettings:ReloadConfig()
+                            end,
+                          itemControl = "DDI-Statusbar",
+                          width = 1.6,
                         },
                         background = {
                             order = 3,
                             type = "select",
-                            dialogControl = "LSM30_Statusbar", 
-                            name = "Health Bar Background", 
-                            values = Media:HashTable("statusbar"), 
-                            get = "GetStatus",
-                            set = "SetStatus",
-                            width = 1.6,
+                            name = "Health Bar Background",
+                            values = statusbars,
+                            get = function()
+                                for i, v in next, statusbars do
+                                    if v == RaidFrameSettings.db.profile.HealthBars.Textures.background then return i end
+                                end
+                            end,
+                            set = function(_, value)
+                                RaidFrameSettings.db.profile.HealthBars.Textures.background  = statusbars[value]
+                                RaidFrameSettings:ReloadConfig()
+                            end,
+                          itemControl = "DDI-Statusbar",
+                          width = 1.6,
                         },
                         newline = {
                             order = 4,
@@ -145,12 +159,19 @@ local options = {
                         powerbar = {
                             order = 5,
                             type = "select",
-                            dialogControl = "LSM30_Statusbar", 
-                            name = "Power Bar", 
-                            values = Media:HashTable("statusbar"), 
-                            get = "GetStatus",
-                            set = "SetStatus",
-                            width = 1.6,
+                            name = "Power Bar",
+                            values = statusbars,
+                            get = function()
+                                for i, v in next, statusbars do
+                                    if v == RaidFrameSettings.db.profile.HealthBars.Textures.powerbar then return i end
+                                end
+                            end,
+                            set = function(_, value)
+                                RaidFrameSettings.db.profile.HealthBars.Textures.powerbar  = statusbars[value]
+                                RaidFrameSettings:ReloadConfig()
+                            end,
+                          itemControl = "DDI-Statusbar",
+                          width = 1.6,
                         },
                         border = {
                             guiHidden = true,

@@ -12,6 +12,7 @@ local defaults = {
             DebuffSize = false,
             Range = false,
             DispelColor = false,
+            HealerManaOnly = false,
         },
         HealthBars = { 
             Textures = { 

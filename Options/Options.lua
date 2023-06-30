@@ -1,7 +1,7 @@
 --[[
     Created by Slothpala 
     Options:
-    Create an options table that we use to create the GUI
+    Create an options table for the GUI
 --]]
 local Media = LibStub("LibSharedMedia-3.0")
 local lastEntry = 10
@@ -93,6 +93,14 @@ local options = {
                             type = "toggle",
                             name = "Dispel Color",
                             desc = "Recolor Health Bars based on their debuff color if your class could dispel them.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r to |r|cffFFFF00MEDIUM|r",
+                            get = "GetModuleStatus",
+                            set = "SetModuleStatus",
+                        },
+                        HealerManaOnly = {
+                            order = 9,
+                            type = "toggle",
+                            name = "Healer Mana Only",
+                            desc = "Display the power bar only for healers.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },

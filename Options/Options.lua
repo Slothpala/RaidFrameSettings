@@ -15,6 +15,7 @@ local DispelColor_disabled = function() return not RaidFrameSettings.db.profile.
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
+local profiles = {}
 local options = {
     name = "Raid Frame Settings",
     handler = RaidFrameSettings,
@@ -666,37 +667,90 @@ local options = {
                 },
             },
         },
-        ImportExportPofile = {
+        PorfileManagement = {
             order = lastEntry,
-            name = "Import/Export Profile",
+            name = "Porfile Management",
             type = "group",
+            childGroups = "tab",
             args = {
-                Header = {
-                    order = 1,
-                    name = "Share your profile or import one",
-                    type = "header",
-                },
-                Desc = {
+                --order 1 is the ace profile tab
+                GroupProfiles = {
                     order = 2,
-                    name = "To export your current profile copy the code below.\nTo import a profile replace the code below and press Accept",
-                    fontSize = "medium",
-                    type = "description",
+                    name = "Raid/Party profile",
+                    type = "group",
+                    args = {
+                        partyprofile = {
+                            order = 1,
+                            name = "Party",
+                            type = "select",
+                            values = profiles,
+                            get = function() 
+                                for i,value in pairs(profiles) do
+                                    if value == RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.partyprofile then
+                                        return i
+                                    end
+                                end
+                            end,
+                            set = function(info,value) 
+                                RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.partyprofile = profiles[value]
+                            end,
+                        },
+                        raidprofile = {
+                            order = 2,
+                            name = "Raid",
+                            type = "select",
+                            values = profiles,
+                            get = function() 
+                                for i,value in pairs(profiles) do
+                                    if value == RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.raidprofile then
+                                        return i
+                                    end
+                                end
+                            end,
+                            set = function(info,value) 
+                                RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.raidprofile = profiles[value]
+                            end,
+                        },
+                    },
                 },
-                Textfield = {
+                ImportExportPofile = {
                     order = 3,
-                    name = "import/export from or to your current profile",
-                    desc = "|cffFF0000Caution|r: Importing a profile will overwrite your current profile.",
-                    type = "input",
-                    multiline = 18,
-                    width = "full",
-                    confirm = function() return "Caution: Importing a profile will overwrite your current profile." end,
-                    get = function() return RaidFrameSettings:ShareProfile() end,
-                    set = function(self, input) RaidFrameSettings:ImportProfile(input); ReloadUI() end, 
+                    name = "Import/Export Profile",
+                    type = "group",
+                    args = {
+                        Header = {
+                            order = 1,
+                            name = "Share your profile or import one",
+                            type = "header",
+                        },
+                        Desc = {
+                            order = 2,
+                            name = "To export your current profile copy the code below.\nTo import a profile replace the code below and press Accept",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                        Textfield = {
+                            order = 3,
+                            name = "import/export from or to your current profile",
+                            desc = "|cffFF0000Caution|r: Importing a profile will overwrite your current profile.",
+                            type = "input",
+                            multiline = 18,
+                            width = "full",
+                            confirm = function() return "Caution: Importing a profile will overwrite your current profile." end,
+                            get = function() return RaidFrameSettings:ShareProfile() end,
+                            set = function(self, input) RaidFrameSettings:ImportProfile(input); ReloadUI() end, 
+                        },
+                    },
                 },
             },
         },
     },
 }
+
+
+function RaidFrameSettings:GetProfiles()
+    RaidFrameSettings.db:GetProfiles(profiles)
+end
 
 
 function RaidFrameSettings:GetOptionsTable()

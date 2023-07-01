@@ -76,12 +76,20 @@ local defaults = {
                 poison  = {r=0.0,g=0.6,b=0.0},
             },
         },
+        PorfileManagement = {
+            GroupProfiles = {
+                partyprofile = "Default",
+                raidprofile  = "Default",
+            },
+        },
     }
 }
 
 function RaidFrameSettings:LoadDataBase()
     self.db = LibStub("AceDB-3.0"):New("RaidFrameSettingsDB", defaults, true) 
     --db callbacks
+    self.db.RegisterCallback(self, "OnNewProfile", "ReloadConfig")
+    self.db.RegisterCallback(self, "OnProfileDeleted", "ReloadConfig")
     self.db.RegisterCallback(self, "OnProfileChanged", "ReloadConfig")
     self.db.RegisterCallback(self, "OnProfileCopied", "ReloadConfig")
     self.db.RegisterCallback(self, "OnProfileReset", "ReloadConfig")

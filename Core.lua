@@ -26,14 +26,25 @@ for i=1,4 do Roster.Units["party"..i] = LGF.GetUnitFrame("party"..i); TrackedUni
 for i=1,40 do Roster.Units["raid"..i] = LGF.GetUnitFrame("raid"..i); TrackedUnits["raid"..i] = true  end
 local groupType = ""
 local inGroup = false
-RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function()
+RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
+    local newgroupType = IsInRaid() and "raid" or "party"
+    if newgroupType ~= groupType then
+        groupType = newgroupType
+        RaidFrameSettings:LoadGoupBasedProfile()
+    end
+    inGroup = IsInGroup() 
+end)
+RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
     groupType = IsInRaid() and "raid" or "party"
     inGroup = IsInGroup() 
 end)
-RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function()
-    groupType = IsInRaid() and "raid" or "party"
-    inGroup = IsInGroup() 
-end)
+
+function RaidFrameSettings:LoadGoupBasedProfile()
+    local profileName = groupType == "raid" and self.db.profile.PorfileManagement.GroupProfiles.raidprofile or self.db.profile.PorfileManagement.GroupProfiles.partyprofile 
+    print(profileName)
+    self.db:SetProfile(profileName)
+    self:ReloadConfig()
+end
 
 local OnFrameUnitAdded_Callback = nil
 function RaidFrameSettings:RegisterOnFrameUnitAdded(callback)

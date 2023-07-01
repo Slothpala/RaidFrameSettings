@@ -22,14 +22,17 @@ function RaidFrameSettings:OnEnable()
     --load options table
     local options = self:GetOptionsTable()
     --create option table based on database structure and add them to options
-    options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) 
+    options.args.PorfileManagement.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) 
+    options.args.PorfileManagement.args.profile.order = 1
     --register options as option table to create a gui based on it
     AC:RegisterOptionsTable("RaidFrameSettings_options", options) 
     --add them to blizzards settings panel for addons
     self.optionsFrame = ACD:AddToBlizOptions("RaidFrameSettings_options", "RaidFrameSettings")
     --add dual specc support 
     LDS:EnhanceDatabase(self.db, "RaidFrameSettings") 
-    LDS:EnhanceOptions(options.args.profile, self.db) 
+    LDS:EnhanceOptions(options.args.PorfileManagement.args.profile, self.db) 
+    self:GetProfiles()
+    self:LoadGoupBasedProfile()
     self:LoadConfig()
 end
 
@@ -69,6 +72,7 @@ function RaidFrameSettings:ReloadConfig()
     for _, module in self:IterateModules() do
         module:Disable()
     end
+    self:GetProfiles()
     self:WipeAllCallbacks()
     self:LoadConfig()
     self:UpdateAllFrames()

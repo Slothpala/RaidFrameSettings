@@ -28,8 +28,8 @@ function RaidFrameSettings:OnEnable()
     --add them to blizzards settings panel for addons
     self.optionsFrame = ACD:AddToBlizOptions("RaidFrameSettings_options", "RaidFrameSettings")
     self:GetProfiles()
-    --self:LoadGroupBasedProfile()
     self:LoadConfig()
+    self:LoadGroupBasedProfile()
 end
 
 function RaidFrameSettings:SlashCommand()
@@ -58,6 +58,7 @@ function RaidFrameSettings:UpdateAfterCombat()
 end
 
 function RaidFrameSettings:ReloadConfig()
+    RaidFrameSettings:Print("config reloaded")
     if InCombatLockdown() then 
         if update_queued then return end
         self:RegisterEvent("PLAYER_REGEN_ENABLED","UpdateAfterCombat") 

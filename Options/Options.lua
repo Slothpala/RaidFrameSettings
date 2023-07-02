@@ -676,9 +676,8 @@ local options = {
                 --order 1 is the ace profile tab
                 GroupProfiles = {
                     order = 2,
-                    name = "Raid/Party profile",
+                    name = "Raid/Party Profile",
                     type = "group",
-                    guiHidden = true,
                     args = {
                         partyprofile = {
                             order = 1,
@@ -694,6 +693,7 @@ local options = {
                             end,
                             set = function(info,value) 
                                 RaidFrameSettingsDBPP = profiles[value]
+                                RaidFrameSettings:LoadGroupBasedProfile()
                             end,
                         },
                         raidprofile = {
@@ -710,6 +710,7 @@ local options = {
                             end,
                             set = function(info,value) 
                                 RaidFrameSettingsDBRP = profiles[value]
+                                RaidFrameSettings:LoadGroupBasedProfile()
                             end,
                         },
                     },

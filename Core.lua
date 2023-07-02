@@ -24,13 +24,13 @@ Roster.Units["player"] = LGF.GetUnitFrame("player")
 TrackedUnits["player"] = true
 for i=1,4 do Roster.Units["party"..i] = LGF.GetUnitFrame("party"..i); TrackedUnits["party"..i] = true end
 for i=1,40 do Roster.Units["raid"..i] = LGF.GetUnitFrame("raid"..i); TrackedUnits["raid"..i] = true  end
-local groupType = ""
+local groupType = IsInRaid() and "raid" or "party"
 local inGroup = false
 RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
     local newgroupType = IsInRaid() and "raid" or "party"
     if newgroupType ~= groupType then
         groupType = newgroupType
-        --RaidFrameSettings:LoadGroupBasedProfile()
+        RaidFrameSettings:LoadGroupBasedProfile()
     end
     inGroup = IsInGroup() 
 end)

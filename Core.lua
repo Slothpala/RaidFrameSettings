@@ -30,7 +30,7 @@ RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
     local newgroupType = IsInRaid() and "raid" or "party"
     if newgroupType ~= groupType then
         groupType = newgroupType
-        RaidFrameSettings:LoadGroupBasedProfile()
+        --RaidFrameSettings:LoadGroupBasedProfile()
     end
     inGroup = IsInGroup() 
 end)
@@ -190,9 +190,15 @@ function RaidFrameSettings:WipeAllCallbacks()
     UpdateHealPrediction_Callback = function() end
 end
 
+--role icon and debuff frame are only used for update all hooks are done in the module files
 local UpdateRoleIcon_Callback = function() end
 function RaidFrameSettings:RegisterUpdateRoleIcon(callback)
     UpdateRoleIcon_Callback = callback
+end
+
+local UpdateDebuffFrame_Callback = function() end
+function RaidFrameSettings:RegisterUpdateDebuffFrame(callback)
+    UpdateDebuffFrame_Callback = callback
 end
 
 function RaidFrameSettings:UpdateAllFrames()
@@ -206,6 +212,11 @@ function RaidFrameSettings:UpdateAllFrames()
             UpdateHealPrediction_Callback(frame)
             UpdateInRange_Callback(frame)
             UpdateRoleIcon_Callback(frame)
+            if frame.debuffFrames then
+                for i=1, #frame.debuffFrames do
+                    UpdateDebuffFrame_Callback(frame.debuffFrames[i]) 
+                end
+            end
         end
     end
 end

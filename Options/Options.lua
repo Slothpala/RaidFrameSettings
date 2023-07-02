@@ -678,6 +678,7 @@ local options = {
                     order = 2,
                     name = "Raid/Party profile",
                     type = "group",
+                    guiHidden = true,
                     args = {
                         partyprofile = {
                             order = 1,

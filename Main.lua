@@ -74,10 +74,6 @@ function RaidFrameSettings:ReloadConfig()
     self:UpdateAllFrames()
 end
 
-function RaidFrameSettings:UpdateAllFrames()
-    self:IterateRoster(CompactUnitFrame_UpdateAll)
-end
-
 --profile import / export functions
 --[[
     the method to share and import profiles is based on:

@@ -58,7 +58,6 @@ function RaidFrameSettings:UpdateAfterCombat()
 end
 
 function RaidFrameSettings:ReloadConfig()
-    RaidFrameSettings:Print("config reloaded")
     if InCombatLockdown() then 
         if update_queued then return end
         self:RegisterEvent("PLAYER_REGEN_ENABLED","UpdateAfterCombat") 

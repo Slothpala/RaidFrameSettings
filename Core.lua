@@ -37,12 +37,13 @@ RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
     end
 end)
 RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
-    groupType = IsInRaid() and "raid" or IsInGroup() and "party" or "Default"
+    groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
 end)
 
 function RaidFrameSettings:LoadGroupBasedProfile()
-    local profileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or ""
+    local profileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or "Default"
     self.db:SetProfile(profileName) 
+    RaidFrameSettings:Print("Profile loaded: "..profileName)
 end
 
 local OnFrameUnitAdded_Callback = nil

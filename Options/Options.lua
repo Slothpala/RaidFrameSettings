@@ -681,7 +681,7 @@ local options = {
                     args = {
                         description = {
                             order = 0,
-                            name = "The profiles you select below will load based on the type of group (raid or party), if you want to use the same profile for all cases just select it for both raid and party.\nThe profiles listed here are the profiles you manage in the Profiles tab.",
+                            name = "The profiles you select below will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases just select it for both raid and party.\nThe profiles listed here are the profiles you manage in the Profiles tab.",
                             fontSize = "medium",
                             type = "description",
                         },

@@ -40,7 +40,7 @@ RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
 end)
 
 function RaidFrameSettings:LoadGroupBasedProfile()
-    local profileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP
+    local profileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or ""
     C_Timer.After(2, function() 
         self.db:SetProfile(profileName) 
     end)
@@ -188,4 +188,24 @@ function RaidFrameSettings:WipeAllCallbacks()
     OnUpdateName_Callback = function() end
     UpdateInRange_Callback = function() end
     UpdateHealPrediction_Callback = function() end
+end
+
+local UpdateRoleIcon_Callback = function() end
+function RaidFrameSettings:RegisterUpdateRoleIcon(callback)
+    UpdateRoleIcon_Callback = callback
+end
+
+function RaidFrameSettings:UpdateAllFrames()
+    for frame,_ in pairs(Roster.FramePool) do
+        if Roster.FramePool[frame] or not shouldIgnore(frame) then 
+            for i = 1,#OnUpdateAll_Callbacks do 
+                OnUpdateAll_Callbacks[i](frame)
+            end
+            OnUpdateHealthColor_Callback(frame)
+            OnUpdateName_Callback(frame)
+            UpdateHealPrediction_Callback(frame)
+            UpdateInRange_Callback(frame)
+            UpdateRoleIcon_Callback(frame)
+        end
+    end
 end

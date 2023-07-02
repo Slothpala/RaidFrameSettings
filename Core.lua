@@ -37,7 +37,7 @@ RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
     end
 end)
 RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
-    groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
+    groupType = IsInRaid() and "raid" or IsInGroup() and "party" or "Default"
 end)
 
 function RaidFrameSettings:LoadGroupBasedProfile()

@@ -12,7 +12,6 @@
   <Script file="Libs\LibDeflate\LibDeflate.lua"/>
   <Script file="Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua"/>
   <Include file="Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
-  <Script file="Libs\LibDualSpec-1.0\LibDualSpec-1.0.lua"/>
   <Script file="Libs\LibGetFrame-1.0\LibGetFrame-1.0.lua"/>
   <Script file="Libs\LibDDI-1.0\lib.lua"/>
 </Ui>

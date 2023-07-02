@@ -30,7 +30,7 @@ RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
     local newgroupType = IsInRaid() and "raid" or "party"
     if newgroupType ~= groupType then
         groupType = newgroupType
-        RaidFrameSettings:LoadGoupBasedProfile()
+        RaidFrameSettings:LoadGroupBasedProfile()
     end
     inGroup = IsInGroup() 
 end)
@@ -39,11 +39,11 @@ RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
     inGroup = IsInGroup() 
 end)
 
-function RaidFrameSettings:LoadGoupBasedProfile()
-    local profileName = groupType == "raid" and self.db.profile.PorfileManagement.GroupProfiles.raidprofile or self.db.profile.PorfileManagement.GroupProfiles.partyprofile 
-    print(profileName)
-    self.db:SetProfile(profileName)
-    self:ReloadConfig()
+function RaidFrameSettings:LoadGroupBasedProfile()
+    local profileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP
+    C_Timer.After(2, function() 
+        self.db:SetProfile(profileName) 
+    end)
 end
 
 local OnFrameUnitAdded_Callback = nil

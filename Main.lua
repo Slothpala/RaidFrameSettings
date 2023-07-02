@@ -9,7 +9,6 @@ RaidFrameSettings:SetDefaultModuleState(false)
 local AC         = LibStub("AceConfig-3.0")
 local ACD        = LibStub("AceConfigDialog-3.0")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
-local LDS        = LibStub("LibDualSpec-1.0")
 local LGF        = LibStub("LibGetFrame-1.0")
 
 function RaidFrameSettings:OnInitialize()
@@ -28,11 +27,8 @@ function RaidFrameSettings:OnEnable()
     AC:RegisterOptionsTable("RaidFrameSettings_options", options) 
     --add them to blizzards settings panel for addons
     self.optionsFrame = ACD:AddToBlizOptions("RaidFrameSettings_options", "RaidFrameSettings")
-    --add dual specc support 
-    LDS:EnhanceDatabase(self.db, "RaidFrameSettings") 
-    LDS:EnhanceOptions(options.args.PorfileManagement.args.profile, self.db) 
     self:GetProfiles()
-    self:LoadGoupBasedProfile()
+    self:LoadGroupBasedProfile()
     self:LoadConfig()
 end
 

@@ -2,7 +2,7 @@
 ## Version: @project-version@
 ## Title: RaidFrameSettings
 ## Author: Slothpala
-## SavedVariables: RaidFrameSettingsDB
+## SavedVariables: RaidFrameSettingsDB, RaidFrameSettingsDBPP, RaidFrameSettingsDBRP
 ## X-Curse-Project-ID: 688930
 
 #Libs

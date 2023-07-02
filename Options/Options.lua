@@ -686,13 +686,13 @@ local options = {
                             values = profiles,
                             get = function() 
                                 for i,value in pairs(profiles) do
-                                    if value == RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.partyprofile then
+                                    if value == RaidFrameSettingsDBPP then
                                         return i
                                     end
                                 end
                             end,
                             set = function(info,value) 
-                                RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.partyprofile = profiles[value]
+                                RaidFrameSettingsDBPP = profiles[value]
                             end,
                         },
                         raidprofile = {
@@ -702,13 +702,13 @@ local options = {
                             values = profiles,
                             get = function() 
                                 for i,value in pairs(profiles) do
-                                    if value == RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.raidprofile then
+                                    if value == RaidFrameSettingsDBRP then
                                         return i
                                     end
                                 end
                             end,
                             set = function(info,value) 
-                                RaidFrameSettings.db.profile.PorfileManagement.GroupProfiles.raidprofile = profiles[value]
+                                RaidFrameSettingsDBRP = profiles[value]
                             end,
                         },
                     },

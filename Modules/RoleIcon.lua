@@ -41,6 +41,7 @@ function RoleIcon:OnEnable()
         end)
         hooked = true
     end
+    RaidFrameSettings:RegisterUpdateRoleIcon(Callback)
 end
 
 function RoleIcon:OnDisable()

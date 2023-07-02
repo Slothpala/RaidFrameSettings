@@ -62,6 +62,8 @@ function HealthBars:OnEnable()
     RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
     --colors
     if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then --static color
+        C_CVar.SetCVar("raidFramesDisplayClassColor","0") --workaround for when the player has a custom color in i.e party profile and switches to raid profile with class color
+        --this way the game does the work for us
         local statusBarColor = RaidFrameSettings.db.profile.HealthBars.Colors.statusbar
         local function UpdateHealthColor(frame)
             frame.healthBar:SetStatusBarColor(statusBarColor.r,statusBarColor.g,statusBarColor.b) 

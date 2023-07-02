@@ -12,6 +12,7 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsTapDenied = UnitIsTapDenied
+
 ---------
 --cache--
 ---------
@@ -24,26 +25,24 @@ Roster.Units["player"] = LGF.GetUnitFrame("player")
 TrackedUnits["player"] = true
 for i=1,4 do Roster.Units["party"..i] = LGF.GetUnitFrame("party"..i); TrackedUnits["party"..i] = true end
 for i=1,40 do Roster.Units["raid"..i] = LGF.GetUnitFrame("raid"..i); TrackedUnits["raid"..i] = true  end
-local groupType = IsInRaid() and "raid" or "party"
-local inGroup = false
+local groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
+
 RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
-    local newgroupType = IsInRaid() and "raid" or "party"
-    if newgroupType ~= groupType then
+    local newgroupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
+    if (newgroupType ~= groupType) then
         groupType = newgroupType
-        RaidFrameSettings:LoadGroupBasedProfile()
+        C_Timer.After(2, function() 
+            RaidFrameSettings:LoadGroupBasedProfile()
+        end)
     end
-    inGroup = IsInGroup() 
 end)
 RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
-    groupType = IsInRaid() and "raid" or "party"
-    inGroup = IsInGroup() 
+    groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
 end)
 
 function RaidFrameSettings:LoadGroupBasedProfile()
     local profileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or ""
-    C_Timer.After(2, function() 
-        self.db:SetProfile(profileName) 
-    end)
+    self.db:SetProfile(profileName) 
 end
 
 local OnFrameUnitAdded_Callback = nil
@@ -182,15 +181,7 @@ function RaidFrameSettings:RegisterUpdateInRange(callback)
     end
 end
 
-function RaidFrameSettings:WipeAllCallbacks()
-    OnUpdateAll_Callbacks = {}
-    OnUpdateHealthColor_Callback = function() end
-    OnUpdateName_Callback = function() end
-    UpdateInRange_Callback = function() end
-    UpdateHealPrediction_Callback = function() end
-end
-
---role icon and debuff frame are only used for update all hooks are done in the module files
+--role icon and debuff frame are only used for update all, hooks are done in the module files
 local UpdateRoleIcon_Callback = function() end
 function RaidFrameSettings:RegisterUpdateRoleIcon(callback)
     UpdateRoleIcon_Callback = callback
@@ -201,10 +192,20 @@ function RaidFrameSettings:RegisterUpdateDebuffFrame(callback)
     UpdateDebuffFrame_Callback = callback
 end
 
+function RaidFrameSettings:WipeAllCallbacks()
+    OnUpdateAll_Callbacks = {}
+    OnUpdateHealthColor_Callback = function() end
+    OnUpdateName_Callback = function() end
+    UpdateInRange_Callback = function() end
+    UpdateHealPrediction_Callback = function() end
+    UpdateRoleIcon_Callback = function() end
+    UpdateDebuffFrame_Callback = function() end
+end
+
 function RaidFrameSettings:UpdateAllFrames()
     for frame,_ in pairs(Roster.FramePool) do
         if Roster.FramePool[frame] or not shouldIgnore(frame) then 
-            for i = 1,#OnUpdateAll_Callbacks do 
+            for i=1,#OnUpdateAll_Callbacks do 
                 OnUpdateAll_Callbacks[i](frame)
             end
             OnUpdateHealthColor_Callback(frame)

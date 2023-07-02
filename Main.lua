@@ -28,8 +28,8 @@ function RaidFrameSettings:OnEnable()
     --add them to blizzards settings panel for addons
     self.optionsFrame = ACD:AddToBlizOptions("RaidFrameSettings_options", "RaidFrameSettings")
     self:GetProfiles()
+        self:LoadGroupBasedProfile()
     self:LoadConfig()
-    self:LoadGroupBasedProfile()
 end
 
 function RaidFrameSettings:SlashCommand()

@@ -48,7 +48,7 @@ function Fonts:OnEnable()
     local UpdateNameCallback
     if Name.Classcolored then
         UpdateNameCallback = function(frame) 
-            local name = GetUnitName(frame.unit,true)
+            local name = GetUnitName(frame.unit or "",true)
             if not name then return end
             local _, englishClass = UnitClass(frame.unit)
             local r,g,b = GetClassColor(englishClass)
@@ -57,7 +57,7 @@ function Fonts:OnEnable()
         end
     else
         UpdateNameCallback = function(frame) 
-            local name = GetUnitName(frame.unit,true)
+            local name = GetUnitName(frame.unit or "",true)
             if not name then return end
             frame.name:SetVertexColor(Name.FontColor.r,Name.FontColor.g,Name.FontColor.b)
             frame.name:SetText(name:match("[^-]+")) --hides the units server. 

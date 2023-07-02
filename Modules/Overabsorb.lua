@@ -23,7 +23,7 @@ function Overabsorb:OnEnable()
         local healthBar = frame.healthBar
         local _, maxHealth = healthBar:GetMinMaxValues()
         if ( maxHealth <= 0 ) then return end
-        local totalAbsorb = UnitGetTotalAbsorbs(frame.displayedUnit) or 0
+        local totalAbsorb = UnitGetTotalAbsorbs(frame.displayedUnit or "") or 0
         if( totalAbsorb > maxHealth ) then
             totalAbsorb = maxHealth
         end

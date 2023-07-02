@@ -41,9 +41,12 @@ RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
 end)
 
 function RaidFrameSettings:LoadGroupBasedProfile()
-    local profileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or "Default"
-    self.db:SetProfile(profileName) 
-    RaidFrameSettings:Print("Profile loaded: "..profileName)
+    local groupProfileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or "Default"
+    local currentProfile = self.db:GetCurrentProfile()
+    if currentProfile ~= groupProfileName then
+        self.db:SetProfile(groupProfileName) 
+        RaidFrameSettings:Print("Profile set to: "..groupProfileName)
+    end
 end
 
 local OnFrameUnitAdded_Callback = nil

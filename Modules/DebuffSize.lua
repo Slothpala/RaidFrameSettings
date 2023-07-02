@@ -14,7 +14,7 @@ function DebuffSize:OnEnable()
     local height = RaidFrameSettings.db.profile.MinorModules.DebuffSize.height
     UtilSetDebuff_Callback = function(debuffFrame, aura)
         if debuffFrame:IsForbidden() then return end
-        if (aura.isBossAura) then
+        if aura and aura.isBossAura then
             local boss_height = minimum(height + debuffsize_increase, debuffFrame.maxHeight)
             local boss_width  = maximum(width, boss_height)
             debuffFrame:SetSize(boss_width, boss_height)
@@ -26,6 +26,7 @@ function DebuffSize:OnEnable()
         hooksecurefunc("CompactUnitFrame_UtilSetDebuff", function(debuffFrame, aura) UtilSetDebuff_Callback(debuffFrame, aura) end)
         hooked = true
     end
+    RaidFrameSettings:RegisterUpdateDebuffFrame(UtilSetDebuff_Callback)
 end
 
 function DebuffSize:OnDisable()

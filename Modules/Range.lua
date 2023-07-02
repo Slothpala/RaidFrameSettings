@@ -7,7 +7,7 @@ function Range:OnEnable()
     local statusbarAlpha  = RaidFrameSettings.db.profile.MinorModules.RangeAlpha.statusbar
     local backgroundAlpha = RaidFrameSettings.db.profile.MinorModules.RangeAlpha.background
     local function UpdateInRangeCallback(frame)
-            local inRange, checkedRange = UnitInRange(frame.displayedUnit)
+            local inRange, checkedRange = UnitInRange(frame.displayedUnit or "")
             if ( checkedRange and not inRange ) then	
                 frame:SetAlpha(statusbarAlpha)
                 frame.background:SetAlpha(backgroundAlpha)

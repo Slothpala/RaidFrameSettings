@@ -37,7 +37,7 @@ function HealthBars:OnEnable()
             frame.powerBar:SetStatusBarTexture(powerBarTexture)
             frame.powerBar.background:SetPoint("TOPLEFT",frame.healthBar, "BOTTOMLEFT", 0, 1)
             frame.powerBar.background:SetPoint("BOTTOMRIGHT", frame.background, "BOTTOMRIGHT", 0, 0) 
-            if not frame.Backdrop then
+            if not frame.backdropInfo then
                 Mixin(frame, BackdropTemplateMixin) 
                 frame:SetBackdrop(backdropInfo)
             end
@@ -51,7 +51,7 @@ function HealthBars:OnEnable()
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
             frame.background:SetTexture(backgroundTexture)
             frame.background:SetVertexColor(backgroundColor.r,backgroundColor.g,backgroundColor.b)
-            if not frame.Backdrop then
+            if not frame.backdropInfo then
                 Mixin(frame, BackdropTemplateMixin) 
                 frame:SetBackdrop(backdropInfo)
             end
@@ -96,6 +96,23 @@ function HealthBars:OnEnable()
 end
 
 function HealthBars:OnDisable()
-
+    local restoreHealthBars = function(frame)
+        frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill")
+        frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
+        frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill")
+        frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER")
+        if frame.backdropInfo then
+            frame:ClearBackdrop() 
+        end
+        if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
+            if not frame.unit then return end
+            local _, englishClass = UnitClass(frame.unit)
+            local r,g,b = GetClassColor(englishClass)
+            frame.healthBar:SetStatusBarColor(r,g,b)
+        else
+            frame.healthBar:SetStatusBarColor(0,1,0)
+        end
+    end
+    RaidFrameSettings:IterateRoster(restoreHealthBars)
 end
 

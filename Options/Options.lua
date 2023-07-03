@@ -115,13 +115,13 @@ local options = {
                 },
                 DispelColorNotice = {
                     order = 3,
-                    name = "Regarding DispelColor",
+                    name = "Regarding Dispel Color",
                     type = "group",
                     inline = true,
                     args = {
                         description = {
                             order = 1,
-                            name = "The module is in a very early stage and I am constantly improving it. If you have problems with class colours not matching, please disable this module.",
+                            name = "The module is in a very early stage and I am constantly improving it. If you have problems with class colors not matching, please disable this module.",
                             fontSize = "medium",
                             type = "description",
                         },

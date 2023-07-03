@@ -12,7 +12,6 @@ local defaults = {
             DebuffSize = false,
             Range = false,
             DispelColor = false,
-            HealerManaOnly = false,
         },
         HealthBars = { 
             Textures = { 
@@ -103,11 +102,7 @@ end
 function RaidFrameSettings:SetModuleStatus(info,value)
     self.db.profile.Module[info[#info]] = value
     --will reload the config each time the settings have been adjusted
-    if value == false then 
-        ReloadUI()
-    else
-        self:ReloadConfig()
-    end
+    self:ReloadConfig()
 end
 
 --status

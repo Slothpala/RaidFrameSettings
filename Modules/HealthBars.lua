@@ -99,6 +99,8 @@ function HealthBars:OnDisable()
     local restoreHealthBars = function(frame)
         frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill")
         frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
+        frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg")
+        frame.background:SetTexCoord(0, 1, 0, 0.53125)
         frame.powerBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Resource-Fill")
         frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER")
         if frame.backdropInfo then

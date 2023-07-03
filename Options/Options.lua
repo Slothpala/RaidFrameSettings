@@ -24,7 +24,7 @@ local options = {
     args = {
         Config = {
             order = lastEntry-1,
-            name = "Config",
+            name = "Enabled Modules",
             type = "group",
             args = {
                 Modules = {
@@ -475,7 +475,7 @@ local options = {
         },
         MinorModules = {
             order = 3,
-            name = "Minor Modules",
+            name = "Module Settings",
             type = "group",
             args = {
                 RoleIcon = {

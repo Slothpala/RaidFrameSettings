@@ -19,5 +19,12 @@ function Range:OnEnable()
 end
 
 function Range:OnDisable()
-
+    local restoreRangeAlpha = function(frame)
+        local inRange, checkedRange = UnitInRange(frame.displayedUnit or "")
+        if ( checkedRange and not inRange ) then	
+            frame:SetAlpha(0.55)
+        end
+        frame.background:SetAlpha(1)
+    end
+    RaidFrameSettings:IterateRoster(restoreRangeAlpha)
 end

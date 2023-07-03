@@ -46,5 +46,9 @@ function Overabsorb:OnEnable()
 end
 
 function Overabsorb:OnDisable()
-
+    local restoreOverabsorbs = function(frame)
+        frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
+        frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
+    end
+    RaidFrameSettings:IterateRoster(restoreOverabsorbs)
 end

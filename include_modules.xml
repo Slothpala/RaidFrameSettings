@@ -7,5 +7,4 @@
   <Script file="Modules\DebuffSize.lua"/>
   <Script file="Modules\Overabsorb.lua"/>
   <Script file="Modules\DispelColor.lua"/>
-  <Script file="Modules\HealerManaOnly.lua"/>
 </Ui>

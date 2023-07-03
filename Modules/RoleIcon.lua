@@ -48,4 +48,10 @@ function RoleIcon:OnDisable()
     if hooked then
         Callback = donothing
     end
+    local restoreRoleIcon = function(frame)
+        frame.roleIcon:ClearAllPoints()
+        frame.roleIcon:SetPoint("TOPLEFT", 3, -2)
+        frame.roleIcon:SetSize(12, 12)
+    end
+    RaidFrameSettings:IterateRoster(restoreRoleIcon)
 end

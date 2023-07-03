@@ -99,6 +99,34 @@ local options = {
                         },
                     },
                 },
+                DescriptionBox = {
+                    order = 2,
+                    name = "Hint",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        description = {
+                            order = 1,
+                            name = "The default UI links the name text to the right of the role icon, so in some cases you will need to use both modules if you want to use either one.",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                    },
+                },
+                DispelColorNotice = {
+                    order = 3,
+                    name = "Regarding DispelColor",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        description = {
+                            order = 1,
+                            name = "The module is in a very early stage and I am constantly improving it. If you have problems with class colours not matching, please disable this module.",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                    },
+                },
             },
         },
         HealthBars = {
@@ -661,7 +689,7 @@ local options = {
         },
         PorfileManagement = {
             order = lastEntry,
-            name = "Porfile Management",
+            name = "Profiles",
             type = "group",
             childGroups = "tab",
             args = {
@@ -670,10 +698,11 @@ local options = {
                     order = 2,
                     name = "Raid/Party Profile",
                     type = "group",
+                    inline = true,
                     args = {
                         description = {
                             order = 0,
-                            name = "The profiles you select below will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases just select it for both raid and party.\nThe profiles listed here are the profiles you manage in the Profiles tab.",
+                            name = "The profiles you select below will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases just select it for both raid and party.",
                             fontSize = "medium",
                             type = "description",
                         },

@@ -23,7 +23,7 @@ function BuffSize:OnEnable()
             end
         end
         UpdateAllCallback = function(frame)
-            for i = 1,4 do
+            for i = 1,#frame.buffFrames do
                 local icon_frame = frame.buffFrames[i]
                 icon_frame:SetSize(width, height)
                 icon_frame.icon:SetTexCoord(left,right,top,bottom)
@@ -31,7 +31,7 @@ function BuffSize:OnEnable()
         end
     else
         UpdateAllCallback = function(frame)
-            for i = 1,4 do
+            for i = 1,#frame.buffFrames do
                 frame.buffFrames[i]:SetSize(width, height)
             end
         end
@@ -40,6 +40,17 @@ function BuffSize:OnEnable()
     RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
 end
 
+--parts of this code are from FrameXML/CompactUnitFrame.lua
 function BuffSize:OnDisable()
-
+    local restoreBuffFrames = function(frame)
+        local frameWidth = frame:GetWidth()
+        local frameHeight = frame:GetHeight()
+        local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
+        local buffSize = math.min(15, 11 * componentScale)
+        for i=1,#frame.buffFrames do
+            frame.buffFrames[i]:SetSize(buffSize, buffSize)
+            frame.buffFrames[i].icon:SetTexCoord(0,1,0,1)
+        end
+    end
+    RaidFrameSettings:IterateRoster(restoreBuffFrames)
 end

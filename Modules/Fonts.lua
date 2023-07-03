@@ -36,7 +36,6 @@ function Fonts:OnEnable()
         frame.name:SetJustifyH(Name.JustifyH)
         frame.name:SetPoint(Name.Position, frame, Name.Position, Name.X_Offset, Name.Y_Offset )
         --Status
-        print(frame.statusText:GetVertexColor())
         frame.statusText:ClearAllPoints()
         frame.statusText:SetFont(Status.Font, Status.FontSize, Status.Outlinemode)
         frame.statusText:SetWidth((frame:GetWidth()))

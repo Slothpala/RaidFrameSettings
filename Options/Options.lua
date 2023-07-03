@@ -700,12 +700,6 @@ local options = {
                     type = "group",
                     inline = true,
                     args = {
-                        description = {
-                            order = 0,
-                            name = "The profiles you select below will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases just select it for both raid and party.",
-                            fontSize = "medium",
-                            type = "description",
-                        },
                         partyprofile = {
                             order = 1,
                             name = "Party",
@@ -739,6 +733,12 @@ local options = {
                                 RaidFrameSettingsDBRP = profiles[value]
                                 RaidFrameSettings:LoadGroupBasedProfile()
                             end,
+                        },
+                        description = {
+                            order = 3,
+                            name = "The profiles you select above will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases just select it for both raid and party.",
+                            fontSize = "medium",
+                            type = "description",
                         },
                     },
                 },

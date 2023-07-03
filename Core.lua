@@ -45,7 +45,7 @@ function RaidFrameSettings:LoadGroupBasedProfile()
     local currentProfile = self.db:GetCurrentProfile()
     if currentProfile ~= groupProfileName then
         self.db:SetProfile(groupProfileName) 
-        RaidFrameSettings:Print("Profile set to: "..groupProfileName)
+        RaidFrameSettings:Print(groupType.." profile loaded")
     end
 end
 

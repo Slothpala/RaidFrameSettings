@@ -36,6 +36,7 @@ function Fonts:OnEnable()
         frame.name:SetJustifyH(Name.JustifyH)
         frame.name:SetPoint(Name.Position, frame, Name.Position, Name.X_Offset, Name.Y_Offset )
         --Status
+        print(frame.statusText:GetVertexColor())
         frame.statusText:ClearAllPoints()
         frame.statusText:SetFont(Status.Font, Status.FontSize, Status.Outlinemode)
         frame.statusText:SetWidth((frame:GetWidth()))
@@ -66,6 +67,22 @@ function Fonts:OnEnable()
     RaidFrameSettings:RegisterOnUpdateName(UpdateNameCallback)
 end
 
+--parts of this code are from FrameXML/CompactUnitFrame.lua
 function Fonts:OnDisable()
-
+    local restoreFonts = function(frame)
+        --Name
+        frame.name:SetFont("Fonts\\FRIZQT__.TTF", 10,"NONE")
+        frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
+        frame.name:SetPoint("TOPRIGHT", -3, -3)
+        frame.name:SetJustifyH("LEFT");
+        frame.name:SetVertexColor(1,1,1)
+        --Status
+        local frameWidth = frame:GetWidth()
+        local frameHeight = frame:GetHeight()
+        frame.statusText:SetFont("Fonts\\FRIZQT__.TTF", 12,"NONE")
+        frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, frameHeight / 3 - 2)
+        frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, frameHeight / 3 - 2)
+        frame.statusText:SetVertexColor(0.5,0.5,0.5)
+    end
+    RaidFrameSettings:IterateRoster(restoreFonts)
 end

@@ -119,7 +119,10 @@ function RaidFrameSettings:ImportProfile(input)
     end
 end
 
-
+--Addon compartment 
+_G.RaidFrameSettings_AddOnCompartmentClick = function()
+    RaidFrameSettings:SlashCommand()
+end
 
 
 

@@ -3,6 +3,8 @@
 ## Title: RaidFrameSettings
 ## Author: Slothpala
 ## SavedVariables: RaidFrameSettingsDB, RaidFrameSettingsDBPP, RaidFrameSettingsDBRP
+## AddonCompartmentFunc: RaidFrameSettings_AddOnCompartmentClick
+## IconTexture: Interface\AddOns\RaidFrameSettings\Textures\Icon\Icon.tga
 ## X-Curse-Project-ID: 688930
 
 #Libs

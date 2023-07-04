@@ -22,6 +22,13 @@ local options = {
     type = "group",
     childGroups = "tree",
     args = {
+        Version = {
+            order = 0,
+            name = "            @project-version@",
+            type = "group",
+            disabled = true,
+            args = {},
+        },
         Config = {
             order = lastEntry-1,
             name = "Enabled Modules",

@@ -64,8 +64,6 @@ function RaidFrameSettings:OnEnable()
     options.args.PorfileManagement.args.profile.order = 1
     --register options as option table to create a gui based on it
     AC:RegisterOptionsTable("RaidFrameSettings_options", options) 
-    --add them to blizzards settings panel for addons
-    self.optionsFrame = ACD:AddToBlizOptions("RaidFrameSettings_options", "RaidFrameSettings")
     self:GetProfiles()
     self:LoadGroupBasedProfile()
     self:LoadConfig()

@@ -10,6 +10,45 @@ local AC         = LibStub("AceConfig-3.0")
 local ACD        = LibStub("AceConfigDialog-3.0")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
 local LGF        = LibStub("LibGetFrame-1.0")
+local AceGUI     = LibStub("AceGUI-3.0")
+
+--GUI Shared xml template with AceGUI widgets 
+local OptionsFrame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
+tinsert(UISpecialFrames, OptionsFrame:GetName())
+OptionsFrame:SetFrameStrata("DIALOG")
+OptionsFrame:SetSize(800,550)
+OptionsFrame:SetPoint("CENTER", UIparent, "CENTER")
+OptionsFrame:EnableMouse(true)
+OptionsFrame:SetMovable(true)
+OptionsFrame:SetResizable(true)
+OptionsFrame:SetResizeBounds(300,200)
+OptionsFrame:SetClampedToScreen(true)
+OptionsFrame:RegisterForDrag("LeftButton")
+OptionsFrame:SetScript("OnDragStart", OptionsFrame.StartMoving)
+OptionsFrame:SetScript("OnDragStop", OptionsFrame.StopMovingOrSizing)
+OptionsFrame:Hide()
+RaidFrameSettingsOptionsPortrait:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon\\Icon.tga")
+
+local resizeButton = CreateFrame("Button", "RaidFrameSettingsOptionsResizeButton", OptionsFrame)
+resizeButton:SetPoint("BOTTOMRIGHT", -5, 7)
+resizeButton:SetSize(14, 14)
+resizeButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+resizeButton:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+resizeButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+resizeButton:SetScript("OnMouseDown", function(_, button) 
+    if button == "LeftButton" then
+        OptionsFrame:StartSizing("BOTTOMRIGHT")
+    end
+end)
+resizeButton:SetScript("OnMouseUp", function()
+    OptionsFrame:StopMovingOrSizing("BOTTOMRIGHT")
+end)
+
+local container = AceGUI:Create("SimpleGroup")
+container.frame:SetParent(OptionsFrame)
+container.frame:SetPoint("TOPLEFT", OptionsFrame, "TOPLEFT", 2, -22)
+container.frame:SetPoint("BOTTOMRIGHT", OptionsFrame, "BOTTOMRIGHT", -2, 3)
+OptionsFrame.container = container
 
 function RaidFrameSettings:OnInitialize()
     self:LoadDataBase()
@@ -28,18 +67,15 @@ function RaidFrameSettings:OnEnable()
     --add them to blizzards settings panel for addons
     self.optionsFrame = ACD:AddToBlizOptions("RaidFrameSettings_options", "RaidFrameSettings")
     self:GetProfiles()
-        self:LoadGroupBasedProfile()
+    self:LoadGroupBasedProfile()
     self:LoadConfig()
 end
 
 function RaidFrameSettings:SlashCommand()
-    --check for combat lockdown here
-    if ACD.OpenFrames["RaidFrameSettings_options"] then
-        ACD:Close("RaidFrameSettings_options")
-    else
-        ACD:SetDefaultSize("RaidFrameSettings_options",800,550)
-        ACD:Open("RaidFrameSettings_options")
-    end
+    OptionsFrame:Show()
+    RaidFrameSettingsOptionsTitleText:SetText("RaidFrameSettings")
+    --open the addon settings
+    ACD:Open("RaidFrameSettings_options",OptionsFrame.container)
 end
 
 function RaidFrameSettings:LoadConfig()  

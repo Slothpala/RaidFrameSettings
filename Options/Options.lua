@@ -68,7 +68,7 @@ local options = {
                             order = 4,
                             type = "toggle",
                             name = "Range",
-                            desc = "Use custom alpha values for out of range units.\n|cffF4A460CPU Impact: |r|cffFF0000HIGH|r",
+                            desc = "Use custom alpha values for out of range units.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r to |r|cffFFFF00MEDIUM|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },

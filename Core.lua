@@ -163,7 +163,7 @@ function RaidFrameSettings:RegisterUpdateHealPrediction(callback)
     UpdateHealPrediction_Callback = callback
     if not hooked["CompactUnitFrame_UpdateHealPrediction"] then
         hooksecurefunc("CompactUnitFrame_UpdateHealPrediction", function(frame) 
-            if Roster.FramePool[frame] then
+            if Roster.FramePool[frame] or not shouldIgnore(frame) then 
                 UpdateHealPrediction_Callback(frame)
             end
         end)
@@ -177,7 +177,7 @@ function RaidFrameSettings:RegisterUpdateInRange(callback)
     UpdateInRange_Callback = callback
     if not hooked["CompactUnitFrame_UpdateInRange"] then
         hooksecurefunc("CompactUnitFrame_UpdateInRange", function(frame) 
-            if Roster.FramePool[frame] then
+            if Roster.FramePool[frame] or not shouldIgnore(frame) then 
                 UpdateInRange_Callback(frame)
             end
         end)

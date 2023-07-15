@@ -1,30 +1,100 @@
 --[[
     Created by Slothpala 
-    Build an always up to date cache of all frames in the raid roster
-    All hooks that benefit from that cache will be stored here for performance reasons. Modules will register callback functions(frame) for a given hook. The first time that a module registers a callback will start the hook.
+    Setup the AddOn. I.e load the db (saved variables), load modules and set up the GUI as well as profile management
 --]]
---lua speed reference
-local pairs = pairs
-local match = match
---wow api speed reference
-local IsForbidden = IsForbidden
-local UnitIsPlayer = UnitIsPlayer
-local UnitIsConnected = UnitIsConnected
-local UnitIsDead = UnitIsDead
-local UnitIsTapDenied = UnitIsTapDenied
+RaidFrameSettings = LibStub("AceAddon-3.0"):NewAddon("RaidFrameSettings", "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0")
+RaidFrameSettings:SetDefaultModuleLibraries("AceEvent-3.0")
+RaidFrameSettings:SetDefaultModuleState(false)
 
----------
---cache--
----------
-local LGF = LibStub("LibGetFrame-1.0")
-local Roster = {}
-Roster.FramePool = {}
-Roster.Units  = {}
-local TrackedUnits = {}
-Roster.Units["player"] = LGF.GetUnitFrame("player")
-TrackedUnits["player"] = true
-for i=1,4 do Roster.Units["party"..i] = LGF.GetUnitFrame("party"..i); TrackedUnits["party"..i] = true end
-for i=1,40 do Roster.Units["raid"..i] = LGF.GetUnitFrame("raid"..i); TrackedUnits["raid"..i] = true  end
+local AC         = LibStub("AceConfig-3.0")
+local ACD        = LibStub("AceConfigDialog-3.0")
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
+local LGF        = LibStub("LibGetFrame-1.0")
+local AceGUI     = LibStub("AceGUI-3.0")
+
+--GUI Shared xml template with AceGUI widgets 
+local OptionsFrame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
+tinsert(UISpecialFrames, OptionsFrame:GetName())
+OptionsFrame:SetFrameStrata("DIALOG")
+OptionsFrame:SetSize(800,550)
+OptionsFrame:SetPoint("CENTER", UIparent, "CENTER")
+OptionsFrame:EnableMouse(true)
+OptionsFrame:SetMovable(true)
+OptionsFrame:SetResizable(true)
+OptionsFrame:SetResizeBounds(300,200)
+OptionsFrame:SetClampedToScreen(true)
+OptionsFrame:RegisterForDrag("LeftButton")
+OptionsFrame:SetScript("OnDragStart", OptionsFrame.StartMoving)
+OptionsFrame:SetScript("OnDragStop", OptionsFrame.StopMovingOrSizing)
+OptionsFrame:Hide()
+RaidFrameSettingsOptionsPortrait:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon\\Icon.tga")
+
+local resizeButton = CreateFrame("Button", "RaidFrameSettingsOptionsResizeButton", OptionsFrame)
+resizeButton:SetPoint("BOTTOMRIGHT", -5, 7)
+resizeButton:SetSize(14, 14)
+resizeButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+resizeButton:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+resizeButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+resizeButton:SetScript("OnMouseDown", function(_, button) 
+    if button == "LeftButton" then
+        OptionsFrame:StartSizing("BOTTOMRIGHT")
+    end
+end)
+resizeButton:SetScript("OnMouseUp", function()
+    OptionsFrame:StopMovingOrSizing("BOTTOMRIGHT")
+end)
+
+local container = AceGUI:Create("SimpleGroup")
+container.frame:SetParent(OptionsFrame)
+container.frame:SetPoint("TOPLEFT", OptionsFrame, "TOPLEFT", 2, -22)
+container.frame:SetPoint("BOTTOMRIGHT", OptionsFrame, "BOTTOMRIGHT", -2, 3)
+OptionsFrame.container = container
+
+function RaidFrameSettings:OnInitialize()
+    self:LoadDataBase()
+    self:RegisterChatCommand("rfs", "SlashCommand")
+    self:RegisterChatCommand("raidframesettings", "SlashCommand")
+end
+
+function RaidFrameSettings:OnEnable()
+    --load options table
+    local options = self:GetOptionsTable()
+    --create option table based on database structure and add them to options
+    options.args.PorfileManagement.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) 
+    options.args.PorfileManagement.args.profile.order = 1
+    --register options as option table to create a gui based on it
+    AC:RegisterOptionsTable("RaidFrameSettings_options", options) 
+    self:GetProfiles()
+    self:LoadGroupBasedProfile()
+    self:LoadConfig()
+end
+
+function RaidFrameSettings:SlashCommand()
+    OptionsFrame:Show()
+    RaidFrameSettingsOptionsTitleText:SetText("RaidFrameSettings")
+    --open the addon settings
+    ACD:Open("RaidFrameSettings_options",OptionsFrame.container)
+end
+
+function RaidFrameSettings:LoadConfig()  
+    for _, module in self:IterateModules() do
+        if self.db.profile.Module[module:GetName()] then 
+            module:Enable()
+        end
+    end
+end
+
+function RaidFrameSettings:ReloadConfig()
+    for _, module in self:IterateModules() do
+        module:Disable()
+    end
+    self:GetProfiles()
+    self:WipeAllCallbacks()
+    self:LoadConfig()
+    self:UpdateAllFrames()
+end
+
+--group type profiles
 local groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
 
 RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
@@ -36,9 +106,6 @@ RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
         end)
     end
 end)
-RaidFrameSettings:RegisterEvent("PLAYER_ENTERING_WORLD",function(event)
-    groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
-end)
 
 function RaidFrameSettings:LoadGroupBasedProfile()
     local groupProfileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or "Default"
@@ -49,179 +116,55 @@ function RaidFrameSettings:LoadGroupBasedProfile()
     end
 end
 
-local OnFrameUnitAdded_Callback = nil
-function RaidFrameSettings:RegisterOnFrameUnitAdded(callback)
-    OnFrameUnitAdded_Callback = callback
-end
-local OnFrameUnitUpdate_Callback = nil
-function RaidFrameSettings:RegisterOnFrameUnitUpdate(callback)
-    OnFrameUnitUpdate_Callback = callback
-end
-local OnFrameUnitRemoved_Callback = nil
-function RaidFrameSettings:RegisterOnFrameUnitRemoved(callback)
-    OnFrameUnitRemoved_Callback = callback
-end
-
-local callback = function(event, frame, unit, previousUnit)
-    if not TrackedUnits[unit] then return end
-    if unit == "player" and not frame:GetDebugName():match("Compact") then return end --ignoring frames with LGF options table just wouldn't work for me
-    if event == "FRAME_UNIT_ADDED" then
-        Roster.FramePool[frame] = true
-        Roster.Units[unit] = frame
-        if OnFrameUnitAdded_Callback then
-            OnFrameUnitAdded_Callback(frame, unit)
-        end
-    end
-    if event == "FRAME_UNIT_UPDATE" then
-        Roster.FramePool[frame] = true
-        Roster.Units[unit] = frame
-        if OnFrameUnitUpdate_Callback then
-            OnFrameUnitUpdate_Callback(frame, unit)
-        end
-    end
-    if event == "FRAME_UNIT_REMOVED" then
-        Roster.FramePool[frame] = nil
-        Roster.Units[unit] = nil
-        if OnFrameUnitRemoved_Callback then
-            OnFrameUnitRemoved_Callback(unit)
-        end
-    end
+--profile import / export functions
+--[[
+    the method to share and import profiles is based on:
+    https://github.com/brittyazel/EnhancedRaidFrames/blob/main/EnhancedRaidFrames.lua
+--]]
+function RaidFrameSettings:ShareProfile()
+    --AceSerialize
+	local serialized_profile = self:Serialize(self.db.profile) 
+    --LibDeflate
+	local compressed_profile = LibDeflate:CompressZlib(serialized_profile) 
+	local encoded_profile    = LibDeflate:EncodeForPrint(compressed_profile)
+	return encoded_profile
 end
 
-LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_ADDED", callback)
-LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_UPDATE", callback)
-LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_REMOVED", callback)
-
-function RaidFrameSettings:IterateRoster(callback)
-    for frame,_ in pairs(Roster.FramePool) do
-        callback(frame)
+function RaidFrameSettings:ImportProfile(input)
+    --validate input
+    --empty?
+    if input == "" then
+        self:Print("No import string provided. Abort")
+        return
+    end
+    --LibDeflate decode
+    local decoded_profile = LibDeflate:DecodeForPrint(input)
+    if decoded_profile == nil then
+        self:Print("Decoding failed. Abort")
+        return
+    end
+    --LibDefalte uncompress
+    local uncompressed_profile = LibDeflate:DecompressZlib(decoded_profile)
+    if uncompressed_profile == nil then
+        self:Print("Uncompressing failed. Abort")
+        return
+    end
+    --AceSerialize
+    --deserialize the profile and overwirte the current values
+    local valid, imported_Profile = self:Deserialize(uncompressed_profile)
+    if valid and imported_Profile then
+		for i,v in pairs(imported_Profile) do
+			self.db.profile[i] = CopyTable(v)
+		end
+    else
+        self:Print("Invalid profile. Abort")
     end
 end
 
----------
---Hooks--
----------
-local hooked = {}
-
-local function shouldIgnore(frame) 
-    if not frame:IsForbidden() and UnitIsPlayer(frame.unit) and not frame.displayedUnit:match("nameplate") then
-        return false
-    end
-    return true
+--Addon compartment 
+_G.RaidFrameSettings_AddOnCompartmentClick = function()
+    RaidFrameSettings:SlashCommand()
 end
 
---CompactUnitFrame_UpdateAll 
-local OnUpdateAll_Callbacks = {}
-function RaidFrameSettings:RegisterOnUpdateAll(callback)
-    OnUpdateAll_Callbacks[#OnUpdateAll_Callbacks+1] = callback
-    if not hooked["CompactUnitFrame_UpdateAll"] then
-        hooksecurefunc("CompactUnitFrame_UpdateAll", function(frame) 
-            if Roster.FramePool[frame] or not shouldIgnore(frame) then 
-                for i = 1,#OnUpdateAll_Callbacks do 
-                    OnUpdateAll_Callbacks[i](frame)
-                end
-            end
-        end)
-        hooked["CompactUnitFrame_UpdateAll"] = true
-    end
-end
 
---CompactUnitFrame_UpdateHealthColor 
-local OnUpdateHealthColor_Callback = function() end
-function RaidFrameSettings:RegisterOnUpdateHealthColor(callback)
-    OnUpdateHealthColor_Callback = callback
-    if not hooked["CompactUnitFrame_UpdateHealthColor"] then
-        hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame) 
-            if Roster.FramePool[frame] or not shouldIgnore(frame) then
-                local unitIsConnected = UnitIsConnected(frame.unit)
-                local unitIsDead = unitIsConnected and UnitIsDead(frame.unit)
-                if not unitIsConnected or unitIsDead then return end
-                OnUpdateHealthColor_Callback(frame)
-            end 
-        end)
-        hooked["CompactUnitFrame_UpdateHealthColor"] = true
-    end
-end
 
---CompactUnitFrame_UpdateName 
-local OnUpdateName_Callback = function() end
-function RaidFrameSettings:RegisterOnUpdateName(callback)
-    OnUpdateName_Callback = callback
-    if not hooked["CompactUnitFrame_UpdateName"] then
-        hooksecurefunc("CompactUnitFrame_UpdateName", function(frame) 
-            if Roster.FramePool[frame] or not shouldIgnore(frame) then 
-                OnUpdateName_Callback(frame)
-            end
-        end)
-        hooked["CompactUnitFrame_UpdateName"] = true
-    end
-end
-
---CompactUnitFrame_UpdateHealPrediction 
-local UpdateHealPrediction_Callback = function() end
-function RaidFrameSettings:RegisterUpdateHealPrediction(callback)
-    UpdateHealPrediction_Callback = callback
-    if not hooked["CompactUnitFrame_UpdateHealPrediction"] then
-        hooksecurefunc("CompactUnitFrame_UpdateHealPrediction", function(frame) 
-            if Roster.FramePool[frame] or not shouldIgnore(frame) then 
-                UpdateHealPrediction_Callback(frame)
-            end
-        end)
-        hooked["CompactUnitFrame_UpdateHealPrediction"] = true
-    end
-end
-
---CompactUnitFrame_UpdateInRange 
-local UpdateInRange_Callback = function() end
-function RaidFrameSettings:RegisterUpdateInRange(callback)
-    UpdateInRange_Callback = callback
-    if not hooked["CompactUnitFrame_UpdateInRange"] then
-        hooksecurefunc("CompactUnitFrame_UpdateInRange", function(frame) 
-            if Roster.FramePool[frame] or not shouldIgnore(frame) then 
-                UpdateInRange_Callback(frame)
-            end
-        end)
-        hooked["CompactUnitFrame_UpdateInRange"] = true
-    end
-end
-
---role icon and debuff frame are only used for update all, hooks are done in the module files
-local UpdateRoleIcon_Callback = function() end
-function RaidFrameSettings:RegisterUpdateRoleIcon(callback)
-    UpdateRoleIcon_Callback = callback
-end
-
-local UpdateDebuffFrame_Callback = function() end
-function RaidFrameSettings:RegisterUpdateDebuffFrame(callback)
-    UpdateDebuffFrame_Callback = callback
-end
-
-function RaidFrameSettings:WipeAllCallbacks()
-    OnUpdateAll_Callbacks = {}
-    OnUpdateHealthColor_Callback = function() end
-    OnUpdateName_Callback = function() end
-    UpdateInRange_Callback = function() end
-    UpdateHealPrediction_Callback = function() end
-    UpdateRoleIcon_Callback = function() end
-    UpdateDebuffFrame_Callback = function() end
-end
-
-function RaidFrameSettings:UpdateAllFrames()
-    for frame,_ in pairs(Roster.FramePool) do
-        if Roster.FramePool[frame] or not shouldIgnore(frame) then 
-            for i=1,#OnUpdateAll_Callbacks do 
-                OnUpdateAll_Callbacks[i](frame)
-            end
-            OnUpdateHealthColor_Callback(frame)
-            OnUpdateName_Callback(frame)
-            UpdateHealPrediction_Callback(frame)
-            UpdateInRange_Callback(frame)
-            UpdateRoleIcon_Callback(frame)
-            if frame.debuffFrames then
-                for i=1, #frame.debuffFrames do
-                    UpdateDebuffFrame_Callback(frame.debuffFrames[i]) 
-                end
-            end
-        end
-    end
-end

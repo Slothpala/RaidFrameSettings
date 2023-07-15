@@ -24,7 +24,7 @@ local updateColor --function defined in OnEnable()
 local function isValidCompactFrame(frame) 
     if frame:IsForbidden() then return end
     local frameName = frame:GetName()
-    if frameName and frameName:match("Member") then 
+    if frameName and frameName:match("Compact") and UnitIsPlayer(frame.unit) then 
         return true
     end
     return false

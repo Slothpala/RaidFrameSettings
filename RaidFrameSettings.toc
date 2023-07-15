@@ -11,8 +11,8 @@
 embeds.xml
 
 #Config
-Main.lua
 Core.lua
+Hooks.lua
 DB\DB.lua
 Options\Options.lua
 

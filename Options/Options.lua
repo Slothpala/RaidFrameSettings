@@ -100,7 +100,7 @@ local options = {
                             order = 8,
                             type = "toggle",
                             name = "Dispel Color",
-                            desc = "Recolor Health Bars based on their debuff color if your class could dispel them.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r to |r|cffFFFF00MEDIUM|r",
+                            desc = "Recolor Health Bars based on their debuff color if your class could dispel them.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },

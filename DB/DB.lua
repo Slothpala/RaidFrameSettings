@@ -65,8 +65,13 @@ local defaults = {
                 clean_icons = true,
             },
             DebuffSize = {
-                width  = 18,
-                height = 18,
+                width         = 18,
+                height        = 18,
+                point         = 3,
+                relativePoint = 3,
+                x_offset      = 0,
+                y_offset      = 0,
+                orientation   = 2,
             },
             DispelColor = {
                 curse   = {r=0.6,g=0.0,b=1.0},

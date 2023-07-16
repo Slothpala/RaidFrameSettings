@@ -147,7 +147,6 @@ function RaidFrameSettings:IterateRoster(callback)
     end
 end
 
-
 function RaidFrameSettings:UpdateAllFrames()
     local function CallbackPool(frame)
         for i=1,#OnUpdateAll_Callbacks do 

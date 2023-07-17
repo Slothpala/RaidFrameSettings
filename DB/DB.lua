@@ -67,6 +67,7 @@ local defaults = {
             DebuffSize = {
                 width         = 18,
                 height        = 18,
+                increase      = 5,
                 point         = 3,
                 relativePoint = 3,
                 x_offset      = 0,

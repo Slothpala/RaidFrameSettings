@@ -63,6 +63,11 @@ local defaults = {
                 width  = 18,
                 height = 18,
                 clean_icons = true,
+                point         = 4,
+                relativePoint = 4,
+                x_offset      = -4,
+                y_offset      = 4,
+                orientation   = 1,
             },
             DebuffSize = {
                 width         = 18,

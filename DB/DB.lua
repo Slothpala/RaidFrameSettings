@@ -7,10 +7,10 @@
 local defaults = {
     profile = {
         Module = {
-            ["*"] = true,
-            BuffSize = false,
-            DebuffSize = false,
-            Range = false,
+            ["*"]   = true,
+            Buffs   = false,
+            Debuffs = false,
+            Range   = false,
             DispelColor = false,
         },
         HealthBars = { 
@@ -49,17 +49,23 @@ local defaults = {
                 y_offset      = -5,
             },
         },
-        MinorModules = {
-            RoleIcon = {
-                position = 1,
-                x_offset = 0,
-                y_offset = 0,
+        Debuffs = {
+            Display = {
+                width         = 18,
+                height        = 18,
+                increase      = 5,
+                point         = 3,
+                relativePoint = 3,
+                x_offset      = 0,
+                y_offset      = 0,
+                orientation   = 2,
             },
-            RangeAlpha = {
-                statusbar  = 0.3,
-                background = 0.2,
+            Blacklist = {
+                --spellID = true
             },
-            BuffSize = {
+        },
+        Buffs = {
+            Display = {
                 width  = 18,
                 height = 18,
                 clean_icons = true,
@@ -69,15 +75,16 @@ local defaults = {
                 y_offset      = 4,
                 orientation   = 1,
             },
-            DebuffSize = {
-                width         = 18,
-                height        = 18,
-                increase      = 5,
-                point         = 3,
-                relativePoint = 3,
-                x_offset      = 0,
-                y_offset      = 0,
-                orientation   = 2,
+        },
+        MinorModules = {
+            RoleIcon = {
+                position = 1,
+                x_offset = 0,
+                y_offset = 0,
+            },
+            RangeAlpha = {
+                statusbar  = 0.3,
+                background = 0.2,
             },
             DispelColor = {
                 curse   = {r=0.6,g=0.0,b=1.0},
@@ -137,4 +144,32 @@ function RaidFrameSettings:SetColor(info, r,g,b)
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].g = g
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].b = b
     self:ReloadConfig()
+end
+
+--debuff blacklist
+function RaidFrameSettings:AddToDebuffBlacklist(info,value)
+    self.db.profile.Debuffs.Blacklist[value] = true
+    RaidFrameSettings:Print(value.." added to blacklist")
+    self:ReloadConfig()
+end
+
+function RaidFrameSettings:RemoveDebuffFromBlacklist(info,value)
+    if self.db.profile.Debuffs.Blacklist[value] == true then
+        self.db.profile.Debuffs.Blacklist[value] = nil
+        RaidFrameSettings:Print(value.." removed from blacklist")
+    end
+    self:ReloadConfig()
+end
+
+function RaidFrameSettings:GetDebuffBlacklist()
+    local blacklist = self.db.profile.Debuffs.Blacklist
+    local text = ""
+    for spellId,value in pairs(blacklist) do
+        if value == true then
+            --GetSpellInfo causes a stack overflow when passed more than 10 characters
+            local name = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r" 
+            text = text .. spellId .. "(" .. name .."); "
+        end
+    end
+    return text
 end

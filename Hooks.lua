@@ -13,11 +13,6 @@ local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsTapDenied = UnitIsTapDenied
 local GetName = GetName
----------
---Hooks--
----------
-local hooked = {}
-
 local function isValidCompactFrame(frame) 
     if frame:IsForbidden() then return end
     local frameName = frame:GetName()
@@ -26,6 +21,32 @@ local function isValidCompactFrame(frame)
     end
     return false
 end
+---------
+--Cache--
+---------
+local Roster = {}
+Roster["player"] = LGF.GetUnitFrame("player")
+for i=1,4 do Roster["party"..i] = LGF.GetUnitFrame("party"..i) end
+for i=1,40 do Roster["raid"..i] = LGF.GetUnitFrame("raid"..i) end
+local callback = function(event, frame, unit, previousUnit)
+    if not isValidCompactFrame(frame) then return end
+    if event == "FRAME_UNIT_ADDED" then
+        Roster[unit] = frame
+    end
+    if event == "FRAME_UNIT_UPDATE" then
+        Roster[unit] = frame
+    end
+    if event == "FRAME_UNIT_REMOVED" then
+        Roster[unit] = nil
+    end
+end
+LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_ADDED", callback)
+LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_UPDATE", callback)
+LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_REMOVED", callback)
+---------
+--Hooks--
+---------
+local hooked = {}
 
 --CompactUnitFrame_UpdateAll 
 local OnUpdateAll_Callbacks = {}
@@ -124,26 +145,8 @@ function RaidFrameSettings:WipeAllCallbacks()
 end
 
 function RaidFrameSettings:IterateRoster(callback)
-    local groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
-    local numGroupMembers = GetNumGroupMembers()
-    if groupType == "party" then
-        for i=1,numGroupMembers-1 do
-            local partyN = LGF.GetUnitFrame("party"..i)
-            if partyN and isValidCompactFrame(partyN) then
-                callback(partyN)
-            end
-        end
-    elseif groupType == "raid" then
-        for i=1,numGroupMembers do
-            local raidN = LGF.GetUnitFrame("raid"..i)
-            if raidN and isValidCompactFrame(raidN) then
-                callback(raidN)
-            end
-        end
-    end
-    local player = LGF.GetUnitFrame("player")
-    if player and isValidCompactFrame(player) then
-        callback(player)
+    for unit, frame in pairs(Roster) do
+        callback(frame)
     end
 end
 

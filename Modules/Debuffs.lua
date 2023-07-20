@@ -1,26 +1,37 @@
 --[[
     Created by Slothpala 
 --]]
-local DebuffSize = RaidFrameSettings:NewModule("DebuffSize")
+local Debuffs = RaidFrameSettings:NewModule("Debuffs")
 local hooked = nil
 --Debuffframe size
 local SetSize = SetSize
 local IsForbidden = IsForbidden
 local UtilSetDebuff_Callback
 
-function DebuffSize:OnEnable()
+
+function Debuffs:OnEnable()
     --Debuffframe size
-    local width = RaidFrameSettings.db.profile.MinorModules.DebuffSize.width
-    local height = RaidFrameSettings.db.profile.MinorModules.DebuffSize.height
-    local debuffsize_increase = RaidFrameSettings.db.profile.MinorModules.DebuffSize.increase
-    local boss_width  = width + debuffsize_increase
-    local boss_height = height + debuffsize_increase
+    local width = RaidFrameSettings.db.profile.Debuffs.Display.width
+    local height = RaidFrameSettings.db.profile.Debuffs.Display.height
+    local Display_increase = RaidFrameSettings.db.profile.Debuffs.Display.increase
+    local boss_width  = width + Display_increase
+    local boss_height = height + Display_increase
+    local blacklist = {}
+    for spellId, value in pairs(RaidFrameSettings.db.profile.Debuffs.Blacklist) do
+        if value == true then
+            blacklist[tonumber(spellId)] = true
+        end
+    end
     UtilSetDebuff_Callback = function(debuffFrame, aura)
         if debuffFrame:IsForbidden() then return end
-        if aura and aura.isBossAura then
-            debuffFrame:SetSize(boss_width, boss_height)
+        if aura and blacklist[aura.spellId] then
+            debuffFrame:SetSize(0.1,0.1)
         else
-            debuffFrame:SetSize(width, height)
+            if aura and aura.isBossAura then
+                debuffFrame:SetSize(boss_width, boss_height)
+            else
+                debuffFrame:SetSize(width, height)
+            end
         end
     end
     if not hooked then
@@ -29,17 +40,17 @@ function DebuffSize:OnEnable()
     end
     RaidFrameSettings:RegisterUpdateDebuffFrame(UtilSetDebuff_Callback)
     --Debuffframe position
-    local point = RaidFrameSettings.db.profile.MinorModules.DebuffSize.point
+    local point = RaidFrameSettings.db.profile.Debuffs.Display.point
     point = ( point == 1 and "TOPLEFT" ) or ( point == 2 and "TOPRIGHT" ) or ( point == 3 and "BOTTOMLEFT" ) or ( point == 4 and "BOTTOMRIGHT" ) 
-    local relativePoint = RaidFrameSettings.db.profile.MinorModules.DebuffSize.relativePoint
+    local relativePoint = RaidFrameSettings.db.profile.Debuffs.Display.relativePoint
     relativePoint = ( relativePoint == 1 and "TOPLEFT" ) or ( relativePoint == 2 and "TOPRIGHT" ) or ( relativePoint == 3 and "BOTTOMLEFT" ) or ( relativePoint == 4 and "BOTTOMRIGHT" ) 
-    local orientation = RaidFrameSettings.db.profile.MinorModules.DebuffSize.orientation
+    local orientation = RaidFrameSettings.db.profile.Debuffs.Display.orientation
     -- 1==LEFT, 2==RIGHT, 3==UP, 4==DOWN
     -- LEFT == "BOTTOMRIGHT","BOTTOMLEFT"; RIGHT == "BOTTOMLEFT","BOTTOMRIGHT"; UP == "BOTTOMLEFT","TOPLEFT"; DOWN = "TOPLEFT","BOTTOMLEFT"
     local debuffPoint = ( orientation == 1 and "BOTTOMRIGHT" ) or ( orientation == 2 and "BOTTOMLEFT" ) or ( orientation == 3 and "BOTTOMLEFT" ) or ( orientation == 4 and "TOPLEFT" ) 
     local debuffRelativePoint = ( orientation == 1 and "BOTTOMLEFT" ) or ( orientation == 2 and "BOTTOMRIGHT" ) or ( orientation == 3 and "TOPLEFT" ) or ( orientation == 4 and "BOTTOMLEFT" ) 
-    local x_offset = RaidFrameSettings.db.profile.MinorModules.DebuffSize.x_offset
-    local y_offset = RaidFrameSettings.db.profile.MinorModules.DebuffSize.y_offset
+    local x_offset = RaidFrameSettings.db.profile.Debuffs.Display.x_offset
+    local y_offset = RaidFrameSettings.db.profile.Debuffs.Display.y_offset
     UpdateAllCallback = function(frame)
         frame.debuffFrames[1]:ClearAllPoints()
         frame.debuffFrames[1]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
@@ -54,7 +65,7 @@ function DebuffSize:OnEnable()
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
-function DebuffSize:OnDisable()
+function Debuffs:OnDisable()
     UtilSetDebuff_Callback = function() end
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()

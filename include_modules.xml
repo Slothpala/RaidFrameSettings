@@ -3,8 +3,8 @@
   <Script file="Modules\Fonts.lua"/>
   <Script file="Modules\RoleIcon.lua"/>
   <Script file="Modules\Range.lua"/>
-  <Script file="Modules\BuffSize.lua"/>
-  <Script file="Modules\DebuffSize.lua"/>
+  <Script file="Modules\Buffs.lua"/>
+  <Script file="Modules\Debuffs.lua"/>
   <Script file="Modules\Overabsorb.lua"/>
   <Script file="Modules\DispelColor.lua"/>
 </Ui>

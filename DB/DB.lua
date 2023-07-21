@@ -48,6 +48,11 @@ local defaults = {
                 x_offset      = 0,
                 y_offset      = -5,
             },
+            Advanced = {
+                shadowColor = {r=0,g=0,b=0,a=1},
+                x_offset = 0,
+                y_offset = 0,
+            },
         },
         Debuffs = {
             Display = {
@@ -140,13 +145,14 @@ end
 
 --color
 function RaidFrameSettings:GetColor(info)
-    return self.db.profile[info[#info-2]][info[#info-1]][info[#info]].r, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].g, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].b
+    return self.db.profile[info[#info-2]][info[#info-1]][info[#info]].r, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].g, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].b, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].a
 end
 
-function RaidFrameSettings:SetColor(info, r,g,b)
+function RaidFrameSettings:SetColor(info, r,g,b,a)
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].r = r 
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].g = g
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].b = b
+    self.db.profile[info[#info-2]][info[#info-1]][info[#info]].a = a
     self:ReloadConfig()
 end
 

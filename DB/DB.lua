@@ -149,30 +149,3 @@ function RaidFrameSettings:SetColor(info, r,g,b)
     self:ReloadConfig()
 end
 
---debuff blacklist
-function RaidFrameSettings:AddToDebuffBlacklist(info,value)
-    self.db.profile.Debuffs.Blacklist[value] = true
-    RaidFrameSettings:Print(value.." added to blacklist")
-    self:ReloadConfig()
-end
-
-function RaidFrameSettings:RemoveDebuffFromBlacklist(info,value)
-    if self.db.profile.Debuffs.Blacklist[value] == true then
-        self.db.profile.Debuffs.Blacklist[value] = nil
-        RaidFrameSettings:Print(value.." removed from blacklist")
-    end
-    self:ReloadConfig()
-end
-
-function RaidFrameSettings:GetDebuffBlacklist()
-    local blacklist = self.db.profile.Debuffs.Blacklist
-    local text = ""
-    for spellId,value in pairs(blacklist) do
-        if value == true then
-            --GetSpellInfo causes a stack overflow when passed more than 10 characters
-            local name = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r" 
-            text = text .. spellId .. "(" .. name .."); "
-        end
-    end
-    return text
-end

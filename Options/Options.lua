@@ -720,7 +720,11 @@ local options = {
                                     width = 1.5,
                                     pattern = "^%d+$",
                                     usage = "please enter a number",
-                                    set = "AddToDebuffBlacklist" 
+                                    set = function(info,value)
+                                        RaidFrameSettings.db.profile.Debuffs.Blacklist[value] = true
+                                        RaidFrameSettings:Print(value.." added to blacklist")
+                                        RaidFrameSettings:ReloadConfig()
+                                    end,
                                 },
                                 remove = {
                                     order = 2,
@@ -730,7 +734,13 @@ local options = {
                                     width = 1.5,
                                     pattern = "^%d+$",
                                     usage = "please enter a number",
-                                    set = "RemoveDebuffFromBlacklist" 
+                                    set = function(info,value)
+                                        if RaidFrameSettings.db.profile.Debuffs.Blacklist[value] == true then
+                                            RaidFrameSettings.db.profile.Debuffs.Blacklist[value] = nil
+                                            RaidFrameSettings:Print(value.." removed from blacklist")
+                                        end
+                                        RaidFrameSettings:ReloadConfig()
+                                    end,
                                 },
                                 Header = {
                                     order = 3,
@@ -744,7 +754,18 @@ local options = {
                                 },
                                 Textfield = {
                                     order = 5,
-                                    name = function() return RaidFrameSettings:GetDebuffBlacklist() end,
+                                    name = function() 
+                                        local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
+                                        local text = ""
+                                        for spellId,value in pairs(blacklist) do
+                                            if value == true then
+                                                --GetSpellInfo causes a stack overflow when passed more than 10 characters
+                                                local name = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r" 
+                                                text = text .. spellId .. "(" .. name .."); "
+                                            end
+                                        end
+                                        return text
+                                    end,
                                     type = "description",
                                     width = "full",
                                     fontSize = "medium",

@@ -152,6 +152,7 @@ end
 
 function RaidFrameSettings:UpdateAllFrames()
     local function CallbackPool(frame)
+        if not frame or not frame.unit then return end
         for i=1,#OnUpdateAll_Callbacks do 
             OnUpdateAll_Callbacks[i](frame)
         end

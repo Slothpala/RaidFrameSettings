@@ -75,6 +75,9 @@ local defaults = {
                 y_offset      = 4,
                 orientation   = 1,
             },
+            Blacklist = {
+                --spellID = true
+            },
         },
         MinorModules = {
             RoleIcon = {

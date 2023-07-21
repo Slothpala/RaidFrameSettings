@@ -11,7 +11,8 @@ local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitInVehicle = UnitInVehicle
-local UnitDebuff = UnitDebuff
+local GetStatusBarColor = GetStatusBarColor
+local SetStatusBarColor = SetStatusBarColor
 --locals
 local Roster = {}
 Roster["player"] = {}
@@ -43,10 +44,14 @@ local function isValidCompactFrame(frame)
 end
 
 local function setStatusBarToDebuffColor(unit, debuffType)
-    local frame = LGF.GetUnitFrame(unit)
+    local frame = LGF.GetUnitFrame(unit)    
     if frame and isValidCompactFrame(frame) then
-        Roster[unit].blockColorUpdate = true
-        frame.healthBar:SetStatusBarColor(debuffTypeColor[debuffType].r,debuffTypeColor[debuffType].g,debuffTypeColor[debuffType].b)
+        local r,g,b = debuffTypeColor[debuffType].r,debuffTypeColor[debuffType].g,debuffTypeColor[debuffType].b
+        local oldR, oldG, oldB = frame.healthBar:GetStatusBarColor()
+        if ( r ~= oldR or g ~= oldG or b ~= oldB ) then
+            Roster[unit].blockColorUpdate = true
+            frame.healthBar:SetStatusBarColor(r,g,b)
+        end
     end
 end
 
@@ -58,7 +63,7 @@ local function restoreStatusBarColor(unit)
     end
 end
 
-local function checkDebuffs(unit)
+local function iterateDebuffs(unit)
     for _,debuffType in pairs(Roster[unit].auras.debuffs) do
         if debuffType then
             setStatusBarToDebuffColor(unit, debuffType)
@@ -69,11 +74,12 @@ local function checkDebuffs(unit)
 end
 
 local function processAurasFull(unit)
+    Roster[unit].auras.debuffs = {}
     local function HandleAura(aura)
         Roster[unit].auras.debuffs[aura.auraInstanceID] = aura.dispelName   
     end
     AuraUtil.ForEachAura(unit, "HARMFUL|RAID", nil, HandleAura, true)  
-    checkDebuffs(unit)  
+    iterateDebuffs(unit)  
 end
 
 local function processAurasIncremental(unit, unitAuraUpdateInfo)
@@ -91,7 +97,7 @@ local function processAurasIncremental(unit, unitAuraUpdateInfo)
             end
         end
     end
-    checkDebuffs(unit)
+    iterateDebuffs(unit)
 end
 
 function DispelColor:OnUnitAura(_,unit,unitAuraUpdateInfo)
@@ -152,13 +158,13 @@ function DispelColor:OnEnable()
             if not Roster[frame.unit].blockColorUpdate then
                 updateColor(frame)
             else
-                checkDebuffs(frame.unit)
+                iterateDebuffs(frame.unit)
             end
         end
     else
         UpdateHealthColor = function(frame)
             if Roster[frame.unit].blockColorUpdate then
-                checkDebuffs(frame.unit)
+                iterateDebuffs(frame.unit)
             end
         end
     end

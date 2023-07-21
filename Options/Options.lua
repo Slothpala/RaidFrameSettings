@@ -819,6 +819,17 @@ local options = {
                             step = 1,
                             width = 0.8,
                         },
+                        scaleFactor = {
+                            order = 4,
+                            name = "scale",
+                            type = "range",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            min = 0.1,
+                            softMax = 3,
+                            step = 0.1,
+                            width = 0.8,
+                        },
                     },
                 },
                 RangeAlpha = {

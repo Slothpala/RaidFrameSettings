@@ -11,6 +11,7 @@ function RoleIcon:OnEnable()
     local x,y,relativePoint
     local x_offset,y_offset = RaidFrameSettings.db.profile.MinorModules.RoleIcon.x_offset,RaidFrameSettings.db.profile.MinorModules.RoleIcon.y_offset
     local position = RaidFrameSettings.db.profile.MinorModules.RoleIcon.position
+    local scaleFactor = RaidFrameSettings.db.profile.MinorModules.RoleIcon.scaleFactor
     if position == 1 then
         x = 4
         y = -4
@@ -34,6 +35,7 @@ function RoleIcon:OnEnable()
         end
         frame.roleIcon:ClearAllPoints()
         frame.roleIcon:SetPoint(relativePoint, frame, relativePoint, x + x_offset, y + y_offset)
+        frame.roleIcon:SetScale(scaleFactor)
     end
     if not hooked then
         hooksecurefunc("CompactUnitFrame_UpdateRoleIcon", function(frame)
@@ -52,6 +54,7 @@ function RoleIcon:OnDisable()
         frame.roleIcon:ClearAllPoints()
         frame.roleIcon:SetPoint("TOPLEFT", 3, -2)
         frame.roleIcon:SetSize(12, 12)
+        frame.roleIcon:SetScale(1)
     end
     RaidFrameSettings:IterateRoster(restoreRoleIcon)
 end

@@ -81,9 +81,10 @@ local defaults = {
         },
         MinorModules = {
             RoleIcon = {
-                position = 1,
-                x_offset = 0,
-                y_offset = 0,
+                position    = 1,
+                x_offset    = 0,
+                y_offset    = 0,
+                scaleFactor = 1,
             },
             RangeAlpha = {
                 statusbar  = 0.3,

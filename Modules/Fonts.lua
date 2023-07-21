@@ -27,7 +27,12 @@ function Fonts:OnEnable()
     Status.JustifyH       = ( RaidFrameSettings.db.profile.Fonts.Status.position == 1 and "LEFT" ) or "CENTER"
     Status.X_Offset       = RaidFrameSettings.db.profile.Fonts.Status.x_offset
     Status.Y_Offset       = RaidFrameSettings.db.profile.Fonts.Status.y_offset
-    --Callbacks
+    --Advanced Font Settings
+    local Advanced = {}
+    Advanced.shadowColor = RaidFrameSettings.db.profile.Fonts.Advanced.shadowColor
+    Advanced.x_offset    = RaidFrameSettings.db.profile.Fonts.Advanced.x_offset
+    Advanced.y_offset    = RaidFrameSettings.db.profile.Fonts.Advanced.y_offset
+    --Callbacks 
     local function UpdateAllCallback(frame)
         --Name
         frame.name:ClearAllPoints()
@@ -35,6 +40,8 @@ function Fonts:OnEnable()
         frame.name:SetWidth((frame:GetWidth()))
         frame.name:SetJustifyH(Name.JustifyH)
         frame.name:SetPoint(Name.Position, frame, Name.Position, Name.X_Offset, Name.Y_Offset )
+        frame.name:SetShadowColor(Advanced.shadowColor.r,Advanced.shadowColor.g,Advanced.shadowColor.b,Advanced.shadowColor.a)
+        frame.name:SetShadowOffset(Advanced.x_offset,Advanced.y_offset)
         --Status
         frame.statusText:ClearAllPoints()
         frame.statusText:SetFont(Status.Font, Status.FontSize, Status.Outlinemode)
@@ -42,6 +49,8 @@ function Fonts:OnEnable()
         frame.statusText:SetJustifyH(Status.JustifyH)
         frame.statusText:SetPoint(Status.Position, frame, Status.Position, Status.X_Offset, Status.Y_Offset )
         frame.statusText:SetVertexColor(Status.FontColor.r,Status.FontColor.g,Status.FontColor.b)
+        frame.statusText:SetShadowColor(Advanced.shadowColor.r,Advanced.shadowColor.g,Advanced.shadowColor.b,Advanced.shadowColor.a)
+        frame.statusText:SetShadowOffset(Advanced.x_offset,Advanced.y_offset)
     end
     RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
     --

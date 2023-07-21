@@ -13,11 +13,23 @@ local UnitIsTapDenied = UnitIsTapDenied
 local UnitInVehicle = UnitInVehicle
 local UnitDebuff = UnitDebuff
 --locals
-local eligibleUnit = {}
-eligibleUnit["player"] = true
-for i=1,4 do eligibleUnit["party"..i] = true end
-for i=1,40 do eligibleUnit["raid"..i] = true end
-local DebuffState = {}
+local Roster = {}
+Roster["player"] = {}
+Roster["player"].blockColorUpdate = false
+Roster["player"].auras = {}
+Roster["player"].auras.debuffs = {}
+for i=1,4 do 
+    Roster["party"..i] = {}
+    Roster["party"..i].blockColorUpdate = false
+    Roster["party"..i].auras = {}
+    Roster["party"..i].auras.debuffs = {}
+end
+for i=1,40 do 
+    Roster["raid"..i] = {}
+    Roster["raid"..i].blockColorUpdate = false
+    Roster["raid"..i].auras = {}
+    Roster["raid"..i].auras.debuffs = {}
+end
 local debuffTypeColor = {}
 local updateColor --function defined in OnEnable()
 
@@ -33,6 +45,7 @@ end
 local function setStatusBarToDebuffColor(unit, debuffType)
     local frame = LGF.GetUnitFrame(unit)
     if frame and isValidCompactFrame(frame) then
+        Roster[unit].blockColorUpdate = true
         frame.healthBar:SetStatusBarColor(debuffTypeColor[debuffType].r,debuffTypeColor[debuffType].g,debuffTypeColor[debuffType].b)
     end
 end
@@ -40,34 +53,56 @@ end
 local function restoreStatusBarColor(unit)
     local frame = LGF.GetUnitFrame(unit)
     if frame and isValidCompactFrame(frame) then
+        Roster[unit].blockColorUpdate = false
         updateColor(frame)
     end
 end
 
 local function checkDebuffs(unit)
-    local index = 0
-    local debuff = nil
-    while(true) do
-        index = index +1
-        local _, _, _, debuffType = UnitDebuff(unit, index, "HARMFUL|RAID")
-        if not debuffType then 
-            break 
+    for _,debuffType in pairs(Roster[unit].auras.debuffs) do
+        if debuffType then
+            setStatusBarToDebuffColor(unit, debuffType)
+            return
         end
-        debuff = debuffType
-        break
     end
-    if debuff then 
-        DebuffState[unit] = true
-        setStatusBarToDebuffColor(unit, debuff)
-    else
-        DebuffState[unit] = false
-        restoreStatusBarColor(unit)
-    end
+    restoreStatusBarColor(unit)
 end
 
-function DispelColor:OnUnitAura(_,unit)
-    if eligibleUnit[unit] then
-        checkDebuffs(unit)
+local function processAurasFull(unit)
+    local function HandleAura(aura)
+        Roster[unit].auras.debuffs[aura.auraInstanceID] = aura.dispelName   
+    end
+    AuraUtil.ForEachAura(unit, "HARMFUL|RAID", nil, HandleAura, true)  
+    checkDebuffs(unit)  
+end
+
+local function processAurasIncremental(unit, unitAuraUpdateInfo)
+    if unitAuraUpdateInfo.addedAuras ~= nil then
+        for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
+            if aura.isRaid and aura.isHarmful then
+                Roster[unit].auras.debuffs[aura.auraInstanceID] = aura.dispelName        
+            end
+        end
+    end
+    if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
+        for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+            if Roster[unit].auras.debuffs[auraInstanceID] then
+                Roster[unit].auras.debuffs[auraInstanceID] = nil
+            end
+        end
+    end
+    checkDebuffs(unit)
+end
+
+function DispelColor:OnUnitAura(_,unit,unitAuraUpdateInfo)
+    if not Roster[unit] then
+        return
+    end
+    if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
+        processAurasFull(unit)
+        return
+    else
+        processAurasIncremental(unit, unitAuraUpdateInfo)
     end
 end
 
@@ -114,14 +149,15 @@ function DispelColor:OnEnable()
     local UpdateHealthColor
     if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then 
         UpdateHealthColor = function(frame)
-            updateColor(frame)
-            if DebuffState[frame.unit] then
+            if not Roster[frame.unit].blockColorUpdate then
+                updateColor(frame)
+            else
                 checkDebuffs(frame.unit)
             end
         end
     else
         UpdateHealthColor = function(frame)
-            if DebuffState[frame.unit] then
+            if Roster[frame.unit].blockColorUpdate then
                 checkDebuffs(frame.unit)
             end
         end

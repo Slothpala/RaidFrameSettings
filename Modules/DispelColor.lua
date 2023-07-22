@@ -155,7 +155,7 @@ function DispelColor:OnEnable()
     local UpdateHealthColor
     if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then 
         UpdateHealthColor = function(frame)
-            if not Roster[frame.unit].blockColorUpdate then
+            if Roster[frame.unit] and not Roster[frame.unit].blockColorUpdate then
                 updateColor(frame)
             else
                 iterateDebuffs(frame.unit)
@@ -163,7 +163,7 @@ function DispelColor:OnEnable()
         end
     else
         UpdateHealthColor = function(frame)
-            if Roster[frame.unit].blockColorUpdate then
+            if Roster[frame.unit] and Roster[frame.unit].blockColorUpdate then
                 iterateDebuffs(frame.unit)
             end
         end

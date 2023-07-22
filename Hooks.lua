@@ -163,7 +163,14 @@ function RaidFrameSettings:UpdateAllFrames()
         UpdateRoleIcon_Callback(frame)
         if frame.debuffFrames then
             for i=1, #frame.debuffFrames do
-                UpdateDebuffFrame_Callback(frame.debuffFrames[i]) 
+                local debuffFrame = frame.debuffFrames[i]
+                UpdateDebuffFrame_Callback(debuffFrame) 
+                if debuffFrame.auraInstanceID then
+                    local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
+                    if self.db.profile.Debuffs.Blacklist[tostring(aura.spellId)] then
+                        debuffFrame:SetSize(0.1,0.1)
+                    end
+                end
             end
         end
     end

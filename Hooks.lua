@@ -161,14 +161,27 @@ function RaidFrameSettings:UpdateAllFrames()
         UpdateHealPrediction_Callback(frame)
         UpdateInRange_Callback(frame)
         UpdateRoleIcon_Callback(frame)
+        --debuffs
         if frame.debuffFrames then
             for i=1, #frame.debuffFrames do
                 local debuffFrame = frame.debuffFrames[i]
                 UpdateDebuffFrame_Callback(debuffFrame) 
                 if debuffFrame.auraInstanceID then
                     local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
-                    if self.db.profile.Debuffs.Blacklist[tostring(aura.spellId)] then
+                    if aura and self.db.profile.Debuffs.Blacklist[tostring(aura.spellId)] then
                         debuffFrame:SetSize(0.1,0.1)
+                    end
+                end
+            end
+        end
+        --buffs
+        if frame.buffFrames then
+            for i=1, #frame.buffFrames do
+                local buffFrame = frame.buffFrames[i]
+                if buffFrame.auraInstanceID then
+                    local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
+                    if aura and self.db.profile.Buffs.Blacklist[tostring(aura.spellId)] then
+                        buffFrame:SetSize(0.1,0.1)
                     end
                 end
             end

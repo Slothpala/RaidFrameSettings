@@ -2,6 +2,8 @@
     Created by Slothpala
 --]]
 local Buffs = RaidFrameSettings:NewModule("Buffs")
+local hooked 
+local UtilSetBuff_Callback
 
 function Buffs:OnEnable()
     --Buff size
@@ -56,10 +58,28 @@ function Buffs:OnEnable()
         end
     end
     RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
+    --blacklist
+    local blacklist = {}
+    for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Blacklist) do
+        blacklist[tonumber(spellId)] = true
+    end
+    UtilSetBuff_Callback = function(buffFrame, aura)
+        if buffFrame:IsForbidden() then return end
+        if aura and blacklist[aura.spellId] then
+            buffFrame:SetSize(0.1,0.1)
+        else
+            buffFrame:SetSize(width, height)
+        end
+    end
+    if not hooked then
+        hooksecurefunc("CompactUnitFrame_UtilSetBuff", function(buffFrame, aura) UtilSetBuff_Callback(buffFrame, aura) end)
+        hooked = true
+    end
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
+    UtilSetBuff_Callback = function() end
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()

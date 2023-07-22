@@ -545,9 +545,8 @@ local options = {
                     args = {
                         Display = {
                             order = 1,
-                            name = "Buffs",
+                            name = "Display",
                             type = "group",
-                            inline = true,
                             args = {
                                 width = {
                                     order = 1,
@@ -640,6 +639,56 @@ local options = {
                                     step = 1,
                                     width = 1.4,
                                 },
+                            },
+                        },
+                        Blacklist = {
+                            order = 2,
+                            name = "Blacklist",
+                            type = "group",
+                            args = {
+                                add = {
+                                    order = 1,
+                                    name = "add aura by spellid to blacklist",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(info,spellID)
+                                        local name = #spellID <= 10 and select(1,GetSpellInfo(spellID)) or "|cffff0000aura not found|r" 
+                                        RaidFrameSettings.db.profile.Buffs.Blacklist[spellID] = name
+                                        RaidFrameSettings:CreateBlacklistEntry("Buffs", name, spellID)
+                                        RaidFrameSettings:Print(spellID.."("..name..") added to blacklist")
+                                        RaidFrameSettings:ReloadConfig()
+                                    end,
+                                },
+                                remove = {
+                                    order = 2,
+                                    name = "remove aura from blacklist",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(info,spellID)
+                                        local name = RaidFrameSettings.db.profile.Buffs.Blacklist[spellID]
+                                        if name then
+                                            RaidFrameSettings.db.profile.Buffs.Blacklist[spellID] = nil
+                                            RaidFrameSettings:RemoveBlacklistEntry("Buffs", name, spellID)
+                                            RaidFrameSettings:Print(spellID.."("..name..") removed from blacklist")
+                                        end
+                                        RaidFrameSettings:ReloadConfig()
+                                    end,
+                                },
+                                BlacklistedAuras = {
+                                    order = 4,
+                                    name = "Blacklisted Buffs",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+                                        --will be created based on blacklist entries in the db by LoadUserInputEntrys
+                                    },
+                                },                           
                             },
                         },
                     },  
@@ -792,10 +841,11 @@ local options = {
                                 },
                                 BlacklistedAuras = {
                                     order = 4,
-                                    name = "Blacklisted Auras",
+                                    name = "Blacklisted Debuffs",
                                     type = "group",
                                     inline = true,
                                     args = {
+                                        --will be created based on blacklist entries in the db by LoadUserInputEntrys
                                     },
                                 },                           
                             },
@@ -1007,7 +1057,7 @@ local options = {
                         },
                         description = {
                             order = 3,
-                            name = "The profiles you select above will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases just select it for both raid and party.",
+                            name = "The profiles you select above will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases select it for both raid and party.",
                             fontSize = "medium",
                             type = "description",
                         },
@@ -1074,6 +1124,7 @@ function RaidFrameSettings:RemoveBlacklistEntry(catergory, name, spellID)
 end
 
 function RaidFrameSettings:LoadUserInputEntrys()
+    --debuff blacklist
     local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
     for spellID,name in pairs(blacklist) do
         local type = type(name)
@@ -1084,5 +1135,10 @@ function RaidFrameSettings:LoadUserInputEntrys()
             return
         end
         RaidFrameSettings:CreateBlacklistEntry("Debuffs", name, spellID)       
+    end
+    --buff blacklist
+    blacklist = RaidFrameSettings.db.profile.Buffs.Blacklist
+    for spellID,name in pairs(blacklist) do
+        RaidFrameSettings:CreateBlacklistEntry("Buffs", name, spellID)       
     end
 end

@@ -58,6 +58,7 @@ end
 
 function RaidFrameSettings:OnEnable()
     --load options table
+    self:LoadUserInputEntrys()
     local options = self:GetOptionsTable()
     --create option table based on database structure and add them to options
     options.args.PorfileManagement.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) 

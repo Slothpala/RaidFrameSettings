@@ -752,7 +752,7 @@ local options = {
                             },
                         },
                         Blacklist = {
-                            order = 2                                                       ,
+                            order = 2,
                             name = "Blacklist",
                             type = "group",
                             args = {
@@ -764,9 +764,11 @@ local options = {
                                     width = 1.5,
                                     pattern = "^%d+$",
                                     usage = "please enter a number",
-                                    set = function(info,value)
-                                        RaidFrameSettings.db.profile.Debuffs.Blacklist[value] = true
-                                        RaidFrameSettings:Print(value.." added to blacklist")
+                                    set = function(info,spellID)
+                                        local name = #spellID <= 10 and select(1,GetSpellInfo(spellID)) or "|cffff0000aura not found|r" 
+                                        RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID] = name
+                                        RaidFrameSettings:CreateBlacklistEntry("Debuffs", name, spellID)
+                                        RaidFrameSettings:Print(spellID.."("..name..") added to blacklist")
                                         RaidFrameSettings:ReloadConfig()
                                     end,
                                 },
@@ -778,42 +780,24 @@ local options = {
                                     width = 1.5,
                                     pattern = "^%d+$",
                                     usage = "please enter a number",
-                                    set = function(info,value)
-                                        if RaidFrameSettings.db.profile.Debuffs.Blacklist[value] == true then
-                                            RaidFrameSettings.db.profile.Debuffs.Blacklist[value] = nil
-                                            RaidFrameSettings:Print(value.." removed from blacklist")
+                                    set = function(info,spellID)
+                                        local name = RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID]
+                                        if name then
+                                            RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID] = nil
+                                            RaidFrameSettings:RemoveBlacklistEntry("Debuffs", name, spellID)
+                                            RaidFrameSettings:Print(spellID.."("..name..") removed from blacklist")
                                         end
                                         RaidFrameSettings:ReloadConfig()
                                     end,
                                 },
-                                Header = {
-                                    order = 3,
-                                    type = "header",
-                                    name = "Blacklisted auras",
-                                },
-                                newline = {
+                                BlacklistedAuras = {
                                     order = 4,
-                                    name = "",
-                                    type = "description",
-                                },
-                                Textfield = {
-                                    order = 5,
-                                    name = function() 
-                                        local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
-                                        local text = ""
-                                        for spellId,value in pairs(blacklist) do
-                                            if value == true then
-                                                --GetSpellInfo causes a stack overflow when passed more than 10 characters
-                                                local name = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r" 
-                                                text = text .. spellId .. "(" .. name .."); "
-                                            end
-                                        end
-                                        return text
-                                    end,
-                                    type = "description",
-                                    width = "full",
-                                    fontSize = "medium",
-                                },
+                                    name = "Blacklisted Auras",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+                                    },
+                                },                           
                             },
                         },
                     },  
@@ -1073,3 +1057,32 @@ function RaidFrameSettings:GetOptionsTable()
     return options
 end
 
+function RaidFrameSettings:CreateBlacklistEntry(catergory, name, spellID)
+    local newEntry = {
+        type = "input",
+        name = name,
+        get = function() return spellID end,
+        set = function() end,
+        dialogControl = "SFX-Info-URL",
+        width = full,
+    }
+    options.args.Auras.args[catergory].args.Blacklist.args.BlacklistedAuras.args[name..spellID] = newEntry
+end
+
+function RaidFrameSettings:RemoveBlacklistEntry(catergory, name, spellID)
+    options.args.Auras.args[catergory].args.Blacklist.args.BlacklistedAuras.args[name..spellID] = nil
+end
+
+function RaidFrameSettings:LoadUserInputEntrys()
+    local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
+    for spellID,name in pairs(blacklist) do
+        local type = type(name)
+        if type ~= "string" then
+            local spellName = #spellID <= 10 and select(1,GetSpellInfo(spellID)) or "|cffff0000aura not found|r" 
+            RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID] = spellName
+            RaidFrameSettings:CreateBlacklistEntry("Debuffs", spellName, spellID)
+            return
+        end
+        RaidFrameSettings:CreateBlacklistEntry("Debuffs", name, spellID)       
+    end
+end

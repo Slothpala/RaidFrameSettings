@@ -66,7 +66,7 @@ local defaults = {
                 orientation   = 2,
             },
             Blacklist = {
-                --spellID = true
+                --[[spellID = name                ]]--
             },
         },
         Buffs = {

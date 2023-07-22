@@ -18,9 +18,7 @@ function Debuffs:OnEnable()
     local boss_height = height + Display_increase
     local blacklist = {}
     for spellId, value in pairs(RaidFrameSettings.db.profile.Debuffs.Blacklist) do
-        if value == true then
-            blacklist[tonumber(spellId)] = true
-        end
+        blacklist[tonumber(spellId)] = true
     end
     UtilSetDebuff_Callback = function(debuffFrame, aura)
         if debuffFrame:IsForbidden() then return end

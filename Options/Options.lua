@@ -12,6 +12,7 @@ local Range_disabled       = function() return not RaidFrameSettings.db.profile.
 local Buffs_disabled       = function() return not RaidFrameSettings.db.profile.Module.Buffs end
 local Debuffs_disabled     = function() return not RaidFrameSettings.db.profile.Module.Debuffs end
 local DispelColor_disabled = function() return not RaidFrameSettings.db.profile.Module.DispelColor end
+local CustomSize_disabled  = function() return not RaidFrameSettings.db.profile.Module.CustomSize end
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
@@ -101,6 +102,14 @@ local options = {
                             type = "toggle",
                             name = "Dispel Color",
                             desc = "Recolor Health Bars based on their debuff color if your class could dispel them.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r",
+                            get = "GetModuleStatus",
+                            set = "SetModuleStatus",
+                        },
+                        CustomSize = {
+                            order = 9,
+                            type = "toggle",
+                            name = "Custom Size",
+                            desc = "Bypass the default frame size restrictions.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
@@ -1003,6 +1012,37 @@ local options = {
                                 RaidFrameSettings.db.profile.MinorModules.DispelColor.magic   = {r=0.2,g=0.6,b=1.0}
                                 RaidFrameSettings.db.profile.MinorModules.DispelColor.poison  = {r=0.0,g=0.6,b=0.0}
                             end,
+                        },
+                    },
+                },
+                CustomSize = {
+                    hidden = CustomSize_disabled,
+                    order = 6,
+                    name = "Custom Size",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        x = {
+                            order = 1,
+                            name = "x - axis",
+                            type = "range",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            min = 1,
+                            softMax = 200,
+                            step = 1,
+                            width = 1,
+                        },
+                        y = {
+                            order = 2,
+                            name = "y - axis",
+                            type = "range",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            min = 1,
+                            softMax = 50,
+                            step = 1,
+                            width = 1,
                         },
                     },
                 },

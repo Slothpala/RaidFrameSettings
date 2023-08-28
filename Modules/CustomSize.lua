@@ -4,7 +4,7 @@
 local CustomSize = RaidFrameSettings:NewModule("CustomSize")
 
 function CustomSize:OnEnable()
-    local customWidth,customHeight = RaidFrameSettings.db.profile.MinorModules.CustomSize.x, RaidFrameSettings.db.profile.MinorModules.CustomSize.y
+    customWidth, customHeight = RaidFrameSettings.db.profile.MinorModules.CustomSize.x, RaidFrameSettings.db.profile.MinorModules.CustomSize.y
     local updateSize = function(frame)
         local frameName = frame:GetName()
         if frameName:match("Arena") then 
@@ -13,6 +13,7 @@ function CustomSize:OnEnable()
         frame:SetSize(customWidth,customHeight)
     end
     RaidFrameSettings:RegisterOnUpdateAll(updateSize)
+    CompactRaidFrameContainer:TryUpdate()
 end
 
 function CustomSize:OnDisable()
@@ -22,5 +23,6 @@ function CustomSize:OnDisable()
         frame:SetSize(defaultWidth,defaultHeight)
     end
     RaidFrameSettings:IterateRoster(restoreSize)
+    CompactRaidFrameContainer:TryUpdate()
 end
 

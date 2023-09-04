@@ -13,7 +13,6 @@ function CustomSize:OnEnable()
         frame:SetSize(customWidth,customHeight)
     end
     RaidFrameSettings:RegisterOnUpdateAll(updateSize)
-    CompactRaidFrameContainer:TryUpdate()
 end
 
 function CustomSize:OnDisable()
@@ -23,6 +22,5 @@ function CustomSize:OnDisable()
         frame:SetSize(defaultWidth,defaultHeight)
     end
     RaidFrameSettings:IterateRoster(restoreSize)
-    CompactRaidFrameContainer:TryUpdate()
 end
 

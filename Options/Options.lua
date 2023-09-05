@@ -143,6 +143,20 @@ local options = {
                         },
                     },
                 },
+                CustomSizeNotize = {
+                    order = 4,
+                    name = "Custom Size",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        description = {
+                            order = 1,
+                            name = "If the frames don't update automatically, enter and exit edit mode or /reload your interface.",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                    },
+                },
             },
         },
         HealthBars = {

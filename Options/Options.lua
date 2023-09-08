@@ -12,7 +12,7 @@ local Range_disabled       = function() return not RaidFrameSettings.db.profile.
 local Buffs_disabled       = function() return not RaidFrameSettings.db.profile.Module.Buffs end
 local Debuffs_disabled     = function() return not RaidFrameSettings.db.profile.Module.Debuffs end
 local DispelColor_disabled = function() return not RaidFrameSettings.db.profile.Module.DispelColor end
-local CustomSize_disabled  = function() return not RaidFrameSettings.db.profile.Module.CustomSize end
+
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
@@ -105,14 +105,6 @@ local options = {
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
-                        CustomSize = {
-                            order = 9,
-                            type = "toggle",
-                            name = "Custom Size",
-                            desc = "Bypass the default frame size restrictions.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r",
-                            get = "GetModuleStatus",
-                            set = "SetModuleStatus",
-                        },
                     },
                 },
                 DescriptionBox = {
@@ -138,20 +130,6 @@ local options = {
                         description = {
                             order = 1,
                             name = "The module is in a very early stage and I am constantly improving it. If you have problems with class colors not matching, please disable this module.",
-                            fontSize = "medium",
-                            type = "description",
-                        },
-                    },
-                },
-                CustomSizeNotize = {
-                    order = 4,
-                    name = "Custom Size",
-                    type = "group",
-                    inline = true,
-                    args = {
-                        description = {
-                            order = 1,
-                            name = "If the frames don't update automatically, enter and exit edit mode or /reload your interface.",
                             fontSize = "medium",
                             type = "description",
                         },
@@ -1026,37 +1004,6 @@ local options = {
                                 RaidFrameSettings.db.profile.MinorModules.DispelColor.magic   = {r=0.2,g=0.6,b=1.0}
                                 RaidFrameSettings.db.profile.MinorModules.DispelColor.poison  = {r=0.0,g=0.6,b=0.0}
                             end,
-                        },
-                    },
-                },
-                CustomSize = {
-                    hidden = CustomSize_disabled,
-                    order = 6,
-                    name = "Custom Size",
-                    type = "group",
-                    inline = true,
-                    args = {
-                        x = {
-                            order = 1,
-                            name = "x - axis",
-                            type = "range",
-                            get = "GetStatus",
-                            set = "SetStatus",
-                            min = 1,
-                            softMax = 200,
-                            step = 1,
-                            width = 1,
-                        },
-                        y = {
-                            order = 2,
-                            name = "y - axis",
-                            type = "range",
-                            get = "GetStatus",
-                            set = "SetStatus",
-                            min = 1,
-                            softMax = 50,
-                            step = 1,
-                            width = 1,
                         },
                     },
                 },

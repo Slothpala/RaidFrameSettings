@@ -85,7 +85,21 @@ function RaidFrameSettings:LoadConfig()
     end
 end
 
+local update_queued = nil
+function RaidFrameSettings:UpdateAfterCombat()
+    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+    self:ReloadConfig()
+    update_queued = false
+end
+
 function RaidFrameSettings:ReloadConfig()
+    if InCombatLockdown() then 
+        if update_queued then return end
+        self:RegisterEvent("PLAYER_REGEN_ENABLED","UpdateAfterCombat") 
+        self:Print("Settings will apply after combat")
+        update_queued = true
+        return 
+    end
     for _, module in self:IterateModules() do
         module:Disable()
     end

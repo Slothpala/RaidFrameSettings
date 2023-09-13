@@ -12,6 +12,7 @@ local defaults = {
             Debuffs = false,
             Range   = false,
             DispelColor = false,
+            CustomScale = false,
         },
         HealthBars = { 
             Textures = { 
@@ -100,6 +101,10 @@ local defaults = {
                 disease = {r=0.6,g=0.4,b=0.0},
                 magic   = {r=0.2,g=0.6,b=1.0},
                 poison  = {r=0.0,g=0.6,b=0.0},
+            },
+            CustomScale = {
+                Party = 1,
+                Raid  = 1,
             },
         },
         PorfileManagement = {

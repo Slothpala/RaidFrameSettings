@@ -12,6 +12,7 @@ local Range_disabled       = function() return not RaidFrameSettings.db.profile.
 local Buffs_disabled       = function() return not RaidFrameSettings.db.profile.Module.Buffs end
 local Debuffs_disabled     = function() return not RaidFrameSettings.db.profile.Module.Debuffs end
 local DispelColor_disabled = function() return not RaidFrameSettings.db.profile.Module.DispelColor end
+local CustomScale_disabled = function() return not RaidFrameSettings.db.profile.Module.CustomScale end
 
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")

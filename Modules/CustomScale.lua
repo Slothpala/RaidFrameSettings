@@ -1,6 +1,8 @@
 --[[
     Created by Slothpala
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local CustomScale = RaidFrameSettings:NewModule("CustomScale")
 
 local function setPartyScale(scaleFactor)

@@ -3,6 +3,8 @@
     Options:
     Create an options table for the GUI
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local Media = LibStub("LibSharedMedia-3.0")
 local lastEntry = 10
 local HealthBars_disabled  = function() return not RaidFrameSettings.db.profile.Module.HealthBars end

@@ -3,6 +3,8 @@
     DB:
     Setup the default database structure for the user settings.
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 
 local defaults = {
     profile = {

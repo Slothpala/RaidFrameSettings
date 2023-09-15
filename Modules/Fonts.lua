@@ -1,6 +1,8 @@
 --[[
     Created by Slothpala
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local Fonts = RaidFrameSettings:NewModule("Fonts")
 local Media = LibStub("LibSharedMedia-3.0")
 

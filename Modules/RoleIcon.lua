@@ -2,6 +2,8 @@
     Created by Slothpala
     position 1,2,3,4 = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"},
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local hooked = nil
 local function donothing() end
 local Callback

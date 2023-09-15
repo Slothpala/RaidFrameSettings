@@ -2,6 +2,8 @@
     Created by Slothpala 
     Modules will register callback functions(frame) for a given hook. The first time that a module registers a callback will start the hook.
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local LGF = LibStub("LibGetFrame-1.0")
 --lua speed reference
 local pairs = pairs

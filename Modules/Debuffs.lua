@@ -1,6 +1,8 @@
 --[[
     Created by Slothpala 
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local Debuffs = RaidFrameSettings:NewModule("Debuffs")
 local hooked = nil
 --Debuffframe size

@@ -2,6 +2,8 @@
     Created by Slothpala
     Based on https://www.curseforge.com/wow/addons/derangement-shieldmeters.
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local Overabsorb = RaidFrameSettings:NewModule("Overabsorb")
 
 function Overabsorb:OnEnable()

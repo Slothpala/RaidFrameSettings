@@ -1,6 +1,8 @@
 --[[
     Created by Slothpala
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local DispelColor = RaidFrameSettings:NewModule("DispelColor")
 local LGF = LibStub("LibGetFrame-1.0")
 --lua speed reference

@@ -1,6 +1,8 @@
 --[[
     Created by Slothpala
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local Buffs = RaidFrameSettings:NewModule("Buffs")
 local hooked 
 local UtilSetBuff_Callback

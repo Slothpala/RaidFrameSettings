@@ -2,7 +2,8 @@
     Created by Slothpala 
     Setup the AddOn. I.e load the db (saved variables), load modules and set up the GUI as well as profile management
 --]]
-RaidFrameSettings = LibStub("AceAddon-3.0"):NewAddon("RaidFrameSettings", "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0")
+local addonName, addonTable = ...
+addonTable.RaidFrameSettings = LibStub("AceAddon-3.0"):NewAddon("RaidFrameSettings", "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0")
 RaidFrameSettings:SetDefaultModuleLibraries("AceEvent-3.0")
 RaidFrameSettings:SetDefaultModuleState(false)
 

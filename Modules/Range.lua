@@ -1,6 +1,8 @@
 --[[
     Created by Slothpala
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 local Range = RaidFrameSettings:NewModule("Range")
 
 function Range:OnEnable()

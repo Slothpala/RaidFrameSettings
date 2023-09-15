@@ -1,6 +1,8 @@
 --[[
     Created by Slothpala
 --]]
+local _, addonTable = ...
+local RaidFrameSettings = addonTable.RaidFrameSettings
 --wow api speed reference
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead

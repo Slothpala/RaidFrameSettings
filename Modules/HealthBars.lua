@@ -59,7 +59,7 @@ function HealthBars:OnEnable()
             frame:SetBackdropBorderColor(borderColor.r,borderColor.g,borderColor.b)
         end
     end
-    RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
+    RaidFrameSettings:RegisterOnFrameSetup(UpdateAllCallback)
     --colors
     if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then --static color
         C_CVar.SetCVar("raidFramesDisplayClassColor","0") --workaround for when the player has a custom color in i.e party profile and switches to raid profile with class color

@@ -48,6 +48,22 @@ LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_REMOVED", callback)
 ---------
 local hooked = {}
 
+--DefaultCompactUnitFrameSetup 
+local OnFrameSetup_Callbacks = {}
+function RaidFrameSettings:RegisterOnFrameSetup(callback)
+    OnFrameSetup_Callbacks[#OnFrameSetup_Callbacks+1] = callback
+    if not hooked["DefaultCompactUnitFrameSetup"] then
+        hooksecurefunc("DefaultCompactUnitFrameSetup", function(frame) 
+            if isValidCompactFrame(frame) then 
+                for i = 1,#OnFrameSetup_Callbacks do 
+                    OnFrameSetup_Callbacks[i](frame)
+                end
+            end
+        end)
+        hooked["DefaultCompactUnitFrameSetup"] = true
+    end
+end
+
 --CompactUnitFrame_UpdateAll 
 local OnUpdateAll_Callbacks = {}
 function RaidFrameSettings:RegisterOnUpdateAll(callback)
@@ -153,6 +169,9 @@ end
 function RaidFrameSettings:UpdateAllFrames()
     local function CallbackPool(frame)
         if not frame or not frame.unit then return end
+        for i=1,#OnFrameSetup_Callbacks do 
+            OnFrameSetup_Callbacks[i](frame)
+        end
         for i=1,#OnUpdateAll_Callbacks do 
             OnUpdateAll_Callbacks[i](frame)
         end

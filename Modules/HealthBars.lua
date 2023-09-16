@@ -28,10 +28,10 @@ function HealthBars:OnEnable()
     local borderColor       = RaidFrameSettings.db.profile.HealthBars.Colors.border
     --callbacks 
     --only apply the power bar texture if the power bar is shown
-    local UpdateAllCallback
+    local UpdateTextures
     --with powerbar
     if C_CVar.GetCVar("raidFramesDisplayPowerBars") == "1" then
-        UpdateAllCallback = function(frame)
+        UpdateTextures = function(frame)
             frame.healthBar:SetStatusBarTexture(statusBarTexture)
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
             frame.background:SetTexture(backgroundTexture)
@@ -48,7 +48,7 @@ function HealthBars:OnEnable()
         end
     --without power bar 
     else
-        UpdateAllCallback = function(frame)
+        UpdateTextures = function(frame)
             frame.healthBar:SetStatusBarTexture(statusBarTexture)
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
             frame.background:SetTexture(backgroundTexture)
@@ -61,7 +61,7 @@ function HealthBars:OnEnable()
             frame:SetBackdropBorderColor(borderColor.r,borderColor.g,borderColor.b)
         end
     end
-    RaidFrameSettings:RegisterOnFrameSetup(UpdateAllCallback)
+    RaidFrameSettings:RegisterOnFrameSetup(UpdateTextures)
     --colors
     if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then --static color
         C_CVar.SetCVar("raidFramesDisplayClassColor","0") --workaround for when the player has a custom color in i.e party profile and switches to raid profile with class color

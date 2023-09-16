@@ -7,7 +7,7 @@ local RaidFrameSettings = addonTable.RaidFrameSettings
 local Overabsorb = RaidFrameSettings:NewModule("Overabsorb")
 
 function Overabsorb:OnEnable()
-    local function UpdateAllCallback(frame)
+    local function OnFrameSetup(frame)
         local absorbOverlay = frame.totalAbsorbOverlay
         local healthBar = frame.healthBar
         absorbOverlay:SetParent(healthBar)
@@ -18,7 +18,7 @@ function Overabsorb:OnEnable()
         absorbGlow:SetPoint("BOTTOMLEFT", absorbOverlay, "BOTTOMLEFT", -5, 0)
         absorbGlow:SetAlpha(1)
     end
-    RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
+    RaidFrameSettings:RegisterOnFrameSetup(OnFrameSetup)
     local function UpdateHealPredictionCallback(frame)
         local absorbBar = frame.totalAbsorb
         local absorbOverlay = frame.totalAbsorbOverlay

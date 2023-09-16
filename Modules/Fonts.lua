@@ -35,7 +35,7 @@ function Fonts:OnEnable()
     Advanced.x_offset    = RaidFrameSettings.db.profile.Fonts.Advanced.x_offset
     Advanced.y_offset    = RaidFrameSettings.db.profile.Fonts.Advanced.y_offset
     --Callbacks 
-    local function UpdateAllCallback(frame)
+    local function UpdateFont(frame)
         --Name
         frame.name:ClearAllPoints()
         frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
@@ -54,7 +54,7 @@ function Fonts:OnEnable()
         frame.statusText:SetShadowColor(Advanced.shadowColor.r,Advanced.shadowColor.g,Advanced.shadowColor.b,Advanced.shadowColor.a)
         frame.statusText:SetShadowOffset(Advanced.x_offset,Advanced.y_offset)
     end
-    RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
+    RaidFrameSettings:RegisterOnFrameSetup(UpdateFont)
     --
     local UpdateNameCallback
     if Name.Classcolored then

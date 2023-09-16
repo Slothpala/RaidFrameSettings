@@ -48,7 +48,7 @@ function Buffs:OnEnable()
     local buffRelativePoint = ( orientation == 1 and "BOTTOMLEFT" ) or ( orientation == 2 and "BOTTOMRIGHT" ) or ( orientation == 3 and "TOPLEFT" ) or ( orientation == 4 and "BOTTOMLEFT" ) 
     local x_offset = RaidFrameSettings.db.profile.Buffs.Display.x_offset
     local y_offset = RaidFrameSettings.db.profile.Buffs.Display.y_offset
-    UpdateAllCallback = function(frame)
+    local function updateAnchors(frame)
         frame.buffFrames[1]:ClearAllPoints()
         frame.buffFrames[1]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
         for i=1, #frame.buffFrames do
@@ -59,7 +59,7 @@ function Buffs:OnEnable()
             resizeAura(frame.buffFrames[i])
         end
     end
-    RaidFrameSettings:RegisterOnUpdateAll(UpdateAllCallback)
+    RaidFrameSettings:RegisterOnFrameSetup(updateAnchors)
     --blacklist
     local blacklist = {}
     for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Blacklist) do

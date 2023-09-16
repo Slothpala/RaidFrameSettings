@@ -4,6 +4,7 @@
 --]]
 local addonName, addonTable = ...
 addonTable.RaidFrameSettings = LibStub("AceAddon-3.0"):NewAddon("RaidFrameSettings", "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0")
+local RaidFrameSettings = addonTable.RaidFrameSettings
 RaidFrameSettings:SetDefaultModuleLibraries("AceEvent-3.0")
 RaidFrameSettings:SetDefaultModuleState(false)
 
@@ -86,28 +87,35 @@ function RaidFrameSettings:LoadConfig()
     end
 end
 
-local update_queued = nil
+local combat_update_queued = nil
 function RaidFrameSettings:UpdateAfterCombat()
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
     self:ReloadConfig()
-    update_queued = false
+    combat_update_queued = false
 end
 
+local updateQueued = nil
 function RaidFrameSettings:ReloadConfig()
-    if InCombatLockdown() then 
-        if update_queued then return end
-        self:RegisterEvent("PLAYER_REGEN_ENABLED","UpdateAfterCombat") 
-        self:Print("Settings will apply after combat")
-        update_queued = true
-        return 
+    if not updateQueued then
+        updateQueued = true
+        C_Timer.After(0.25, function()
+            if InCombatLockdown() then 
+                if combat_update_queued then return end
+                RaidFrameSettings:RegisterEvent("PLAYER_REGEN_ENABLED","UpdateAfterCombat") 
+                RaidFrameSettings:Print("Settings will apply after combat")
+                combat_update_queued = true
+                return 
+            end
+            for _, module in RaidFrameSettings:IterateModules() do
+                module:Disable()
+            end
+            RaidFrameSettings:GetProfiles()
+            RaidFrameSettings:WipeAllCallbacks()
+            RaidFrameSettings:LoadConfig()
+            RaidFrameSettings:UpdateAllFrames()
+            updateQueued = false
+        end)
     end
-    for _, module in self:IterateModules() do
-        module:Disable()
-    end
-    self:GetProfiles()
-    self:WipeAllCallbacks()
-    self:LoadConfig()
-    self:UpdateAllFrames()
 end
 
 --group type profiles
@@ -117,9 +125,7 @@ RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
     local newgroupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
     if (newgroupType ~= groupType) then
         groupType = newgroupType
-        C_Timer.After(2, function() 
-            RaidFrameSettings:LoadGroupBasedProfile()
-        end)
+        RaidFrameSettings:LoadGroupBasedProfile()
     end
 end)
 

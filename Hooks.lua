@@ -4,17 +4,20 @@
 --]]
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
-local LGF = LibStub("LibGetFrame-1.0")
 --lua speed reference
 local pairs = pairs
-local match = match
+local select = select
 --wow api speed reference
+local match = match
 local IsForbidden = IsForbidden
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsTapDenied = UnitIsTapDenied
 local GetName = GetName
+local IsInRaid = IsInRaid
+local GetParent = GetParent
+
 local function isValidCompactFrame(frame) 
     if frame:IsForbidden() then return end
     local frameName = frame:GetName()
@@ -23,28 +26,6 @@ local function isValidCompactFrame(frame)
     end
     return false
 end
----------
---Cache--
----------
-local Roster = {}
-Roster["player"] = LGF.GetUnitFrame("player")
-for i=1,4 do Roster["party"..i] = LGF.GetUnitFrame("party"..i) end
-for i=1,40 do Roster["raid"..i] = LGF.GetUnitFrame("raid"..i) end
-local callback = function(event, frame, unit, previousUnit)
-    if not isValidCompactFrame(frame) then return end
-    if event == "FRAME_UNIT_ADDED" then
-        Roster[unit] = frame
-    end
-    if event == "FRAME_UNIT_UPDATE" then
-        Roster[unit] = frame
-    end
-    if event == "FRAME_UNIT_REMOVED" then
-        Roster[unit] = nil
-    end
-end
-LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_ADDED", callback)
-LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_UPDATE", callback)
-LGF.RegisterCallback("RaidFrameSettings", "FRAME_UNIT_REMOVED", callback)
 ---------
 --Hooks--
 ---------
@@ -153,6 +134,7 @@ function RaidFrameSettings:RegisterUpdateDebuffFrame(callback)
 end
 
 function RaidFrameSettings:WipeAllCallbacks()
+    OnFrameSetup_Callbacks = {}
     OnUpdateAll_Callbacks = {}
     OnUpdateHealthColor_Callback = function() end
     OnUpdateName_Callback = function() end
@@ -163,8 +145,35 @@ function RaidFrameSettings:WipeAllCallbacks()
 end
 
 function RaidFrameSettings:IterateRoster(callback)
-    for unit, frame in pairs(Roster) do
-        callback(frame)
+    local showSeparateGroups = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups()
+    if IsInRaid() and not select(1,IsActiveBattlefieldArena()) then --IsInRaid() returns true in arena even though we need party frame names
+        if showSeparateGroups then
+            for i=1, 8 do
+                for j=1, 5 do
+                    local frame = _G["CompactRaidGroup" ..i.. "Member" .. j .. "HealthBar"]
+                    if frame then
+                        frame = frame:GetParent()
+                        callback(frame)
+                    end
+                end
+            end
+        else
+            for i=1, 40 do
+                local frame = _G["CompactRaidFrame" ..i .. "HealthBar"]
+                if frame then
+                    frame = frame:GetParent()
+                    callback(frame)
+                end
+            end
+        end
+    else
+        for i=1, 5 do
+            local frame = _G["CompactPartyFrameMember" ..i .. "HealthBar"]
+            if frame then
+                frame = frame:GetParent()
+                callback(frame)
+            end
+        end
     end
 end
 

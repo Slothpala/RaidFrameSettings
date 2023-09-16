@@ -298,19 +298,14 @@ local options = {
             order = 3,
             name = "Fonts",
             type = "group",
+            childGroups = "tab",
             hidden = Fonts_disabled,
             args = {
                 Name = {
                     order = 1,
-                    name = " ",
+                    name = "Name",
                     type = "group",
-                    inline = true,
                     args = {
-                        Header = {
-                            order = 1,
-                            type = "header",
-                            name = "Name",
-                        },
                         font = {
                             order = 2,
                             type = "select",
@@ -401,15 +396,9 @@ local options = {
                 },
                 Status = {
                     order = 2,
-                    name = " ",
+                    name = "Status",
                     type = "group",
-                    inline = true,
                     args = {
-                        Header = {
-                            order = 1,
-                            type = "header",
-                            name = "Status Text",
-                        },
                         font = {
                             order = 2,
                             type = "select",
@@ -491,16 +480,10 @@ local options = {
                     },
                 },
                 Advanced = {
-                    order = 2,
-                    name = " ",
+                    order = 3,
+                    name = "Advanced",
                     type = "group",
-                    inline = true,
                     args = {
-                        Header = {
-                            order = 1,
-                            type = "header",
-                            name = "Advanced",
-                        },
                         shadowColor = {
                             order = 2,
                             type = "color",

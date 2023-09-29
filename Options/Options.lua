@@ -523,7 +523,7 @@ local options = {
             order = 4,
             name = "Auras",
             type = "group",
-            childGroups = "tab",
+            --childGroups = "tab",
             hidden = function()
                 if not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs then 
                     return true
@@ -1021,8 +1021,21 @@ local options = {
                             width = 1.2,
                             isPercent = true,
                         },
+                        Arena = {
+                            order = 2,
+                            name = "Arena",
+                            desc = "",
+                            type = "range",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            min = 0.5,
+                            max = 3,
+                            step = 0.1,
+                            width = 1.2,
+                            isPercent = true,
+                        },
                         Raid = {
-                            order = 1,
+                            order = 3,
                             name = "Raid",
                             desc = "",
                             type = "range",

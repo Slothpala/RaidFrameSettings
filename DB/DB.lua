@@ -107,6 +107,7 @@ local defaults = {
             CustomScale = {
                 Party = 1,
                 Raid  = 1,
+                Arena = 1,
             },
         },
         PorfileManagement = {

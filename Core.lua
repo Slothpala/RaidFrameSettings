@@ -16,24 +16,32 @@ local AceGUI     = LibStub("AceGUI-3.0")
 
 --GUI Shared xml template with AceGUI widgets 
 local OptionsFrame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
+local r,g,b = PANEL_BACKGROUND_COLOR:GetRGB()
+OptionsFrame.Bg:SetColorTexture(r,g,b,0.9)
 tinsert(UISpecialFrames, OptionsFrame:GetName())
 OptionsFrame:SetFrameStrata("DIALOG")
-OptionsFrame:SetSize(800,550)
+OptionsFrame:SetSize(800,400)
 OptionsFrame:SetPoint("CENTER", UIparent, "CENTER")
 OptionsFrame:EnableMouse(true)
 OptionsFrame:SetMovable(true)
 OptionsFrame:SetResizable(true)
-OptionsFrame:SetResizeBounds(300,200)
+OptionsFrame:SetResizeBounds(600,400)
+OptionsFrame:SetClampRectInsets(200, -200, 0, 300)
 OptionsFrame:SetClampedToScreen(true)
 OptionsFrame:RegisterForDrag("LeftButton")
-OptionsFrame:SetScript("OnDragStart", OptionsFrame.StartMoving)
-OptionsFrame:SetScript("OnDragStop", OptionsFrame.StopMovingOrSizing)
+OptionsFrame.TitleContainer:SetScript("OnMouseDown", function()
+    OptionsFrame:StartMoving()
+end)
+OptionsFrame.TitleContainer:SetScript("OnMouseUp", function()
+    OptionsFrame:StopMovingOrSizing()
+end)
 OptionsFrame:Hide()
 RaidFrameSettingsOptionsPortrait:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon\\Icon.tga")
 
-local resizeButton = CreateFrame("Button", "RaidFrameSettingsOptionsResizeButton", OptionsFrame)
-resizeButton:SetPoint("BOTTOMRIGHT", -3, 5)
-resizeButton:SetSize(22, 22)
+local resizeButton = CreateFrame("Button", nil, OptionsFrame)
+resizeButton:SetPoint("BOTTOMRIGHT", OptionsFrame)
+resizeButton:SetSize(26, 26)
+resizeButton:EnableMouse(true)
 resizeButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
 resizeButton:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
 resizeButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
@@ -42,14 +50,16 @@ resizeButton:SetScript("OnMouseDown", function(_, button)
         OptionsFrame:StartSizing("BOTTOMRIGHT")
     end
 end)
-resizeButton:SetScript("OnMouseUp", function()
-    OptionsFrame:StopMovingOrSizing("BOTTOMRIGHT")
+resizeButton:SetScript("OnMouseUp", function(_, button)
+    if button == "LeftButton" then
+        OptionsFrame:StopMovingOrSizing()
+    end
 end)
 
 local container = AceGUI:Create("SimpleGroup")
 container.frame:SetParent(OptionsFrame)
 container.frame:SetPoint("TOPLEFT", OptionsFrame, "TOPLEFT", 15, -58)
-container.frame:SetPoint("BOTTOMRIGHT", OptionsFrame, "BOTTOMRIGHT", -15, 20)
+container.frame:SetPoint("BOTTOMRIGHT", OptionsFrame, "BOTTOMRIGHT", -15, 25)
 OptionsFrame.container = container
 
 function RaidFrameSettings:OnInitialize()
@@ -87,11 +97,10 @@ function RaidFrameSettings:LoadConfig()
     end
 end
 
-local combat_update_queued = nil
+
 function RaidFrameSettings:UpdateAfterCombat()
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
     self:ReloadConfig()
-    combat_update_queued = false
 end
 
 local updateQueued = nil
@@ -100,19 +109,17 @@ function RaidFrameSettings:ReloadConfig()
         updateQueued = true
         C_Timer.After(0.25, function()
             if InCombatLockdown() then 
-                if combat_update_queued then return end
                 RaidFrameSettings:RegisterEvent("PLAYER_REGEN_ENABLED","UpdateAfterCombat") 
                 RaidFrameSettings:Print("Settings will apply after combat")
-                combat_update_queued = true
-                return 
+            else
+                for _, module in RaidFrameSettings:IterateModules() do
+                    module:Disable()
+                end
+                RaidFrameSettings:GetProfiles()
+                RaidFrameSettings:WipeAllCallbacks()
+                RaidFrameSettings:LoadConfig()
+                RaidFrameSettings:UpdateAllFrames()
             end
-            for _, module in RaidFrameSettings:IterateModules() do
-                module:Disable()
-            end
-            RaidFrameSettings:GetProfiles()
-            RaidFrameSettings:WipeAllCallbacks()
-            RaidFrameSettings:LoadConfig()
-            RaidFrameSettings:UpdateAllFrames()
             updateQueued = false
         end)
     end

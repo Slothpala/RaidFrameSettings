@@ -12,15 +12,14 @@ local defaults = {
             ["*"]   = true,
             Buffs   = false,
             Debuffs = false,
-            Range   = false,
             DispelColor = false,
             CustomScale = false,
         },
         HealthBars = { 
             Textures = { 
-                statusbar  = "Blizzard",
-                powerbar   = "Blizzard",
-                background = "Blizzard Raid Bar",
+                statusbar  = "Solid",
+                powerbar   = "Solid",
+                background = "Solid",
                 border     = "Solid",
             },
             Colors = { 

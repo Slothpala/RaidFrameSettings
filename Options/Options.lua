@@ -523,7 +523,7 @@ local options = {
             order = 4,
             name = "Auras",
             type = "group",
-            --childGroups = "tab",
+            childGroups = "tab",
             hidden = function()
                 if not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs then 
                     return true

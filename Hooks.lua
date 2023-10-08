@@ -5,6 +5,7 @@
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 --lua speed reference
+local _G = _G
 local pairs = pairs
 local select = select
 --wow api speed reference

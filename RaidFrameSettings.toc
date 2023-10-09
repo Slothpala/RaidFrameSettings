@@ -16,6 +16,7 @@ Core.lua
 Hooks.lua
 DB\DB.lua
 Options\Options.lua
+Options\OptionsFrame.lua
 
 #Modules
 include_modules.xml

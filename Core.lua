@@ -9,58 +9,7 @@ RaidFrameSettings:SetDefaultModuleLibraries("AceEvent-3.0")
 RaidFrameSettings:SetDefaultModuleState(false)
 
 local AC         = LibStub("AceConfig-3.0")
-local ACD        = LibStub("AceConfigDialog-3.0")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
-local LGF        = LibStub("LibGetFrame-1.0")
-local AceGUI     = LibStub("AceGUI-3.0")
-
---GUI Shared xml template with AceGUI widgets 
-local OptionsFrame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
-local r,g,b = PANEL_BACKGROUND_COLOR:GetRGB()
-OptionsFrame.Bg:SetColorTexture(r,g,b,0.9)
-tinsert(UISpecialFrames, OptionsFrame:GetName())
-OptionsFrame:SetFrameStrata("DIALOG")
-OptionsFrame:SetSize(800,400)
-OptionsFrame:SetPoint("CENTER", UIparent, "CENTER")
-OptionsFrame:SetMovable(true)
-OptionsFrame:SetResizable(true)
-OptionsFrame:SetResizeBounds(600,200)
-OptionsFrame:SetClampRectInsets(200, -200, 0, 150)
-OptionsFrame:SetClampedToScreen(true)
-OptionsFrame:RegisterForDrag("LeftButton")
-OptionsFrame.TitleContainer:SetScript("OnMouseDown", function()
-    OptionsFrame:StartMoving()
-end)
-OptionsFrame.TitleContainer:SetScript("OnMouseUp", function()
-    OptionsFrame:StopMovingOrSizing()
-end)
-OptionsFrame:Hide()
-RaidFrameSettingsOptionsPortrait:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon\\Icon.tga")
-
-local resizeButton = CreateFrame("Button", nil, OptionsFrame)
-resizeButton:SetPoint("BOTTOMRIGHT", OptionsFrame)
-resizeButton:SetSize(26, 26)
-resizeButton:EnableMouse(true)
-resizeButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
-resizeButton:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
-resizeButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
-resizeButton:SetScript("OnMouseDown", function(_, button) 
-    if button == "LeftButton" then
-        OptionsFrame:StartSizing("BOTTOMRIGHT")
-    end
-end)
-resizeButton:SetScript("OnMouseUp", function(_, button)
-    if button == "LeftButton" then
-        OptionsFrame:StopMovingOrSizing()
-    end
-end)
-
-local container = AceGUI:Create("SimpleGroup")
-container.frame:SetParent(OptionsFrame)
-container.frame:SetPoint("TOPLEFT", OptionsFrame, "TOPLEFT", 18, -58)
-container.frame:SetPoint("BOTTOMRIGHT", OptionsFrame, "BOTTOMRIGHT", -18, 25)
-container.frame:SetClipsChildren(true)
-OptionsFrame.container = container
 
 function RaidFrameSettings:OnInitialize()
     self:LoadDataBase()
@@ -83,10 +32,12 @@ function RaidFrameSettings:OnEnable()
 end
 
 function RaidFrameSettings:SlashCommand()
-    OptionsFrame:Show()
-    RaidFrameSettingsOptionsTitleText:SetText("RaidFrameSettings")
-    --open the addon settings
-    ACD:Open("RaidFrameSettings_options",OptionsFrame.container)
+    local frame = RaidFrameSettings:GetOptionsFrame()
+    if not frame:IsShown() then
+        frame:Show()
+    else
+        frame:Hide()
+    end
 end
 
 function RaidFrameSettings:LoadConfig()  

@@ -8,6 +8,15 @@ local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitInVehicle = UnitInVehicle
+local GetStatusBarTexture = GetStatusBarTexture
+local SetStatusBarTexture = SetStatusBarTexture
+local SetStatusBarColor = SetStatusBarColor
+local SetTexture = SetTexture
+local SetVertexColor = SetVertexColor
+local SetPoint = SetPoint
+local SetBackdrop = SetBackdrop
+local ApplyBackdrop = ApplyBackdrop
+local SetBackdropBorderColor = SetBackdropBorderColor
 
 local HealthBars = RaidFrameSettings:NewModule("HealthBars")
 local Media = LibStub("LibSharedMedia-3.0")

@@ -48,7 +48,6 @@ function RaidFrameSettings:LoadConfig()
     end
 end
 
-
 function RaidFrameSettings:UpdateAfterCombat()
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
     self:ReloadConfig()

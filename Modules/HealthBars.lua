@@ -107,7 +107,7 @@ function HealthBars:OnEnable()
 end
 
 function HealthBars:OnDisable()
-    local restoreHealthBars = function(frame)
+    local restoreStatusBars = function(frame)
         frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill")
         frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
         frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg")
@@ -126,6 +126,6 @@ function HealthBars:OnDisable()
             frame.healthBar:SetStatusBarColor(0,1,0)
         end
     end
-    RaidFrameSettings:IterateRoster(restoreHealthBars)
+    RaidFrameSettings:IterateRoster(restoreStatusBars)
 end
 

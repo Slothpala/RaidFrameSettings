@@ -22,7 +22,7 @@ local GetParent = GetParent
 local function isValidCompactFrame(frame) 
     if frame:IsForbidden() then return end
     local frameName = frame:GetName()
-    if frameName and frameName:match("Compact") and UnitIsPlayer(frame.unit) then 
+    if frameName and frameName:match("Compact") then 
         return true
     end
     return false
@@ -45,6 +45,35 @@ function RaidFrameSettings:RegisterOnFrameSetup(callback)
             end
         end)
         hooked["DefaultCompactUnitFrameSetup"] = true
+    end
+end
+
+--DefaultCompactMiniFrameSetup 
+local OnMiniFrameSetup_Callbacks = {}
+function RaidFrameSettings:RegisterOnMiniFrameSetup(callback)
+    OnMiniFrameSetup_Callbacks[#OnMiniFrameSetup_Callbacks+1] = callback
+    if not hooked["DefaultCompactMiniFrameSetup"] then
+        hooksecurefunc("DefaultCompactMiniFrameSetup", function(frame)
+            local name = frame.unit
+            if not name or not name:match("pet") then 
+                return
+            end
+            for _,border in pairs({
+                "horizTopBorder",
+                "horizBottomBorder",
+                "vertLeftBorder",
+                "vertRightBorder",
+            }) do
+                if frame[border] then
+                    frame[border]:SetAlpha(0)
+                end
+            end
+            for i = 1,#OnMiniFrameSetup_Callbacks do 
+                OnMiniFrameSetup_Callbacks[i](frame)
+            end
+
+        end)
+        hooked["DefaultCompactMiniFrameSetup"] = true
     end
 end
 
@@ -136,6 +165,7 @@ end
 
 function RaidFrameSettings:WipeAllCallbacks()
     OnFrameSetup_Callbacks = {}
+    OnMiniFrameSetup_Callbacks = {}
     OnUpdateAll_Callbacks = {}
     OnUpdateHealthColor_Callback = function() end
     OnUpdateName_Callback = function() end
@@ -174,6 +204,11 @@ function RaidFrameSettings:IterateRoster(callback)
                 frame = frame:GetParent()
                 callback(frame)
             end
+            frame = _G["CompactArenaFrameMember" ..i .. "HealthBar"]
+            if frame then
+                frame = frame:GetParent()
+                callback(frame)
+            end
         end
     end
 end
@@ -183,6 +218,9 @@ function RaidFrameSettings:UpdateAllFrames()
         if not frame or not frame.unit then return end
         for i=1,#OnFrameSetup_Callbacks do 
             OnFrameSetup_Callbacks[i](frame)
+        end
+        for i=1,#OnMiniFrameSetup_Callbacks do 
+            OnMiniFrameSetup_Callbacks[i](frame)
         end
         for i=1,#OnUpdateAll_Callbacks do 
             OnUpdateAll_Callbacks[i](frame)

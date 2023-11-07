@@ -170,5 +170,12 @@ function Hooks:DisableHooks()
     end
 end
 
-
+--useful when blizzard code removes an event handler and 
+--hooking again is necessary
+function Hooks:RemoveHandler(frame, handler)
+    if not hooked[frame] then
+        return
+    end
+    hooked[frame][handler] = nil
+end
 

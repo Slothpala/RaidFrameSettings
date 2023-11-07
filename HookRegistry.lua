@@ -5,11 +5,13 @@ local Hooks = addonTable.hooks
 
 local _G = _G
 local HookScript = HookScript
+local GetName = GetName
 local hooksecurefunc = hooksecurefunc
 local tostring = tostring
 local string_sub = string.sub 
 local next = next
 local pairs = pairs
+
 
 local doNothing = function() 
     return
@@ -115,11 +117,8 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
             if not frame then
                 return
             end
-            local unit = frame.unit
-            if not unit then 
-                return
-            end
-            if not ( unit == "player" or string_sub(unit, 1, 4) == "raid" or string_sub(unit, 1, 5) == "party" or string_sub(unit, 1, 5) == "arena" ) then
+            local name = frame:GetName()
+            if not string_sub(name, 1, 7) == "Compact" then
                 return
             end
             for key, callback in next, callbacks[obj][functionName] do

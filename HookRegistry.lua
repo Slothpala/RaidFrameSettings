@@ -12,7 +12,6 @@ local string_sub = string.sub
 local next = next
 local pairs = pairs
 
-
 local doNothing = function() 
     return
 end
@@ -118,6 +117,9 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
                 return
             end
             local name = frame:GetName()
+            if not name then
+                return
+            end
             if not string_sub(name, 1, 7) == "Compact" then
                 return
             end

@@ -8,7 +8,8 @@ Mixin(Debuffs, addonTable.hooks)
 --Debuffframe size
 local SetSize = SetSize
 local IsForbidden = IsForbidden
-local UtilSetDebuff_Callback
+local ClearAllPoints = ClearAllPoints
+local SetPoint = SetPoint
 
 
 function Debuffs:OnEnable()
@@ -23,7 +24,9 @@ function Debuffs:OnEnable()
         blacklist[tonumber(spellId)] = true
     end
     UtilSetDebuff_Callback = function(debuffFrame, aura)
-        if debuffFrame:IsForbidden() then return end
+        if debuffFrame:IsForbidden() then 
+            return 
+        end
         if aura and blacklist[aura.spellId] then
             debuffFrame:SetSize(0.1,0.1)
         else

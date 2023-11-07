@@ -4,8 +4,18 @@
 --]]
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
+
 local Overabsorb = RaidFrameSettings:NewModule("Overabsorb")
 Mixin(Overabsorb, addonTable.hooks)
+
+local ClearAllPoints = ClearAllPoints
+local SetPoint = SetPoint
+local SetParent = SetParent
+local SetAlpha = SetAlpha
+local IsShown = IsShown
+local SetWidth = SetWidth
+local SetTexCoord = SetTexCoord
+local Show = Show
 
 function Overabsorb:OnEnable()
     local function OnFrameSetup(frame)

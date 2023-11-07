@@ -4,6 +4,11 @@
 --]]
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
+
+local HealthBars = RaidFrameSettings:NewModule("HealthBars")
+Mixin(HealthBars, addonTable.hooks)
+local Media = LibStub("LibSharedMedia-3.0")
+
 --wow api speed reference
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
@@ -19,9 +24,6 @@ local SetBackdrop = SetBackdrop
 local ApplyBackdrop = ApplyBackdrop
 local SetBackdropBorderColor = SetBackdropBorderColor
 
-local HealthBars = RaidFrameSettings:NewModule("HealthBars")
-Mixin(HealthBars, addonTable.hooks)
-local Media = LibStub("LibSharedMedia-3.0")
 
 function HealthBars:OnEnable()
     --textures

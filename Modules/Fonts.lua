@@ -7,6 +7,19 @@ local Fonts = RaidFrameSettings:NewModule("Fonts")
 Mixin(Fonts, addonTable.hooks)
 local Media = LibStub("LibSharedMedia-3.0")
 
+local ClearAllPoints = ClearAllPoints
+local SetPoint = SetPoint
+local SetFont = SetFont
+local SetText = SetText
+local SetWidth = SetWidth
+local SetJustifyH = SetJustifyH
+local SetShadowColor = SetShadowColor
+local SetShadowOffset = SetShadowOffset
+local SetVertexColor = SetVertexColor
+local GetUnitName = GetUnitName
+local UnitClass = UnitClass
+local GetClassColor = GetClassColor
+
 function Fonts:OnEnable()
     --Name
     local Name = {}

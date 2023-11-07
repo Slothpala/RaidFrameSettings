@@ -3,8 +3,12 @@
 --]]
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
+
 local Range = RaidFrameSettings:NewModule("Range")
 Mixin(Range, addonTable.hooks)
+
+local UnitInRange = UnitInRange
+local SetAlpha = SetAlpha
 
 function Range:OnEnable()
     local statusbarAlpha  = RaidFrameSettings.db.profile.MinorModules.RangeAlpha.statusbar

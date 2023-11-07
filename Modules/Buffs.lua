@@ -5,8 +5,11 @@ local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 local Buffs = RaidFrameSettings:NewModule("Buffs")
 Mixin(Buffs, addonTable.hooks)
-local hooked 
-local UtilSetBuff_Callback
+
+local SetSize = SetSize
+local SetTexCoord = SetTexCoord
+local ClearAllPoints = ClearAllPoints
+local SetPoint = SetPoint
 
 function Buffs:OnEnable()
     --Buff size

@@ -101,6 +101,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         DispelColor = {
+                            disabled = true,
                             order = 8,
                             type = "toggle",
                             name = "Dispel Color",

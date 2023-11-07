@@ -1,5 +1,6 @@
 local _, addonTable = ...
 addonTable.hooks = {}
+local addon = addonTable.addon
 local Hooks = addonTable.hooks
 
 local _G = _G

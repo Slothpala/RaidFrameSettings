@@ -4,6 +4,7 @@
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 local Fonts = RaidFrameSettings:NewModule("Fonts")
+Mixin(Fonts, addonTable.hooks)
 local Media = LibStub("LibSharedMedia-3.0")
 
 function Fonts:OnEnable()
@@ -54,7 +55,7 @@ function Fonts:OnEnable()
         frame.statusText:SetShadowColor(Advanced.shadowColor.r,Advanced.shadowColor.g,Advanced.shadowColor.b,Advanced.shadowColor.a)
         frame.statusText:SetShadowOffset(Advanced.x_offset,Advanced.y_offset)
     end
-    RaidFrameSettings:RegisterOnFrameSetup(UpdateFont)
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", UpdateFont)
     --
     local UpdateNameCallback
     if Name.Classcolored then
@@ -74,7 +75,11 @@ function Fonts:OnEnable()
             frame.name:SetText(name:match("[^-]+")) --hides the units server. 
         end
     end
-    RaidFrameSettings:RegisterOnUpdateName(UpdateNameCallback)
+    self:HookFuncFiltered("CompactUnitFrame_UpdateName", UpdateNameCallback)
+    RaidFrameSettings:IterateRoster(function(frame)
+        UpdateFont(frame)
+        UpdateNameCallback(frame)
+    end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua

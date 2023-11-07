@@ -4,7 +4,7 @@
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 local Debuffs = RaidFrameSettings:NewModule("Debuffs")
-local hooked = nil
+Mixin(Debuffs, addonTable.hooks)
 --Debuffframe size
 local SetSize = SetSize
 local IsForbidden = IsForbidden
@@ -34,11 +34,7 @@ function Debuffs:OnEnable()
             end
         end
     end
-    if not hooked then
-        hooksecurefunc("CompactUnitFrame_UtilSetDebuff", function(debuffFrame, aura) UtilSetDebuff_Callback(debuffFrame, aura) end)
-        hooked = true
-    end
-    RaidFrameSettings:RegisterUpdateDebuffFrame(UtilSetDebuff_Callback)
+    self:HookFunc("CompactUnitFrame_UtilSetDebuff", UtilSetDebuff_Callback)
     --Debuffframe position
     local point = RaidFrameSettings.db.profile.Debuffs.Display.point
     point = ( point == 1 and "TOPLEFT" ) or ( point == 2 and "TOPRIGHT" ) or ( point == 3 and "BOTTOMLEFT" ) or ( point == 4 and "BOTTOMRIGHT" ) 
@@ -61,12 +57,27 @@ function Debuffs:OnEnable()
             end
         end
     end
-    RaidFrameSettings:RegisterOnFrameSetup(updateAnchors)
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", updateAnchors)
+    RaidFrameSettings:IterateRoster(function(frame)
+        updateAnchors(frame)
+        if frame.debuffFrames then
+            for i=1, #frame.debuffFrames do
+                local debuffFrame = frame.debuffFrames[i]
+                UtilSetDebuff_Callback(debuffFrame) 
+                if debuffFrame.auraInstanceID then
+                    local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
+                    if aura and RaidFrameSettings.db.profile.Debuffs.Blacklist[tostring(aura.spellId)] then
+                        debuffFrame:SetSize(0.1,0.1)
+                    end
+                end
+            end
+        end
+    end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
-    UtilSetDebuff_Callback = function() end
+    self:DisableHooks()
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()

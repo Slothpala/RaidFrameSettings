@@ -6,6 +6,5 @@
   <Script file="Modules\Buffs.lua"/>
   <Script file="Modules\Debuffs.lua"/>
   <Script file="Modules\Overabsorb.lua"/>
-  <Script file="Modules\DispelColor.lua"/>
   <Script file="Modules\CustomScale.lua"/>
 </Ui>

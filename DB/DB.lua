@@ -147,7 +147,8 @@ end
 function RaidFrameSettings:SetStatus(info,value)
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]] = value
     --will reload the config each time the settings have been adjusted
-    self:ReloadConfig()
+    local module_name = info[#info-2] == "MinorModules" and info[#info-1] or info[#info-2]
+    self:UpdateModule(module_name)
 end
 
 --color
@@ -160,6 +161,7 @@ function RaidFrameSettings:SetColor(info, r,g,b,a)
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].g = g
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].b = b
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].a = a
-    self:ReloadConfig()
+    local module_name = info[#info-2] == "MinorModules" and info[#info-1] or info[#info-2]
+    self:UpdateModule(module_name)
 end
 

@@ -1,5 +1,6 @@
 --[[
     Created by Slothpala
+    i will rename this to StatusBars.lua at some point.
 --]]
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
@@ -19,6 +20,7 @@ local ApplyBackdrop = ApplyBackdrop
 local SetBackdropBorderColor = SetBackdropBorderColor
 
 local HealthBars = RaidFrameSettings:NewModule("HealthBars")
+Mixin(HealthBars, addonTable.hooks)
 local Media = LibStub("LibSharedMedia-3.0")
 
 function HealthBars:OnEnable()
@@ -70,8 +72,9 @@ function HealthBars:OnEnable()
             frame:SetBackdropBorderColor(borderColor.r,borderColor.g,borderColor.b)
         end
     end
-    RaidFrameSettings:RegisterOnFrameSetup(UpdateTextures)
-    RaidFrameSettings:RegisterOnMiniFrameSetup(UpdateTextures)
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", UpdateTextures)
+    self:HookFuncFiltered("DefaultCompactMiniFrameSetup", UpdateTextures)
+    RaidFrameSettings:IterateRoster(UpdateTextures)
     --colors
     if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then --static color
         C_CVar.SetCVar("raidFramesDisplayClassColor","0") --workaround for when the player has a custom color in i.e party profile and switches to raid profile with class color
@@ -81,7 +84,7 @@ function HealthBars:OnEnable()
             frame.healthBar:SetStatusBarColor(statusBarColor.r,statusBarColor.g,statusBarColor.b) 
         end
         if not RaidFrameSettings.db.profile.Module.DispelColor then
-            RaidFrameSettings:RegisterOnUpdateHealthColor(UpdateHealthColor)
+            self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", UpdateHealthColor)
         end
     elseif RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 1 then --class color
         if C_CVar.GetCVar("raidFramesDisplayClassColor") == "0" then
@@ -108,6 +111,7 @@ function HealthBars:OnEnable()
 end
 
 function HealthBars:OnDisable()
+    self:DisableHooks()
     local restoreStatusBars = function(frame)
         frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill")
         frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")

@@ -119,7 +119,7 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
             if not unit then 
                 return
             end
-            if not ( unit == "player" or string_sub(unit, 1, 4) == "raid" or string_sub(unit, 1, 5) == "party" ) then
+            if not ( unit == "player" or string_sub(unit, 1, 4) == "raid" or string_sub(unit, 1, 5) == "party" or string_sub(unit, 1, 5) == "arena" ) then
                 return
             end
             for key, callback in next, callbacks[obj][functionName] do

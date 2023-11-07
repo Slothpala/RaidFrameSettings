@@ -14,16 +14,29 @@ local function updateRoster()
                     local frame = _G["CompactRaidGroup" ..i.. "Member" .. j .. "HealthBar"]
                     if frame then
                         frame = frame:GetParent()
+                        if frame.unit then
+                            Roster[frame.unit] = frame
+                        end
+                    end
+                end
+            end
+            for i=1, 40 do
+                local frame = _G["CompactRaidFrame" ..i .. "HealthBar"]
+                if frame then
+                    frame = frame:GetParent()
+                    if frame.unit then
                         Roster[frame.unit] = frame
                     end
                 end
             end
         else
-            for i=1, 40 do
+            for i=1, 80 do
                 local frame = _G["CompactRaidFrame" ..i .. "HealthBar"]
                 if frame then
                     frame = frame:GetParent()
-                    Roster[frame.unit] = frame
+                    if frame.unit then
+                        Roster[frame.unit] = frame
+                    end
                 end
             end
         end

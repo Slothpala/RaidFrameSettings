@@ -41,10 +41,10 @@ function HealthBars:OnEnable()
     local borderColor       = RaidFrameSettings.db.profile.HealthBars.Colors.border
     --callbacks 
     --only apply the power bar texture if the power bar is shown
-    local UpdateTextures
+    local updateTextures
     --with powerbar
     if C_CVar.GetCVar("raidFramesDisplayPowerBars") == "1" then
-        UpdateTextures = function(frame)
+        updateTextures = function(frame)
             frame.healthBar:SetStatusBarTexture(statusBarTexture)
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
             frame.background:SetTexture(backgroundTexture)
@@ -61,7 +61,7 @@ function HealthBars:OnEnable()
         end
     --without power bar 
     else
-        UpdateTextures = function(frame)
+        updateTextures = function(frame)
             frame.healthBar:SetStatusBarTexture(statusBarTexture)
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
             frame.background:SetTexture(backgroundTexture)
@@ -74,42 +74,46 @@ function HealthBars:OnEnable()
             frame:SetBackdropBorderColor(borderColor.r,borderColor.g,borderColor.b)
         end
     end
-    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", UpdateTextures)
-    self:HookFuncFiltered("DefaultCompactMiniFrameSetup", UpdateTextures)
-    RaidFrameSettings:IterateRoster(UpdateTextures)
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", updateTextures)
+    self:HookFuncFiltered("DefaultCompactMiniFrameSetup", updateTextures)
     --colors
-    if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then --static color
-        C_CVar.SetCVar("raidFramesDisplayClassColor","0") --workaround for when the player has a custom color in i.e party profile and switches to raid profile with class color
-        --this way the game does the work for us
-        local statusBarColor = RaidFrameSettings.db.profile.HealthBars.Colors.statusbar
-        local function UpdateHealthColor(frame)
-            frame.healthBar:SetStatusBarColor(statusBarColor.r,statusBarColor.g,statusBarColor.b) 
-        end
-        if not RaidFrameSettings.db.profile.Module.DispelColor then
-            self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", UpdateHealthColor)
-        end
-    elseif RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 1 then --class color
+    local selected = RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode
+    local useClassColors = selected == 1 and true or false
+    local useOverrideColor = selected == 2 and true or false
+    local useCustomColor = selected == 3 and true or false
+    local updateHealthColor
+    if useClassColors then
         if C_CVar.GetCVar("raidFramesDisplayClassColor") == "0" then
             C_CVar.SetCVar("raidFramesDisplayClassColor","1")
-        else
-            local function toClassColor(frame)
-                if not frame or not frame.unit then return end
-                local _, englishClass = UnitClass(frame.unit)
-                local r,g,b = GetClassColor(englishClass)
-                frame.healthBar:SetStatusBarColor(r,g,b)
-            end
-            RaidFrameSettings:IterateRoster(toClassColor)
         end
-    elseif RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 2 then --green color
+        updateHealthColor = function(frame)
+            if not frame or not frame.unit then 
+                return 
+            end
+            local _, englishClass = UnitClass(frame.unit)
+            local r,g,b = GetClassColor(englishClass)
+            frame.healthBar:SetStatusBarColor(r,g,b)
+        end
+    elseif useOverrideColor then
         if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
             C_CVar.SetCVar("raidFramesDisplayClassColor","0")
-        else
-            local function toOverrideColor(frame)
-                frame.healthBar:SetStatusBarColor(0,1,0)
-            end
-            RaidFrameSettings:IterateRoster(toOverrideColor)
+        end
+        updateHealthColor = function(frame)
+            frame.healthBar:SetStatusBarColor(0,1,0)
+        end
+    elseif useCustomColor then
+        local color = RaidFrameSettings.db.profile.HealthBars.Colors.statusbar
+        updateHealthColor = function(frame)
+            frame.healthBar:SetStatusBarColor(color.r,color.g,color.b) 
+        end
+        if not RaidFrameSettings.db.profile.Module.DispelColor then
+            self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", updateHealthColor)
         end
     end
+    RaidFrameSettings:IterateRoster(function(frame)
+        updateTextures(frame)
+        updateHealthColor(frame)
+    end)
 end
 
 function HealthBars:OnDisable()

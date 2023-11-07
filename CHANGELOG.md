@@ -1,5 +1,9 @@
 # **Changelog**
 
+### Version [2.10.5] - 2023-11-07
+#### Changed
+* interface version updated to 100200
+
 ### Version [2.10.4] - 2023-10-19
 
 #### Added

@@ -62,10 +62,10 @@ function RaidFrameSettings:ReloadConfig()
 end
 
 --group type profiles
-local groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
+local groupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
 
 RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
-    local newgroupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
+    local newgroupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
     if (newgroupType ~= groupType) then
         groupType = newgroupType
         RaidFrameSettings:LoadGroupBasedProfile()

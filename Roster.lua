@@ -32,7 +32,16 @@ local function updateRoster()
             local frame = _G["CompactPartyFrameMember" ..i .. "HealthBar"]
             if frame then
                 frame = frame:GetParent()
-                Roster[frame.unit] = frame
+                if frame.unit then
+                    Roster[frame.unit] = frame
+                end
+            end
+            local frame = _G["CompactPartyFramePet" ..i .. "HealthBar"]
+            if frame then
+                frame = frame:GetParent()
+                if frame.unit then
+                    Roster[frame.unit] = frame
+                end
             end
             local frame = _G["CompactArenaFrameMember" ..i .. "HealthBar"]
             if frame then

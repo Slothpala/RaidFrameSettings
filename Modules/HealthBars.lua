@@ -75,7 +75,23 @@ function HealthBars:OnEnable()
         end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", updateTextures)
-    self:HookFuncFiltered("DefaultCompactMiniFrameSetup", updateTextures)
+    self:HookFunc("DefaultCompactMiniFrameSetup", function(frame)
+        local unit = frame.unit
+        if not unit or not unit:match("pet") then 
+            return
+        end
+        for _,border in pairs({
+            "horizTopBorder",
+            "horizBottomBorder",
+            "vertLeftBorder",
+            "vertRightBorder",
+        }) do
+            if frame[border] then
+                frame[border]:SetAlpha(0)
+            end
+        end
+        updateTextures(frame)
+    end)
     --colors
     local selected = RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode
     local useClassColors = selected == 1 and true or false

@@ -22,6 +22,9 @@ local debuffColors = {
     Bleed   = {r=0.8,g=0.0,b=0.0},
 }
 local canCure = {}
+local Bleeds = {
+    [1] = "Bleed name",
+}
 local auraMap = {}
 local blockColorUpdate = {}
 

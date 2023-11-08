@@ -22,9 +22,8 @@ local debuffColors = {
     Bleed   = {r=0.8,g=0.0,b=0.0},
 }
 local canCure = {}
-local Bleeds = {
-    [1] = "Bleed name",
-}
+
+local Bleeds = addonTable.Bleeds
 local auraMap = {}
 local blockColorUpdate = {}
 
@@ -51,6 +50,9 @@ local function updateAurasFull(frame)
         if canCure[aura.dispelName] then
             auraMap[frame][aura.auraInstanceID] = aura.dispelName
         end
+        if Bleeds[aura.spellId] and canCure["Bleed"] then 
+            auraMap[frame][aura.auraInstanceID] = "Bleed"
+        end
     end
     AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleAura, true)  
     updateColor(frame)
@@ -61,6 +63,9 @@ local function updateAurasIncremental(frame, updateInfo)
         for _, aura in pairs(updateInfo.addedAuras) do
             if aura.isHarmful and canCure[aura.dispelName] then
                 auraMap[frame][aura.auraInstanceID] = aura.dispelName
+            end
+            if Bleeds[aura.spellId] and canCure["Bleed"] then 
+                auraMap[frame][aura.auraInstanceID] = "Bleed"
             end
         end
     end
@@ -78,8 +83,8 @@ local hooked = {}
 local function makeHooks(frame)
     auraMap[frame] = {}
     --[[
-    CompactUnitFrame_UnregisterEvents removes the event handler with frame:SetScript("OnEvent", nil) and thus the hook.
-    Interface/FrameXML/CompactUnitFrame.lua
+        CompactUnitFrame_UnregisterEvents removes the event handler with frame:SetScript("OnEvent", nil) and thus the hook.
+        Interface/FrameXML/CompactUnitFrame.lua
     ]]--
     module:HookScript(frame, "OnEvent", function(frame,event,unit,updateInfo)
         if event ~= "UNIT_AURA" then
@@ -217,6 +222,9 @@ function module:UpdateCurable()
                     canCure.Disease = true
                 end
             end
+            if IsSpellKnown(1022) then --Blessing of Protection
+                canCure.Bleed = true
+            end
         end,
         ["PRIEST"] = function()
             if IsSpellKnown(527) then --Purify
@@ -256,6 +264,7 @@ function module:UpdateCurable()
                 canCure.Curse = true
                 canCure.Poison = true
                 canCure.Disease = true
+                canCure.Bleed = true
             end
             if IsSpellKnown(365585) then --Expunge 
                 canCure.Poison = true

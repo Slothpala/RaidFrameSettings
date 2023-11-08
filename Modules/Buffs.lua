@@ -4,8 +4,12 @@
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 local Buffs = RaidFrameSettings:NewModule("Buffs")
-local hooked 
-local UtilSetBuff_Callback
+Mixin(Buffs, addonTable.hooks)
+
+local SetSize = SetSize
+local SetTexCoord = SetTexCoord
+local ClearAllPoints = ClearAllPoints
+local SetPoint = SetPoint
 
 function Buffs:OnEnable()
     --Buff size
@@ -59,29 +63,39 @@ function Buffs:OnEnable()
             resizeAura(frame.buffFrames[i])
         end
     end
-    RaidFrameSettings:RegisterOnFrameSetup(updateAnchors)
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", updateAnchors)
     --blacklist
     local blacklist = {}
     for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
-    UtilSetBuff_Callback = function(buffFrame, aura)
-        if buffFrame:IsForbidden() then return end
+    local resizeBuffFrame = function(buffFrame, aura)
         if aura and blacklist[aura.spellId] then
             buffFrame:SetSize(0.1,0.1)
         else
             buffFrame:SetSize(width, height)
         end
     end
-    if not hooked then
-        hooksecurefunc("CompactUnitFrame_UtilSetBuff", function(buffFrame, aura) UtilSetBuff_Callback(buffFrame, aura) end)
-        hooked = true
-    end
+    self:HookFunc("CompactUnitFrame_UtilSetBuff", resizeBuffFrame)
+    RaidFrameSettings:IterateRoster(function(frame)
+        updateAnchors(frame)
+        if frame.buffFrames then
+            for i=1, #frame.buffFrames do
+                local buffFrame = frame.buffFrames[i]
+                if buffFrame.auraInstanceID then
+                    local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
+                    if aura and RaidFrameSettings.db.profile.Buffs.Blacklist[tostring(aura.spellId)] then
+                        buffFrame:SetSize(0.1,0.1)
+                    end
+                end
+            end
+        end
+    end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
-    UtilSetBuff_Callback = function() end
+    self:DisableHooks()
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()

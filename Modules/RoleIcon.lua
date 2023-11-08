@@ -4,10 +4,12 @@
 --]]
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
-local hooked = nil
-local function donothing() end
-local Callback
 local RoleIcon = RaidFrameSettings:NewModule("RoleIcon")
+Mixin(RoleIcon, addonTable.hooks)
+
+local ClearAllPoints = ClearAllPoints
+local SetPoint = SetPoint
+local SetScale = SetScale
 
 function RoleIcon:OnEnable()
     local x,y,relativePoint
@@ -31,7 +33,7 @@ function RoleIcon:OnEnable()
         y = 4
         relativePoint = "BOTTOMRIGHT"
     end
-    Callback = function(frame)
+    local updatePosition = function(frame)
         if not frame.roleIcon then
             return
         end
@@ -39,19 +41,12 @@ function RoleIcon:OnEnable()
         frame.roleIcon:SetPoint(relativePoint, frame, relativePoint, x + x_offset, y + y_offset)
         frame.roleIcon:SetScale(scaleFactor)
     end
-    if not hooked then
-        hooksecurefunc("CompactUnitFrame_UpdateRoleIcon", function(frame)
-            Callback(frame)
-        end)
-        hooked = true
-    end
-    RaidFrameSettings:RegisterUpdateRoleIcon(Callback)
+    self:HookFunc("CompactUnitFrame_UpdateRoleIcon", updatePosition)
+    RaidFrameSettings:IterateRoster(updatePosition)
 end
 
 function RoleIcon:OnDisable()
-    if hooked then
-        Callback = donothing
-    end
+    self:DisableHooks()
     local restoreRoleIcon = function(frame)
         frame.roleIcon:ClearAllPoints()
         frame.roleIcon:SetPoint("TOPLEFT", 3, -2)

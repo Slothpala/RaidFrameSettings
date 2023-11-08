@@ -8,16 +8,11 @@ local RaidFrameSettings = addonTable.RaidFrameSettings
 RaidFrameSettings:SetDefaultModuleLibraries("AceEvent-3.0")
 RaidFrameSettings:SetDefaultModuleState(false)
 
-local AC         = LibStub("AceConfig-3.0")
+local AC = LibStub("AceConfig-3.0")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
 
 function RaidFrameSettings:OnInitialize()
     self:LoadDataBase()
-    self:RegisterChatCommand("rfs", "SlashCommand")
-    self:RegisterChatCommand("raidframesettings", "SlashCommand")
-end
-
-function RaidFrameSettings:OnEnable()
     --load options table
     self:LoadUserInputEntrys()
     local options = self:GetOptionsTable()
@@ -26,12 +21,15 @@ function RaidFrameSettings:OnEnable()
     options.args.PorfileManagement.args.profile.order = 1
     --register options as option table to create a gui based on it
     AC:RegisterOptionsTable("RaidFrameSettings_options", options) 
-    self:GetProfiles()
-    self:LoadGroupBasedProfile()
-    self:LoadConfig()
+    self:RegisterChatCommand("rfs", "SlashCommand")
+    self:RegisterChatCommand("raidframesettings", "SlashCommand")
 end
 
 function RaidFrameSettings:SlashCommand()
+    if InCombatLockdown() then
+        self:Print("Please leave combat and try again.")
+        return
+    end
     local frame = RaidFrameSettings:GetOptionsFrame()
     if not frame:IsShown() then
         frame:Show()
@@ -40,7 +38,9 @@ function RaidFrameSettings:SlashCommand()
     end
 end
 
-function RaidFrameSettings:LoadConfig()  
+function RaidFrameSettings:OnEnable()
+    self:GetProfiles()
+    self:LoadGroupBasedProfile()
     for _, module in self:IterateModules() do
         if self.db.profile.Module[module:GetName()] then 
             module:Enable()
@@ -48,38 +48,27 @@ function RaidFrameSettings:LoadConfig()
     end
 end
 
-function RaidFrameSettings:UpdateAfterCombat()
-    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-    self:ReloadConfig()
-end
-
-local updateQueued = nil
-function RaidFrameSettings:ReloadConfig()
-    if not updateQueued then
-        updateQueued = true
-        C_Timer.After(0.25, function()
-            if InCombatLockdown() then 
-                RaidFrameSettings:RegisterEvent("PLAYER_REGEN_ENABLED","UpdateAfterCombat") 
-                RaidFrameSettings:Print("Settings will apply after combat")
-            else
-                for _, module in RaidFrameSettings:IterateModules() do
-                    module:Disable()
-                end
-                RaidFrameSettings:GetProfiles()
-                RaidFrameSettings:WipeAllCallbacks()
-                RaidFrameSettings:LoadConfig()
-                RaidFrameSettings:UpdateAllFrames()
-            end
-            updateQueued = false
-        end)
+function RaidFrameSettings:OnDisable()
+    for name, module in self:IterateModules() do
+        module:Disable()
     end
 end
 
+function RaidFrameSettings:UpdateModule(module_name)
+    self:DisableModule(module_name)
+    self:EnableModule(module_name)
+end
+
+function RaidFrameSettings:ReloadConfig()
+    self:Disable()
+    self:Enable()
+end
+
 --group type profiles
-local groupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
+local groupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
 
 RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
-    local newgroupType = IsInRaid() and "raid" or IsInGroup() and "party" or ""
+    local newgroupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
     if (newgroupType ~= groupType) then
         groupType = newgroupType
         RaidFrameSettings:LoadGroupBasedProfile()
@@ -92,51 +81,6 @@ function RaidFrameSettings:LoadGroupBasedProfile()
     if currentProfile ~= groupProfileName then
         self.db:SetProfile(groupProfileName) 
         RaidFrameSettings:Print("Profile set to: "..groupProfileName)
-    end
-end
-
---profile import / export functions
---[[
-    the method to share and import profiles is based on:
-    https://github.com/brittyazel/EnhancedRaidFrames/blob/main/EnhancedRaidFrames.lua
---]]
-function RaidFrameSettings:ShareProfile()
-    --AceSerialize
-	local serialized_profile = self:Serialize(self.db.profile) 
-    --LibDeflate
-	local compressed_profile = LibDeflate:CompressZlib(serialized_profile) 
-	local encoded_profile    = LibDeflate:EncodeForPrint(compressed_profile)
-	return encoded_profile
-end
-
-function RaidFrameSettings:ImportProfile(input)
-    --validate input
-    --empty?
-    if input == "" then
-        self:Print("No import string provided. Abort")
-        return
-    end
-    --LibDeflate decode
-    local decoded_profile = LibDeflate:DecodeForPrint(input)
-    if decoded_profile == nil then
-        self:Print("Decoding failed. Abort")
-        return
-    end
-    --LibDefalte uncompress
-    local uncompressed_profile = LibDeflate:DecompressZlib(decoded_profile)
-    if uncompressed_profile == nil then
-        self:Print("Uncompressing failed. Abort")
-        return
-    end
-    --AceSerialize
-    --deserialize the profile and overwirte the current values
-    local valid, imported_Profile = self:Deserialize(uncompressed_profile)
-    if valid and imported_Profile then
-		for i,v in pairs(imported_Profile) do
-			self.db.profile[i] = CopyTable(v)
-		end
-    else
-        self:Print("Invalid profile. Abort")
     end
 end
 

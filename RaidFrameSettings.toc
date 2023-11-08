@@ -5,7 +5,7 @@
 ## SavedVariables: RaidFrameSettingsDB, RaidFrameSettingsDBPP, RaidFrameSettingsDBRP
 ## AddonCompartmentFunc: RaidFrameSettings_AddOnCompartmentClick
 ## IconTexture: Interface\AddOns\RaidFrameSettings\Textures\Icon\Icon.tga
-## OptionalDeps: Ace3, LibDeflate, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibGetFrame-1.0, LibDDI-1.0, AceGUI-3.0_SFX-Widgets
+## OptionalDeps: Ace3, LibDeflate, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDDI-1.0, AceGUI-3.0_SFX-Widgets
 ## X-Curse-Project-ID: 688930
 
 #Libs
@@ -13,13 +13,15 @@ embeds.xml
 
 #Config
 Core.lua
-Hooks.lua
+HookRegistry.lua
+Roster.lua
+ProfileSharing.lua
 DB\DB.lua
 Options\Options.lua
 Options\OptionsFrame.lua
 
 #Modules
-include_modules.xml
+modules.xml
 
 
 

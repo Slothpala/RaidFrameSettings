@@ -37,6 +37,7 @@ end
 frame:Hide()
 local r,g,b = PANEL_BACKGROUND_COLOR:GetRGB()
 frame.Bg:SetColorTexture(r,g,b,0.9)
+frame:SetScript("OnEvent", frame.Hide)
 tinsert(UISpecialFrames, frame:GetName())
 frame.title = _G["RaidFrameSettingsOptionsTitleText"]
 frame.title:SetText(addonName)
@@ -66,9 +67,11 @@ addResizeButton()
 local container = createAceContainer()
 frame.container = container
 frame:HookScript("OnShow",function()
+    frame:RegisterEvent("PLAYER_REGEN_DISABLED")
     ACD:Open("RaidFrameSettings_options",container)
 end)
 frame:HookScript("OnHide",function()
+    frame:UnregisterEvent("PLAYER_REGEN_DISABLED")
     container:ReleaseChildren()
 end)
 

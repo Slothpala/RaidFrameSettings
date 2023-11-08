@@ -13,7 +13,7 @@ local RoleIcon_disabled    = function() return not RaidFrameSettings.db.profile.
 local Range_disabled       = function() return not RaidFrameSettings.db.profile.Module.Range end
 local Buffs_disabled       = function() return not RaidFrameSettings.db.profile.Module.Buffs end
 local Debuffs_disabled     = function() return not RaidFrameSettings.db.profile.Module.Debuffs end
-local DispelColor_disabled = function() return not RaidFrameSettings.db.profile.Module.DispelColor end
+local DebuffHighlight_disabled = function() return not RaidFrameSettings.db.profile.Module.DebuffHighlight end
 local CustomScale_disabled = function() return not RaidFrameSettings.db.profile.Module.CustomScale end
 
 --LibDDI-1.0
@@ -68,7 +68,7 @@ local options = {
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
-                        Range = {
+                        RangeAlpha = {
                             order = 4,
                             type = "toggle",
                             name = "Range",
@@ -100,12 +100,11 @@ local options = {
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
-                        DispelColor = {
-                            disabled = true,
+                        DebuffHighlight = {
                             order = 8,
                             type = "toggle",
-                            name = "Dispel Color",
-                            desc = "Recolor Health Bars based on their debuff color if your class could dispel them.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r",
+                            name = "Debuff Highlight",
+                            desc = "Recolor unit health bars based on debuff type.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
@@ -128,20 +127,6 @@ local options = {
                         description = {
                             order = 1,
                             name = "The default UI links the name text to the right of the role icon, so in some cases you will need to use both modules if you want to use either one.",
-                            fontSize = "medium",
-                            type = "description",
-                        },
-                    },
-                },
-                DispelColorNotice = {
-                    order = 3,
-                    name = "Regarding Dispel Color",
-                    type = "group",
-                    inline = true,
-                    args = {
-                        description = {
-                            order = 1,
-                            name = "The module is in a very early stage and I am constantly improving it. If you have problems with class colors not matching, please disable this module.",
                             fontSize = "medium",
                             type = "description",
                         },
@@ -850,6 +835,147 @@ local options = {
                 },
             },
         },
+        DebuffHighlight = {
+            order = 5,
+            name = "Debuff Hightlight",
+            type = "group",
+            hidden = DebuffHighlight_disabled,
+            args = {
+                Config = {
+                    order = 1,
+                    name = "Config",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        operation_mode = {
+                            order = 1,
+                            name = "Operation mode",
+                            desc = "Smart - The add-on will determine which debuffs you can dispel based on your talents and class, and will only highlight those debuffs. \nManual - You choose which debuff types you want to see.",
+                            type = "select",
+                            values = {"Smart", "Manual"},
+                            sorting = {1,2},
+                            get = "GetStatus",
+                            set = "SetStatus",
+                        },
+                        Curse = {
+                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            order = 2,
+                            name = "Curse",
+                            type = "toggle",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            width = 0.5,
+                        },
+                        Disease = {
+                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            order = 3,
+                            name = "Disease",
+                            type = "toggle",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            width = 0.5,
+                        },
+                        Magic = {
+                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            order = 4,
+                            name = "Magic",
+                            type = "toggle",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            width = 0.5,
+                        },
+                        Poison = {
+                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            order = 5,
+                            name = "Poison",
+                            type = "toggle",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            width = 0.5,
+                        },
+                        Bleed = {
+                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            order = 6,
+                            name = "Bleed",
+                            type = "toggle",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            width = 0.5,
+                        },
+                    },
+                },
+                DebuffColors = {
+                    order = 2,
+                    name = "Debuff colors",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        Curse = {
+                            order = 1,
+                            type = "color",
+                            name = "Curse", 
+                            get = "GetColor",
+                            set = "SetColor",
+                            width = 0.5,
+                        },
+                        Disease  = {
+                            order = 2,
+                            type = "color",
+                            name = "Disease", 
+                            get = "GetColor",
+                            set = "SetColor",
+                            width = 0.5,
+                        },
+                        Magic = {
+                            order = 3,
+                            type = "color",
+                            name = "Magic",
+                            get = "GetColor",
+                            set = "SetColor",
+                            width = 0.5,
+                        },
+                        Poison = {
+                            order = 4,
+                            type = "color",
+                            name = "Poison", 
+                            get = "GetColor",
+                            set = "SetColor",
+                            width = 0.5,
+                        },
+                        Bleed = {
+                            order = 5,
+                            type = "color",
+                            name = "Bleed", 
+                            get = "GetColor",
+                            set = "SetColor",
+                            width = 0.5,
+                        },
+                        newline = {
+                            order = 6,
+                            type = "description",
+                            name = "",
+                        },
+                        ResetColors = {
+                            order = 7,
+                            name = "reset",
+                            desc = "to default",
+                            type = "execute",
+                            width = 0.4,
+                            confirm = true,
+                            func = 
+                            function() 
+                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Curse   = {r=0.6,g=0.0,b=1.0}
+                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Disease = {r=0.6,g=0.4,b=0.0}
+                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Magic   = {r=0.2,g=0.6,b=1.0}
+                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Poison  = {r=0.0,g=0.6,b=0.0}
+                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Bleed   = {r=0.8,g=0.0,b=0.0}
+                                RaidFrameSettings:ReloadConfig()
+                            end,
+                        },
+                    },
+                },
+            },
+        },
         MinorModules = {
             order = 5,
             name = "Module Settings",
@@ -938,67 +1064,6 @@ local options = {
                             step = 0.01,
                             width = 1.2,
                             isPercent = true,
-                        },
-                    },
-                },
-                DispelColor = {
-                    hidden = DispelColor_disabled,
-                    order = 5,
-                    name = "Dispel Color",
-                    type = "group",
-                    inline = true,
-                    args = {
-                        curse = {
-                            order = 1,
-                            type = "color",
-                            name = "Curse", 
-                            get = "GetColor",
-                            set = "SetColor",
-                            width = 0.5,
-                        },
-                        disease  = {
-                            order = 2,
-                            type = "color",
-                            name = "Disease", 
-                            get = "GetColor",
-                            set = "SetColor",
-                            width = 0.5,
-                        },
-                        magic = {
-                            order = 3,
-                            type = "color",
-                            name = "Magic",
-                            get = "GetColor",
-                            set = "SetColor",
-                            width = 0.5,
-                        },
-                        poison = {
-                            order = 4,
-                            type = "color",
-                            name = "Poison", 
-                            get = "GetColor",
-                            set = "SetColor",
-                            width = 0.5,
-                        },
-                        newline = {
-                            order = 5,
-                            type = "description",
-                            name = "",
-                        },
-                        ResetColors = {
-                            order = 6,
-                            name = "reset",
-                            desc = "to default",
-                            type = "execute",
-                            width = 0.4,
-                            confirm = true,
-                            func = 
-                            function() 
-                                RaidFrameSettings.db.profile.MinorModules.DispelColor.curse   = {r=0.6,g=0.0,b=1.0}
-                                RaidFrameSettings.db.profile.MinorModules.DispelColor.disease = {r=0.6,g=0.4,b=0.0}
-                                RaidFrameSettings.db.profile.MinorModules.DispelColor.magic   = {r=0.2,g=0.6,b=1.0}
-                                RaidFrameSettings.db.profile.MinorModules.DispelColor.poison  = {r=0.0,g=0.6,b=0.0}
-                            end,
                         },
                     },
                 },

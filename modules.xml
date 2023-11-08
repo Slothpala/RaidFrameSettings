@@ -7,4 +7,5 @@
   <Script file="Modules\Debuffs.lua"/>
   <Script file="Modules\Overabsorb.lua"/>
   <Script file="Modules\CustomScale.lua"/>
+  <Script file="Modules\DebuffHighlight.lua"/>
 </Ui>

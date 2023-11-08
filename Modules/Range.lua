@@ -4,7 +4,7 @@
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 
-local Range = RaidFrameSettings:NewModule("Range")
+local Range = RaidFrameSettings:NewModule("RangeAlpha")
 Mixin(Range, addonTable.hooks)
 
 local UnitInRange = UnitInRange

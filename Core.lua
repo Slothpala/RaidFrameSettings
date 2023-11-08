@@ -26,6 +26,10 @@ function RaidFrameSettings:OnInitialize()
 end
 
 function RaidFrameSettings:SlashCommand()
+    if InCombatLockdown() then
+        self:Print("Please leave combat and try again.")
+        return
+    end
     local frame = RaidFrameSettings:GetOptionsFrame()
     if not frame:IsShown() then
         frame:Show()
@@ -54,7 +58,6 @@ function RaidFrameSettings:UpdateModule(module_name)
     self:DisableModule(module_name)
     self:EnableModule(module_name)
 end
-
 
 function RaidFrameSettings:ReloadConfig()
     self:Disable()

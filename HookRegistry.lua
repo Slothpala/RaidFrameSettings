@@ -5,8 +5,9 @@ local Hooks = addonTable.hooks
 
 local _G = _G
 local HookScript = HookScript
-local GetName = GetName
 local hooksecurefunc = hooksecurefunc
+local GetName = GetName
+local IsForbidden = IsForbidden
 local tostring = tostring
 local string_sub = string.sub 
 local next = next
@@ -115,6 +116,9 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
             local frame = frame
             if not frame then
                 return
+            end
+            if frame:IsForbidden() then 
+                return 
             end
             local name = frame:GetName()
             if not name then

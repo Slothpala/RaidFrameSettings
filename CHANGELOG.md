@@ -1,6 +1,6 @@
 # **Changelog**
 
-### Version [2.10.6] - 2023-11-10
+### Version [2.15.1] - 2023-11-10
 #### Fixed
 * Friendly nameplate issue in intance content.
 

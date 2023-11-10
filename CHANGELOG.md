@@ -1,4 +1,12 @@
 # **Changelog**
+
+### Version [2.10.6] - 2023-11-10
+#### Fixed
+* Friendly nameplate issue in intance content.
+
+#### Changed
+* Roster.lua - local speed referneces added.
+
 ### Version [2.15.0] - 2023-11-08
 #### Removed
 * DispelColor.lua module

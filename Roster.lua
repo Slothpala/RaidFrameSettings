@@ -1,6 +1,11 @@
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
 
+local _G = _G
+local GetParent = GetParent
+local IsInRaid = IsInRaid
+local IsActiveBattlefieldArena = IsActiveBattlefieldArena
+
 local Roster = {}
 local needsUpdate = true
 

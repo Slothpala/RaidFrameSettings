@@ -43,7 +43,7 @@ function Debuffs:OnEnable()
             debuffFrame.icon:SetTexCoord(left,right,top,bottom)
             debuffFrame.border:SetTexture("Interface/AddOns/RaidFrameSettings/Textures/DebuffOverlay_clean_icons.tga")
             debuffFrame.border:SetTexCoord(0,1,0,1)
-            debuffFrame.border:SetTextureSliceMargins(3, 3, 3, 3)
+            debuffFrame.border:SetTextureSliceMargins(3, 29, 3, 29) --not 100% sure how this works, have found very little documantation for it. But i imagine like SetTexCoord from left to right and top to bottom
             debuffFrame.border:SetTextureSliceMode(Enum.UITextureSliceMode.Stretched)
         end
     else

@@ -1,4 +1,12 @@
 # **Changelog**
+### Version [2.16.0] - 2023-11-11
+#### Added 
+* DebuffOverlay_clean_icons.tga
+* Clean icons for debuffs
+* Clean borders for debuffs when using clean icons by making use of the new texture slicing system
+ 
+#### Changed
+* Boss aura increase is now a factor 
 
 ### Version [2.15.1] - 2023-11-10
 #### Fixed

@@ -59,6 +59,7 @@ local defaults = {
             Display = {
                 width         = 18,
                 height        = 18,
+                clean_icons = true,
                 increase      = 5,
                 point         = 3,
                 relativePoint = 3,

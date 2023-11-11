@@ -714,10 +714,20 @@ local options = {
                                     type = "range",
                                     get = "GetStatus",
                                     set = "SetStatus",
-                                    min = 0,
-                                    max = 20,
-                                    step = 1,
+                                    min = 1,
+                                    max = 2,
+                                    step = 0.1,
                                     width = 0.8,
+                                    isPercent = true,
+                                },
+                                clean_icons = {
+                                    order = 2.2,
+                                    type = "toggle",
+                                    name = "use clean icons",
+                                    -- and replace it with a 1pixel border #later
+                                    desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
                                 },
                                 newline = {
                                     order = 3,

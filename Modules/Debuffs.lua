@@ -63,8 +63,6 @@ function Debuffs:OnEnable()
     local debuffRelativePoint = ( orientation == 1 and "BOTTOMLEFT" ) or ( orientation == 2 and "BOTTOMRIGHT" ) or ( orientation == 3 and "TOPLEFT" ) or ( orientation == 4 and "BOTTOMLEFT" ) 
     local x_offset = RaidFrameSettings.db.profile.Debuffs.Display.x_offset
     local y_offset = RaidFrameSettings.db.profile.Debuffs.Display.y_offset
-    local x_padding = orientation == 1 and -3 or orientation == 2 and 3 or 0
-    local y_padding = orientation == 3 and 3 or orientation == 4 and -3 or 0
 
     local function updateAnchors(frame)
         frame.debuffFrames[1]:ClearAllPoints()
@@ -73,7 +71,7 @@ function Debuffs:OnEnable()
             resizeAura(frame.debuffFrames[i])
             if ( i > 1 ) then
                 frame.debuffFrames[i]:ClearAllPoints();
-                frame.debuffFrames[i]:SetPoint(debuffPoint, frame.debuffFrames[i - 1], debuffRelativePoint, x_padding, y_padding);
+                frame.debuffFrames[i]:SetPoint(debuffPoint, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
             end
         end
     end

@@ -362,10 +362,11 @@ function module:RegisterEvents()
     if not eventFrame then
         eventFrame = CreateFrame("Frame")
     end
-    eventFrame:SetScript("OnEvent", function()
-        self:UpdateCurable()
+    eventFrame:SetScript("OnEvent", function(self, event, ...)
+        module:UpdateCurable()
     end)
-    eventFrame:RegisterEvent("LEARNED_SPELL_IN_TAB")
+    eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED") 
+    eventFrame:RegisterEvent("LEARNED_SPELL_IN_TAB") 
     eventFrame:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
     if playerClass == "WARLOCK" then
         eventFrame:RegisterUnitEvent("UNIT_PET", "player")

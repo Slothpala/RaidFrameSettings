@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.16.2] - 2023-11-15
+#### Added
+* DebuffHighlight: eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED") added to detect when learning a passive spell without unlearning or learning any new spell e.g. learning an override spell as a healer 
+
 ### Version [2.16.1] - 2023-11-13
 #### Removed
 * padding for clean icon debuffs removed for now 

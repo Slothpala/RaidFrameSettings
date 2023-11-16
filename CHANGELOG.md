@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.16.3] - 2023-11-16
+#### Fixed
+* Roster.lua allow registration of CompactPartyFrames without units to solve an issue with DebuffHighlight.lua
+
 ### Version [2.16.2] - 2023-11-15
 #### Added
 * DebuffHighlight: eventFrame:RegisterEvent("TRAIT_CONFIG_UPDATED") added to detect when learning a passive spell without unlearning or learning any new spell e.g. learning an override spell as a healer 

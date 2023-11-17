@@ -79,14 +79,14 @@ local function updateAurasIncremental(frame, updateInfo)
     updateColor(frame)
 end
 
-local hooked = {}
-local function makeHooks(frame)
+function module:HookFrame(frame)
     auraMap[frame] = {}
     --[[
         CompactUnitFrame_UnregisterEvents removes the event handler with frame:SetScript("OnEvent", nil) and thus the hook.
         Interface/FrameXML/CompactUnitFrame.lua
     ]]--
-    module:HookScript(frame, "OnEvent", function(frame,event,unit,updateInfo)
+    self:RemoveHandler(frame, "OnEvent") --remove the registry key for frame["OnEvent"] so that it actually gets hooked again and not just stores a callback for an non existing hook
+    self:HookScript(frame, "OnEvent", function(frame,event,unit,updateInfo)
         if event ~= "UNIT_AURA" then
             return
         end
@@ -95,12 +95,11 @@ local function makeHooks(frame)
         else
             updateAurasIncremental(frame, updateInfo)
         end
-        hooked[frame] = true
     end)
-    module:HookScript(frame, "OnShow", function(frame)
+    self:HookScript(frame, "OnShow", function(frame)
         updateAurasFull(frame)
     end)
-    module:HookScript(frame, "OnHide", function(frame)
+    self:HookScript(frame, "OnHide", function(frame)
         blockColorUpdate[frame] = nil
     end)
 end
@@ -126,15 +125,8 @@ function module:OnEnable()
         if not UnitIsPlayer(frame.unit) then --exclude pet/vehicle frame
             return
         end
-        makeHooks(frame)
-    end)  
-    self:HookFunc("CompactUnitFrame_UnregisterEvents", function(frame)
-        if hooked[frame] then
-            blockColorUpdate[frame] = nil
-            self:RemoveHandler(frame, "OnEvent")
-            hooked[frame] = nil
-        end
-    end)  
+        self:HookFrame(frame)                          
+    end)   
     local onUpdateHealthColor
     if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then 
         onUpdateHealthColor = function(frame) 
@@ -157,7 +149,7 @@ function module:OnEnable()
     ]]--
     self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", onUpdateHealthColor)
     RaidFrameSettings:IterateRoster(function(frame)
-        makeHooks(frame)
+        self:HookFrame(frame)
         updateAurasFull(frame)
     end)
 end

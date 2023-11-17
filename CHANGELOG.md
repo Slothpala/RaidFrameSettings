@@ -1,4 +1,12 @@
 # **Changelog**
+### Version [2.16.4] - 2023-11-17
+#### Changed
+* DebuffHightlight.lua
+    * renamed makeHooks to HookFrame and moved it to module scope
+    * removed CompactUnitFrame_UnregisterEvents hook and the associated table hooked
+    * moved RemoveHandler(frame, "OnEvent") right before HookScript(frame, "OnEvent", callback)
+
+
 ### Version [2.16.3] - 2023-11-16
 #### Fixed
 * Roster.lua allow registration of CompactPartyFrames without units to solve an issue with DebuffHighlight.lua

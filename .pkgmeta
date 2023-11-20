@@ -20,7 +20,6 @@ externals:
     Libs/AceGUI-3.0_SFX-Widgets: https://github.com/SFX-WoW/AceGUI-3.0_SFX-Widgets.git
     Libs/LibCanDispel-1.0: https://github.com/Slothpala/LibCanDispel.git
 
-    Libs/LibGetFrame-1.0: https://github.com/mrbuds/LibGetFrame
 
     
 manual-changelog:

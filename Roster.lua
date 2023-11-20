@@ -5,6 +5,7 @@ local _G = _G
 local GetParent = GetParent
 local IsInRaid = IsInRaid
 local IsActiveBattlefieldArena = IsActiveBattlefieldArena
+local next = next
 
 local Roster = {}
 local needsUpdate = true
@@ -50,10 +51,8 @@ local function updateRoster()
             local frame = _G["CompactPartyFrameMember" ..i .. "HealthBar"]
             if frame then
                 frame = frame:GetParent()
-                if frame then
-                    local unit = frame.unit or ""
-                    Roster[unit] = frame
-                end
+                local unit = frame.unit or ""
+                Roster[unit] = frame
             end
             local frame = _G["CompactPartyFramePet" ..i .. "HealthBar"]
             if frame then

@@ -847,7 +847,7 @@ local options = {
         },
         DebuffHighlight = {
             order = 5,
-            name = "Debuff Hightlight",
+            name = "Debuff Highlight",
             type = "group",
             hidden = DebuffHighlight_disabled,
             args = {

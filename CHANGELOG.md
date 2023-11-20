@@ -1,4 +1,7 @@
 # **Changelog**
+### Version [2.16.5] - 2023-11-20
+#### Fixed
+* Typo  
 ### Version [2.16.4] - 2023-11-17
 #### Changed
 * DebuffHightlight.lua

@@ -18,6 +18,7 @@ local SetTexCoord = SetTexCoord
 local Show = Show
 
 function Overabsorb:OnEnable()
+    local glow_alpha = RaidFrameSettings.db.profile.MinorModules.Overabsorb.glowAlpha
     local function OnFrameSetup(frame)
         local absorbOverlay = frame.totalAbsorbOverlay
         local healthBar = frame.healthBar
@@ -27,7 +28,7 @@ function Overabsorb:OnEnable()
         absorbGlow:ClearAllPoints()
         absorbGlow:SetPoint("TOPLEFT", absorbOverlay, "TOPLEFT", -5, 0)
         absorbGlow:SetPoint("BOTTOMLEFT", absorbOverlay, "BOTTOMLEFT", -5, 0)
-        absorbGlow:SetAlpha(1)
+        absorbGlow:SetAlpha(glow_alpha)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
     local function UpdateHealPredictionCallback(frame)
@@ -65,8 +66,9 @@ end
 function Overabsorb:OnDisable()
     self:DisableHooks()
     local restoreOverabsorbs = function(frame)
-        frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0);
-        frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0);
+        frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0)
+        frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0)
+        frame.overAbsorbGlow:SetAlpha(1)
     end
     RaidFrameSettings:IterateRoster(restoreOverabsorbs)
 end

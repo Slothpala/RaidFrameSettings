@@ -125,6 +125,9 @@ local defaults = {
                 Raid  = 1,
                 Arena = 1,
             },
+            Overabsorb = {
+                glowAlpha = 1,
+            },
         },
         PorfileManagement = {
             GroupProfiles = {

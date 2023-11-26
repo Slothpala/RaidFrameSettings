@@ -1,4 +1,16 @@
 # **Changelog**
+
+### Version [2.17.0] - 2023-11-26
+#### Added
+* LibCanDispel
+* Overabsorb module:
+    * customizable alpha value for the absorb glow
+
+#### Changed
+* DebuffHighlight moudle:
+    * switched to library LibCanDispel to determine if a debuff is dispellable by the player.
+
+
 ### Version [2.16.5] - 2023-11-20
 #### Fixed
 * Typo  

@@ -15,6 +15,7 @@ local Buffs_disabled       = function() return not RaidFrameSettings.db.profile.
 local Debuffs_disabled     = function() return not RaidFrameSettings.db.profile.Module.Debuffs end
 local DebuffHighlight_disabled = function() return not RaidFrameSettings.db.profile.Module.DebuffHighlight end
 local CustomScale_disabled = function() return not RaidFrameSettings.db.profile.Module.CustomScale end
+local Overabsorb_disabled = function() return not RaidFrameSettings.db.profile.Module.Overabsorb end
 
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
@@ -1121,6 +1122,26 @@ local options = {
                             max = 3,
                             step = 0.1,
                             width = 1.2,
+                            isPercent = true,
+                        },
+                    },
+                },
+                Overabsorb = {
+                    hidden = Overabsorb_disabled,
+                    order = 7,
+                    name = "Overabsorb",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        glowAlpha = {
+                            order = 1,
+                            name = "Glow intensity",
+                            type = "range",
+                            get = "GetStatus",
+                            set = "SetStatus",
+                            min = 0,
+                            max = 1,
+                            step = 0.1,
                             isPercent = true,
                         },
                     },

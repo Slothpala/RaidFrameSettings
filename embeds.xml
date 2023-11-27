@@ -15,5 +15,6 @@
   <Include file="Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
   <Script file="Libs\LibDDI-1.0\lib.lua"/>
   <Include file="Libs\AceGUI-3.0_SFX-Widgets\AceGUI-3.0_SFX-Widgets.xml"/>
+  <Script file="Libs\LibCanDispel-1.0\LibCanDispel-1.0.lua"/>
 @end-non-debug@-->
 </Ui>

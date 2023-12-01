@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [2.17.1] - 2023-12-01
+#### Fixed
+* Fixed an issue that prevented the user from changing the active profile to anything other than the current group profile.
+
+#### Changed
+* the addons ReloadConfig() process
 
 ### Version [2.17.0] - 2023-11-26
 #### Added

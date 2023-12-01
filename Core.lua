@@ -10,9 +10,12 @@ RaidFrameSettings:SetDefaultModuleState(false)
 
 local AC = LibStub("AceConfig-3.0")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
+local groupType
 
 function RaidFrameSettings:OnInitialize()
     self:LoadDataBase()
+    self:GetProfiles()
+    groupType = self:GetGroupType()
     --load options table
     self:LoadUserInputEntrys()
     local options = self:GetOptionsTable()
@@ -23,6 +26,7 @@ function RaidFrameSettings:OnInitialize()
     AC:RegisterOptionsTable("RaidFrameSettings_options", options) 
     self:RegisterChatCommand("rfs", "SlashCommand")
     self:RegisterChatCommand("raidframesettings", "SlashCommand")
+    self:RegisterEvent("PLAYER_LOGIN","LoadGroupBasedProfile")
 end
 
 function RaidFrameSettings:SlashCommand()
@@ -39,13 +43,12 @@ function RaidFrameSettings:SlashCommand()
 end
 
 function RaidFrameSettings:OnEnable()
-    self:GetProfiles()
-    self:LoadGroupBasedProfile()
     for _, module in self:IterateModules() do
         if self.db.profile.Module[module:GetName()] then 
             module:Enable()
         end
     end
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckGroupType")
 end
 
 function RaidFrameSettings:OnDisable()
@@ -60,27 +63,30 @@ function RaidFrameSettings:UpdateModule(module_name)
 end
 
 function RaidFrameSettings:ReloadConfig()
+    self:GetProfiles()
     self:Disable()
     self:Enable()
 end
 
---group type profiles
-local groupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
+function RaidFrameSettings:GetGroupType()
+    local groupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
+    return groupType
+end
 
-RaidFrameSettings:RegisterEvent("GROUP_ROSTER_UPDATE",function(event)
-    local newgroupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
-    if (newgroupType ~= groupType) then
-        groupType = newgroupType
-        RaidFrameSettings:LoadGroupBasedProfile()
+function RaidFrameSettings:CheckGroupType()
+    local newGroupType = self:GetGroupType()
+    if (newGroupType ~= groupType) then
+        groupType = newGroupType
+        self:LoadGroupBasedProfile()
     end
-end)
+end
 
 function RaidFrameSettings:LoadGroupBasedProfile()
     local groupProfileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or "Default"
     local currentProfile = self.db:GetCurrentProfile()
     if currentProfile ~= groupProfileName then
         self.db:SetProfile(groupProfileName) 
-        RaidFrameSettings:Print("Profile set to: "..groupProfileName)
+        self:Print("Profile set to: "..groupProfileName)
     end
 end
 

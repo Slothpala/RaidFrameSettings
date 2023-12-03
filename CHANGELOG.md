@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [2.17.2] - 2023-12-04
+#### Changed
+* Debuffs module:
+    * improved the clean icon texture so that it does not overlap to the next icon and the cooldown swipe now covers the entire border for better visual clarity
+    * adjusted texture slice margins accordingly and added a 1% offset to avoid distortion on scaled icons
+
 ### Version [2.17.1] - 2023-12-01
 #### Fixed
 * Fixed an issue that prevented the user from changing the active profile to anything other than the current group profile.

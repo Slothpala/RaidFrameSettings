@@ -29,22 +29,23 @@ local defaults = {
             },
         },
         Fonts = { 
-            Name = { 
+            ["**"] = {
                 font          = "Friz Quadrata TT",
-                fontsize      = 12,
                 fontcolor     = {r=1,g=1,b=1,a=1},
+                outline       = true,
+                thick         = false,
+                monochrome    = false,
+            },
+            Name = { 
+                fontsize      = 12,
                 useclasscolor = true,
-                outlinemode   = 1,
                 position      = 3,
                 x_offset      = 0,
                 y_offset      = -5,
             },
             Status = { 
-                font          = "Friz Quadrata TT",
                 fontsize      = 14,
-                fontcolor     = {r=1,g=1,b=1,a=1},
                 useclasscolor = false,
-                outlinemode   = 1,
                 position      = 2,
                 x_offset      = 0,
                 y_offset      = -5,

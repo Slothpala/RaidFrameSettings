@@ -21,33 +21,42 @@ local UnitClass = UnitClass
 local GetClassColor = GetClassColor
 
 function Fonts:OnEnable()
+    local dbObj = RaidFrameSettings.db.profile.Fonts
     --Name
     local Name = {}
-    Name.Font             = Media:Fetch("font",RaidFrameSettings.db.profile.Fonts.Name.font)
-    Name.FontSize         = RaidFrameSettings.db.profile.Fonts.Name.fontsize
-    Name.FontColor        = RaidFrameSettings.db.profile.Fonts.Name.fontcolor
-    Name.Classcolored     = RaidFrameSettings.db.profile.Fonts.Name.useclasscolor
-    Name.Outlinemode      = ( RaidFrameSettings.db.profile.Fonts.Name.outlinemode == 1 and "OUTLINE" ) or ( RaidFrameSettings.db.profile.Fonts.Name.outlinemode == 2 and "THICKOUTLINE" ) or ( RaidFrameSettings.db.profile.Fonts.Name.outlinemode == 3 and "MONOCHROME" ) or ( RaidFrameSettings.db.profile.Fonts.Name.outlinemode == 4 and "NONE" )
-    Name.Position         = ( RaidFrameSettings.db.profile.Fonts.Name.position == 1 and "TOPLEFT" ) or ( RaidFrameSettings.db.profile.Fonts.Name.position == 2 and "CENTER" ) or ( RaidFrameSettings.db.profile.Fonts.Name.position == 3 and "TOP" ) or ( RaidFrameSettings.db.profile.Fonts.Name.position == 4 and "BOTTOM" )
-    Name.JustifyH         = ( RaidFrameSettings.db.profile.Fonts.Name.position == 1 and "LEFT" ) or "CENTER"
-    Name.X_Offset         = RaidFrameSettings.db.profile.Fonts.Name.x_offset
-    Name.Y_Offset         = RaidFrameSettings.db.profile.Fonts.Name.y_offset
+    Name.Font             = Media:Fetch("font",dbObj.Name.font)
+    Name.FontSize         = dbObj.Name.fontsize
+    Name.FontColor        = dbObj.Name.fontcolor
+    Name.Classcolored     = dbObj.Name.useclasscolor
+    --OUTLINEMODE
+    local flag1           = dbObj.Name.thick and "THICK" or ""
+    local flag2           = dbObj.Name.outline and "OUTLINE" or ""
+    local flag3           = dbObj.Name.monochrome and "MONOCHROME" or ""
+    Name.Outlinemode      = ( flag1 .. flag2 .. ", " .. flag3 )
+    Name.Position         = ( dbObj.Name.position == 1 and "TOPLEFT" ) or ( dbObj.Name.position == 2 and "CENTER" ) or ( dbObj.Name.position == 3 and "TOP" ) or ( dbObj.Name.position == 4 and "BOTTOM" )
+    Name.JustifyH         = ( dbObj.Name.position == 1 and "LEFT" ) or "CENTER"
+    Name.X_Offset         = dbObj.Name.x_offset
+    Name.Y_Offset         = dbObj.Name.y_offset
     --Status
     local Status = {}
-    Status.Font           = Media:Fetch("font",RaidFrameSettings.db.profile.Fonts.Status.font)
-    Status.FontSize       = RaidFrameSettings.db.profile.Fonts.Status.fontsize
-    Status.FontColor      = RaidFrameSettings.db.profile.Fonts.Status.fontcolor
-    Status.Classcolored   = RaidFrameSettings.db.profile.Fonts.Status.useclasscolor
-    Status.Outlinemode    = ( RaidFrameSettings.db.profile.Fonts.Status.outlinemode == 1 and "OUTLINE" ) or ( RaidFrameSettings.db.profile.Fonts.Status.outlinemode == 2 and "THICKOUTLINE" ) or ( RaidFrameSettings.db.profile.Fonts.Status.outlinemode == 3 and "MONOCHROME" ) or ( RaidFrameSettings.db.profile.Fonts.Status.outlinemode == 4 and "NONE" )
-    Status.Position       = ( RaidFrameSettings.db.profile.Fonts.Status.position == 1 and "TOPLEFT" ) or ( RaidFrameSettings.db.profile.Fonts.Status.position == 2 and "CENTER" ) or ( RaidFrameSettings.db.profile.Fonts.Status.position == 3 and "TOP" ) or ( RaidFrameSettings.db.profile.Fonts.Status.position == 4 and "BOTTOM" )
-    Status.JustifyH       = ( RaidFrameSettings.db.profile.Fonts.Status.position == 1 and "LEFT" ) or "CENTER"
-    Status.X_Offset       = RaidFrameSettings.db.profile.Fonts.Status.x_offset
-    Status.Y_Offset       = RaidFrameSettings.db.profile.Fonts.Status.y_offset
+    Status.Font           = Media:Fetch("font",dbObj.Status.font)
+    Status.FontSize       = dbObj.Status.fontsize
+    Status.FontColor      = dbObj.Status.fontcolor
+    Status.Classcolored   = dbObj.Status.useclasscolor
+    --OUTLINEMODE
+    local flag1           = dbObj.Status.thick and "THICK" or ""
+    local flag2           = dbObj.Status.outline and "OUTLINE" or ""
+    local flag3           = dbObj.Status.monochrome and "MONOCHROME" or ""
+    Status.Outlinemode      = ( flag1 .. flag2 .. ", " .. flag3 )
+    Status.Position       = ( dbObj.Status.position == 1 and "TOPLEFT" ) or ( dbObj.Status.position == 2 and "CENTER" ) or ( dbObj.Status.position == 3 and "TOP" ) or ( dbObj.Status.position == 4 and "BOTTOM" )
+    Status.JustifyH       = ( dbObj.Status.position == 1 and "LEFT" ) or "CENTER"
+    Status.X_Offset       = dbObj.Status.x_offset
+    Status.Y_Offset       = dbObj.Status.y_offset
     --Advanced Font Settings
     local Advanced = {}
-    Advanced.shadowColor = RaidFrameSettings.db.profile.Fonts.Advanced.shadowColor
-    Advanced.x_offset    = RaidFrameSettings.db.profile.Fonts.Advanced.x_offset
-    Advanced.y_offset    = RaidFrameSettings.db.profile.Fonts.Advanced.y_offset
+    Advanced.shadowColor = dbObj.Advanced.shadowColor
+    Advanced.x_offset    = dbObj.Advanced.x_offset
+    Advanced.y_offset    = dbObj.Advanced.y_offset
     --Callbacks 
     local function UpdateFont(frame)
         --Name

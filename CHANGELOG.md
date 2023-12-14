@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [2.17.3] - 2023-12-14
+#### Changed
+* Font module:
+    * reworked how the flags "OUTLINE", "THICKOUTLINE" and "MONOCHROME" are handled for name and status. The user now has 3 check boxes that cover all possible combinations of these flags.
+
 ### Version [2.17.2] - 2023-12-04
 #### Changed
 * Debuffs module:

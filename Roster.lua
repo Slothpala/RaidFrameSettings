@@ -10,11 +10,21 @@ local next = next
 local Roster = {}
 local needsUpdate = true
 
+local function showSeparateGroups()
+    local showSeparateGroups 
+    if addonTable.isClassic then
+        showSeparateGroups = CompactRaidFrameManager_GetSetting("KeepGroupsTogether")
+    else
+        showSeparateGroups = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups()
+    end
+    return showSeparateGroups
+end
+
 local function updateRoster()
     Roster = {}
-    local showSeparateGroups = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups()
-    if IsInRaid() and not select(1,IsActiveBattlefieldArena()) then --IsInRaid() returns true in arena even though we need party frame names
-        if showSeparateGroups then
+    local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or addonTable.isClassic --IsInRaid() returns true in arena even though we need party frame names
+    if useRaid then 
+        if showSeparateGroups() then
             for i=1, 8 do
                 for j=1, 5 do
                     local frame = _G["CompactRaidGroup" ..i.. "Member" .. j .. "HealthBar"]

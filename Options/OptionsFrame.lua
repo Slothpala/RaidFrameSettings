@@ -62,7 +62,7 @@ end)
 frame.TitleContainer:SetScript("OnMouseUp", function()
     frame:StopMovingOrSizing()
 end)
-RaidFrameSettingsOptionsPortrait:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon\\Icon.tga")
+RaidFrameSettingsOptionsPortrait:SetTexture(addonTable.texturePaths.PortraitIcon)
 addResizeButton()
 local container = createAceContainer()
 frame.container = container

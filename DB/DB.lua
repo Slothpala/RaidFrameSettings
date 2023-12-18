@@ -13,6 +13,7 @@ local defaults = {
             Buffs   = false,
             Debuffs = false,
             CustomScale = false,
+            DebuffHighlight = false,
         },
         HealthBars = { 
             Textures = { 

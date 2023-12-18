@@ -4,6 +4,7 @@
     Create an options table for the GUI
 --]]
 local _, addonTable = ...
+local isVanilla, isWrath, isClassic, isRetail = addonTable.isVanilla, addonTable.isWrath, addonTable.isClassic, addonTable.isRetail
 local RaidFrameSettings = addonTable.RaidFrameSettings
 local Media = LibStub("LibSharedMedia-3.0")
 local lastEntry = 10
@@ -62,6 +63,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         RoleIcon = {
+                            hidden = isVanilla,
                             order = 3,
                             type = "toggle",
                             name = "Role Icon",
@@ -78,6 +80,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Buffs = {
+                            hidden = not isRetail,
                             order = 5,
                             type = "toggle",
                             name = "Buffs",
@@ -86,6 +89,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Debuffs = {
+                            hidden = not isRetail,
                             order = 6,
                             type = "toggle",
                             name = "Debuffs",
@@ -94,6 +98,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Overabsorb = {
+                            hidden = not isRetail,
                             order = 7,
                             type = "toggle",
                             name = "Overabsorb",
@@ -102,6 +107,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         DebuffHighlight = {
+                            hidden = not isRetail,
                             order = 8,
                             type = "toggle",
                             name = "Debuff Highlight",
@@ -110,6 +116,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         CustomScale = {
+                            hidden = not isRetail,
                             order = 9,
                             type = "toggle",
                             name = "Custom Scale",
@@ -538,6 +545,7 @@ local options = {
             },
         },
         Auras = {
+            hidden = not isRetail,
             order = 4,
             name = "Auras",
             type = "group",
@@ -878,6 +886,7 @@ local options = {
             },
         },
         DebuffHighlight = {
+            hidden = not isRetail,
             order = 5,
             name = "Debuff Highlight",
             type = "group",
@@ -1024,7 +1033,7 @@ local options = {
             type = "group",
             args = {
                 RoleIcon = {
-                    hidden = RoleIcon_disabled,
+                    hidden = isVanilla or RoleIcon_disabled,
                     order = 1,
                     name = "Role Icon",
                     type = "group",
@@ -1110,7 +1119,7 @@ local options = {
                     },
                 },
                 CustomScale = {
-                    hidden = CustomScale_disabled,
+                    hidden = isClassic or CustomScale_disabled,
                     order = 6,
                     name = "Custom Scale",
                     type = "group",
@@ -1158,7 +1167,7 @@ local options = {
                     },
                 },
                 Overabsorb = {
-                    hidden = Overabsorb_disabled,
+                    hidden = isClassic or Overabsorb_disabled,
                     order = 7,
                     name = "Overabsorb",
                     type = "group",

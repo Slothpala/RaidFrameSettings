@@ -1,0 +1,27 @@
+## Interface: 11500
+## Version: @project-version@
+## Title: RaidFrameSettings
+## Author: Slothpala
+## SavedVariables: RaidFrameSettingsDB, RaidFrameSettingsDBPP, RaidFrameSettingsDBRP
+## OptionalDeps: Ace3, LibDeflate, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDDI-1.0, AceGUI-3.0_SFX-Widgets, LibCanDispel-1.0
+## X-Curse-Project-ID: 688930
+
+Init_Vanilla.lua
+
+#Libs
+embeds.xml
+
+#Config
+Core.lua
+HookRegistry.lua
+Roster.lua
+ProfileSharing.lua
+DB\DB.lua
+Options\Options.lua
+Options\OptionsFrame.lua
+
+#Modules
+modules_vanilla.xml
+
+
+

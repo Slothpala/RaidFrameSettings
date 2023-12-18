@@ -1,0 +1,5 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="Modules\HealthBars.lua"/>
+    <Script file="Modules\Fonts.lua"/>
+    <Script file="Modules\Range.lua"/>
+</Ui>

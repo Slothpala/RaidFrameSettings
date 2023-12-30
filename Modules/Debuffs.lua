@@ -85,7 +85,7 @@ function Debuffs:OnEnable()
     end
     local function hideAllDebuffs(frame, startingIndex)
         if frame.debuffFrames then
-            updateAnchors(frame, startingIndex)
+            updateAnchors(frame, startingIndex and startingIndex > 0 and startingIndex - 1)
         end
     end
     self:HookFunc("CompactUnitFrame_HideAllDebuffs", hideAllDebuffs)

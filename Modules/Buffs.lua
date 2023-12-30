@@ -55,7 +55,7 @@ function Buffs:OnEnable()
     local function updateAnchors(frame, endingIndex)
         local first = true
         local prev
-        for i = 1, endingIndex or #frame.buffFrames do
+        for i = 1, endingIndex and endingIndex > #frame.buffFrames and #frame.buffFrames or endingIndex or #frame.buffFrames do
             if frame.buffFrames[i]:IsShown() then
                 if first then
                     frame.buffFrames[i]:ClearAllPoints()
@@ -72,7 +72,7 @@ function Buffs:OnEnable()
     end
     local hideAllBuffs = function(frame, startingIndex)
         if frame.buffFrames then
-            updateAnchors(frame, startingIndex)
+            updateAnchors(frame, startingIndex and startingIndex > 0 and startingIndex - 1)
         end
     end
     self:HookFunc("CompactUnitFrame_HideAllBuffs", hideAllBuffs)

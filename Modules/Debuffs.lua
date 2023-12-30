@@ -20,6 +20,7 @@ function Debuffs:OnEnable()
     --Debuffframe size
     local width = RaidFrameSettings.db.profile.Debuffs.Display.width
     local height = RaidFrameSettings.db.profile.Debuffs.Display.height
+    local resizeAura
     local increase = RaidFrameSettings.db.profile.Debuffs.Display.increase
     local boss_width  = width * increase
     local boss_height = height * increase
@@ -64,18 +65,87 @@ function Debuffs:OnEnable()
     local x_offset = RaidFrameSettings.db.profile.Debuffs.Display.x_offset
     local y_offset = RaidFrameSettings.db.profile.Debuffs.Display.y_offset
 
-    local function updateAnchors(frame)
-        frame.debuffFrames[1]:ClearAllPoints()
-        frame.debuffFrames[1]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
-        for i=1, #frame.debuffFrames do
-            resizeAura(frame.debuffFrames[i])
-            if ( i > 1 ) then
-                frame.debuffFrames[i]:ClearAllPoints();
-                frame.debuffFrames[i]:SetPoint(debuffPoint, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
+    local function updateAnchors(frame, endingIndex)
+        local first = true
+        local prev
+        for i = 1, endingIndex and endingIndex > #frame.debuffFrames and #frame.debuffFrames or endingIndex or #frame.debuffFrames do
+            if frame.debuffFrames[i]:IsShown() then
+                if first then
+                    frame.debuffFrames[i]:ClearAllPoints()
+                    frame.debuffFrames[i]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
+                    prev = frame.debuffFrames[i]
+                    first = false
+                else
+                    frame.debuffFrames[i]:ClearAllPoints()
+                    frame.debuffFrames[i]:SetPoint(debuffPoint, prev, debuffRelativePoint, 0, 0)
+                    prev = frame.debuffFrames[i]
+                end
             end
         end
     end
-    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", updateAnchors)
+    local function hideAllDebuffs(frame, startingIndex)
+        if frame.debuffFrames then
+            updateAnchors(frame, startingIndex)
+        end
+    end
+    self:HookFunc("CompactUnitFrame_HideAllDebuffs", hideAllDebuffs)
+
+    local function updatePrivateAuras(frame)
+        if not frame.PrivateAuraAnchors then
+            return
+        end
+
+        local lastShownDebuff;
+        for i = frame.maxDebuffs, 1, -1 do
+            local debuff = frame["Debuff"..i]
+            if debuff:IsShown() then
+                lastShownDebuff = debuff
+                break
+            end
+        end
+        frame.PrivateAuraAnchor1:ClearAllPoints()
+        if lastShownDebuff then
+            frame.PrivateAuraAnchor1:SetPoint(debuffPoint, lastShownDebuff, debuffRelativePoint, 0, 0)
+        else
+            frame.PrivateAuraAnchor1:SetPoint(point, frame.Debuff1, relativePoint, 0, 0)
+        end
+        frame.PrivateAuraAnchor2:ClearAllPoints()
+        frame.PrivateAuraAnchor2:SetPoint(debuffPoint, frame.PrivateAuraAnchor1, debuffRelativePoint, 0, 0)
+    end
+    self:HookFunc("CompactUnitFrame_UpdatePrivateAuras", updatePrivateAuras)
+
+    local createDebuffFrames = function(frame)
+        -- local maxDebuffs = frame:GetWidth() / width
+        -- maxDebuffs = math.floor(maxDebuffs)
+        -- maxDebuffs = math.max(3, maxDebuffs)
+        local maxDebuffs = 10
+
+        if maxDebuffs > frame.maxDebuffs then
+            local frameName = frame:GetName() .. "Debuff"
+            for i = frame.maxDebuffs + 1, maxDebuffs do
+                local child = _G[frameName .. i] or CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
+                child:ClearAllPoints()
+                child:SetPoint("BOTTOMLEFT", _G[frameName .. i - 1], "BOTTOMRIGHT")
+                frame["Debuff" .. i] = child
+            end
+            frame.maxDebuffs = maxDebuffs
+        end
+
+        for i = 1, maxDebuffs do
+            resizeAura(frame.debuffFrames[i])
+            frame.debuffFrames[i]:SetFrameStrata("TOOLTIP")
+        end
+
+        if frame.PrivateAuraAnchors then
+            for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
+                privateAuraAnchor:SetSize(boss_width, boss_height)
+                privateAuraAnchor:SetFrameStrata("TOOLTIP")
+            end
+        end
+
+        updateAnchors(frame)
+    end
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", createDebuffFrames)
     --blacklist
     local blacklist = {}
     for spellId, value in pairs(RaidFrameSettings.db.profile.Debuffs.Blacklist) do
@@ -86,8 +156,9 @@ function Debuffs:OnEnable()
             return 
         end
         if aura and blacklist[aura.spellId] then
-            debuffFrame:SetSize(0.1,0.1)
+            debuffFrame:Hide()
         else
+            debuffFrame:Show()
             if aura and aura.isBossAura then
                 debuffFrame:SetSize(boss_width, boss_height)
             else
@@ -107,6 +178,7 @@ function Debuffs:OnEnable()
                 end
             end
         end
+        updateAnchors(frame)
     end)
 end
 

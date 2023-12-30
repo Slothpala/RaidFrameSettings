@@ -52,18 +52,54 @@ function Buffs:OnEnable()
     local buffRelativePoint = ( orientation == 1 and "BOTTOMLEFT" ) or ( orientation == 2 and "BOTTOMRIGHT" ) or ( orientation == 3 and "TOPLEFT" ) or ( orientation == 4 and "BOTTOMLEFT" ) 
     local x_offset = RaidFrameSettings.db.profile.Buffs.Display.x_offset
     local y_offset = RaidFrameSettings.db.profile.Buffs.Display.y_offset
-    local function updateAnchors(frame)
-        frame.buffFrames[1]:ClearAllPoints()
-        frame.buffFrames[1]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
-        for i=1, #frame.buffFrames do
-            if ( i > 1 ) then
-                frame.buffFrames[i]:ClearAllPoints();
-                frame.buffFrames[i]:SetPoint(buffPoint, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
+    local function updateAnchors(frame, endingIndex)
+        local first = true
+        local prev
+        for i = 1, endingIndex or #frame.buffFrames do
+            if frame.buffFrames[i]:IsShown() then
+                if first then
+                    frame.buffFrames[i]:ClearAllPoints()
+                    frame.buffFrames[i]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
+                    prev = frame.buffFrames[i]
+                    first = false
+                else
+                    frame.buffFrames[i]:ClearAllPoints()
+                    frame.buffFrames[i]:SetPoint(buffPoint, prev, buffRelativePoint, 0, 0)
+                    prev = frame.buffFrames[i]
+                end
             end
-            resizeAura(frame.buffFrames[i])
         end
     end
-    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", updateAnchors)
+    local hideAllBuffs = function(frame, startingIndex)
+        if frame.buffFrames then
+            updateAnchors(frame, startingIndex)
+        end
+    end
+    self:HookFunc("CompactUnitFrame_HideAllBuffs", hideAllBuffs)
+
+    local createBuffFrames = function(frame)
+        -- local maxBuffs = frame:GetWidth() / width
+        -- maxBuffs = math.floor(maxBuffs)
+        -- maxBuffs = math.max(3, maxBuffs)
+        local maxBuffs = 10
+
+        if maxBuffs > frame.maxBuffs then
+            local frameName = frame:GetName() .. "Buff"
+            for i = frame.maxBuffs + 1, maxBuffs do
+                local child = _G[frameName .. i] or CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
+                child:ClearAllPoints()
+                child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
+            end
+            frame.maxBuffs = maxBuffs
+        end
+
+        for i = 1, maxBuffs do
+            resizeAura(frame.buffFrames[i])
+        end
+
+        updateAnchors(frame)
+    end
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", createBuffFrames)
     --blacklist
     local blacklist = {}
     for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Blacklist) do
@@ -71,9 +107,9 @@ function Buffs:OnEnable()
     end
     local resizeBuffFrame = function(buffFrame, aura)
         if aura and blacklist[aura.spellId] then
-            buffFrame:SetSize(0.1,0.1)
+            buffFrame:Hide()
         else
-            buffFrame:SetSize(width, height)
+            buffFrame:Show()
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", resizeBuffFrame)
@@ -85,11 +121,12 @@ function Buffs:OnEnable()
                 if buffFrame.auraInstanceID then
                     local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
                     if aura and RaidFrameSettings.db.profile.Buffs.Blacklist[tostring(aura.spellId)] then
-                        buffFrame:SetSize(0.1,0.1)
+                        buffFrame:Hide()
                     end
                 end
             end
         end
+        updateAnchors(frame)
     end)
 end
 

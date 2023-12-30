@@ -66,20 +66,27 @@ function Debuffs:OnEnable()
     local y_offset = RaidFrameSettings.db.profile.Debuffs.Display.y_offset
 
     local function updateAnchors(frame, endingIndex)
-        local first = true
-        local prev
+        local first, prev, isBossAura
         for i = 1, endingIndex and endingIndex > #frame.debuffFrames and #frame.debuffFrames or endingIndex or #frame.debuffFrames do
             if frame.debuffFrames[i]:IsShown() then
-                if first then
+                if not first then
                     frame.debuffFrames[i]:ClearAllPoints()
                     frame.debuffFrames[i]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
                     prev = frame.debuffFrames[i]
-                    first = false
+                    first = frame.debuffFrames[i]
                 else
                     frame.debuffFrames[i]:ClearAllPoints()
                     frame.debuffFrames[i]:SetPoint(debuffPoint, prev, debuffRelativePoint, 0, 0)
+                    isBossAura = frame.debuffFrames[i].isBossAura or isBossAura
                     prev = frame.debuffFrames[i]
                 end
+            end
+        end
+        if first and not first.isBossAura and isBossAura then
+            if (point == 1 or point == 2) and (orientation == 1 or orientation == 2) then
+                first:SetPoint(point, frame, relativePoint, x_offset, y_offset + width - boss_width)
+            elseif (point == 2 or point == 4) and (orientation == 3 or orientation == 4) then
+                first:SetPoint(point, frame, relativePoint, x_offset - boss_width + width, y_offset)
             end
         end
     end
@@ -160,6 +167,7 @@ function Debuffs:OnEnable()
         else
             debuffFrame:Show()
             if aura and aura.isBossAura then
+                debuffFrame.isBossAura = aura.isBossAura
                 debuffFrame:SetSize(boss_width, boss_height)
             else
                 debuffFrame:SetSize(width, height)

@@ -190,10 +190,11 @@ function Debuffs:OnDisable()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
         local buffSize = math.min(15, 11 * componentScale)
+        local powerBarUsedHeight = frame.powerBar:IsShown() and frame.powerBar:GetHeight() or 0
+        local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE);
         for i=1,#frame.debuffFrames do  
             frame.debuffFrames[i]:SetSize(buffSize, buffSize)
         end
-        local powerBarUsedHeight = frame.powerBar:IsShown() and frame.powerBar:GetHeight() or 0
         local debuffPos, debuffRelativePoint, debuffOffset = "BOTTOMLEFT", "BOTTOMRIGHT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight
         frame.debuffFrames[1]:ClearAllPoints()
         frame.debuffFrames[1]:SetPoint(debuffPos, frame, "BOTTOMLEFT", 3, debuffOffset)
@@ -207,6 +208,12 @@ function Debuffs:OnDisable()
                 frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
             end
         end
+        if frame.PrivateAuraAnchors then
+            for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
+                local size = min(buffSize + BOSS_DEBUFF_SIZE_INCREASE, maxDebuffSize)
+                privateAuraAnchor:SetSize(size, size)
+            end
+        end    
     end
     RaidFrameSettings:IterateRoster(restoreDebuffFrames)
 end

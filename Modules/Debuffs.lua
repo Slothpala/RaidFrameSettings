@@ -17,7 +17,7 @@ local SetTextureSliceMode  = SetTextureSliceMode
 local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 
 function Debuffs:OnEnable()
-    --Debuffframe size
+        --Debuffframe size
     local width = RaidFrameSettings.db.profile.Debuffs.Display.width
     local height = RaidFrameSettings.db.profile.Debuffs.Display.height
     local resizeAura
@@ -70,7 +70,7 @@ function Debuffs:OnEnable()
         (framestrataIdx == 2 and "BACKGROUND") or (framestrataIdx == 3 and "LOW") or (framestrataIdx == 4 and "MEDIUM") or (framestrataIdx == 5 and "HIGH") or
         (framestrataIdx == 6 and "DIALOG") or (framestrataIdx == 7 and "FULLSCREEN") or (framestrataIdx == 8 and "FULLSCREEN_DIALOG") or (framestrataIdx == 9 and "TOOLTIP")
 
-    local function updateAnchors(frame, endingIndex)
+        local function updateAnchors(frame, endingIndex)
         local first, prev, isBossAura
         for i = 1, endingIndex and endingIndex > #frame.debuffFrames and #frame.debuffFrames or endingIndex or #frame.debuffFrames do
             if frame.debuffFrames[i]:IsShown() then
@@ -144,7 +144,7 @@ function Debuffs:OnEnable()
 
         for i = 1, maxDebuffs do
             resizeAura(frame.debuffFrames[i])
-            frame.debuffFrames[i]:SetFrameStrata(framestrata)
+                        frame.debuffFrames[i]:SetFrameStrata(framestrata)
         end
 
         if frame.PrivateAuraAnchors then
@@ -210,6 +210,7 @@ function Debuffs:OnDisable()
         local debuffPos, debuffRelativePoint, debuffOffset = "BOTTOMLEFT", "BOTTOMRIGHT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight
         frame.debuffFrames[1]:ClearAllPoints()
         frame.debuffFrames[1]:SetPoint(debuffPos, frame, "BOTTOMLEFT", 3, debuffOffset)
+        frame.debuffFrames[1]:SetFrameStrata(frame:GetFrameStrata())
         for i=1, #frame.debuffFrames do
             frame.debuffFrames[i].border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
             frame.debuffFrames[i].border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)

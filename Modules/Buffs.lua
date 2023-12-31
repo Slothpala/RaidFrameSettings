@@ -148,7 +148,7 @@ function Buffs:OnDisable()
         end
 
         local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE)
-        local buffSpace = frame:GetWidth() - (#frame.debuffFrames * maxDebuffSize)
+        local buffSpace = frame:GetWidth() - (3 * maxDebuffSize)
         local maxBuffs = buffSpace / Display
         maxBuffs = math.floor(maxBuffs)
         maxBuffs = math.max(3, maxBuffs)

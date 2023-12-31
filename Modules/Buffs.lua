@@ -52,6 +52,7 @@ function Buffs:OnEnable()
     local buffRelativePoint = ( orientation == 1 and "BOTTOMLEFT" ) or ( orientation == 2 and "BOTTOMRIGHT" ) or ( orientation == 3 and "TOPLEFT" ) or ( orientation == 4 and "BOTTOMLEFT" ) 
     local x_offset = RaidFrameSettings.db.profile.Buffs.Display.x_offset
     local y_offset = RaidFrameSettings.db.profile.Buffs.Display.y_offset
+    local maxBuffs = RaidFrameSettings.db.profile.Buffs.Display.maxbuffs
     local function updateAnchors(frame, endingIndex)
         local first = true
         local prev
@@ -78,11 +79,6 @@ function Buffs:OnEnable()
     self:HookFunc("CompactUnitFrame_HideAllBuffs", hideAllBuffs)
 
     local createBuffFrames = function(frame)
-        -- local maxBuffs = frame:GetWidth() / width
-        -- maxBuffs = math.floor(maxBuffs)
-        -- maxBuffs = math.max(3, maxBuffs)
-        local maxBuffs = 10
-
         if maxBuffs > frame.maxBuffs then
             local frameName = frame:GetName() .. "Buff"
             for i = frame.maxBuffs + 1, maxBuffs do
@@ -150,6 +146,14 @@ function Buffs:OnDisable()
                 frame.buffFrames[i]:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
             end
         end
+
+        local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE)
+        local buffSpace = frame:GetWidth() - (#frame.debuffFrames * maxDebuffSize)
+        local maxBuffs = buffSpace / Display
+        maxBuffs = math.floor(maxBuffs)
+        maxBuffs = math.max(3, maxBuffs)
+        maxBuffs = math.min(#frame.buffFrames, maxBuffs)
+        frame.maxBuffs = maxBuffs
     end
     RaidFrameSettings:IterateRoster(restoreBuffFrames)
 end

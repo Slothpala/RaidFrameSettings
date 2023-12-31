@@ -64,6 +64,11 @@ function Debuffs:OnEnable()
     local debuffRelativePoint = ( orientation == 1 and "BOTTOMLEFT" ) or ( orientation == 2 and "BOTTOMRIGHT" ) or ( orientation == 3 and "TOPLEFT" ) or ( orientation == 4 and "BOTTOMLEFT" ) 
     local x_offset = RaidFrameSettings.db.profile.Debuffs.Display.x_offset
     local y_offset = RaidFrameSettings.db.profile.Debuffs.Display.y_offset
+    local maxDebuffs = RaidFrameSettings.db.profile.Debuffs.Display.maxdebuffs
+    local framestrataIdx = RaidFrameSettings.db.profile.Debuffs.Display.framestrata
+    local framestrata = (framestrataIdx == 1 and "Inherited") or
+        (framestrataIdx == 2 and "BACKGROUND") or (framestrataIdx == 3 and "LOW") or (framestrataIdx == 4 and "MEDIUM") or (framestrataIdx == 5 and "HIGH") or
+        (framestrataIdx == 6 and "DIALOG") or (framestrataIdx == 7 and "FULLSCREEN") or (framestrataIdx == 8 and "FULLSCREEN_DIALOG") or (framestrataIdx == 9 and "TOOLTIP")
 
     local function updateAnchors(frame, endingIndex)
         local first, prev, isBossAura
@@ -122,10 +127,9 @@ function Debuffs:OnEnable()
     self:HookFunc("CompactUnitFrame_UpdatePrivateAuras", updatePrivateAuras)
 
     local createDebuffFrames = function(frame)
-        -- local maxDebuffs = frame:GetWidth() / width
-        -- maxDebuffs = math.floor(maxDebuffs)
-        -- maxDebuffs = math.max(3, maxDebuffs)
-        local maxDebuffs = 10
+        if framestrata == "Inherited" then
+            framestrata = frame:GetFrameStrata()
+        end
 
         if maxDebuffs > frame.maxDebuffs then
             local frameName = frame:GetName() .. "Debuff"
@@ -140,13 +144,13 @@ function Debuffs:OnEnable()
 
         for i = 1, maxDebuffs do
             resizeAura(frame.debuffFrames[i])
-            frame.debuffFrames[i]:SetFrameStrata("TOOLTIP")
+            frame.debuffFrames[i]:SetFrameStrata(framestrata)
         end
 
         if frame.PrivateAuraAnchors then
             for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
                 privateAuraAnchor:SetSize(boss_width, boss_height)
-                privateAuraAnchor:SetFrameStrata("TOOLTIP")
+                privateAuraAnchor:SetFrameStrata(framestrata)
             end
         end
 
@@ -214,14 +218,17 @@ function Debuffs:OnDisable()
             if ( i > 1 ) then
                 frame.debuffFrames[i]:ClearAllPoints();
                 frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
+                frame.debuffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
             end
         end
         if frame.PrivateAuraAnchors then
             for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
                 local size = min(buffSize + BOSS_DEBUFF_SIZE_INCREASE, maxDebuffSize)
                 privateAuraAnchor:SetSize(size, size)
+                privateAuraAnchor:SetFrameStrata(frame:GetFrameStrata())
             end
-        end    
+        end
+        frame.maxDebuffs = 3
     end
     RaidFrameSettings:IterateRoster(restoreDebuffFrames)
 end

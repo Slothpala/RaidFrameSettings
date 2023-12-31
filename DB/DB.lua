@@ -68,6 +68,8 @@ local defaults = {
                 x_offset      = 0,
                 y_offset      = 0,
                 orientation   = 2,
+                maxdebuffs    = 10,
+                framestrata   = 9,
             },
             Blacklist = {
                 --[[spellID = name                ]]--
@@ -83,6 +85,7 @@ local defaults = {
                 x_offset      = -4,
                 y_offset      = 4,
                 orientation   = 1,
+                maxbuffs      = 10,
             },
             Blacklist = {
                 --spellID = true

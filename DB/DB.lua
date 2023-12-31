@@ -69,7 +69,7 @@ local defaults = {
                 y_offset      = 0,
                 orientation   = 2,
                 maxdebuffs    = 10,
-                framestrata   = 9,
+                framestrata   = 1,
             },
             Blacklist = {
                 --[[spellID = name                ]]--

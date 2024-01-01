@@ -163,15 +163,15 @@ function Debuffs:OnEnable()
         blacklist[tonumber(spellId)] = true
     end
     local resizeDebuffFrame = function(debuffFrame, aura)
-        if debuffFrame:IsForbidden() then 
+        if debuffFrame:IsForbidden() or not aura then 
             return 
         end
-        if aura and blacklist[aura.spellId] then
+        debuffFrame.isBossAura = aura.isBossAura
+        if blacklist[aura.spellId] then
             debuffFrame:Hide()
         else
             debuffFrame:Show()
             if aura and aura.isBossAura then
-                debuffFrame.isBossAura = aura.isBossAura
                 debuffFrame:SetSize(boss_width, boss_height)
             else
                 debuffFrame:SetSize(width, height)

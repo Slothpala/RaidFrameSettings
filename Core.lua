@@ -48,7 +48,7 @@ function RaidFrameSettings:OnEnable()
             module:Enable()
         end
     end
-    self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckGroupType")
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckGroupType") --GroupType.lua
 end
 
 function RaidFrameSettings:OnDisable()
@@ -66,28 +66,6 @@ function RaidFrameSettings:ReloadConfig()
     self:GetProfiles()
     self:Disable()
     self:Enable()
-end
-
-function RaidFrameSettings:GetGroupType()
-    local groupType = IsInRaid() and not select(1,IsActiveBattlefieldArena()) and "raid" or IsInGroup() and "party" or ""
-    return groupType
-end
-
-function RaidFrameSettings:CheckGroupType()
-    local newGroupType = self:GetGroupType()
-    if (newGroupType ~= groupType) then
-        groupType = newGroupType
-        self:LoadGroupBasedProfile()
-    end
-end
-
-function RaidFrameSettings:LoadGroupBasedProfile()
-    local groupProfileName = groupType == "raid" and RaidFrameSettingsDBRP or RaidFrameSettingsDBPP or "Default"
-    local currentProfile = self.db:GetCurrentProfile()
-    if currentProfile ~= groupProfileName then
-        self.db:SetProfile(groupProfileName) 
-        self:Print("Profile set to: "..groupProfileName)
-    end
 end
 
 --Addon compartment 

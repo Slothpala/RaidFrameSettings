@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [2.18.1] - 2024-01-07
+#### Changed 
+* moved information about group type profiles from _G to addon.db.global and added a new option for group type arena
+* Added new Utils folder with GroupType.lua & ProfileSwitching.lua and moved profile switching and group type determination from core to these files.
+
 ### Version [2.18.0] - 2023-12-18
 #### Added
 * The addon with its core modules "Health Bars", "Fonts", "Range", "Role Icon" (wotlk only) has been ported for classic (wotlk and vanilla/sod)

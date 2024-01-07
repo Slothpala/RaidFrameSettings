@@ -137,7 +137,14 @@ local defaults = {
                 raidprofile  = "Default",
             },
         },
-    }
+    },
+    global = {
+        GroupProfiles = {
+            party = "Default",
+            raid = "Default",
+            arena = "Default",
+        },
+    },
 }
 
 function RaidFrameSettings:LoadDataBase()
@@ -155,7 +162,7 @@ function RaidFrameSettings:GetModuleStatus(info)
     return self.db.profile.Module[info[#info]]
 end
 
-function RaidFrameSettings:SetModuleStatus(info,value)
+function RaidFrameSettings:SetModuleStatus(info, value)
     self.db.profile.Module[info[#info]] = value
     --will reload the config each time the settings have been adjusted
     self:ReloadConfig()
@@ -166,7 +173,7 @@ function RaidFrameSettings:GetStatus(info)
     return self.db.profile[info[#info-2]][info[#info-1]][info[#info]]
 end
 
-function RaidFrameSettings:SetStatus(info,value)
+function RaidFrameSettings:SetStatus(info, value)
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]] = value
     --will reload the config each time the settings have been adjusted
     local module_name = info[#info-2] == "MinorModules" and info[#info-1] or info[#info-2]
@@ -187,3 +194,10 @@ function RaidFrameSettings:SetColor(info, r,g,b,a)
     self:UpdateModule(module_name)
 end
 
+function RaidFrameSettings:GetGlobal(info)
+    return self.db.profile[info[#info-2]][info[#info-1]][info[#info]]
+end
+
+function RaidFrameSettings:SetGlobal(info, value)
+    self.db.profile[info[#info-2]][info[#info-1]][info[#info]] = value
+end

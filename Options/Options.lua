@@ -1233,37 +1233,54 @@ local options = {
                     type = "group",
                     inline = true,
                     args = {
-                        partyprofile = {
+                        party = {
                             order = 1,
                             name = "Party",
                             type = "select",
                             values = profiles,
                             get = function() 
                                 for i,value in pairs(profiles) do
-                                    if value == RaidFrameSettingsDBPP then
+                                    if value == RaidFrameSettings.db.global.GroupProfiles.party then
                                         return i
                                     end
                                 end
                             end,
                             set = function(info,value) 
-                                RaidFrameSettingsDBPP = profiles[value]
+                                RaidFrameSettings.db.global.GroupProfiles.party = profiles[value]
                                 RaidFrameSettings:LoadGroupBasedProfile()
                             end,
                         },
-                        raidprofile = {
+                        raid = {
                             order = 2,
                             name = "Raid",
                             type = "select",
                             values = profiles,
                             get = function() 
                                 for i,value in pairs(profiles) do
-                                    if value == RaidFrameSettingsDBRP then
+                                    if value == RaidFrameSettings.db.global.GroupProfiles.raid then
                                         return i
                                     end
                                 end
                             end,
                             set = function(info,value) 
-                                RaidFrameSettingsDBRP = profiles[value]
+                                RaidFrameSettings.db.global.GroupProfiles.raid = profiles[value]
+                                RaidFrameSettings:LoadGroupBasedProfile()
+                            end,
+                        },
+                        arena = {
+                            order = 3,
+                            name = "Arena",
+                            type = "select",
+                            values = profiles,
+                            get = function() 
+                                for i,value in pairs(profiles) do
+                                    if value == RaidFrameSettings.db.global.GroupProfiles.arena then
+                                        return i
+                                    end
+                                end
+                            end,
+                            set = function(info,value) 
+                                RaidFrameSettings.db.global.GroupProfiles.arena = profiles[value]
                                 RaidFrameSettings:LoadGroupBasedProfile()
                             end,
                         },

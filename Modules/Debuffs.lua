@@ -180,7 +180,6 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", resizeDebuffFrame)
     RaidFrameSettings:IterateRoster(function(frame)
-        updateAnchors(frame)
         if frame.debuffFrames then
             for i=1, #frame.debuffFrames do
                 local debuffFrame = frame.debuffFrames[i]
@@ -190,7 +189,7 @@ function Debuffs:OnEnable()
                 end
             end
         end
-        updateAnchors(frame)
+        createDebuffFrames(frame)
     end)
 end
 

@@ -110,7 +110,6 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", resizeBuffFrame)
     RaidFrameSettings:IterateRoster(function(frame)
-        updateAnchors(frame)
         if frame.buffFrames then
             for i=1, #frame.buffFrames do
                 local buffFrame = frame.buffFrames[i]
@@ -122,7 +121,7 @@ function Buffs:OnEnable()
                 end
             end
         end
-        updateAnchors(frame)
+        createBuffFrames(frame)
     end)
 end
 

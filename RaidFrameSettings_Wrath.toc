@@ -20,6 +20,10 @@ DB\DB.lua
 Options\Options.lua
 Options\OptionsFrame.lua
 
+#Utils 
+Utils\GroupType.lua
+Utils\ProfileSwitcher.lua
+
 #Modules
 modules_wrath.xml
 

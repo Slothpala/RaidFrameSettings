@@ -2,7 +2,7 @@
 ## Version: @project-version@
 ## Title: RaidFrameSettings
 ## Author: Slothpala
-## SavedVariables: RaidFrameSettingsDB, RaidFrameSettingsDBPP, RaidFrameSettingsDBRP
+## SavedVariables: RaidFrameSettingsDB
 ## AddonCompartmentFunc: RaidFrameSettings_AddOnCompartmentClick
 ## IconTexture: Interface\AddOns\RaidFrameSettings\Textures\Icon\Icon.tga
 ## OptionalDeps: Ace3, LibDeflate, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDDI-1.0, AceGUI-3.0_SFX-Widgets, LibCanDispel-1.0
@@ -21,6 +21,10 @@ ProfileSharing.lua
 DB\DB.lua
 Options\Options.lua
 Options\OptionsFrame.lua
+
+#Utils 
+Utils\GroupType.lua
+Utils\ProfileSwitcher.lua
 
 #Modules
 modules.xml

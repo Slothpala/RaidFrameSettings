@@ -7,6 +7,7 @@ local _, addonTable = ...
 local Bleeds = {
     --Atal'Dazar
     [255814] = "Rending Maul",
+    [255434] = "Serrated Teeth",
     --Black Rook Hold
     [225963] = "Bloodthirsty Leap",
     [197546] = "Brutal Glaive",
@@ -27,6 +28,8 @@ local Bleeds = {
     [271178] = "Ravaging Leap",
     [260741] = "Jagged Nettles",
     [264556] = "Tearing Strike",
+    --Throne of the Tides
+    [426660] = "Razor Jaws",
 }
 
 addonTable.Bleeds = Bleeds

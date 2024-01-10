@@ -21,6 +21,16 @@ local Overabsorb_disabled = function() return not RaidFrameSettings.db.profile.M
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
+local position_spellID = 0
+local position = {
+    name     = "",
+    point    = 1,
+    x        = 0,
+    y        = 0,
+    x_offset = 0,
+    y_offset = 0,
+}
+
 local profiles = {}
 local options = {
     name = "Raid Frame Settings",
@@ -545,13 +555,15 @@ local options = {
             },
         },
         Auras = {
-            hidden = not isRetail,
             order = 4,
             name = "Auras",
             type = "group",
             childGroups = "tab",
             hidden = function()
-                if not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs then 
+                if not isRetail then
+                    return false
+                end
+                if not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs then
                     return true
                 end
                 return false
@@ -660,8 +672,13 @@ local options = {
                                     step = 1,
                                     width = 1.4,
                                 },
-                                maxbuffs = {
+                                newline3 = {
                                     order = 10,
+                                    name = "",
+                                    type = "description",
+                                },
+                                maxbuffs = {
+                                    order = 11,
                                     name = "Max buffes",
                                     type = "range",
                                     get = "GetStatus",
@@ -670,6 +687,217 @@ local options = {
                                     softMax = 10,
                                     step = 1,
                                     width = 1.4,
+                                },
+                                framestrata = {
+                                    order = 12,
+                                    name = "Frame Strata",
+                                    type = "select",
+                                    values = { "Inherited", "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP" },
+                                    sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                },
+                                Duration = {
+                                    order = 13,
+                                    name = "Duration",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+                                        font = {
+                                            order = 2,
+                                            type = "select",
+                                            dialogControl = "LSM30_Font",
+                                            name = "Font",
+                                            values = Media:HashTable("font"),
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        outline = {
+                                            order = 3,
+                                            name = "OUTLINE",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.5,
+                                        },
+                                        thick = {
+                                            disabled = function() return not RaidFrameSettings.db.profile.Buffs.Display.Duration.outline end,
+                                            order = 3.1,
+                                            name = "THICK",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.4,
+                                        },
+                                        monochrome = {
+                                            order = 3.2,
+                                            name = "MONOCHROME",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.8,
+                                        },
+                                        newline = {
+                                            order = 3.3,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        fontsize = {
+                                            order = 4,
+                                            name = "Font size",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            min = 1,
+                                            max = 40,
+                                            step = 1,
+                                        },
+                                        fontcolor = {
+                                            order = 6,
+                                            type = "color",
+                                            name = "Duration color",
+                                            get = "GetColor2",
+                                            set = "SetColor2",
+                                            width = 0.8,
+                                        },
+                                        newline2 = {
+                                            order = 6.1,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        position = {
+                                            order = 7,
+                                            name = "Position",
+                                            type = "select",
+                                            values = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" },
+                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        x_offset = {
+                                            order = 8,
+                                            name = "x - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                        y_offset = {
+                                            order = 9,
+                                            name = "y - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                    },
+                                },
+                                Stacks = {
+                                    order = 14,
+                                    name = "Stacks",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+                                        font = {
+                                            order = 2,
+                                            type = "select",
+                                            dialogControl = "LSM30_Font",
+                                            name = "Font",
+                                            values = Media:HashTable("font"),
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        outline = {
+                                            order = 3,
+                                            name = "OUTLINE",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.5,
+                                        },
+                                        thick = {
+                                            disabled = function() return not RaidFrameSettings.db.profile.Buffs.Display.Stacks.outline end,
+                                            order = 3.1,
+                                            name = "THICK",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.4,
+                                        },
+                                        monochrome = {
+                                            order = 3.2,
+                                            name = "MONOCHROME",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.8,
+                                        },
+                                        newline = {
+                                            order = 3.3,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        fontsize = {
+                                            order = 4,
+                                            name = "Font size",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            min = 1,
+                                            max = 40,
+                                            step = 1,
+                                        },
+                                        fontcolor = {
+                                            order = 6,
+                                            type = "color",
+                                            name = "Stack color",
+                                            get = "GetColor2",
+                                            set = "SetColor2",
+                                            width = 0.8,
+                                        },
+                                        newline2 = {
+                                            order = 6.1,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        position = {
+                                            order = 7,
+                                            name = "Position",
+                                            type = "select",
+                                            values = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" },
+                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        x_offset = {
+                                            order = 8,
+                                            name = "x - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                        y_offset = {
+                                            order = 9,
+                                            name = "y - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -723,7 +951,157 @@ local options = {
                                 },                           
                             },
                         },
-                    },  
+                        Position = {
+                            order = 3,
+                            name = "Position",
+                            type = "group",
+                            args = {
+                                add = {
+                                    order = 1,
+                                    name = "add aura by spellid to position list",
+                                    desc = "",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+                                        spellId = {
+                                            order = 1,
+                                            name = "spellId",
+                                            type = "input",
+                                            width = 1.5,
+                                            set = function(info, value)
+                                                position_spellID = value
+                                            end,
+                                            get = function(info, value)
+                                                return position_spellID
+                                            end,
+                                        },
+                                        point = {
+                                            order = 2,
+                                            name = "Point",
+                                            type = "select",
+                                            values = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" },
+                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                            set = function(info, value)
+                                                position.point = value
+                                            end,
+                                            get = function(info, value)
+                                                return position.point
+                                            end,
+                                        },
+                                        newline = {
+                                            order = 3,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        x = {
+                                            order = 4,
+                                            name = "x",
+                                            type = "range",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                            set = function(info, value)
+                                                position.x = value
+                                            end,
+                                            get = function(info, value)
+                                                return position.x
+                                            end,
+                                        },
+                                        y = {
+                                            order = 5,
+                                            name = "y",
+                                            type = "range",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                            set = function(info, value)
+                                                position.y = value
+                                            end,
+                                            get = function(info, value)
+                                                return position.y
+                                            end,
+                                        },
+                                        newline2 = {
+                                            order = 6,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        x_offset = {
+                                            order = 7,
+                                            name = "X Offset",
+                                            type = "range",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                            set = function(info, value)
+                                                position.x_offset = value
+                                            end,
+                                            get = function(info, value)
+                                                return position.x_offset
+                                            end,
+                                        },
+                                        y_offset = {
+                                            order = 8,
+                                            name = "Y Offset",
+                                            type = "range",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                            set = function(info, value)
+                                                position.y_offset = value
+                                            end,
+                                            get = function(info, value)
+                                                return position.y_offset
+                                            end,
+                                        },
+                                        newline3 = {
+                                            order = 9,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        add = {
+                                            order = 10,
+                                            name = "Add",
+                                            type = "execute",
+                                            func = function()
+                                                position.name = #position_spellID <= 10 and select(1,GetSpellInfo(position_spellID)) or "|cffff0000aura not found|r"
+                                                RaidFrameSettings.db.profile.Buffs.Position[position_spellID] = position
+                                                RaidFrameSettings:CreatePositionEntry(position_spellID, position)
+                                                RaidFrameSettings:ReloadConfig()
+                                            end,
+                                        },
+                                    }
+                                },
+                                remove = {
+                                    order = 2,
+                                    name = "remove aura from position list",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(info, spellID)
+                                        RaidFrameSettings.db.profile.Buffs.Position[spellID] = nil
+                                        RaidFrameSettings:RemovePositionEntry(spellID)
+                                        RaidFrameSettings:ReloadConfig()
+                                    end,
+                                },
+                                PositionedAuras = {
+                                    order = 3,
+                                    name = "Positioned Buffs",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
                 Debuffs = {
                     hidden = Debuffs_disabled,
@@ -840,8 +1218,13 @@ local options = {
                                     step = 1,
                                     width = 1.4,
                                 },
-                                maxdebuffs = {
+                                newline3 = {
                                     order = 10,
+                                    name = "",
+                                    type = "description",
+                                },
+                                maxdebuffs = {
+                                    order = 11,
                                     name = "Max Debuffes",
                                     type = "range",
                                     get = "GetStatus",
@@ -852,15 +1235,234 @@ local options = {
                                     width = 1.4,
                                 },
                                 framestrata = {
-                                    order = 11,
+                                    order = 12,
                                     name = "Frame Strata",
                                     type = "select",
-                                    values = {"Inherited", "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP"},
-                                    sorting = {1,2,3,4,5,6,7,8,9},
+                                    values = { "Inherited", "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP" },
+                                    sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
                                     get = "GetStatus",
                                     set = "SetStatus",
                                 },
-
+                                Duration = {
+                                    order = 13,
+                                    name = "Duration",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+                                        font = {
+                                            order = 2,
+                                            type = "select",
+                                            dialogControl = "LSM30_Font",
+                                            name = "Font",
+                                            values = Media:HashTable("font"),
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        outline = {
+                                            order = 3,
+                                            name = "OUTLINE",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.5,
+                                        },
+                                        thick = {
+                                            disabled = function() return not RaidFrameSettings.db.profile.Buffs.Display.Duration.outline end,
+                                            order = 3.1,
+                                            name = "THICK",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.4,
+                                        },
+                                        monochrome = {
+                                            order = 3.2,
+                                            name = "MONOCHROME",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.8,
+                                        },
+                                        newline = {
+                                            order = 3.3,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        fontsize = {
+                                            order = 4,
+                                            name = "Font size",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            min = 1,
+                                            max = 40,
+                                            step = 1,
+                                        },
+                                        usedebuffcolor = {
+                                            order = 5,
+                                            name = "Debuff Colored",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.8,
+                                        },
+                                        fontcolor = {
+                                            order = 6,
+                                            type = "color",
+                                            name = "Duration color",
+                                            get = "GetColor2",
+                                            set = "SetColor2",
+                                            width = 0.8,
+                                            disabled = function() return RaidFrameSettings.db.profile.Debuffs.Display.Duration.usedebuffcolor end,
+                                        },
+                                        newline2 = {
+                                            order = 6.1,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        position = {
+                                            order = 7,
+                                            name = "Position",
+                                            type = "select",
+                                            values = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" },
+                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        x_offset = {
+                                            order = 8,
+                                            name = "x - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                        y_offset = {
+                                            order = 9,
+                                            name = "y - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                    },
+                                },
+                                Stacks = {
+                                    order = 14,
+                                    name = "Stacks",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+                                        font = {
+                                            order = 2,
+                                            type = "select",
+                                            dialogControl = "LSM30_Font",
+                                            name = "Font",
+                                            values = Media:HashTable("font"),
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        outline = {
+                                            order = 3,
+                                            name = "OUTLINE",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.5,
+                                        },
+                                        thick = {
+                                            disabled = function() return not RaidFrameSettings.db.profile.Debuffs.Display.Stacks.outline end,
+                                            order = 3.1,
+                                            name = "THICK",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.4,
+                                        },
+                                        monochrome = {
+                                            order = 3.2,
+                                            name = "MONOCHROME",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.8,
+                                        },
+                                        newline = {
+                                            order = 3.3,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        fontsize = {
+                                            order = 4,
+                                            name = "Font size",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            min = 1,
+                                            max = 40,
+                                            step = 1,
+                                        },
+                                        usedebuffcolor = {
+                                            order = 5,
+                                            name = "Debuff Colored",
+                                            type = "toggle",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            width = 0.8,
+                                        },
+                                        fontcolor = {
+                                            order = 6,
+                                            type = "color",
+                                            name = "Stack color",
+                                            get = "GetColor2",
+                                            set = "SetColor2",
+                                            width = 0.8,
+                                            disabled = function() return RaidFrameSettings.db.profile.Debuffs.Display.Stacks.usedebuffcolor end,
+                                        },
+                                        newline2 = {
+                                            order = 6.1,
+                                            type = "description",
+                                            name = "",
+                                        },
+                                        position = {
+                                            order = 7,
+                                            name = "Position",
+                                            type = "select",
+                                            values = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" },
+                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                        },
+                                        x_offset = {
+                                            order = 8,
+                                            name = "x - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                        y_offset = {
+                                            order = 9,
+                                            name = "y - offset",
+                                            type = "range",
+                                            get = "GetStatus2",
+                                            set = "SetStatus2",
+                                            softMin = -25,
+                                            softMax = 25,
+                                            step = 1,
+                                            width = 0.8,
+                                        },
+                                    },
+                                },
                             },
                         },
                         Blacklist = {
@@ -918,11 +1520,10 @@ local options = {
             },
         },
         DebuffHighlight = {
-            hidden = not isRetail,
             order = 5,
             name = "Debuff Highlight",
             type = "group",
-            hidden = DebuffHighlight_disabled,
+            hidden = not isRetail or DebuffHighlight_disabled,
             args = {
                 Config = {
                     order = 1,
@@ -1352,6 +1953,23 @@ function RaidFrameSettings:RemoveBlacklistEntry(catergory, name, spellID)
     options.args.Auras.args[catergory].args.Blacklist.args.BlacklistedAuras.args[name..spellID] = nil
 end
 
+function RaidFrameSettings:CreatePositionEntry(spellID, pos)
+    local newEntry = {
+        type = "description",
+        name = spellID .. ": " .. pos.name .. " Point:" .. (
+                (pos.point == 1 and "TOPLEFT") or (pos.point == 2 and "TOP") or (pos.point == 3 and "TOPRIGHT") or
+                (pos.point == 4 and "LEFT") or (pos.point == 5 and "CENTER") or (pos.point == 6 and "RIGHT") or
+                (pos.point == 7 and "BOTTOMLEFT") or (pos.point == 8 and "BOTTOM") or (pos.point == 9 and "BOTTOMRIGHT")
+            ) .. " X:" .. pos.x .. " Y:" .. pos.y .. " X Offset:" .. pos.x_offset .. " Y Offset:" .. pos.y_offset ,
+        width = full,
+    }
+    options.args.Auras.args.Buffs.args.Position.args.PositionedAuras.args[spellID] = newEntry
+end
+
+function RaidFrameSettings:RemovePositionEntry(spellID)
+    options.args.Auras.args.Buffs.args.Position.args.PositionedAuras.args[spellID] = nil
+end
+
 function RaidFrameSettings:LoadUserInputEntrys()
     --debuff blacklist
     local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
@@ -1369,5 +1987,11 @@ function RaidFrameSettings:LoadUserInputEntrys()
     blacklist = RaidFrameSettings.db.profile.Buffs.Blacklist
     for spellID,name in pairs(blacklist) do
         RaidFrameSettings:CreateBlacklistEntry("Buffs", name, spellID)       
+    end
+
+    --buff position list
+    local positionlist = RaidFrameSettings.db.profile.Buffs.Position
+    for spellID, pos in pairs(positionlist) do
+        RaidFrameSettings:CreatePositionEntry(spellID, pos)
     end
 end

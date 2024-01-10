@@ -5,6 +5,8 @@ local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 local Debuffs = RaidFrameSettings:NewModule("Debuffs")
 Mixin(Debuffs, addonTable.hooks)
+local Media                                   = LibStub("LibSharedMedia-3.0")
+
 --Debuffframe size
 local SetSize = SetSize
 local IsForbidden = IsForbidden
@@ -15,6 +17,7 @@ local SetTexCoord = SetTexCoord
 local SetTextureSliceMargins = SetTextureSliceMargins
 local SetTextureSliceMode  = SetTextureSliceMode
 local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+local AuraUtil_ForEachAura                    = AuraUtil.ForEachAura
 
 function Debuffs:OnEnable()
         --Debuffframe size
@@ -67,13 +70,67 @@ function Debuffs:OnEnable()
     local maxDebuffs = RaidFrameSettings.db.profile.Debuffs.Display.maxdebuffs
     local framestrataIdx = RaidFrameSettings.db.profile.Debuffs.Display.framestrata
     local framestrata = (framestrataIdx == 1 and "Inherited") or
-        (framestrataIdx == 2 and "BACKGROUND") or (framestrataIdx == 3 and "LOW") or (framestrataIdx == 4 and "MEDIUM") or (framestrataIdx == 5 and "HIGH") or
-        (framestrataIdx == 6 and "DIALOG") or (framestrataIdx == 7 and "FULLSCREEN") or (framestrataIdx == 8 and "FULLSCREEN_DIALOG") or (framestrataIdx == 9 and "TOOLTIP")
+        (framestrataIdx == 2 and "BACKGROUND") or (framestrataIdx == 3 and "LOW") or (framestrataIdx == 4 and "MEDIUM") or
+        (framestrataIdx == 5 and "HIGH") or (framestrataIdx == 6 and "DIALOG") or (framestrataIdx == 7 and "FULLSCREEN") or
+        (framestrataIdx == 8 and "FULLSCREEN_DIALOG") or (framestrataIdx == 9 and "TOOLTIP")
 
-        local function updateAnchors(frame, endingIndex)
+    local dbObj = RaidFrameSettings.db.profile.Debuffs.Display.Duration
+    local Duration = {
+        Font        = Media:Fetch("font", dbObj.font),
+        FontSize    = dbObj.fontsize,
+        DebuffColor = dbObj.usedebuffcolor,
+        FontColor   = dbObj.fontcolor,
+        OutlineMode = (dbObj.thick and "THICK" or "") ..
+        (dbObj.outline and "OUTLINE" or "") .. ", " .. (dbObj.monochrome and "MONOCHROME" or ""),
+        Position    = (dbObj.position == 1 and "TOPLEFT") or (dbObj.position == 2 and "TOP") or
+            (dbObj.position == 3 and "TOPRIGHT")
+            or (dbObj.position == 4 and "LEFT") or (dbObj.position == 5 and "CENTER") or
+            (dbObj.position == 6 and "RIGHT")
+            or (dbObj.position == 7 and "BOTTOMLEFT") or (dbObj.position == 8 and "BOTTOM") or
+            (dbObj.position == 9 and "BOTTOMRIGHT"),
+        X_Offset    = dbObj.x_offset,
+        Y_Offset    = dbObj.y_offset,
+    }
+
+    dbObj = RaidFrameSettings.db.profile.Debuffs.Display.Stacks
+    local Stacks = {
+        Font        = Media:Fetch("font", dbObj.font),
+        FontSize    = dbObj.fontsize,
+        DebuffColor = dbObj.usedebuffcolor,
+        FontColor   = dbObj.fontcolor,
+        OutlineMode = (dbObj.thick and "THICK" or "") ..
+        (dbObj.outline and "OUTLINE" or "") .. ", " .. (dbObj.monochrome and "MONOCHROME" or ""),
+        Position    = (dbObj.position == 1 and "TOPLEFT") or (dbObj.position == 2 and "TOP") or
+            (dbObj.position == 3 and "TOPRIGHT")
+            or (dbObj.position == 4 and "LEFT") or (dbObj.position == 5 and "CENTER") or
+            (dbObj.position == 6 and "RIGHT")
+            or (dbObj.position == 7 and "BOTTOMLEFT") or (dbObj.position == 8 and "BOTTOM") or
+            (dbObj.position == 9 and "BOTTOMRIGHT"),
+        X_Offset    = dbObj.x_offset,
+        Y_Offset    = dbObj.y_offset,
+    }
+
+
+    local debuffColors = {
+        Curse   = { r = 0.6, g = 0.0, b = 1.0 },
+        Disease = { r = 0.6, g = 0.4, b = 0.0 },
+        Magic   = { r = 0.2, g = 0.6, b = 1.0 },
+        Poison  = { r = 0.0, g = 0.6, b = 0.0 },
+        Bleed   = { r = 0.8, g = 0.0, b = 0.0 },
+    }
+    local Bleeds = addonTable.Bleeds
+
+    dbObj = RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors
+    debuffColors.Curse = dbObj.Curse
+    debuffColors.Disease = dbObj.Disease
+    debuffColors.Magic = dbObj.Magic
+    debuffColors.Poison = dbObj.Poison
+    debuffColors.Bleed = dbObj.Bleed
+
+    local function updateAnchors(frame, endingIndex)
         local first, prev, isBossAura
         for i = 1, endingIndex and endingIndex > #frame.debuffFrames and #frame.debuffFrames or endingIndex or #frame.debuffFrames do
-            if frame.debuffFrames[i]:IsShown() then
+            if frame.debuffFrames[i]:IsShown() and not frame.debuffFrames[i]:IsForbidden() then
                 if not first then
                     frame.debuffFrames[i]:ClearAllPoints()
                     frame.debuffFrames[i]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
@@ -109,7 +166,7 @@ function Debuffs:OnEnable()
 
         local lastShownDebuff;
         for i = frame.maxDebuffs, 1, -1 do
-            local debuff = frame["Debuff"..i]
+            local debuff = frame["Debuff" .. i]
             if debuff:IsShown() then
                 lastShownDebuff = debuff
                 break
@@ -126,6 +183,21 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UpdatePrivateAuras", updatePrivateAuras)
 
+    local function GetTimerText(remain)
+        if remain < 60 then
+            return Round(remain)
+        elseif remain < 600 then
+            return string.format("%d:%02d", math.floor(remain / 60), (remain % 60))
+        elseif remain < 3600 then
+            return string.format("%dm", Round(remain / 60))
+        elseif remain < 36000 then
+            return string.format("%d:%02dm", math.floor(remain / 3600), math.ceil((remain % 3600) / 60))
+        elseif remain < 86400 then
+            return string.format("%dh", Round(remain / 3600))
+        else
+            return string.format("%dd", Round(remain / 86400))
+        end
+    end
     local createDebuffFrames = function(frame)
         if framestrata == "Inherited" then
             framestrata = frame:GetFrameStrata()
@@ -143,8 +215,38 @@ function Debuffs:OnEnable()
         end
 
         for i = 1, maxDebuffs do
-            resizeAura(frame.debuffFrames[i])
-                        frame.debuffFrames[i]:SetFrameStrata(framestrata)
+            local debuffFrame = frame.debuffFrames[i]
+            resizeAura(debuffFrame)
+            debuffFrame:SetFrameStrata(framestrata)
+
+            local cooldown = debuffFrame.cooldown
+            cooldown:SetHideCountdownNumbers(false)
+            cooldown:SetDrawBling(false)
+            cooldown:SetDrawSwipe(false)
+
+            local count = debuffFrame.count
+            count:ClearAllPoints()
+            count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
+            count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
+            count:SetTextHeight(Stacks.FontSize)
+            -- count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
+
+            if not cooldown.text then
+                cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
+                cooldown:SetScript("OnUpdate", function(s, t)
+                    local left = GetTimerText(s.expirationTime - GetTime())
+                    if s.left ~= left then
+                        s.left = left
+                        s.text:SetText(left or "")
+                    end
+                end)
+            end
+            local text = cooldown.text
+            text:ClearAllPoints()
+            text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
+            text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
+            text:SetTextHeight(Duration.FontSize)
+            -- text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
         end
 
         if frame.PrivateAuraAnchors then
@@ -163,8 +265,8 @@ function Debuffs:OnEnable()
         blacklist[tonumber(spellId)] = true
     end
     local resizeDebuffFrame = function(debuffFrame, aura)
-        if debuffFrame:IsForbidden() or not aura then 
-            return 
+        if debuffFrame:IsForbidden() or not aura then
+            return
         end
         debuffFrame.isBossAura = aura.isBossAura
         if blacklist[aura.spellId] then
@@ -175,6 +277,38 @@ function Debuffs:OnEnable()
                 debuffFrame:SetSize(boss_width, boss_height)
             else
                 debuffFrame:SetSize(width, height)
+            end
+
+            if debuffFrame.cooldown.text then
+                local color = Duration.FontColor
+                if Duration.DebuffColor then
+                    if aura.dispelName then
+                        color = debuffColors[aura.dispelName]
+                    end
+                    if Bleeds[aura.spellId] then
+                        color = debuffColors.Bleed
+                    end
+                end
+                debuffFrame.cooldown.text:SetVertexColor(color.r, color.g, color.b)
+            end
+
+            local color = Stacks.FontColor
+            if Stacks.DebuffColor then
+                if aura.dispelName then
+                    color = debuffColors[aura.dispelName]
+                end
+                if Bleeds[aura.spellId] then
+                    color = debuffColors.Bleed
+                end
+            end
+            debuffFrame.count:SetVertexColor(color.r, color.g, color.b)
+
+            debuffFrame.cooldown.start = aura.expirationTime - aura.duration
+            debuffFrame.cooldown.duration = aura.duration
+            debuffFrame.cooldown.expirationTime = aura.expirationTime
+
+            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                OmniCC.Cooldown.SetNoCooldownCount(debuffFrame.cooldown, true)
             end
         end
     end

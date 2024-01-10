@@ -70,6 +70,30 @@ local defaults = {
                 orientation   = 2,
                 maxdebuffs    = 10,
                 framestrata   = 1,
+                Duration      = {
+                    font           = "Friz Quadrata TT",
+                    fontcolor      = { r = 1, g = 1, b = 1, a = 1 },
+                    outline        = true,
+                    thick          = false,
+                    monochrome     = false,
+                    fontsize       = 12,
+                    usedebuffcolor = true,
+                    position       = 1,
+                    x_offset       = -3,
+                    y_offset       = 3,
+                },
+                Stacks        = {
+                    font           = "Friz Quadrata TT",
+                    fontcolor      = { r = 1, g = 1, b = 1, a = 1 },
+                    outline        = true,
+                    thick          = false,
+                    monochrome     = false,
+                    fontsize       = 12,
+                    usedebuffcolor = true,
+                    position       = 9,
+                    x_offset       = 4,
+                    y_offset       = -3,
+                },
             },
             Blacklist = {
                 --[[spellID = name                ]]--
@@ -86,9 +110,35 @@ local defaults = {
                 y_offset      = 4,
                 orientation   = 1,
                 maxbuffs      = 10,
+                framestrata   = 1,
+                Duration      = {
+                    font           = "Friz Quadrata TT",
+                    fontcolor      = { r = 1, g = 1, b = 1, a = 1 },
+                    outline        = true,
+                    thick          = false,
+                    monochrome     = false,
+                    fontsize       = 10,
+                    position       = 1,
+                    x_offset       = -3,
+                    y_offset       = 3,
+                },
+                Stacks        = {
+                    font           = "Friz Quadrata TT",
+                    fontcolor      = { r = 1, g = 1, b = 1, a = 1 },
+                    outline        = true,
+                    thick          = false,
+                    monochrome     = false,
+                    fontsize       = 10,
+                    position       = 9,
+                    x_offset       = 4,
+                    y_offset       = -3,
+                },
             },
             Blacklist = {
                 --spellID = true
+            },
+            Position = {
+                --spellID = {point, x, y, x_offset, y_offset}
             },
         },
         DebuffHighlight = {
@@ -183,6 +233,31 @@ function RaidFrameSettings:SetStatus(info, value)
     self:UpdateModule(module_name)
 end
 
+function RaidFrameSettings:GetStatus2(info)
+    local db = self.db.profile
+    for i, k in ipairs(info) do
+        if i > 1 or k ~= "Auras" then
+            db = db[k]
+        end
+    end
+    return db
+end
+
+function RaidFrameSettings:SetStatus2(info, value)
+    local db = self.db.profile
+    for i = 1, #info - 1 do
+        local k = info[i]
+        if i > 1 or k ~= "Auras" then
+            db = db[k]
+        end
+    end
+    db[info[#info]] = value
+
+    --will reload the config each time the settings have been adjusted
+    local module_name = (info[1] == "MinorModules" or info[1] == "Auras") and info[2] or info[1]
+    self:UpdateModule(module_name)
+end
+
 --color
 function RaidFrameSettings:GetColor(info)
     return self.db.profile[info[#info-2]][info[#info-1]][info[#info]].r, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].g, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].b, self.db.profile[info[#info-2]][info[#info-1]][info[#info]].a
@@ -194,6 +269,19 @@ function RaidFrameSettings:SetColor(info, r,g,b,a)
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].b = b
     self.db.profile[info[#info-2]][info[#info-1]][info[#info]].a = a
     local module_name = info[#info-2] == "MinorModules" and info[#info-1] or info[#info-2]
+    self:UpdateModule(module_name)
+end
+
+function RaidFrameSettings:GetColor2(info)
+    local color = RaidFrameSettings:GetStatus2(info)
+    return color.r, color.g, color.b, color.a
+end
+
+function RaidFrameSettings:SetColor2(info, r, g, b, a)
+    local color = { r = r, g = g, b = b, a = a }
+    RaidFrameSettings:SetStatus2(info, color)
+
+    local module_name = (info[1] == "MinorModules" or info[1] == "Auras") and info[2] or info[1]
     self:UpdateModule(module_name)
 end
 

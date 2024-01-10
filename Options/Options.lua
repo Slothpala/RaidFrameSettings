@@ -21,16 +21,6 @@ local Overabsorb_disabled = function() return not RaidFrameSettings.db.profile.M
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
-local position_spellID = 0
-local position = {
-    name     = "",
-    point    = 1,
-    x        = 0,
-    y        = 0,
-    x_offset = 0,
-    y_offset = 0,
-}
-
 local profiles = {}
 local options = {
     name = "Raid Frame Settings",
@@ -958,140 +948,28 @@ local options = {
                             args = {
                                 add = {
                                     order = 1,
-                                    name = "add aura by spellid to position list",
-                                    desc = "",
-                                    type = "group",
-                                    inline = true,
-                                    args = {
-                                        spellId = {
-                                            order = 1,
-                                            name = "spellId",
-                                            type = "input",
-                                            width = 1.5,
-                                            set = function(info, value)
-                                                position_spellID = value
-                                            end,
-                                            get = function(info, value)
-                                                return position_spellID
-                                            end,
-                                        },
-                                        point = {
-                                            order = 2,
-                                            name = "Point",
-                                            type = "select",
-                                            values = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" },
-                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
-                                            set = function(info, value)
-                                                position.point = value
-                                            end,
-                                            get = function(info, value)
-                                                return position.point
-                                            end,
-                                        },
-                                        newline = {
-                                            order = 3,
-                                            name = "",
-                                            type = "description",
-                                        },
-                                        x = {
-                                            order = 4,
-                                            name = "x",
-                                            type = "range",
-                                            softMin = -100,
-                                            softMax = 100,
-                                            step = 1,
-                                            width = 1.4,
-                                            set = function(info, value)
-                                                position.x = value
-                                            end,
-                                            get = function(info, value)
-                                                return position.x
-                                            end,
-                                        },
-                                        y = {
-                                            order = 5,
-                                            name = "y",
-                                            type = "range",
-                                            softMin = -100,
-                                            softMax = 100,
-                                            step = 1,
-                                            width = 1.4,
-                                            set = function(info, value)
-                                                position.y = value
-                                            end,
-                                            get = function(info, value)
-                                                return position.y
-                                            end,
-                                        },
-                                        newline2 = {
-                                            order = 6,
-                                            name = "",
-                                            type = "description",
-                                        },
-                                        x_offset = {
-                                            order = 7,
-                                            name = "X Offset",
-                                            type = "range",
-                                            softMin = -100,
-                                            softMax = 100,
-                                            step = 1,
-                                            width = 1.4,
-                                            set = function(info, value)
-                                                position.x_offset = value
-                                            end,
-                                            get = function(info, value)
-                                                return position.x_offset
-                                            end,
-                                        },
-                                        y_offset = {
-                                            order = 8,
-                                            name = "Y Offset",
-                                            type = "range",
-                                            softMin = -100,
-                                            softMax = 100,
-                                            step = 1,
-                                            width = 1.4,
-                                            set = function(info, value)
-                                                position.y_offset = value
-                                            end,
-                                            get = function(info, value)
-                                                return position.y_offset
-                                            end,
-                                        },
-                                        newline3 = {
-                                            order = 9,
-                                            name = "",
-                                            type = "description",
-                                        },
-                                        add = {
-                                            order = 10,
-                                            name = "Add",
-                                            type = "execute",
-                                            func = function()
-                                                position.name = #position_spellID <= 10 and select(1,GetSpellInfo(position_spellID)) or "|cffff0000aura not found|r"
-                                                RaidFrameSettings.db.profile.Buffs.Position[position_spellID] = position
-                                                RaidFrameSettings:CreatePositionEntry(position_spellID, position)
-                                                RaidFrameSettings:ReloadConfig()
-                                            end,
-                                        },
-                                    }
-                                },
-                                remove = {
-                                    order = 2,
-                                    name = "remove aura from position list",
-                                    desc = "",
+                                    name = "add aura by spellid to positioned list",
                                     type = "input",
-                                    width = 1.5,
                                     pattern = "^%d+$",
                                     usage = "please enter a number",
-                                    set = function(info, spellID)
-                                        RaidFrameSettings.db.profile.Buffs.Position[spellID] = nil
-                                        RaidFrameSettings:RemovePositionEntry(spellID)
+                                    set = function(_, new_spellID)
+                                        local position = {
+                                            name     = "",
+                                            point    = 1,
+                                            x        = 0,
+                                            y        = 0,
+                                            x_offset = 0,
+                                            y_offset = 0,
+                                        }
+                                        position.name = #new_spellID <= 10 and select(1, GetSpellInfo(new_spellID)) or "|cffff0000aura not found|r"
+                                        RaidFrameSettings.db.profile.Buffs.Position[new_spellID] = position
+                                        RaidFrameSettings:CreatePositionEntry(new_spellID, position)
                                         RaidFrameSettings:ReloadConfig()
                                     end,
+                                    width = 1.5,
                                 },
                                 PositionedAuras = {
-                                    order = 3,
+                                    order = 2,
                                     name = "Positioned Buffs",
                                     type = "group",
                                     inline = true,
@@ -1955,13 +1833,111 @@ end
 
 function RaidFrameSettings:CreatePositionEntry(spellID, pos)
     local newEntry = {
-        type = "description",
-        name = spellID .. ": " .. pos.name .. " Point:" .. (
-                (pos.point == 1 and "TOPLEFT") or (pos.point == 2 and "TOP") or (pos.point == 3 and "TOPRIGHT") or
-                (pos.point == 4 and "LEFT") or (pos.point == 5 and "CENTER") or (pos.point == 6 and "RIGHT") or
-                (pos.point == 7 and "BOTTOMLEFT") or (pos.point == 8 and "BOTTOM") or (pos.point == 9 and "BOTTOMRIGHT")
-            ) .. " X:" .. pos.x .. " Y:" .. pos.y .. " X Offset:" .. pos.x_offset .. " Y Offset:" .. pos.y_offset ,
-        width = full,
+        type = "group",
+        name = "",
+        args = {
+            spell = {
+                order = 1,
+                name = pos.name,
+                type = "input",
+                get = function() return spellID end,
+                set = function(_, new_spellID)
+                    if new_spellID == spellID then
+                        return
+                    end
+
+                    RaidFrameSettings.db.profile.Buffs.Position[spellID] = nil
+                    RaidFrameSettings:RemovePositionEntry(spellID)
+
+                    pos.name = #new_spellID <= 10 and select(1, GetSpellInfo(new_spellID)) or "|cffff0000aura not found|r"
+                    RaidFrameSettings.db.profile.Buffs.Position[new_spellID] = pos
+                    RaidFrameSettings:CreatePositionEntry(new_spellID, pos)
+
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.8,
+            },
+            point = {
+                order = 2,
+                name = "Point",
+                type = "select",
+                values = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" },
+                sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                get = function() return pos.point end,
+                set = function(_, point)
+                    pos.point = point
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.8,
+            },
+            x = {
+                order = 3,
+                name = "X",
+                type = "input",
+                pattern = "^[%d.]+$",
+                usage = "please enter a number",
+                get = function() return tostring(pos.x) end,
+                set = function(_, x)
+                    pos.x = tonumber(x)
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.4,
+            },
+            y = {
+                order = 4,
+                name = "Y",
+                type = "input",
+                pattern = "^[%d.]+$",
+                usage = "please enter a number",
+                get = function() return tostring(pos.y) end,
+                set = function(_, y)
+                    pos.y = tonumber(y)
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.4,
+            },
+            x_offset = {
+                order = 5,
+                name = "X Offset",
+                type = "range",
+                softMin = -100,
+                softMax = 100,
+                step = 1,
+                get = function() return pos.x_offset end,
+                set = function(_, x_offset)
+                    pos.x_offset = x_offset
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.8,
+            },
+            y_offset = {
+                order = 6,
+                name = "Y Offset",
+                type = "range",
+                softMin = -100,
+                softMax = 100,
+                step = 1,
+                get = function() return pos.y_offset end,
+                set = function(_, y_offset)
+                    pos.y_offset = y_offset
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.8,
+            },
+            remove = {
+                order = 7,
+                name = "Remove",
+                desc = "",
+                type = "execute",
+                width = 0.5,
+                func = function()
+                    RaidFrameSettings.db.profile.Buffs.Position[spellID] = nil
+                    RaidFrameSettings:RemovePositionEntry(spellID)
+                    RaidFrameSettings:ReloadConfig()
+                end,
+            },
+        },
+        width = "full",
     }
     options.args.Auras.args.Buffs.args.Position.args.PositionedAuras.args[spellID] = newEntry
 end

@@ -70,6 +70,10 @@ local defaults = {
                 orientation   = 2,
                 maxdebuffs    = 10,
                 framestrata   = 1,
+                edge          = false,
+                swipe         = false,
+                reverse       = false,
+                showCdnum     = true,
                 Duration      = {
                     font           = "Friz Quadrata TT",
                     fontcolor      = { r = 1, g = 1, b = 1, a = 1 },
@@ -111,6 +115,10 @@ local defaults = {
                 orientation   = 1,
                 maxbuffs      = 10,
                 framestrata   = 1,
+                edge          = false,
+                swipe         = false,
+                reverse       = false,
+                showCdnum     = true,
                 Duration      = {
                     font           = "Friz Quadrata TT",
                     fontcolor      = { r = 1, g = 1, b = 1, a = 1 },

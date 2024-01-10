@@ -74,6 +74,11 @@ function Debuffs:OnEnable()
         (framestrataIdx == 5 and "HIGH") or (framestrataIdx == 6 and "DIALOG") or (framestrataIdx == 7 and "FULLSCREEN") or
         (framestrataIdx == 8 and "FULLSCREEN_DIALOG") or (framestrataIdx == 9 and "TOOLTIP")
 
+    local edge = RaidFrameSettings.db.profile.Debuffs.Display.edge
+    local swipe = RaidFrameSettings.db.profile.Debuffs.Display.swipe
+    local reverse = RaidFrameSettings.db.profile.Debuffs.Display.reverse
+    local showCdnum = RaidFrameSettings.db.profile.Debuffs.Display.showCdnum
+
     local dbObj = RaidFrameSettings.db.profile.Debuffs.Display.Duration
     local Duration = {
         Font        = Media:Fetch("font", dbObj.font),
@@ -184,7 +189,9 @@ function Debuffs:OnEnable()
     self:HookFunc("CompactUnitFrame_UpdatePrivateAuras", updatePrivateAuras)
 
     local function GetTimerText(remain)
-        if remain < 60 then
+        if remain < 0 then
+            return ""
+        elseif remain < 60 then
             return Round(remain)
         elseif remain < 600 then
             return string.format("%d:%02d", math.floor(remain / 60), (remain % 60))
@@ -206,7 +213,11 @@ function Debuffs:OnEnable()
         if maxDebuffs > frame.maxDebuffs then
             local frameName = frame:GetName() .. "Debuff"
             for i = frame.maxDebuffs + 1, maxDebuffs do
-                local child = _G[frameName .. i] or CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
+                local child = _G[frameName .. i] 
+                if not child then
+                    child = CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
+                    child:Hide()
+                end
                 child:ClearAllPoints()
                 child:SetPoint("BOTTOMLEFT", _G[frameName .. i - 1], "BOTTOMRIGHT")
                 frame["Debuff" .. i] = child
@@ -220,20 +231,25 @@ function Debuffs:OnEnable()
             debuffFrame:SetFrameStrata(framestrata)
 
             local cooldown = debuffFrame.cooldown
-            cooldown:SetHideCountdownNumbers(false)
-            cooldown:SetDrawBling(false)
-            cooldown:SetDrawSwipe(false)
+            cooldown:SetDrawEdge(edge)
+            cooldown:SetDrawSwipe(swipe)
+            cooldown:SetReverse(reverse)
+            cooldown.start = 0
+            cooldown.duration = 0
+            cooldown.expirationTime = 0
 
             local count = debuffFrame.count
             count:ClearAllPoints()
             count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
             count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
             count:SetTextHeight(Stacks.FontSize)
-            -- count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
 
             if not cooldown.text then
                 cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
                 cooldown:SetScript("OnUpdate", function(s, t)
+                    if s.expirationTime == 0 then
+                        return
+                    end
                     local left = GetTimerText(s.expirationTime - GetTime())
                     if s.left ~= left then
                         s.left = left
@@ -246,7 +262,12 @@ function Debuffs:OnEnable()
             text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
             text:SetTextHeight(Duration.FontSize)
-            -- text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
+
+            if showCdnum then
+                text:Show()
+            else
+                text:Hide()
+            end
         end
 
         if frame.PrivateAuraAnchors then
@@ -314,6 +335,7 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", resizeDebuffFrame)
     RaidFrameSettings:IterateRoster(function(frame)
+        createDebuffFrames(frame)
         if frame.debuffFrames then
             for i=1, #frame.debuffFrames do
                 local debuffFrame = frame.debuffFrames[i]
@@ -323,7 +345,7 @@ function Debuffs:OnEnable()
                 end
             end
         end
-        createDebuffFrames(frame)
+        updateAnchors(frame)
     end)
 end
 
@@ -343,7 +365,6 @@ function Debuffs:OnDisable()
         local debuffPos, debuffRelativePoint, debuffOffset = "BOTTOMLEFT", "BOTTOMRIGHT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight
         frame.debuffFrames[1]:ClearAllPoints()
         frame.debuffFrames[1]:SetPoint(debuffPos, frame, "BOTTOMLEFT", 3, debuffOffset)
-        frame.debuffFrames[1]:SetFrameStrata(frame:GetFrameStrata())
         for i=1, #frame.debuffFrames do
             frame.debuffFrames[i].border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
             frame.debuffFrames[i].border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)
@@ -352,8 +373,15 @@ function Debuffs:OnDisable()
             if ( i > 1 ) then
                 frame.debuffFrames[i]:ClearAllPoints();
                 frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
-                frame.debuffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
             end
+            frame.debuffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
+            frame.debuffFrames[i]:SetFrameLevel(frame:SetFrameLevel() + 1)
+
+            local cooldown = frame.debuffFrames[i].cooldown
+            cooldown:SetDrawEdge(true)
+            cooldown:SetDrawSwipe(true)
+            cooldown:SetReverse(true)
+            cooldown.text:Hide()
         end
         if frame.PrivateAuraAnchors then
             for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do

@@ -61,6 +61,11 @@ function Buffs:OnEnable()
         (framestrataIdx == 6 and "DIALOG") or (framestrataIdx == 7 and "FULLSCREEN") or
         (framestrataIdx == 8 and "FULLSCREEN_DIALOG") or (framestrataIdx == 9 and "TOOLTIP")
 
+    local edge = RaidFrameSettings.db.profile.Buffs.Display.edge
+    local swipe = RaidFrameSettings.db.profile.Buffs.Display.swipe
+    local reverse = RaidFrameSettings.db.profile.Buffs.Display.reverse
+    local showCdnum = RaidFrameSettings.db.profile.Buffs.Display.showCdnum
+
     local dbObj = RaidFrameSettings.db.profile.Buffs.Display.Duration
     local Duration = {
         Font        = Media:Fetch("font", dbObj.font),
@@ -145,7 +150,9 @@ function Buffs:OnEnable()
     self:HookFunc("CompactUnitFrame_HideAllBuffs", hideAllBuffs)
 
     local function GetTimerText(remain)
-        if remain < 60 then
+        if remain < 0 then
+            return ""
+        elseif remain < 60 then
             return Round(remain)
         elseif remain < 600 then
             return string.format("%d:%02d", math.floor(remain / 60), (remain % 60))
@@ -167,7 +174,11 @@ function Buffs:OnEnable()
         if maxBuffs > frame.maxBuffs then
             local frameName = frame:GetName() .. "Buff"
             for i = frame.maxBuffs + 1, maxBuffs do
-                local child = _G[frameName .. i] or CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
+                local child = _G[frameName .. i] 
+                if not child then
+                    child = CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
+                    child:Hide()
+                end
                 child:ClearAllPoints()
                 child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
             end
@@ -180,9 +191,12 @@ function Buffs:OnEnable()
             buffFrame:SetFrameStrata(framestrata)
 
             local cooldown = buffFrame.cooldown
-            cooldown:SetHideCountdownNumbers(false)
-            cooldown:SetDrawBling(false)
-            cooldown:SetDrawSwipe(false)
+            cooldown:SetDrawEdge(edge)
+            cooldown:SetDrawSwipe(swipe)
+            cooldown:SetReverse(reverse)
+            cooldown.start = 0
+            cooldown.duration = 0
+            cooldown.expirationTime = 0
 
             local count = buffFrame.count
             count:ClearAllPoints()
@@ -194,6 +208,9 @@ function Buffs:OnEnable()
             if not cooldown.text then
                 cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
                 cooldown:SetScript("OnUpdate", function(s, t)
+                    if s.expirationTime == 0 then
+                        return
+                    end
                     local left = GetTimerText(s.expirationTime - GetTime())
                     if s.left ~= left then
                         s.left = left
@@ -207,6 +224,12 @@ function Buffs:OnEnable()
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
             text:SetTextHeight(Duration.FontSize)
             text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
+            
+            if showCdnum then
+                text:Show()
+            else
+                text:Hide()
+            end
         end
 
         updateAnchors(frame)
@@ -239,6 +262,7 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", resizeBuffFrame)
     RaidFrameSettings:IterateRoster(function(frame)
+        createBuffFrames(frame)
         if frame.buffFrames then
             for i=1, #frame.buffFrames do
                 local buffFrame = frame.buffFrames[i]
@@ -250,7 +274,7 @@ function Buffs:OnEnable()
                 end
             end
         end
-        createBuffFrames(frame)
+        updateAnchors(frame)
     end)
 end
 
@@ -266,15 +290,21 @@ function Buffs:OnDisable()
         local buffPos, buffRelativePoint, buffOffset = "BOTTOMRIGHT", "BOTTOMLEFT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight;
         frame.buffFrames[1]:ClearAllPoints();
         frame.buffFrames[1]:SetPoint(buffPos, frame, "BOTTOMRIGHT", -3, buffOffset);
-        frame.buffFrames[1]:SetFrameStrata(frame:GetFrameStrata())
         for i=1, #frame.buffFrames do
             frame.buffFrames[i]:SetSize(Display, Display)
             frame.buffFrames[i].icon:SetTexCoord(0,1,0,1)
             if ( i > 1 ) then
                 frame.buffFrames[i]:ClearAllPoints();
                 frame.buffFrames[i]:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
-                frame.buffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
             end
+            frame.buffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
+            frame.buffFrames[i]:SetFrameLevel(frame:SetFrameLevel() + 1)
+
+            local cooldown = frame.buffFrames[i].cooldown
+            cooldown:SetDrawEdge(true)
+            cooldown:SetDrawSwipe(true)
+            cooldown:SetReverse(true)
+            cooldown.text:Hide()
         end
 
         local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE)

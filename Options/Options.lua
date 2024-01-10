@@ -687,11 +687,51 @@ local options = {
                                     get = "GetStatus",
                                     set = "SetStatus",
                                 },
-                                Duration = {
+                                newline4 = {
                                     order = 13,
+                                    name = "",
+                                    type = "description",
+                                },
+
+                                edge = {
+                                    order = 14,
+                                    name = "Edge",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 0.5,
+                                },
+                                swipe = {
+                                    order = 15,
+                                    name = "Swipe",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 0.5,
+                                },
+                                reverse = {
+                                    order = 16,
+                                    name = "Reverse",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 0.5,
+                                },
+                                showCdnum = {
+                                    order = 17,
+                                    name = "Show Cooldown Numbers",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 1.2,
+                                },
+
+                                Duration = {
+                                    order = 18,
                                     name = "Duration",
                                     type = "group",
                                     inline = true,
+                                    disabled = function() return not RaidFrameSettings.db.profile.Buffs.Display.showCdnum end,
                                     args = {
                                         font = {
                                             order = 2,
@@ -711,7 +751,7 @@ local options = {
                                             width = 0.5,
                                         },
                                         thick = {
-                                            disabled = function() return not RaidFrameSettings.db.profile.Buffs.Display.Duration.outline end,
+                                            disabled = function() return not RaidFrameSettings.db.profile.Buffs.Display.showCdnum or not RaidFrameSettings.db.profile.Buffs.Display.Duration.outline end,
                                             order = 3.1,
                                             name = "THICK",
                                             type = "toggle",
@@ -789,7 +829,7 @@ local options = {
                                     },
                                 },
                                 Stacks = {
-                                    order = 14,
+                                    order = 19,
                                     name = "Stacks",
                                     type = "group",
                                     inline = true,
@@ -1121,11 +1161,51 @@ local options = {
                                     get = "GetStatus",
                                     set = "SetStatus",
                                 },
-                                Duration = {
+                                newline4 = {
                                     order = 13,
+                                    name = "",
+                                    type = "description",
+                                },
+
+                                edge = {
+                                    order = 14,
+                                    name = "Edge",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 0.5,
+                                },
+                                swipe = {
+                                    order = 15,
+                                    name = "Swipe",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 0.5,
+                                },
+                                reverse = {
+                                    order = 16,
+                                    name = "Reverse",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 0.5,
+                                },
+                                showCdnum = {
+                                    order = 17,
+                                    name = "Show Cooldown Numbers",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 1.2,
+                                },
+
+                                Duration = {
+                                    order = 18,
                                     name = "Duration",
                                     type = "group",
                                     inline = true,
+                                    disabled = function() return not RaidFrameSettings.db.profile.Debuffs.Display.showCdnum end,
                                     args = {
                                         font = {
                                             order = 2,
@@ -1145,7 +1225,7 @@ local options = {
                                             width = 0.5,
                                         },
                                         thick = {
-                                            disabled = function() return not RaidFrameSettings.db.profile.Buffs.Display.Duration.outline end,
+                                            disabled = function() return not RaidFrameSettings.db.profile.Debuffs.Display.showCdnum or not RaidFrameSettings.db.profile.Buffs.Display.Duration.outline end,
                                             order = 3.1,
                                             name = "THICK",
                                             type = "toggle",
@@ -1232,7 +1312,7 @@ local options = {
                                     },
                                 },
                                 Stacks = {
-                                    order = 14,
+                                    order = 19,
                                     name = "Stacks",
                                     type = "group",
                                     inline = true,

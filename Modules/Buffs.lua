@@ -298,7 +298,7 @@ function Buffs:OnDisable()
                 frame.buffFrames[i]:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
             end
             frame.buffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
-            frame.buffFrames[i]:SetFrameLevel(frame:SetFrameLevel() + 1)
+            frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = frame.buffFrames[i].cooldown
             cooldown:SetDrawEdge(true)

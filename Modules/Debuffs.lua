@@ -375,7 +375,7 @@ function Debuffs:OnDisable()
                 frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
             end
             frame.debuffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
-            frame.debuffFrames[i]:SetFrameLevel(frame:SetFrameLevel() + 1)
+            frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = frame.debuffFrames[i].cooldown
             cooldown:SetDrawEdge(true)

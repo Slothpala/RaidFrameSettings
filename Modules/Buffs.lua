@@ -175,6 +175,8 @@ function Buffs:OnEnable()
             framestrata = frame:GetFrameStrata()
         end
 
+        frame.modified = true
+
         if maxBuffs > frame.maxBuffs then
             local frameName = frame:GetName() .. "Buff"
             for i = frame.maxBuffs + 1, maxBuffs do
@@ -305,6 +307,10 @@ end
 function Buffs:OnDisable()
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
+        if not frame.modified then
+            return
+        end
+
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
@@ -333,9 +339,9 @@ function Buffs:OnDisable()
             end
 
             local count = frame.buffFrames[i].count
-            count:SetFont(count.original.font:GetFont())
             count:ClearAllPoints()
             count:SetPoint("BOTTOMRIGHT", 5, 0)
+            count:SetFont(count.original.font:GetFont())
             count:SetJustifyH(count.original.justifyH)
             count:SetJustifyV(count.original.justifyV)
         end

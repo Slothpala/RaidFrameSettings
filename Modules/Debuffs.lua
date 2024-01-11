@@ -214,6 +214,8 @@ function Debuffs:OnEnable()
             framestrata = frame:GetFrameStrata()
         end
 
+        frame.modified = true
+
         if maxDebuffs > frame.maxDebuffs then
             local frameName = frame:GetName() .. "Debuff"
             for i = frame.maxDebuffs + 1, maxDebuffs do
@@ -374,6 +376,10 @@ end
 function Debuffs:OnDisable()
     self:DisableHooks()
     local restoreDebuffFrames = function(frame)
+        if not frame.modified then
+            return
+        end
+
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
@@ -408,9 +414,9 @@ function Debuffs:OnDisable()
             end
 
             local count = frame.debuffFrames[i].count
-            count:SetFont(count.original.font:GetFont())
             count:ClearAllPoints()
             count:SetPoint("BOTTOMRIGHT", 5, 0)
+            count:SetFont(count.original.font:GetFont())
             count:SetJustifyH(count.original.justifyH)
             count:SetJustifyV(count.original.justifyV)
         end

@@ -195,15 +195,11 @@ function Debuffs:OnEnable()
     local function GetTimerText(remain)
         if remain < 0 then
             return ""
-        elseif remain < 60 then
+        elseif remain < 100 then
             return Round(remain)
-        elseif remain < 600 then
-            return string.format("%d:%02d", math.floor(remain / 60), (remain % 60))
-        elseif remain < 3600 then
+        elseif remain < 6000 then
             return string.format("%dm", Round(remain / 60))
-        elseif remain < 36000 then
-            return string.format("%d:%02dm", math.floor(remain / 3600), math.ceil((remain % 3600) / 60))
-        elseif remain < 86400 then
+        elseif remain < 360000 then
             return string.format("%dh", Round(remain / 3600))
         else
             return string.format("%dd", Round(remain / 86400))

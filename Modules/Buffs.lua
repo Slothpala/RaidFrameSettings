@@ -79,6 +79,8 @@ function Buffs:OnEnable()
             (dbObj.position == 6 and "RIGHT")
             or (dbObj.position == 7 and "BOTTOMLEFT") or (dbObj.position == 8 and "BOTTOM") or
             (dbObj.position == 9 and "BOTTOMRIGHT"),
+        JustifyH    = (dbObj.justifyH == 1 and "LEFT") or (dbObj.justifyH == 2 and "CENTER") or (dbObj.justifyH == 3 and "RIGHT"),
+        JustifyV    = (dbObj.justifyV == 1 and "TOP") or (dbObj.justifyV == 2 and "MIDDLE") or (dbObj.justifyV == 3 and "BOTTOM"),
         X_Offset    = dbObj.x_offset,
         Y_Offset    = dbObj.y_offset,
     }
@@ -96,6 +98,8 @@ function Buffs:OnEnable()
             (dbObj.position == 6 and "RIGHT")
             or (dbObj.position == 7 and "BOTTOMLEFT") or (dbObj.position == 8 and "BOTTOM") or
             (dbObj.position == 9 and "BOTTOMRIGHT"),
+        JustifyH    = (dbObj.justifyH == 1 and "LEFT") or (dbObj.justifyH == 2 and "CENTER") or (dbObj.justifyH == 3 and "RIGHT"),
+        JustifyV    = (dbObj.justifyV == 1 and "TOP") or (dbObj.justifyV == 2 and "MIDDLE") or (dbObj.justifyV == 3 and "BOTTOM"),
         X_Offset    = dbObj.x_offset,
         Y_Offset    = dbObj.y_offset,
     }
@@ -181,11 +185,14 @@ function Buffs:OnEnable()
                 end
                 child:ClearAllPoints()
                 child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
+                if not frame.buffFrames[i] then
+                    frame.buffFrames[i] = child
+                end
             end
             frame.maxBuffs = maxBuffs
         end
 
-        for i = 1, maxBuffs do
+        for i = 1, #frame.buffFrames do
             local buffFrame = frame.buffFrames[i]
             resizeAura(buffFrame)
             buffFrame:SetFrameStrata(framestrata)
@@ -201,6 +208,8 @@ function Buffs:OnEnable()
             local count = buffFrame.count
             count:ClearAllPoints()
             count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
+            count:SetJustifyH(Stacks.JustifyH)
+            count:SetJustifyV(Stacks.JustifyV)
             count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
             count:SetTextHeight(Stacks.FontSize)
             count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
@@ -221,6 +230,8 @@ function Buffs:OnEnable()
             local text = cooldown.text
             text:ClearAllPoints()
             text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
+            text:SetJustifyH(Duration.JustifyH)
+            text:SetJustifyV(Duration.JustifyV)
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
             text:SetTextHeight(Duration.FontSize)
             text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
@@ -308,6 +319,12 @@ function Buffs:OnDisable()
             cooldown:SetDrawSwipe(true)
             cooldown:SetReverse(true)
             cooldown.text:Hide()
+
+            local count = frame.buffFrames[i].count
+            count:ClearAllPoints()
+            count:SetPoint("RIGHT", 5, 0)
+            count:SetJustifyH("MIDDLE")
+            count:SetJustifyV("RIGHT")
         end
 
         local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE)

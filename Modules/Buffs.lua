@@ -228,8 +228,14 @@ function Buffs:OnEnable()
 
             if showCdnum then
                 text:Show()
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+                end
             else
                 text:Hide()
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+                end
             end
         end
 
@@ -255,10 +261,6 @@ function Buffs:OnEnable()
             buffFrame.cooldown.start = aura.expirationTime - aura.duration
             buffFrame.cooldown.duration = aura.duration
             buffFrame.cooldown.expirationTime = aura.expirationTime
-
-            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                OmniCC.Cooldown.SetNoCooldownCount(buffFrame.cooldown, true)
-            end
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", resizeBuffFrame)

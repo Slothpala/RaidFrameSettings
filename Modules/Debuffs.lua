@@ -263,11 +263,16 @@ function Debuffs:OnEnable()
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
             text:SetTextHeight(Duration.FontSize)
             text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
-
             if showCdnum then
                 text:Show()
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+                end
             else
                 text:Hide()
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+                end
             end
         end
 
@@ -328,10 +333,6 @@ function Debuffs:OnEnable()
             debuffFrame.cooldown.start = aura.expirationTime - aura.duration
             debuffFrame.cooldown.duration = aura.duration
             debuffFrame.cooldown.expirationTime = aura.expirationTime
-
-            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                OmniCC.Cooldown.SetNoCooldownCount(debuffFrame.cooldown, true)
-            end
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", resizeDebuffFrame)

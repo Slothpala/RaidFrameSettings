@@ -238,6 +238,11 @@ function Debuffs:OnEnable()
             debuffFrame:SetFrameStrata(framestrata)
 
             local cooldown = debuffFrame.cooldown
+            cooldown.original = {
+                edge = cooldown:GetDrawEdge(),
+                swipe = cooldown:GetDrawSwipe(),
+                reverse = cooldown:GetReverse(),
+            }
             cooldown:SetDrawEdge(edge)
             cooldown:SetDrawSwipe(swipe)
             cooldown:SetReverse(reverse)
@@ -246,12 +251,16 @@ function Debuffs:OnEnable()
             cooldown.expirationTime = cooldown.start + cooldown.duration
 
             local count = debuffFrame.count
+            count.original = {
+                font = count:GetFontObject(),
+                justifyH = count:GetJustifyH(),
+                justifyV = count:GetJustifyV(),
+            }
             count:ClearAllPoints()
             count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
             count:SetJustifyH(Stacks.JustifyH)
             count:SetJustifyV(Stacks.JustifyV)
             count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
-            count:SetTextHeight(Stacks.FontSize)
 
             if not cooldown.text then
                 cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
@@ -272,7 +281,6 @@ function Debuffs:OnEnable()
             text:SetJustifyH(Duration.JustifyH)
             text:SetJustifyV(Duration.JustifyV)
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
-            text:SetTextHeight(Duration.FontSize)
             text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
             if showCdnum then
                 text:Show()
@@ -391,16 +399,20 @@ function Debuffs:OnDisable()
             -- frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = frame.debuffFrames[i].cooldown
-            cooldown:SetDrawEdge(true)
-            cooldown:SetDrawSwipe(true)
-            cooldown:SetReverse(true)
+            cooldown:SetDrawEdge(cooldown.original.edge)
+            cooldown:SetDrawSwipe(cooldown.original.swipe)
+            cooldown:SetReverse(cooldown.original.reverse)
             cooldown.text:Hide()
+            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+            end
 
             local count = frame.debuffFrames[i].count
+            count:SetFont(count.original.font:GetFont())
             count:ClearAllPoints()
-            count:SetPoint("RIGHT", 5, 0)
-            count:SetJustifyH("MIDDLE")
-            count:SetJustifyV("RIGHT")
+            count:SetPoint("BOTTOMRIGHT", 5, 0)
+            count:SetJustifyH(count.original.justifyH)
+            count:SetJustifyV(count.original.justifyV)
         end
         if frame.PrivateAuraAnchors then
             for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do

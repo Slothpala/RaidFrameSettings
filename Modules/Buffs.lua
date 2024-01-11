@@ -198,6 +198,11 @@ function Buffs:OnEnable()
             buffFrame:SetFrameStrata(framestrata)
 
             local cooldown = buffFrame.cooldown
+            cooldown.original = {
+                edge = cooldown:GetDrawEdge(),
+                swipe = cooldown:GetDrawSwipe(),
+                reverse = cooldown:GetReverse(),
+            }
             cooldown:SetDrawEdge(edge)
             cooldown:SetDrawSwipe(swipe)
             cooldown:SetReverse(reverse)
@@ -206,12 +211,17 @@ function Buffs:OnEnable()
             cooldown.expirationTime = cooldown.start + cooldown.duration
 
             local count = buffFrame.count
+            count.original = {
+                font = count:GetFontObject(),
+                justifyH = count:GetJustifyH(),
+                justifyV = count:GetJustifyV(),
+            }
             count:ClearAllPoints()
             count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
             count:SetJustifyH(Stacks.JustifyH)
             count:SetJustifyV(Stacks.JustifyV)
+            count.fontobj = count:GetFontObject()
             count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
-            count:SetTextHeight(Stacks.FontSize)
             count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
 
             if not cooldown.text then
@@ -233,7 +243,6 @@ function Buffs:OnEnable()
             text:SetJustifyH(Duration.JustifyH)
             text:SetJustifyV(Duration.JustifyV)
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
-            text:SetTextHeight(Duration.FontSize)
             text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
             text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
 
@@ -315,16 +324,20 @@ function Buffs:OnDisable()
             -- frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = frame.buffFrames[i].cooldown
-            cooldown:SetDrawEdge(true)
-            cooldown:SetDrawSwipe(true)
-            cooldown:SetReverse(true)
+            cooldown:SetDrawEdge(cooldown.original.edge)
+            cooldown:SetDrawSwipe(cooldown.original.swipe)
+            cooldown:SetReverse(cooldown.original.reverse)
             cooldown.text:Hide()
+            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+            end
 
             local count = frame.buffFrames[i].count
+            count:SetFont(count.original.font:GetFont())
             count:ClearAllPoints()
-            count:SetPoint("RIGHT", 5, 0)
-            count:SetJustifyH("MIDDLE")
-            count:SetJustifyV("RIGHT")
+            count:SetPoint("BOTTOMRIGHT", 5, 0)
+            count:SetJustifyH(count.original.justifyH)
+            count:SetJustifyV(count.original.justifyV)
         end
 
         local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE)

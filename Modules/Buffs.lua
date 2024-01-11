@@ -194,9 +194,9 @@ function Buffs:OnEnable()
             cooldown:SetDrawEdge(edge)
             cooldown:SetDrawSwipe(swipe)
             cooldown:SetReverse(reverse)
-            cooldown.start = 0
-            cooldown.duration = 0
-            cooldown.expirationTime = 0
+            cooldown.start = cooldown:GetCooldownTimes() / 1000
+            cooldown.duration = cooldown:GetCooldownDuration() / 1000
+            cooldown.expirationTime = cooldown.start + cooldown.duration
 
             local count = buffFrame.count
             count:ClearAllPoints()
@@ -224,7 +224,8 @@ function Buffs:OnEnable()
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
             text:SetTextHeight(Duration.FontSize)
             text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
-            
+            text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
+
             if showCdnum then
                 text:Show()
             else
@@ -298,7 +299,7 @@ function Buffs:OnDisable()
                 frame.buffFrames[i]:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
             end
             frame.buffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
-            frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
+            -- frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = frame.buffFrames[i].cooldown
             cooldown:SetDrawEdge(true)

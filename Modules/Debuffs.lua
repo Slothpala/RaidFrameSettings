@@ -234,9 +234,9 @@ function Debuffs:OnEnable()
             cooldown:SetDrawEdge(edge)
             cooldown:SetDrawSwipe(swipe)
             cooldown:SetReverse(reverse)
-            cooldown.start = 0
-            cooldown.duration = 0
-            cooldown.expirationTime = 0
+            cooldown.start = cooldown:GetCooldownTimes() / 1000
+            cooldown.duration = cooldown:GetCooldownDuration() / 1000
+            cooldown.expirationTime = cooldown.start + cooldown.duration
 
             local count = debuffFrame.count
             count:ClearAllPoints()
@@ -262,6 +262,7 @@ function Debuffs:OnEnable()
             text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
             text:SetTextHeight(Duration.FontSize)
+            text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
 
             if showCdnum then
                 text:Show()
@@ -375,7 +376,7 @@ function Debuffs:OnDisable()
                 frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
             end
             frame.debuffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
-            frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
+            -- frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = frame.debuffFrames[i].cooldown
             cooldown:SetDrawEdge(true)

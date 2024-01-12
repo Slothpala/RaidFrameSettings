@@ -158,9 +158,9 @@ function Buffs:OnEnable()
             return ""
         elseif remain < 100 then
             return Round(remain)
-        elseif remain < 6000 then
+        elseif remain < 600 then
             return string.format("%dm", Round(remain / 60))
-        elseif remain < 360000 then
+        elseif remain < 36000 then
             return string.format("%dh", Round(remain / 3600))
         else
             return string.format("%dd", Round(remain / 86400))

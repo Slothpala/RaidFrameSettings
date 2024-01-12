@@ -1317,7 +1317,6 @@ local options = {
                                             get = "GetColor2",
                                             set = "SetColor2",
                                             width = 0.8,
-                                            disabled = function() return RaidFrameSettings.db.profile.Debuffs.Display.Duration.usedebuffcolor end,
                                         },
                                         newline2 = {
                                             order = 6.1,
@@ -1450,7 +1449,6 @@ local options = {
                                             get = "GetColor2",
                                             set = "SetColor2",
                                             width = 0.8,
-                                            disabled = function() return RaidFrameSettings.db.profile.Debuffs.Display.Stacks.usedebuffcolor end,
                                         },
                                         newline2 = {
                                             order = 6.1,

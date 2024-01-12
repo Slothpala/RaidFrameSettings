@@ -334,6 +334,7 @@ function Debuffs:OnEnable()
                     end
                 end
                 debuffFrame.cooldown.text:SetVertexColor(color.r, color.g, color.b)
+                debuffFrame.border:SetVertexColor(color.r, color.g, color.b)
             end
 
             local color = Stacks.FontColor

@@ -76,7 +76,10 @@ local defaults = {
                 showCdnum     = true,
                 Duration      = {
                     font           = "",
-                    fontcolor      = { r = 1, g = 1, b = 1, a = 1 },
+                    fontcolor      = { r = 0.827, g = 0.827, b = 0.827, a = 1 },
+                    shadowColor    = { r = 0, g = 0, b = 0, a = 1 },
+                    shadow_x_offset = 1,
+                    shadow_y_offset = -1,
                     outline        = true,
                     thick          = false,
                     monochrome     = false,
@@ -91,6 +94,9 @@ local defaults = {
                 Stacks        = {
                     font           = "",
                     fontcolor      = { r = 1, g = 1, b = 0, a = 1 },
+                    shadowColor    = { r = 0, g = 0, b = 0, a = 1 },
+                    shadow_x_offset = 1,
+                    shadow_y_offset = -1,
                     outline        = true,
                     thick          = false,
                     monochrome     = false,
@@ -126,6 +132,9 @@ local defaults = {
                 Duration      = {
                     font           = "",
                     fontcolor      = { r = 1, g = 1, b = 1, a = 1 },
+                    shadowColor    = { r = 0, g = 0, b = 0, a = 1 },
+                    shadow_x_offset = 1,
+                    shadow_y_offset = -1,
                     outline        = true,
                     thick          = false,
                     monochrome     = false,
@@ -139,6 +148,9 @@ local defaults = {
                 Stacks        = {
                     font           = "",
                     fontcolor      = { r = 0, g = 1, b = 1, a = 1 },
+                    shadowColor    = { r = 0, g = 0, b = 0, a = 1 },
+                    shadow_x_offset = 1,
+                    shadow_y_offset = -1,
                     outline        = true,
                     thick          = false,
                     monochrome     = false,

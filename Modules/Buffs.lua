@@ -71,6 +71,9 @@ function Buffs:OnEnable()
         Font        = Media:Fetch("font", dbObj.font),
         FontSize    = dbObj.fontsize,
         FontColor   = dbObj.fontcolor,
+        ShadowColor = dbObj.shadowColor,
+        ShadowXoffset = dbObj.shadow_x_offset,
+        ShadowYoffset = dbObj.shadow_y_offset,
         OutlineMode = (dbObj.thick and "THICK" or "") ..
         (dbObj.outline and "OUTLINE" or "") .. ", " .. (dbObj.monochrome and "MONOCHROME" or ""),
         Position    = (dbObj.position == 1 and "TOPLEFT") or (dbObj.position == 2 and "TOP") or
@@ -90,6 +93,9 @@ function Buffs:OnEnable()
         Font        = Media:Fetch("font", dbObj.font),
         FontSize    = dbObj.fontsize,
         FontColor   = dbObj.fontcolor,
+        ShadowColor = dbObj.shadowColor,
+        ShadowXoffset = dbObj.shadow_x_offset,
+        ShadowYoffset = dbObj.shadow_y_offset,
         OutlineMode = (dbObj.thick and "THICK" or "") ..
         (dbObj.outline and "OUTLINE" or "") .. ", " .. (dbObj.monochrome and "MONOCHROME" or ""),
         Position    = (dbObj.position == 1 and "TOPLEFT") or (dbObj.position == 2 and "TOP") or
@@ -209,10 +215,14 @@ function Buffs:OnEnable()
             cooldown.expirationTime = cooldown.start + cooldown.duration
 
             local count = buffFrame.count
+            local r, g, b, a = count:GetShadowColor()
+            local x, y = count:GetShadowOffset()
             count.original = {
                 font = count:GetFontObject(),
                 justifyH = count:GetJustifyH(),
                 justifyV = count:GetJustifyV(),
+                shadowColor = { r = r, g = g, b = b, a = a },
+                shadowOffset = { x = x, y = y },
             }
             count:ClearAllPoints()
             count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
@@ -221,6 +231,8 @@ function Buffs:OnEnable()
             count.fontobj = count:GetFontObject()
             count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
             count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
+            count:SetShadowColor(Stacks.ShadowColor.r, Stacks.ShadowColor.g, Stacks.ShadowColor.b, Stacks.ShadowColor.a)
+            count:SetShadowOffset(Stacks.ShadowXoffset, Stacks.ShadowYoffset)
 
             if not cooldown.text then
                 cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
@@ -242,6 +254,8 @@ function Buffs:OnEnable()
             text:SetJustifyV(Duration.JustifyV)
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
             text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
+            text:SetShadowColor(Duration.ShadowColor.r, Duration.ShadowColor.g, Duration.ShadowColor.b, Duration.ShadowColor.a)
+            text:SetShadowOffset(Duration.ShadowXoffset, Duration.ShadowYoffset)
             text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
 
             if showCdnum then
@@ -338,6 +352,8 @@ function Buffs:OnDisable()
             count:ClearAllPoints()
             count:SetPoint("BOTTOMRIGHT", 5, 0)
             count:SetFont(count.original.font:GetFont())
+            count:SetShadowColor(count.original.shadowColor.r, count.original.shadowColor.g, count.original.shadowColor.b, count.original.shadowColor.a)
+            count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
             count:SetJustifyH(count.original.justifyH)
             count:SetJustifyV(count.original.justifyV)
         end

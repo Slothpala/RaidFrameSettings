@@ -85,6 +85,9 @@ function Debuffs:OnEnable()
         FontSize    = dbObj.fontsize,
         DebuffColor = dbObj.usedebuffcolor,
         FontColor   = dbObj.fontcolor,
+        ShadowColor = dbObj.shadowColor,
+        ShadowXoffset = dbObj.shadow_x_offset,
+        ShadowYoffset = dbObj.shadow_y_offset,
         OutlineMode = (dbObj.thick and "THICK" or "") ..
         (dbObj.outline and "OUTLINE" or "") .. ", " .. (dbObj.monochrome and "MONOCHROME" or ""),
         Position    = (dbObj.position == 1 and "TOPLEFT") or (dbObj.position == 2 and "TOP") or
@@ -105,6 +108,9 @@ function Debuffs:OnEnable()
         FontSize    = dbObj.fontsize,
         DebuffColor = dbObj.usedebuffcolor,
         FontColor   = dbObj.fontcolor,
+        ShadowColor = dbObj.shadowColor,
+        ShadowXoffset = dbObj.shadow_x_offset,
+        ShadowYoffset = dbObj.shadow_y_offset,
         OutlineMode = (dbObj.thick and "THICK" or "") ..
         (dbObj.outline and "OUTLINE" or "") .. ", " .. (dbObj.monochrome and "MONOCHROME" or ""),
         Position    = (dbObj.position == 1 and "TOPLEFT") or (dbObj.position == 2 and "TOP") or
@@ -249,16 +255,22 @@ function Debuffs:OnEnable()
             cooldown.expirationTime = cooldown.start + cooldown.duration
 
             local count = debuffFrame.count
+            local r, g, b, a = count:GetShadowColor()
+            local x, y = count:GetShadowOffset()
             count.original = {
                 font = count:GetFontObject(),
                 justifyH = count:GetJustifyH(),
                 justifyV = count:GetJustifyV(),
+                shadowColor = { r = r, g = g, b = b, a = a },
+                shadowOffset = { x = x, y = y },
             }
             count:ClearAllPoints()
             count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
             count:SetJustifyH(Stacks.JustifyH)
             count:SetJustifyV(Stacks.JustifyV)
             count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
+            count:SetShadowColor(Stacks.ShadowColor.r, Stacks.ShadowColor.g, Stacks.ShadowColor.b, Stacks.ShadowColor.a)
+            count:SetShadowOffset(Stacks.ShadowXoffset, Stacks.ShadowYoffset)
 
             if not cooldown.text then
                 cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
@@ -279,6 +291,8 @@ function Debuffs:OnEnable()
             text:SetJustifyH(Duration.JustifyH)
             text:SetJustifyV(Duration.JustifyV)
             text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
+            text:SetShadowColor(Duration.ShadowColor.r, Duration.ShadowColor.g, Duration.ShadowColor.b, Duration.ShadowColor.a)
+            text:SetShadowOffset(Duration.ShadowXoffset, Duration.ShadowYoffset)
             text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
             if showCdnum then
                 text:Show()
@@ -416,6 +430,8 @@ function Debuffs:OnDisable()
             count:SetFont(count.original.font:GetFont())
             count:SetJustifyH(count.original.justifyH)
             count:SetJustifyV(count.original.justifyV)
+            count:SetShadowColor(count.original.shadowColor.r, count.original.shadowColor.g, count.original.shadowColor.b, count.original.shadowColor.a)
+            count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
         end
         if frame.PrivateAuraAnchors then
             for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do

@@ -8,5 +8,5 @@
   <Script file="Modules\Overabsorb.lua"/>
   <Script file="Modules\CustomScale.lua"/>
   <Script file="Modules\BleedDB.lua"/>
-  <Script file="Modules\DebuffHighlight.lua"/>
+  <Script file="Modules\AuraHighlight.lua"/>
 </Ui>

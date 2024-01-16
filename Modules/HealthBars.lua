@@ -122,12 +122,12 @@ function HealthBars:OnEnable()
         updateHealthColor = function(frame)
             frame.healthBar:SetStatusBarColor(color.r,color.g,color.b) 
         end
-        if not RaidFrameSettings.db.profile.Module.DebuffHighlight then
+        if not RaidFrameSettings.db.profile.Module.AuraHighlight then
             self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", updateHealthColor)
         end
     end
-    if RaidFrameSettings.db.profile.Module.DebuffHighlight then
-        RaidFrameSettings:UpdateModule("DebuffHighlight")
+    if RaidFrameSettings.db.profile.Module.AuraHighlight then
+        RaidFrameSettings:UpdateModule("AuraHighlight")
     end
     RaidFrameSettings:IterateRoster(function(frame)
         updateTextures(frame)

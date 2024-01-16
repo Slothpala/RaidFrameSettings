@@ -1,7 +1,7 @@
 local _, addonTable = ...
 local RaidFrameSettings = addonTable.RaidFrameSettings
 
-local module = RaidFrameSettings:NewModule("DebuffHighlight")
+local module = RaidFrameSettings:NewModule("AuraHighlight")
 Mixin(module, addonTable.hooks)
 local LCD --LibCanDispel or custom defined in OnEnable
 
@@ -25,6 +25,10 @@ local debuffColors = {
 
 local Bleeds = addonTable.Bleeds
 local auraMap = {}
+
+local aura_missing_list = {}
+local missingAuraColor = {r=0.8156863451004028,g=0.5803921818733215,b=0.658823549747467}
+
 local blockColorUpdate = {}
 
 local updateHealthColor 
@@ -35,7 +39,7 @@ local function toDebuffColor(frame, dispelName)
 end
 
 local function updateColor(frame)
-    for auraInstanceID, dispelName in next, auraMap[frame] do
+    for auraInstanceID, dispelName in next, auraMap[frame].debuffs do
         if auraInstanceID then
             toDebuffColor(frame, dispelName)
             return
@@ -46,15 +50,20 @@ end
 
 local function updateAurasFull(frame)
     auraMap[frame] = {}
+    auraMap[frame].debuffs = {}
+    auraMap[frame].missing_list = {}
     local function HandleAura(aura)
         if aura.dispelName and LCD:CanDispel(aura.dispelName) then
-            auraMap[frame][aura.auraInstanceID] = aura.dispelName
+            auraMap[frame].debuffs[aura.auraInstanceID] = aura.dispelName
         end
         if Bleeds[aura.spellId] and LCD:CanDispel("Bleed") then 
-            auraMap[frame][aura.auraInstanceID] = "Bleed"
+            auraMap[frame].debuffs[aura.auraInstanceID] = "Bleed"
+        end
+        if aura_missing_list[aura.spellId] then
+            auraMap[frame].missing_list[aura.auraInstanceID] = aura.spellId
         end
     end
-    AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleAura, true)  
+    AuraUtil_ForEachAura(frame.unit, "HELPFUL|HARMFUL", nil, HandleAura, true)  
     updateColor(frame)
 end
 
@@ -62,17 +71,23 @@ local function updateAurasIncremental(frame, updateInfo)
     if updateInfo.addedAuras then
         for _, aura in pairs(updateInfo.addedAuras) do
             if aura.isHarmful and aura.dispelName and LCD:CanDispel(aura.dispelName) then
-                auraMap[frame][aura.auraInstanceID] = aura.dispelName
+                auraMap[frame].debuffs[aura.auraInstanceID] = aura.dispelName
             end
             if Bleeds[aura.spellId] and LCD:CanDispel("Bleed") then 
-                auraMap[frame][aura.auraInstanceID] = "Bleed"
+                auraMap[frame].debuffs[aura.auraInstanceID] = "Bleed"
+            end
+            if aura_missing_list[aura.spellId] then
+                auraMap[frame].missing_list[aura.auraInstanceID] = aura.spellId
             end
         end
     end
     if updateInfo.removedAuraInstanceIDs then
         for _, auraInstanceID in pairs(updateInfo.removedAuraInstanceIDs) do
-            if auraMap[frame][auraInstanceID] then
-                auraMap[frame][auraInstanceID] = nil
+            if auraMap[frame].debuffs[auraInstanceID] then
+                auraMap[frame].debuffs[auraInstanceID] = nil
+            end
+            if auraMap[frame].missing_list[auraInstanceID] then
+                auraMap[frame].missing_list[auraInstanceID] = nil
             end
         end
     end
@@ -81,6 +96,8 @@ end
 
 function module:HookFrame(frame)
     auraMap[frame] = {}
+    auraMap[frame].debuffs = {}
+    auraMap[frame].missing_list = {}
     --[[
         CompactUnitFrame_UnregisterEvents removes the event handler with frame:SetScript("OnEvent", nil) and thus the hook.
         Interface/FrameXML/CompactUnitFrame.lua
@@ -110,15 +127,37 @@ function module:SetUpdateHealthColor()
         local useClassColors = selected == 1 and true or false
         local useOverrideColor = selected == 2 and true or false
         local useCustomColor = selected == 3 and true or false
+        local function hasMissingAura(frame) 
+            if next(aura_missing_list) == nil then
+                return false
+            end
+            if not auraMap[frame] then
+                return false
+            end
+            local reverse_missing_list = {}
+            for auraInstanceID, spellId in next, auraMap[frame].missing_list do
+                reverse_missing_list[spellId] = true
+            end
+            for spellId, name in next, aura_missing_list do
+                if not reverse_missing_list[spellId] then
+                    return true
+                end
+            end
+            return false
+        end
         if useClassColors then
             updateHealthColor = function(frame)
                 if not frame or not frame.unit then 
                     return 
                 end
                 blockColorUpdate[frame] = false
-                local _, englishClass = UnitClass(frame.unit)
-                local r,g,b = GetClassColor(englishClass)
-                frame.healthBar:SetStatusBarColor(r,g,b)
+                if hasMissingAura(frame) then
+                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
+                else
+                    local _, englishClass = UnitClass(frame.unit)
+                    local r,g,b = GetClassColor(englishClass)
+                    frame.healthBar:SetStatusBarColor(r,g,b)
+                end
             end
         elseif useOverrideColor then
             updateHealthColor = function(frame)
@@ -126,7 +165,11 @@ function module:SetUpdateHealthColor()
                     return 
                 end
                 blockColorUpdate[frame] = false
-                frame.healthBar:SetStatusBarColor(0,1,0)
+                if hasMissingAura(frame) then
+                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
+                else
+                    frame.healthBar:SetStatusBarColor(0,1,0)
+                end
             end
         elseif useCustomColor then
             local color = RaidFrameSettings.db.profile.HealthBars.Colors.statusbar
@@ -135,7 +178,11 @@ function module:SetUpdateHealthColor()
                     return 
                 end
                 blockColorUpdate[frame] = false
-                frame.healthBar:SetStatusBarColor(color.r,color.g,color.b) 
+                if hasMissingAura(frame) then
+                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
+                else
+                    frame.healthBar:SetStatusBarColor(color.r,color.g,color.b) 
+                end
             end
         end
     else
@@ -145,7 +192,11 @@ function module:SetUpdateHealthColor()
                     return 
                 end
                 blockColorUpdate[frame] = false
-                frame.healthBar:SetStatusBarColor(0,1,0)
+                if hasMissingAura(frame) then
+                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
+                else
+                    frame.healthBar:SetStatusBarColor(0,1,0)
+                end
             end
         else
             updateHealthColor = function(frame)
@@ -153,16 +204,20 @@ function module:SetUpdateHealthColor()
                     return 
                 end
                 blockColorUpdate[frame] = false
-                local _, englishClass = UnitClass(frame.unit)
-                local r,g,b = GetClassColor(englishClass)
-                frame.healthBar:SetStatusBarColor(r,g,b)
+                if hasMissingAura(frame) then
+                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
+                else
+                    local _, englishClass = UnitClass(frame.unit)
+                    local r,g,b = GetClassColor(englishClass)
+                    frame.healthBar:SetStatusBarColor(r,g,b)
+                end
             end
         end
     end
 end
 
 function module:GetDebuffColors()
-    local dbObj = RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors
+    local dbObj = RaidFrameSettings.db.profile.AuraHighlight.DebuffColors
     debuffColors.Curse = dbObj.Curse
     debuffColors.Disease = dbObj.Disease
     debuffColors.Magic = dbObj.Magic
@@ -172,7 +227,9 @@ end
 
 function module:OnEnable()
     self:SetUpdateHealthColor()
-    local dbObj = RaidFrameSettings.db.profile.DebuffHighlight
+    local dbObj = RaidFrameSettings.db.profile.AuraHighlight
+    aura_missing_list = dbObj.MissingAura[addonTable.playerClass].spellIDs
+    missingAuraColor = dbObj.MissingAura.missingAuraColor
     if dbObj.Config.operation_mode == 1 then
         LCD = {}
         LCD = LibStub("LibCanDispel-1.0")
@@ -199,22 +256,14 @@ function module:OnEnable()
         end
         self:HookFrame(frame)                          
     end)   
-    local onUpdateHealthColor
-    if RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode == 3 then 
-        onUpdateHealthColor = function(frame) 
-            if blockColorUpdate[frame] then
-                updateColor(frame)
-            else
-                updateHealthColor(frame)
-            end
-        end
-    else
-        onUpdateHealthColor = function(frame) 
-            if blockColorUpdate[frame] then
-                updateColor(frame)
-            end
+    local onUpdateHealthColor = function(frame) 
+        if blockColorUpdate[frame] then
+            updateColor(frame)
+        else
+            updateHealthColor(frame)
         end
     end
+
     --[[
         CompactUnitFrame_UpdateHealthColor checks the current healthbar color value and restores it to the designated color if it differs from it.
         If this happens while the frame has a debuff color, we will need to update it again.

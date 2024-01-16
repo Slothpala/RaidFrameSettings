@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.19.1] - 2024-01-16
+#### Updated 
+* retail version updated to 100205 
+
 ### Version [2.19.0] - 2024-01-16
 #### Changed
 * Replaced module DebuffHighlight with AuraHighlight. The new modules allows for coloring based on a missing aura.

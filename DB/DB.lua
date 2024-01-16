@@ -13,7 +13,7 @@ local defaults = {
             Buffs   = false,
             Debuffs = false,
             CustomScale = false,
-            DebuffHighlight = false,
+            AuraHighlight = false,
         },
         HealthBars = { 
             Textures = { 
@@ -88,7 +88,7 @@ local defaults = {
                 --spellID = true
             },
         },
-        DebuffHighlight = {
+        AuraHighlight = {
             Config = {
                 operation_mode = 1,
                 Curse = false,
@@ -103,6 +103,14 @@ local defaults = {
                 Magic   = {r=0.2,g=0.6,b=1.0},
                 Poison  = {r=0.0,g=0.6,b=0.0},
                 Bleed   = {r=0.8,g=0.0,b=0.0},
+            },
+            MissingAura = {
+                classSelection = 1,
+                missingAuraColor = {r=0.8156863451004028,g=0.5803921818733215,b=0.658823549747467}, 
+                ["*"] = {
+                    input_field = "",
+                    spellIDs = {},
+                },
             },
         },
         MinorModules = {

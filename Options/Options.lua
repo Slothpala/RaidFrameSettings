@@ -14,7 +14,7 @@ local RoleIcon_disabled    = function() return not RaidFrameSettings.db.profile.
 local Range_disabled       = function() return not RaidFrameSettings.db.profile.Module.Range end
 local Buffs_disabled       = function() return not RaidFrameSettings.db.profile.Module.Buffs end
 local Debuffs_disabled     = function() return not RaidFrameSettings.db.profile.Module.Debuffs end
-local DebuffHighlight_disabled = function() return not RaidFrameSettings.db.profile.Module.DebuffHighlight end
+local AuraHighlight_disabled = function() return not RaidFrameSettings.db.profile.Module.AuraHighlight end
 local CustomScale_disabled = function() return not RaidFrameSettings.db.profile.Module.CustomScale end
 local Overabsorb_disabled = function() return not RaidFrameSettings.db.profile.Module.Overabsorb end
 
@@ -106,11 +106,11 @@ local options = {
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
-                        DebuffHighlight = {
+                        AuraHighlight = {
                             hidden = not isRetail,
                             order = 8,
                             type = "toggle",
-                            name = "Debuff Highlight",
+                            name = "Aura Highlight",
                             desc = "Recolor unit health bars based on debuff type.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
@@ -885,12 +885,12 @@ local options = {
                 },
             },
         },
-        DebuffHighlight = {
+        AuraHighlight = {
             hidden = not isRetail,
             order = 5,
-            name = "Debuff Highlight",
+            name = "Aura Highlight",
             type = "group",
-            hidden = DebuffHighlight_disabled,
+            hidden = AuraHighlight_disabled,
             args = {
                 Config = {
                     order = 1,
@@ -909,7 +909,7 @@ local options = {
                             set = "SetStatus",
                         },
                         Curse = {
-                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            hidden = function() return RaidFrameSettings.db.profile.AuraHighlight.Config.operation_mode == 1 and true or false end,
                             order = 2,
                             name = "Curse",
                             type = "toggle",
@@ -918,7 +918,7 @@ local options = {
                             width = 0.5,
                         },
                         Disease = {
-                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            hidden = function() return RaidFrameSettings.db.profile.AuraHighlight.Config.operation_mode == 1 and true or false end,
                             order = 3,
                             name = "Disease",
                             type = "toggle",
@@ -927,7 +927,7 @@ local options = {
                             width = 0.5,
                         },
                         Magic = {
-                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            hidden = function() return RaidFrameSettings.db.profile.AuraHighlight.Config.operation_mode == 1 and true or false end,
                             order = 4,
                             name = "Magic",
                             type = "toggle",
@@ -936,7 +936,7 @@ local options = {
                             width = 0.5,
                         },
                         Poison = {
-                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            hidden = function() return RaidFrameSettings.db.profile.AuraHighlight.Config.operation_mode == 1 and true or false end,
                             order = 5,
                             name = "Poison",
                             type = "toggle",
@@ -945,7 +945,7 @@ local options = {
                             width = 0.5,
                         },
                         Bleed = {
-                            hidden = function() return RaidFrameSettings.db.profile.DebuffHighlight.Config.operation_mode == 1 and true or false end,
+                            hidden = function() return RaidFrameSettings.db.profile.AuraHighlight.Config.operation_mode == 1 and true or false end,
                             order = 6,
                             name = "Bleed",
                             type = "toggle",
@@ -1015,12 +1015,63 @@ local options = {
                             confirm = true,
                             func = 
                             function() 
-                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Curse   = {r=0.6,g=0.0,b=1.0}
-                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Disease = {r=0.6,g=0.4,b=0.0}
-                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Magic   = {r=0.2,g=0.6,b=1.0}
-                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Poison  = {r=0.0,g=0.6,b=0.0}
-                                RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors.Bleed   = {r=0.8,g=0.0,b=0.0}
+                                RaidFrameSettings.db.profile.AuraHighlight.DebuffColors.Curse   = {r=0.6,g=0.0,b=1.0}
+                                RaidFrameSettings.db.profile.AuraHighlight.DebuffColors.Disease = {r=0.6,g=0.4,b=0.0}
+                                RaidFrameSettings.db.profile.AuraHighlight.DebuffColors.Magic   = {r=0.2,g=0.6,b=1.0}
+                                RaidFrameSettings.db.profile.AuraHighlight.DebuffColors.Poison  = {r=0.0,g=0.6,b=0.0}
+                                RaidFrameSettings.db.profile.AuraHighlight.DebuffColors.Bleed   = {r=0.8,g=0.0,b=0.0}
                                 RaidFrameSettings:ReloadConfig()
+                            end,
+                        },
+                    },
+                },
+                MissingAura = {
+                    order = 3,
+                    name = "Missing Aura",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        classSelection = {
+                            order = 1,
+                            name = "Class:",
+                            type = "select",
+                            values = addonTable.playableHealerClasses,
+                            get = "GetStatus",
+                            set = "SetStatus",
+                        },
+                        missingAuraColor = {
+                            order = 2,
+                            name = "Missing Aura Color",
+                            type = "color",
+                            get = "GetColor",
+                            set = "SetColor",
+                        },
+                        input_field = {
+                            order = 3,
+                            name = "Enter spellIDs",
+                            desc = "enter spellIDs seperated by a semicolon or comma\nExample: 12345; 123; 456;",
+                            type = "input",
+                            width = "full",
+                            multiline = 5,
+                            set = function(self, input)
+                                local dbObj = RaidFrameSettings.db.profile.AuraHighlight.MissingAura
+                                local class = addonTable.playableHealerClasses[dbObj.classSelection]
+                                dbObj[class].input_field = input
+                                --transform string to a list of spellIDs:
+                                local tbl = {}
+                                for word in string.gmatch(input, "([^;,%s]+)") do
+                                    local name = GetSpellInfo(word)
+                                    if name then
+                                        tbl[tonumber(word)] = name
+                                    end
+                                end
+                                dbObj[class].spellIDs = tbl
+                                RaidFrameSettings:UpdateModule("AuraHighlight")
+                            end,
+                            get = function() 
+                                local dbObj = RaidFrameSettings.db.profile.AuraHighlight.MissingAura
+                                local class = addonTable.playableHealerClasses[dbObj.classSelection]
+                                return dbObj[class].input_field
                             end,
                         },
                     },

@@ -135,7 +135,7 @@ function Debuffs:OnEnable()
     }
     local Bleeds = addonTable.Bleeds
 
-    dbObj = RaidFrameSettings.db.profile.DebuffHighlight.DebuffColors
+    dbObj = RaidFrameSettings.db.profile.AuraHighlight.DebuffColors
     debuffColors.Curse = dbObj.Curse
     debuffColors.Disease = dbObj.Disease
     debuffColors.Magic = dbObj.Magic

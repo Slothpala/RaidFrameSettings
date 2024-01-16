@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.19.0] - 2024-01-16
+#### Changed
+* Replaced module DebuffHighlight with AuraHighlight. The new modules allows for coloring based on a missing aura.
+
 ### Version [2.18.1] - 2024-01-07
 #### Changed 
 * moved information about group type profiles from _G to addon.db.global and added a new option for group type arena

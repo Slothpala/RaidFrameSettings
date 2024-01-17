@@ -125,29 +125,29 @@ function module:HookFrame(frame)
 end
 
 function module:SetUpdateHealthColor()
+    local function hasMissingAura(frame) 
+        if next(aura_missing_list) == nil then
+            return false
+        end
+        if not auraMap[frame] then
+            return false
+        end
+        local reverse_missing_list = {}
+        for auraInstanceID, spellId in next, auraMap[frame].missing_list do
+            reverse_missing_list[spellId] = true
+        end
+        for spellId, name in next, aura_missing_list do
+            if not reverse_missing_list[spellId] then
+                return true
+            end
+        end
+        return false
+    end
     if RaidFrameSettings.db.profile.Module.HealthBars then
         local selected = RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode
         local useClassColors = selected == 1 and true or false
         local useOverrideColor = selected == 2 and true or false
         local useCustomColor = selected == 3 and true or false
-        local function hasMissingAura(frame) 
-            if next(aura_missing_list) == nil then
-                return false
-            end
-            if not auraMap[frame] then
-                return false
-            end
-            local reverse_missing_list = {}
-            for auraInstanceID, spellId in next, auraMap[frame].missing_list do
-                reverse_missing_list[spellId] = true
-            end
-            for spellId, name in next, aura_missing_list do
-                if not reverse_missing_list[spellId] then
-                    return true
-                end
-            end
-            return false
-        end
         if useClassColors then
             updateHealthColor = function(frame)
                 if not frame or not frame.unit then 

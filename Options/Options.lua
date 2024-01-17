@@ -886,11 +886,10 @@ local options = {
             },
         },
         AuraHighlight = {
-            hidden = not isRetail,
             order = 5,
             name = "Aura Highlight",
             type = "group",
-            hidden = AuraHighlight_disabled,
+            hidden = not isRetail or AuraHighlight_disabled,
             args = {
                 Config = {
                     order = 1,

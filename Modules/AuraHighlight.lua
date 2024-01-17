@@ -63,7 +63,8 @@ local function updateAurasFull(frame)
             auraMap[frame].missing_list[aura.auraInstanceID] = aura.spellId
         end
     end
-    AuraUtil_ForEachAura(frame.unit, "HELPFUL|HARMFUL", nil, HandleAura, true)  
+    AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleAura, true)
+    AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, HandleAura, true)
     updateColor(frame)
 end
 

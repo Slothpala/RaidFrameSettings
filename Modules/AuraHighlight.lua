@@ -52,19 +52,21 @@ local function updateAurasFull(frame)
     auraMap[frame] = {}
     auraMap[frame].debuffs = {}
     auraMap[frame].missing_list = {}
-    local function HandleAura(aura)
+    local function HandleHarmAura(aura)
         if aura.dispelName and LCD:CanDispel(aura.dispelName) then
             auraMap[frame].debuffs[aura.auraInstanceID] = aura.dispelName
         end
         if Bleeds[aura.spellId] and LCD:CanDispel("Bleed") then 
             auraMap[frame].debuffs[aura.auraInstanceID] = "Bleed"
         end
+    end
+    local function HandleHelpAura(aura)
         if aura_missing_list[aura.spellId] then
             auraMap[frame].missing_list[aura.auraInstanceID] = aura.spellId
         end
     end
-    AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleAura, true)
-    AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, HandleAura, true)
+    AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleHarmAura, true)
+    AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, HandleHelpAura, true)
     updateColor(frame)
 end
 

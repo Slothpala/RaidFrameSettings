@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [2.19.2] - 2024-01-17
+#### Fixes
+* AuraHighlight: module works again without HealrhBars module enabled
+* AuraHighlight: updateAurasFull seperated helpful harmful scans
+
 ### Version [2.19.1] - 2024-01-16
 #### Updated 
 * retail version updated to 100205 

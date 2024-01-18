@@ -12,17 +12,6 @@ local SetTexCoord = SetTexCoord
 local ClearAllPoints = ClearAllPoints
 local SetPoint = SetPoint
 
-local frame_registry = {
-    --[[
-        frame = {
-            numBuffFrames = 10,
-            extraBuffFrames = {
-                [1] = frame --would be the first after blizzards own
-            }
-        }
-    ]]
-}
-
 function Buffs:OnEnable()
     --Buff size
     local width  = RaidFrameSettings.db.profile.Buffs.Display.width
@@ -188,23 +177,23 @@ function Buffs:OnEnable()
             framestrata = frame:GetFrameStrata()
         end
 
-        if not frame_registry[frame] then
-            frame_registry[frame] = {}
-            frame_registry[frame].numBuffFrames = frame.maxBuffs
-            frame_registry[frame].extraBuffFrames = {}
-        end
-        --frame.modified = true
+        frame.modified = true
 
-        local frame_maxBuffs = frame_registry[frame].numBuffFrames
-        if maxBuffs > frame_maxBuffs then
+        if maxBuffs > frame.maxBuffs then
             local frameName = frame:GetName() .. "Buff"
-            for i = frame_maxBuffs + 1, maxBuffs do
-                local buffFrame = CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
-                buffFrame:Hide()
-                buffFrame:ClearAllPoints()
-                buffFrame:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
-                table.insert(frame_registry[frame].extraBuffFrames, buffFrame)
+            for i = frame.maxBuffs + 1, maxBuffs do
+                local child = _G[frameName .. i] 
+                if not child then
+                    child = CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
+                    child:Hide()
+                end
+                child:ClearAllPoints()
+                child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
+                if not frame.buffFrames[i] then
+                    frame.buffFrames[i] = child
+                end
             end
+            frame.maxBuffs = maxBuffs
         end
 
         for i = 1, #frame.buffFrames do
@@ -328,7 +317,7 @@ end
 function Buffs:OnDisable()
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
-        if not frame_registry[frame] then
+        if not frame.modified then
             return
         end
 

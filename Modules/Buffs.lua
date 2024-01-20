@@ -12,6 +12,20 @@ local SetTexCoord = SetTexCoord
 local ClearAllPoints = ClearAllPoints
 local SetPoint = SetPoint
 
+local frame_registry = {}
+
+function Buffs:HookFrame(frame)
+    self:RemoveHandler(frame, "OnEvent")
+    self:HookScript(frame, "OnEvent", function(frame, event, unit, updateInfo)
+        if event ~= "PLAYER_REGEN_ENABLED" then
+            return
+        end
+        if frame_registry[frame] and frame_registry[frame].lockdown then
+            DefaultCompactUnitFrameSetup(frame)
+        end
+    end)
+end
+
 function Buffs:OnEnable()
     --Buff size
     local width  = RaidFrameSettings.db.profile.Buffs.Display.width
@@ -121,6 +135,12 @@ function Buffs:OnEnable()
         }
     end
 
+    --blacklist
+    local blacklist = {}
+    for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Blacklist) do
+        blacklist[tonumber(spellId)] = true
+    end
+
     local function updateAnchors(frame, endingIndex)
         local first = true
         local prev
@@ -152,9 +172,26 @@ function Buffs:OnEnable()
             end
         end
     end
-    local hideAllBuffs = function(frame, startingIndex)
-        if frame.buffFrames then
-            updateAnchors(frame, startingIndex and startingIndex > 0 and startingIndex - 1)
+    local hideAllBuffs = function(frame)
+        if frame.buffFrames and frame.buffs then
+            local frameNum = 1
+            frame.buffs:Iterate(function(auraInstanceID, aura)
+                if frameNum > maxBuffs then
+                    return true
+                end
+                if blacklist[aura.spellId] then
+                    return false
+                end
+                local buffFrame = frame.buffFrames[frameNum]
+                CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                frameNum = frameNum + 1
+                return false
+            end)
+            for i = frameNum, #frame.buffFrames do
+                frame.buffFrames[i]:Hide()
+                CooldownFrame_Clear(frame.buffFrames[i].cooldown)
+            end
+            updateAnchors(frame, frameNum - 1)
         end
     end
     self:HookFunc("CompactUnitFrame_HideAllBuffs", hideAllBuffs)
@@ -173,129 +210,142 @@ function Buffs:OnEnable()
         end
     end
     local createBuffFrames = function(frame)
-        if framestrata == "Inherited" then
-            framestrata = frame:GetFrameStrata()
-        end
-
-        frame.modified = true
-
-        if maxBuffs > frame.maxBuffs then
-            local frameName = frame:GetName() .. "Buff"
-            for i = frame.maxBuffs + 1, maxBuffs do
-                local child = _G[frameName .. i] 
-                if not child then
-                    child = CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
-                    child:Hide()
-                end
-                child:ClearAllPoints()
-                child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
-                if not frame.buffFrames[i] then
-                    frame.buffFrames[i] = child
-                end
-            end
-            frame.maxBuffs = maxBuffs
-        end
-
-        for i = 1, #frame.buffFrames do
-            local buffFrame = frame.buffFrames[i]
-            resizeAura(buffFrame)
-            buffFrame:SetFrameStrata(framestrata)
-
-            local cooldown = buffFrame.cooldown
-            cooldown.original = {
-                edge = cooldown:GetDrawEdge(),
-                swipe = cooldown:GetDrawSwipe(),
-                reverse = cooldown:GetReverse(),
+        if not frame_registry[frame] then
+            self:HookFrame(frame)
+            frame_registry[frame] = {
+                lockdown = false,
+                dirty    = true,
             }
-            cooldown:SetDrawEdge(edge)
-            cooldown:SetDrawSwipe(swipe)
-            cooldown:SetReverse(reverse)
-            cooldown.start = cooldown:GetCooldownTimes() / 1000
-            cooldown.duration = cooldown:GetCooldownDuration() / 1000
-            cooldown.expirationTime = cooldown.start + cooldown.duration
+        end
 
-            local count = buffFrame.count
-            local r, g, b, a = count:GetShadowColor()
-            local x, y = count:GetShadowOffset()
-            count.original = {
-                font = count:GetFontObject(),
-                justifyH = count:GetJustifyH(),
-                justifyV = count:GetJustifyV(),
-                shadowColor = { r = r, g = g, b = b, a = a },
-                shadowOffset = { x = x, y = y },
-            }
-            count:ClearAllPoints()
-            count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
-            count:SetJustifyH(Stacks.JustifyH)
-            count:SetJustifyV(Stacks.JustifyV)
-            count.fontobj = count:GetFontObject()
-            count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
-            count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
-            count:SetShadowColor(Stacks.ShadowColor.r, Stacks.ShadowColor.g, Stacks.ShadowColor.b, Stacks.ShadowColor.a)
-            count:SetShadowOffset(Stacks.ShadowXoffset, Stacks.ShadowYoffset)
-
-            if not cooldown.text then
-                cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
-                cooldown:SetScript("OnUpdate", function(s, t)
-                    if s.expirationTime == 0 then
-                        return
-                    end
-                    local left = GetTimerText(s.expirationTime - GetTime())
-                    if s.left ~= left then
-                        s.left = left
-                        s.text:SetText(left or "")
-                    end
-                end)
+        if frame_registry[frame].dirty then
+            if InCombatLockdown() then
+                frame_registry[frame].lockdown = true
+                return
             end
-            local text = cooldown.text
-            text:ClearAllPoints()
-            text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
-            text:SetJustifyH(Duration.JustifyH)
-            text:SetJustifyV(Duration.JustifyV)
-            text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
-            text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
-            text:SetShadowColor(Duration.ShadowColor.r, Duration.ShadowColor.g, Duration.ShadowColor.b, Duration.ShadowColor.a)
-            text:SetShadowOffset(Duration.ShadowXoffset, Duration.ShadowYoffset)
-            text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
 
-            if showCdnum then
-                text:Show()
-                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+            frame_registry[frame].lockdown = false
+            frame_registry[frame].dirty = false
+
+            -- 프레임 생성
+            if maxBuffs > frame.maxBuffs then
+                local frameName = frame:GetName() .. "Buff"
+                for i = frame.maxBuffs + 1, maxBuffs do
+                    local child = _G[frameName .. i]
+                    if not child then
+                        child = CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
+                        child:Hide()
+                        child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
+                    end
+                    if not frame.buffFrames[i] then
+                        frame.buffFrames[i] = child
+                    end
                 end
-            else
-                text:Hide()
-                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+            end
+
+            -- 설정 변경
+            if framestrata == "Inherited" then
+                framestrata = frame:GetFrameStrata()
+            end
+
+            for i = 1, #frame.buffFrames do
+                local buffFrame = frame.buffFrames[i]
+                resizeAura(buffFrame)
+                buffFrame:SetFrameStrata(framestrata)
+
+                local cooldown = buffFrame.cooldown
+                if not cooldown.original then
+                    cooldown.original = {
+                        edge = cooldown:GetDrawEdge(),
+                        swipe = cooldown:GetDrawSwipe(),
+                        reverse = cooldown:GetReverse(),
+                        noCooldownCount = cooldown.noCooldownCount
+                    }
+                end
+                cooldown:SetDrawEdge(edge)
+                cooldown:SetDrawSwipe(swipe)
+                cooldown:SetReverse(reverse)
+
+                cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
+
+                local count = buffFrame.count
+                if not count.original then
+                    local r, g, b, a = count:GetShadowColor()
+                    local x, y = count:GetShadowOffset()
+                    count.original = {
+                        font = count:GetFontObject(),
+                        justifyH = count:GetJustifyH(),
+                        justifyV = count:GetJustifyV(),
+                        shadowColor = { r = r, g = g, b = b, a = a },
+                        shadowOffset = { x = x, y = y },
+                    }
+                end
+                count:ClearAllPoints()
+                count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
+                count:SetJustifyH(Stacks.JustifyH)
+                count:SetJustifyV(Stacks.JustifyV)
+                count.fontobj = count:GetFontObject()
+                count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
+                count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
+                count:SetShadowColor(Stacks.ShadowColor.r, Stacks.ShadowColor.g, Stacks.ShadowColor.b, Stacks.ShadowColor.a)
+                count:SetShadowOffset(Stacks.ShadowXoffset, Stacks.ShadowYoffset)
+
+                if not cooldown.text then
+                    cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
+                    cooldown:SetScript("OnUpdate", function(s, t)
+                        s.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
+                        if s.expirationTime == 0 then
+                            return
+                        end
+                        local left = GetTimerText(s.expirationTime - GetTime())
+                        if s.left ~= left then
+                            s.left = left
+                            s.text:SetText(left or "")
+                        end
+                    end)
+                end
+                local text = cooldown.text
+                text:ClearAllPoints()
+                text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
+                text:SetJustifyH(Duration.JustifyH)
+                text:SetJustifyV(Duration.JustifyV)
+                text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
+                text:SetVertexColor(Duration.FontColor.r, Duration.FontColor.g, Duration.FontColor.b)
+                text:SetShadowColor(Duration.ShadowColor.r, Duration.ShadowColor.g, Duration.ShadowColor.b, Duration.ShadowColor.a)
+                text:SetShadowOffset(Duration.ShadowXoffset, Duration.ShadowYoffset)
+                text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
+
+                if showCdnum then
+                    text:Show()
+                    if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                        OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+                    end
+                else
+                    text:Hide()
                 end
             end
         end
 
+        hideAllBuffs(frame)
         updateAnchors(frame)
     end
+
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", createBuffFrames)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
-    local resizeBuffFrame = function(buffFrame, aura)
+    local utilSetBuff = function(buffFrame, aura)
         if buffFrame:IsForbidden() then
             return
         end
 
-        buffFrame.aura = aura
-        if aura and blacklist[aura.spellId] then
-            buffFrame:Hide()
-        else
-            buffFrame:Show()
-
-            buffFrame.cooldown.start = aura.expirationTime - aura.duration
-            buffFrame.cooldown.duration = aura.duration
-            buffFrame.cooldown.expirationTime = aura.expirationTime
-        end
+        local cooldown = buffFrame.cooldown
+        cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
+        cooldown.text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
     end
-    self:HookFunc("CompactUnitFrame_UtilSetBuff", resizeBuffFrame)
+    self:HookFunc("CompactUnitFrame_UtilSetBuff", utilSetBuff)
+
+    for _, v in pairs(frame_registry) do
+        v.dirty = true
+    end
+
     RaidFrameSettings:IterateRoster(function(frame)
         createBuffFrames(frame)
         if frame.buffFrames then
@@ -317,9 +367,10 @@ end
 function Buffs:OnDisable()
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
-        if not frame.modified then
+        if not frame_registry[frame] then
             return
         end
+        frame_registry[frame] = nil
 
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -345,7 +396,7 @@ function Buffs:OnDisable()
             cooldown:SetReverse(cooldown.original.reverse)
             cooldown.text:Hide()
             if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
             end
 
             local count = frame.buffFrames[i].count
@@ -357,14 +408,6 @@ function Buffs:OnDisable()
             count:SetJustifyH(count.original.justifyH)
             count:SetJustifyV(count.original.justifyV)
         end
-
-        local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE)
-        local buffSpace = frame:GetWidth() - (3 * maxDebuffSize)
-        local maxBuffs = buffSpace / Display
-        maxBuffs = math.floor(maxBuffs)
-        maxBuffs = math.max(3, maxBuffs)
-        maxBuffs = math.min(#frame.buffFrames, maxBuffs)
-        frame.maxBuffs = maxBuffs
     end
     RaidFrameSettings:IterateRoster(restoreBuffFrames)
 end

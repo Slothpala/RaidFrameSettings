@@ -19,6 +19,20 @@ local SetTextureSliceMode  = SetTextureSliceMode
 local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 local AuraUtil_ForEachAura                    = AuraUtil.ForEachAura
 
+local frame_registry = {}
+
+function Debuffs:HookFrame(frame)
+    self:RemoveHandler(frame, "OnEvent")
+    self:HookScript(frame, "OnEvent", function(frame, event, unit, updateInfo)
+        if event ~= "PLAYER_REGEN_ENABLED" then
+            return
+        end
+        if frame_registry[frame] and frame_registry[frame].lockdown then
+            DefaultCompactUnitFrameSetup(frame)
+        end
+    end)
+end
+
 function Debuffs:OnEnable()
         --Debuffframe size
     local width = RaidFrameSettings.db.profile.Debuffs.Display.width
@@ -142,6 +156,12 @@ function Debuffs:OnEnable()
     debuffColors.Poison = dbObj.Poison
     debuffColors.Bleed = dbObj.Bleed
 
+    --blacklist
+    local blacklist = {}
+    for spellId, value in pairs(RaidFrameSettings.db.profile.Debuffs.Blacklist) do
+        blacklist[tonumber(spellId)] = true
+    end
+    
     local function updateAnchors(frame, endingIndex)
         local first, prev, isBossAura
         for i = 1, endingIndex and endingIndex > #frame.debuffFrames and #frame.debuffFrames or endingIndex or #frame.debuffFrames do
@@ -167,9 +187,29 @@ function Debuffs:OnEnable()
             end
         end
     end
-    local function hideAllDebuffs(frame, startingIndex)
-        if frame.debuffFrames then
-            updateAnchors(frame, startingIndex and startingIndex > 0 and startingIndex - 1)
+    local function hideAllDebuffs(frame)
+        if frame.debuffFrames and frame.debuffs then
+            local frameNum = 1
+            frame.debuffs:Iterate(function(auraInstanceID, aura)
+                if frameNum > maxDebuffs then
+					return true
+				end
+				if CompactUnitFrame_IsAuraInstanceIDBlocked(frame, auraInstanceID) then
+					return false
+				end
+                if blacklist[aura.spellId] then
+                    return false
+                end
+				local debuffFrame = frame.debuffFrames[frameNum]
+				CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+				frameNum = frameNum + 1
+				return false
+			end)
+            for i = frameNum, #frame.debuffFrames do
+                frame.debuffFrames[i]:Hide()
+                CooldownFrame_Clear(frame.debuffFrames[i].cooldown)
+            end
+            updateAnchors(frame, frameNum - 1)
         end
     end
     self:HookFunc("CompactUnitFrame_HideAllDebuffs", hideAllDebuffs)
@@ -180,8 +220,8 @@ function Debuffs:OnEnable()
         end
 
         local lastShownDebuff;
-        for i = frame.maxDebuffs, 1, -1 do
-            local debuff = frame["Debuff" .. i]
+        for i = #frame.debuffFrames, 1, -1 do
+            local debuff = frame.debuffFrames[i]
             if debuff:IsShown() then
                 lastShownDebuff = debuff
                 break
@@ -212,147 +252,144 @@ function Debuffs:OnEnable()
         end
     end
     local createDebuffFrames = function(frame)
-        if framestrata == "Inherited" then
-            framestrata = frame:GetFrameStrata()
-        end
-
-        frame.modified = true
-
-        if maxDebuffs > frame.maxDebuffs then
-            local frameName = frame:GetName() .. "Debuff"
-            for i = frame.maxDebuffs + 1, maxDebuffs do
-                local child = _G[frameName .. i] 
-                if not child then
-                    child = CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
-                    child:Hide()
-                end
-                child:ClearAllPoints()
-                child:SetPoint("BOTTOMLEFT", _G[frameName .. i - 1], "BOTTOMRIGHT")
-                if not frame.debuffFrames[i] then
-                    frame.buffFrames[i] = child
-                end
-                frame["Debuff" .. i] = child
-            end
-            frame.maxDebuffs = maxDebuffs
-        end
-
-        for i = 1, #frame.debuffFrames do
-            local debuffFrame = frame.debuffFrames[i]
-            resizeAura(debuffFrame)
-            debuffFrame:SetFrameStrata(framestrata)
-
-            local cooldown = debuffFrame.cooldown
-            cooldown.original = {
-                edge = cooldown:GetDrawEdge(),
-                swipe = cooldown:GetDrawSwipe(),
-                reverse = cooldown:GetReverse(),
+        if not frame_registry[frame] then
+            self:HookFrame(frame)
+            frame_registry[frame] = {
+                lockdown = false,
+                dirty    = true,
             }
-            cooldown:SetDrawEdge(edge)
-            cooldown:SetDrawSwipe(swipe)
-            cooldown:SetReverse(reverse)
-            cooldown.start = cooldown:GetCooldownTimes() / 1000
-            cooldown.duration = cooldown:GetCooldownDuration() / 1000
-            cooldown.expirationTime = cooldown.start + cooldown.duration
+        end
 
-            local count = debuffFrame.count
-            local r, g, b, a = count:GetShadowColor()
-            local x, y = count:GetShadowOffset()
-            count.original = {
-                font = count:GetFontObject(),
-                justifyH = count:GetJustifyH(),
-                justifyV = count:GetJustifyV(),
-                shadowColor = { r = r, g = g, b = b, a = a },
-                shadowOffset = { x = x, y = y },
-            }
-            count:ClearAllPoints()
-            count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
-            count:SetJustifyH(Stacks.JustifyH)
-            count:SetJustifyV(Stacks.JustifyV)
-            count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
-            count:SetShadowColor(Stacks.ShadowColor.r, Stacks.ShadowColor.g, Stacks.ShadowColor.b, Stacks.ShadowColor.a)
-            count:SetShadowOffset(Stacks.ShadowXoffset, Stacks.ShadowYoffset)
-
-            if not cooldown.text then
-                cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
-                cooldown:SetScript("OnUpdate", function(s, t)
-                    if s.expirationTime == 0 then
-                        return
-                    end
-                    local left = GetTimerText(s.expirationTime - GetTime())
-                    if s.left ~= left then
-                        s.left = left
-                        s.text:SetText(left or "")
-                    end
-                end)
+        if frame_registry[frame].dirty then
+            if InCombatLockdown() then
+                frame_registry[frame].lockdown = true
+                return
             end
-            local text = cooldown.text
-            text:ClearAllPoints()
-            text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
-            text:SetJustifyH(Duration.JustifyH)
-            text:SetJustifyV(Duration.JustifyV)
-            text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
-            text:SetShadowColor(Duration.ShadowColor.r, Duration.ShadowColor.g, Duration.ShadowColor.b, Duration.ShadowColor.a)
-            text:SetShadowOffset(Duration.ShadowXoffset, Duration.ShadowYoffset)
-            text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
-            if showCdnum then
-                text:Show()
-                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+
+            frame_registry[frame].lockdown = false
+            frame_registry[frame].dirty = false
+
+            -- 프레임 생성
+            if maxDebuffs > frame.maxDebuffs then
+                local frameName = frame:GetName() .. "Debuff"
+                for i = frame.maxDebuffs + 1, maxDebuffs do
+                    local child = _G[frameName .. i] 
+                    if not child then
+                        child = CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
+                        child:Hide()
+                        child:SetPoint("BOTTOMLEFT", _G[frameName .. i - 1], "BOTTOMRIGHT")
+                    end
+                    if not frame.debuffFrames[i] then
+                        frame.debuffFrames[i] = child
+                    end
+                    frame["Debuff" .. i] = child
                 end
-            else
-                text:Hide()
-                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+            end
+
+            -- 설정 변경
+            if framestrata == "Inherited" then
+                framestrata = frame:GetFrameStrata()
+            end
+
+            for i = 1, #frame.debuffFrames do
+                local debuffFrame = frame.debuffFrames[i]
+                resizeAura(debuffFrame)
+                debuffFrame:SetFrameStrata(framestrata)
+
+                local cooldown = debuffFrame.cooldown
+                if not cooldown.original then
+                    cooldown.original = {
+                        edge = cooldown:GetDrawEdge(),
+                        swipe = cooldown:GetDrawSwipe(),
+                        reverse = cooldown:GetReverse(),
+                        noCooldownCount = cooldown.noCooldownCount
+                    }
+                end
+                cooldown:SetDrawEdge(edge)
+                cooldown:SetDrawSwipe(swipe)
+                cooldown:SetReverse(reverse)
+                cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
+
+                local count = debuffFrame.count
+                if not count.original then
+                    local r, g, b, a = count:GetShadowColor()
+                    local x, y = count:GetShadowOffset()
+                    count.original = {
+                        font = count:GetFontObject(),
+                        justifyH = count:GetJustifyH(),
+                        justifyV = count:GetJustifyV(),
+                        shadowColor = { r = r, g = g, b = b, a = a },
+                        shadowOffset = { x = x, y = y },
+                    }
+                end
+                count:ClearAllPoints()
+                count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
+                count:SetJustifyH(Stacks.JustifyH)
+                count:SetJustifyV(Stacks.JustifyV)
+                count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
+                count:SetShadowColor(Stacks.ShadowColor.r, Stacks.ShadowColor.g, Stacks.ShadowColor.b, Stacks.ShadowColor.a)
+                count:SetShadowOffset(Stacks.ShadowXoffset, Stacks.ShadowYoffset)
+
+                if not cooldown.text then
+                    cooldown.text = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
+                    cooldown:SetScript("OnUpdate", function(s, t)
+                        s.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
+                        if s.expirationTime == 0 then
+                            return
+                        end
+                        local left = GetTimerText(s.expirationTime - GetTime())
+                        if s.left ~= left then
+                            s.left = left
+                            s.text:SetText(left or "")
+                        end
+                    end)
+                end
+                local text = cooldown.text
+                text:ClearAllPoints()
+                text:SetPoint(Duration.Position, Duration.X_Offset, Duration.Y_Offset)
+                text:SetJustifyH(Duration.JustifyH)
+                text:SetJustifyV(Duration.JustifyV)
+                text:SetFont(Duration.Font, Duration.FontSize, Duration.OutlineMode)
+                text:SetShadowColor(Duration.ShadowColor.r, Duration.ShadowColor.g, Duration.ShadowColor.b, Duration.ShadowColor.a)
+                text:SetShadowOffset(Duration.ShadowXoffset, Duration.ShadowYoffset)
+                text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
+                if showCdnum then
+                    text:Show()
+                    if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                        OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+                    end
+                else
+                    text:Hide()
+                end
+            end
+
+            if frame.PrivateAuraAnchors then
+                for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
+                    privateAuraAnchor:SetSize(boss_width, boss_height)
+                    privateAuraAnchor:SetFrameStrata(framestrata)
                 end
             end
         end
-
-        if frame.PrivateAuraAnchors then
-            for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
-                privateAuraAnchor:SetSize(boss_width, boss_height)
-                privateAuraAnchor:SetFrameStrata(framestrata)
-            end
-        end
-
+        hideAllDebuffs(frame)
         updateAnchors(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", createDebuffFrames)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(RaidFrameSettings.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
-    local resizeDebuffFrame = function(debuffFrame, aura)
+
+
+    local utilSetDebuff = function(debuffFrame, aura)
         if debuffFrame:IsForbidden() or not aura then
             return
         end
         debuffFrame.isBossAura = aura.isBossAura
-        if blacklist[aura.spellId] then
-            debuffFrame:Hide()
+        if aura and aura.isBossAura then
+            debuffFrame:SetSize(boss_width, boss_height)
         else
-            debuffFrame:Show()
-            if aura and aura.isBossAura then
-                debuffFrame:SetSize(boss_width, boss_height)
-            else
-                debuffFrame:SetSize(width, height)
-            end
+            debuffFrame:SetSize(width, height)
+        end
 
-            if debuffFrame.cooldown.text then
-                local color = Duration.FontColor
-                if Duration.DebuffColor then
-                    if aura.dispelName then
-                        color = debuffColors[aura.dispelName]
-                    end
-                    if Bleeds[aura.spellId] then
-                        color = debuffColors.Bleed
-                    end
-                end
-                debuffFrame.cooldown.text:SetVertexColor(color.r, color.g, color.b)
-                debuffFrame.border:SetVertexColor(color.r, color.g, color.b)
-            end
-
-            local color = Stacks.FontColor
-            if Stacks.DebuffColor then
+        if debuffFrame.cooldown.text then
+            local color = Duration.FontColor
+            if Duration.DebuffColor then
                 if aura.dispelName then
                     color = debuffColors[aura.dispelName]
                 end
@@ -360,14 +397,31 @@ function Debuffs:OnEnable()
                     color = debuffColors.Bleed
                 end
             end
-            debuffFrame.count:SetVertexColor(color.r, color.g, color.b)
-
-            debuffFrame.cooldown.start = aura.expirationTime - aura.duration
-            debuffFrame.cooldown.duration = aura.duration
-            debuffFrame.cooldown.expirationTime = aura.expirationTime
+            debuffFrame.cooldown.text:SetVertexColor(color.r, color.g, color.b)
+            debuffFrame.border:SetVertexColor(color.r, color.g, color.b)
         end
+
+        local color = Stacks.FontColor
+        if Stacks.DebuffColor then
+            if aura.dispelName then
+                color = debuffColors[aura.dispelName]
+            end
+            if Bleeds[aura.spellId] then
+                color = debuffColors.Bleed
+            end
+        end
+        debuffFrame.count:SetVertexColor(color.r, color.g, color.b)
+
+        local cooldown = debuffFrame.cooldown
+        cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
+        cooldown.text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
     end
-    self:HookFunc("CompactUnitFrame_UtilSetDebuff", resizeDebuffFrame)
+    self:HookFunc("CompactUnitFrame_UtilSetDebuff", utilSetDebuff)
+
+    for _, v in pairs(frame_registry) do
+        v.dirty = true
+    end
+
     RaidFrameSettings:IterateRoster(function(frame)
         createDebuffFrames(frame)
         if frame.debuffFrames then
@@ -375,7 +429,7 @@ function Debuffs:OnEnable()
                 local debuffFrame = frame.debuffFrames[i]
                 if debuffFrame.auraInstanceID then
                     local aura = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
-                    resizeDebuffFrame(debuffFrame, aura)
+                    utilSetDebuff(debuffFrame, aura)
                 end
             end
         end
@@ -387,9 +441,10 @@ end
 function Debuffs:OnDisable()
     self:DisableHooks()
     local restoreDebuffFrames = function(frame)
-        if not frame.modified then
+        if not frame_registry[frame] then
             return
         end
+        frame_registry[frame] = nil
 
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -421,7 +476,7 @@ function Debuffs:OnDisable()
             cooldown:SetReverse(cooldown.original.reverse)
             cooldown.text:Hide()
             if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, false)
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
             end
 
             local count = frame.debuffFrames[i].count
@@ -440,7 +495,6 @@ function Debuffs:OnDisable()
                 privateAuraAnchor:SetFrameStrata(frame:GetFrameStrata())
             end
         end
-        frame.maxDebuffs = 3
     end
     RaidFrameSettings:IterateRoster(restoreDebuffFrames)
 end

@@ -227,7 +227,6 @@ function Buffs:OnEnable()
             frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
-            -- 프레임 생성
             if maxBuffs > frame.maxBuffs then
                 local frameName = frame:GetName() .. "Buff"
                 for i = frame.maxBuffs + 1, maxBuffs do
@@ -236,6 +235,7 @@ function Buffs:OnEnable()
                         child = CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
                         child:Hide()
                         child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
+                        child.cooldown:SetHideCountdownNumbers(true)
                     end
                     if not frame.buffFrames[i] then
                         frame.buffFrames[i] = child
@@ -243,7 +243,6 @@ function Buffs:OnEnable()
                 end
             end
 
-            -- 설정 변경
             if framestrata == "Inherited" then
                 framestrata = frame:GetFrameStrata()
             end
@@ -322,6 +321,9 @@ function Buffs:OnEnable()
                     end
                 else
                     text:Hide()
+                    if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                        OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+                    end
                 end
             end
         end

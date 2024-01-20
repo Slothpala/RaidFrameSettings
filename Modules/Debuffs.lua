@@ -269,7 +269,6 @@ function Debuffs:OnEnable()
             frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
-            -- 프레임 생성
             if maxDebuffs > frame.maxDebuffs then
                 local frameName = frame:GetName() .. "Debuff"
                 for i = frame.maxDebuffs + 1, maxDebuffs do
@@ -278,6 +277,7 @@ function Debuffs:OnEnable()
                         child = CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
                         child:Hide()
                         child:SetPoint("BOTTOMLEFT", _G[frameName .. i - 1], "BOTTOMRIGHT")
+                        child.cooldown:SetHideCountdownNumbers(true)
                     end
                     if not frame.debuffFrames[i] then
                         frame.debuffFrames[i] = child
@@ -286,7 +286,6 @@ function Debuffs:OnEnable()
                 end
             end
 
-            -- 설정 변경
             if framestrata == "Inherited" then
                 framestrata = frame:GetFrameStrata()
             end
@@ -360,6 +359,9 @@ function Debuffs:OnEnable()
                     end
                 else
                     text:Hide()
+                    if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                        OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+                    end
                 end
             end
 

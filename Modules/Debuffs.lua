@@ -252,6 +252,9 @@ function Debuffs:OnEnable()
         end
     end
     local createDebuffFrames = function(frame)
+        if frame.updateAllEvent == "UNIT_PET" then
+            return
+        end
         if not frame_registry[frame] then
             self:HookFrame(frame)
             frame_registry[frame] = {
@@ -269,7 +272,7 @@ function Debuffs:OnEnable()
             frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
-            if maxDebuffs > frame.maxDebuffs then
+            if frame.maxDebuffs > 0 and maxDebuffs > frame.maxDebuffs then
                 local frameName = frame:GetName() .. "Debuff"
                 for i = frame.maxDebuffs + 1, maxDebuffs do
                     local child = _G[frameName .. i] 

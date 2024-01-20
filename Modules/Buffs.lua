@@ -210,6 +210,10 @@ function Buffs:OnEnable()
         end
     end
     local createBuffFrames = function(frame)
+        if frame.updateAllEvent == "UNIT_PET" then
+            return
+        end
+
         if not frame_registry[frame] then
             self:HookFrame(frame)
             frame_registry[frame] = {
@@ -227,7 +231,7 @@ function Buffs:OnEnable()
             frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
-            if maxBuffs > frame.maxBuffs then
+            if frame.maxBuffs > 0 and maxBuffs > frame.maxBuffs then
                 local frameName = frame:GetName() .. "Buff"
                 for i = frame.maxBuffs + 1, maxBuffs do
                     local child = _G[frameName .. i]

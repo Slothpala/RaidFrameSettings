@@ -161,21 +161,22 @@ function Debuffs:OnEnable()
     for spellId, value in pairs(RaidFrameSettings.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
-    
+
     local function updateAnchors(frame, endingIndex)
         local first, prev, isBossAura
-        for i = 1, endingIndex and endingIndex > #frame.debuffFrames and #frame.debuffFrames or endingIndex or #frame.debuffFrames do
-            if frame.debuffFrames[i]:IsShown() and not frame.debuffFrames[i]:IsForbidden() then
+        for i = 1, endingIndex and endingIndex > maxDebuffs and maxDebuffs or endingIndex or maxDebuffs do
+            local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
+            if debuffFrame:IsShown() and not debuffFrame:IsForbidden() then
                 if not first then
-                    frame.debuffFrames[i]:ClearAllPoints()
-                    frame.debuffFrames[i]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
-                    prev = frame.debuffFrames[i]
-                    first = frame.debuffFrames[i]
+                    debuffFrame:ClearAllPoints()
+                    debuffFrame:SetPoint(point, frame, relativePoint, x_offset, y_offset)
+                    prev = debuffFrame
+                    first = debuffFrame
                 else
-                    frame.debuffFrames[i]:ClearAllPoints()
-                    frame.debuffFrames[i]:SetPoint(debuffPoint, prev, debuffRelativePoint, 0, 0)
-                    isBossAura = frame.debuffFrames[i].isBossAura or isBossAura
-                    prev = frame.debuffFrames[i]
+                    debuffFrame:ClearAllPoints()
+                    debuffFrame:SetPoint(debuffPoint, prev, debuffRelativePoint, 0, 0)
+                    isBossAura = debuffFrame.isBossAura or isBossAura
+                    prev = debuffFrame
                 end
             end
         end
@@ -188,7 +189,7 @@ function Debuffs:OnEnable()
         end
     end
     local function hideAllDebuffs(frame)
-        if frame.debuffFrames and frame.debuffs then
+        if frame.debuffFrames and frame.debuffs and frame_registry[frame] then
             local frameNum = 1
             frame.debuffs:Iterate(function(auraInstanceID, aura)
                 if frameNum > maxDebuffs then
@@ -200,14 +201,15 @@ function Debuffs:OnEnable()
                 if blacklist[aura.spellId] then
                     return false
                 end
-				local debuffFrame = frame.debuffFrames[frameNum]
-				CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
+                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
 				frameNum = frameNum + 1
 				return false
 			end)
-            for i = frameNum, #frame.debuffFrames do
-                frame.debuffFrames[i]:Hide()
-                CooldownFrame_Clear(frame.debuffFrames[i].cooldown)
+            for i = frameNum, maxDebuffs do
+                local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
+                debuffFrame:Hide()
+                CooldownFrame_Clear(debuffFrame.cooldown)
             end
             updateAnchors(frame, frameNum - 1)
         end
@@ -215,13 +217,13 @@ function Debuffs:OnEnable()
     self:HookFunc("CompactUnitFrame_HideAllDebuffs", hideAllDebuffs)
 
     local function updatePrivateAuras(frame)
-        if not frame.PrivateAuraAnchors then
+        if not frame.PrivateAuraAnchors or not frame_registry[frame] then
             return
         end
 
         local lastShownDebuff;
-        for i = #frame.debuffFrames, 1, -1 do
-            local debuff = frame.debuffFrames[i]
+        for i = maxDebuffs, 1, -1 do
+            local debuff = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
             if debuff:IsShown() then
                 lastShownDebuff = debuff
                 break
@@ -258,8 +260,9 @@ function Debuffs:OnEnable()
         if not frame_registry[frame] then
             self:HookFrame(frame)
             frame_registry[frame] = {
-                lockdown = false,
-                dirty    = true,
+                lockdown          = false,
+                dirty             = true,
+                extraDebuffFrames = {},
             }
         end
 
@@ -272,15 +275,16 @@ function Debuffs:OnEnable()
             frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
-            if frame.maxDebuffs > 0 and maxDebuffs > frame.maxDebuffs then
+            if frame.maxDebuffs > 0 and maxDebuffs > #frame.debuffFrames then
                 local frameName = frame:GetName() .. "Debuff"
-                for i = frame.maxDebuffs + 1, maxDebuffs do
-                    local child = _G[frameName .. i] 
+                for i = #frame.debuffFrames + 1, maxDebuffs do
+                    local child = frame_registry[frame].extraDebuffFrames[i]
                     if not child then
                         child = CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
                         child:Hide()
                         child:SetPoint("BOTTOMLEFT", _G[frameName .. i - 1], "BOTTOMRIGHT")
                         child.cooldown:SetHideCountdownNumbers(true)
+                        frame_registry[frame].extraDebuffFrames[i] = child
                     end
                     if not frame.debuffFrames[i] then
                         frame.debuffFrames[i] = child
@@ -293,8 +297,8 @@ function Debuffs:OnEnable()
                 framestrata = frame:GetFrameStrata()
             end
 
-            for i = 1, #frame.debuffFrames do
-                local debuffFrame = frame.debuffFrames[i]
+            for i = 1, maxDebuffs do
+                local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
                 resizeAura(debuffFrame)
                 debuffFrame:SetFrameStrata(framestrata)
 
@@ -385,6 +389,11 @@ function Debuffs:OnEnable()
         if debuffFrame:IsForbidden() or not aura then
             return
         end
+        local frame = debuffFrame:GetParent()
+        if not frame_registry[frame] then
+            return
+        end
+
         debuffFrame.isBossAura = aura.isBossAura
         if aura and aura.isBossAura then
             debuffFrame:SetSize(boss_width, boss_height)
@@ -429,9 +438,12 @@ function Debuffs:OnEnable()
 
     RaidFrameSettings:IterateRoster(function(frame)
         createDebuffFrames(frame)
+        if not frame_registry[frame] then
+            return
+        end
         if frame.debuffFrames then
-            for i=1, #frame.debuffFrames do
-                local debuffFrame = frame.debuffFrames[i]
+            for i=1, maxDebuffs do
+                local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
                 if debuffFrame.auraInstanceID then
                     local aura = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
                     utilSetDebuff(debuffFrame, aura)
@@ -449,7 +461,7 @@ function Debuffs:OnDisable()
         if not frame_registry[frame] then
             return
         end
-        frame_registry[frame] = nil
+        frame_registry[frame].dirty = true
 
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()

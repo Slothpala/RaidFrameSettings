@@ -144,36 +144,37 @@ function Buffs:OnEnable()
     local function updateAnchors(frame, endingIndex)
         local first = true
         local prev
-        for i = 1, endingIndex and endingIndex > #frame.buffFrames and #frame.buffFrames or endingIndex or #frame.buffFrames do
-            if frame.buffFrames[i]:IsShown() and not frame.buffFrames[i]:IsForbidden() then
+        for i = 1, endingIndex and endingIndex > maxBuffs and maxBuffs or endingIndex or maxBuffs do
+            local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
+            if buffFrame:IsShown() and not buffFrame:IsForbidden() then
                 local continue
-                if frame.buffFrames[i].aura then
-                    local aura = frame.buffFrames[i].aura
+                if buffFrame.aura then
+                    local aura = buffFrame.aura
                     if Position[aura.spellId] then
                         local pos = Position[aura.spellId]
-                        frame.buffFrames[i]:ClearAllPoints()
-                        frame.buffFrames[i]:SetPoint(pos.point, frame, pos.point, pos.x_offset, pos.y_offset)
+                        buffFrame:ClearAllPoints()
+                        buffFrame:SetPoint(pos.point, frame, pos.point, pos.x_offset, pos.y_offset)
                         continue = true
                     end
                 end
 
                 if not continue then
                     if first then
-                        frame.buffFrames[i]:ClearAllPoints()
-                        frame.buffFrames[i]:SetPoint(point, frame, relativePoint, x_offset, y_offset)
-                        prev = frame.buffFrames[i]
+                        buffFrame:ClearAllPoints()
+                        buffFrame:SetPoint(point, frame, relativePoint, x_offset, y_offset)
+                        prev = buffFrame
                         first = false
                     else
-                        frame.buffFrames[i]:ClearAllPoints()
-                        frame.buffFrames[i]:SetPoint(buffPoint, prev, buffRelativePoint, 0, 0)
-                        prev = frame.buffFrames[i]
+                        buffFrame:ClearAllPoints()
+                        buffFrame:SetPoint(buffPoint, prev, buffRelativePoint, 0, 0)
+                        prev = buffFrame
                     end
                 end
             end
         end
     end
     local hideAllBuffs = function(frame)
-        if frame.buffFrames and frame.buffs then
+        if frame.buffFrames and frame.buffs and frame_registry[frame] then
             local frameNum = 1
             frame.buffs:Iterate(function(auraInstanceID, aura)
                 if frameNum > maxBuffs then
@@ -182,14 +183,15 @@ function Buffs:OnEnable()
                 if blacklist[aura.spellId] then
                     return false
                 end
-                local buffFrame = frame.buffFrames[frameNum]
+                local buffFrame = frame.buffFrames[frameNum] or frame_registry[frame].extraBuffFrames[frameNum]
                 CompactUnitFrame_UtilSetBuff(buffFrame, aura)
                 frameNum = frameNum + 1
                 return false
             end)
-            for i = frameNum, #frame.buffFrames do
-                frame.buffFrames[i]:Hide()
-                CooldownFrame_Clear(frame.buffFrames[i].cooldown)
+            for i = frameNum, maxBuffs do
+                local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
+                buffFrame:Hide()
+                CooldownFrame_Clear(buffFrame.cooldown)
             end
             updateAnchors(frame, frameNum - 1)
         end
@@ -217,8 +219,9 @@ function Buffs:OnEnable()
         if not frame_registry[frame] then
             self:HookFrame(frame)
             frame_registry[frame] = {
-                lockdown = false,
-                dirty    = true,
+                lockdown        = false,
+                dirty           = true,
+                extraBuffFrames = {},
             }
         end
 
@@ -231,18 +234,16 @@ function Buffs:OnEnable()
             frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
-            if frame.maxBuffs > 0 and maxBuffs > frame.maxBuffs then
+            if frame.maxBuffs > 0 and maxBuffs > #frame.buffFrames then
                 local frameName = frame:GetName() .. "Buff"
-                for i = frame.maxBuffs + 1, maxBuffs do
-                    local child = _G[frameName .. i]
+                for i = #frame.buffFrames + 1, maxBuffs do
+                    local child = frame_registry[frame].extraBuffFrames[i]
                     if not child then
                         child = CreateFrame("Button", frameName .. i, frame, "CompactBuffTemplate")
                         child:Hide()
                         child:SetPoint("BOTTOMRIGHT", _G[frameName .. i - 1], "BOTTOMLEFT")
                         child.cooldown:SetHideCountdownNumbers(true)
-                    end
-                    if not frame.buffFrames[i] then
-                        frame.buffFrames[i] = child
+                        frame_registry[frame].extraBuffFrames[i] = child
                     end
                 end
             end
@@ -251,8 +252,8 @@ function Buffs:OnEnable()
                 framestrata = frame:GetFrameStrata()
             end
 
-            for i = 1, #frame.buffFrames do
-                local buffFrame = frame.buffFrames[i]
+            for i = 1, maxBuffs do
+                local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
                 resizeAura(buffFrame)
                 buffFrame:SetFrameStrata(framestrata)
 
@@ -341,7 +342,13 @@ function Buffs:OnEnable()
         if buffFrame:IsForbidden() then
             return
         end
+        local frame = buffFrame:GetParent()
+        if not frame_registry[frame] then
+            return
+        end
 
+        buffFrame.aura = aura
+        
         local cooldown = buffFrame.cooldown
         cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
         cooldown.text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
@@ -354,9 +361,12 @@ function Buffs:OnEnable()
 
     RaidFrameSettings:IterateRoster(function(frame)
         createBuffFrames(frame)
+        if not frame_registry[frame] then
+            return
+        end
         if frame.buffFrames then
-            for i=1, #frame.buffFrames do
-                local buffFrame = frame.buffFrames[i]
+            for i=1, maxBuffs do
+                local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
                 if buffFrame.auraInstanceID then
                     local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
                     if aura and RaidFrameSettings.db.profile.Buffs.Blacklist[tostring(aura.spellId)] then
@@ -376,7 +386,7 @@ function Buffs:OnDisable()
         if not frame_registry[frame] then
             return
         end
-        frame_registry[frame] = nil
+        frame_registry[frame].dirty = true
 
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()

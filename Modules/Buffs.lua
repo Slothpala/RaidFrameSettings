@@ -212,7 +212,7 @@ function Buffs:OnEnable()
         end
     end
     local createBuffFrames = function(frame)
-        if frame.updateAllEvent == "UNIT_PET" then
+        if frame.updateAllEvent == "UNIT_PET" or frame.maxBuffs == 0 then
             return
         end
 
@@ -234,7 +234,7 @@ function Buffs:OnEnable()
             frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
-            if frame.maxBuffs > 0 and maxBuffs > #frame.buffFrames then
+            if maxBuffs > #frame.buffFrames then
                 local frameName = frame:GetName() .. "Buff"
                 for i = #frame.buffFrames + 1, maxBuffs do
                     local child = frame_registry[frame].extraBuffFrames[i]

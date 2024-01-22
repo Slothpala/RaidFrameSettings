@@ -137,13 +137,6 @@ function Debuffs:OnEnable()
     }
     local Bleeds = addonTable.Bleeds
 
-    dbObj = RaidFrameSettings.db.profile.AuraHighlight.DebuffColors
-    debuffColors.Curse = dbObj.Curse
-    debuffColors.Disease = dbObj.Disease
-    debuffColors.Magic = dbObj.Magic
-    debuffColors.Poison = dbObj.Poison
-    debuffColors.Bleed = dbObj.Bleed
-
     --blacklist
     local blacklist = {}
     for spellId, value in pairs(RaidFrameSettings.db.profile.Debuffs.Blacklist) do
@@ -450,10 +443,12 @@ end
 function Debuffs:OnDisable()
     self:DisableHooks()
     local restoreDebuffFrames = function(frame)
-        if not frame_registry[frame] then
-            return
+        if frame_registry[frame] then
+            frame_registry[frame].dirty = true
+            for _, extraDebuffFrame in pairs(frame_registry[frame].extraDebuffFrames) do
+                extraDebuffFrame:Hide()
+            end
         end
-        frame_registry[frame].dirty = true
 
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -468,18 +463,19 @@ function Debuffs:OnDisable()
         frame.debuffFrames[1]:ClearAllPoints()
         frame.debuffFrames[1]:SetPoint(debuffPos, frame, "BOTTOMLEFT", 3, debuffOffset)
         for i=1, #frame.debuffFrames do
-            frame.debuffFrames[i].border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
-            frame.debuffFrames[i].border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)
-            frame.debuffFrames[i].border:SetTextureSliceMargins(0,0,0,0)
-            frame.debuffFrames[i].icon:SetTexCoord(0,1,0,1)
+            local debuffFrame = frame.debuffFrames[i]
+            debuffFrame.border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
+            debuffFrame.border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)
+            debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
+            debuffFrame.icon:SetTexCoord(0,1,0,1)
             if ( i > 1 ) then
-                frame.debuffFrames[i]:ClearAllPoints();
-                frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
+                debuffFrame:ClearAllPoints();
+                debuffFrame:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
             end
-            frame.debuffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
+            debuffFrame:SetFrameStrata(frame:GetFrameStrata())
             -- frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
-            local cooldown = frame.debuffFrames[i].cooldown
+            local cooldown = debuffFrame.cooldown
             cooldown:SetDrawEdge(cooldown.original.edge)
             cooldown:SetDrawSwipe(cooldown.original.swipe)
             cooldown:SetReverse(cooldown.original.reverse)
@@ -488,7 +484,7 @@ function Debuffs:OnDisable()
                 OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
             end
 
-            local count = frame.debuffFrames[i].count
+            local count = debuffFrame.count
             count:ClearAllPoints()
             count:SetPoint("BOTTOMRIGHT", 5, 0)
             count:SetFont(count.original.font:GetFont())

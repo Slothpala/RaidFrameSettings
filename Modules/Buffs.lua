@@ -444,7 +444,6 @@ function Buffs:OnDisable()
             count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
             count:SetJustifyH(count.original.justifyH)
             count:SetJustifyV(count.original.justifyV)
-            buffFrame:Show()
         end
     end
     RaidFrameSettings:IterateRoster(restoreBuffFrames)

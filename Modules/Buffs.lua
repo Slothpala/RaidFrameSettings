@@ -413,16 +413,16 @@ function Buffs:OnDisable()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
         local Display = math.min(15, 11 * componentScale)
         local powerBarUsedHeight = frame.powerBar:IsShown() and frame.powerBar:GetHeight() or 0
-        local buffPos, buffRelativePoint, buffOffset = "BOTTOMRIGHT", "BOTTOMLEFT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight;
-        frame.buffFrames[1]:ClearAllPoints();
-        frame.buffFrames[1]:SetPoint(buffPos, frame, "BOTTOMRIGHT", -3, buffOffset);
+        local buffPos, buffRelativePoint, buffOffset = "BOTTOMRIGHT", "BOTTOMLEFT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight
+        frame.buffFrames[1]:ClearAllPoints()
+        frame.buffFrames[1]:SetPoint(buffPos, frame, "BOTTOMRIGHT", -3, buffOffset)
         for i=1, #frame.buffFrames do
             local buffFrame = frame.buffFrames[i]
             buffFrame:SetSize(Display, Display)
             buffFrame.icon:SetTexCoord(0,1,0,1)
             if ( i > 1 ) then
-                buffFrame:ClearAllPoints();
-                buffFrame:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
+                buffFrame:ClearAllPoints()
+                buffFrame:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0)
             end
             buffFrame:SetFrameStrata(frame:GetFrameStrata())
             -- frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)

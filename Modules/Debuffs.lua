@@ -148,7 +148,7 @@ function Debuffs:OnEnable()
             return
         end
 
-        local lastShownDebuff;
+        local lastShownDebuff
         for i = maxDebuffs, 1, -1 do
             local debuff = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
             if debuff and debuff:IsShown() then
@@ -264,8 +264,8 @@ function Debuffs:OnEnable()
                         child = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
                         child:SetParent(frame)
                         child:Hide()
-                        child.baseSize = width;
-                        child.maxHeight = width;
+                        child.baseSize = width
+                        child.maxHeight = width
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraDebuffFrames[i] = child
                     end
@@ -455,7 +455,7 @@ function Debuffs:OnDisable()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
         local buffSize = math.min(15, 11 * componentScale)
         local powerBarUsedHeight = frame.powerBar:IsShown() and frame.powerBar:GetHeight() or 0
-        local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE);
+        local maxDebuffSize = math.min(20, frameHeight - powerBarUsedHeight - CUF_AURA_BOTTOM_OFFSET - CUF_NAME_SECTION_SIZE)
         for i=1,#frame.debuffFrames do  
             frame.debuffFrames[i]:SetSize(buffSize, buffSize)
         end
@@ -469,8 +469,8 @@ function Debuffs:OnDisable()
             debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
             debuffFrame.icon:SetTexCoord(0,1,0,1)
             if ( i > 1 ) then
-                debuffFrame:ClearAllPoints();
-                debuffFrame:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
+                debuffFrame:ClearAllPoints()
+                debuffFrame:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0)
             end
             debuffFrame:SetFrameStrata(frame:GetFrameStrata())
             -- frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)

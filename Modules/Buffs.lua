@@ -268,6 +268,7 @@ function Buffs:OnEnable()
                     local child = frame_registry[frame].extraBuffFrames[idx]
                     if not child then
                         child = CreateFrame("Button", nil, UIParent, "CompactBuffTemplate")
+                        child:SetParent(frame)
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraBuffFrames[idx] = child

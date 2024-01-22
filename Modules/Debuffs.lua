@@ -282,6 +282,7 @@ function Debuffs:OnEnable()
                     local child = frame_registry[frame].extraDebuffFrames[i]
                     if not child then
                         child = CreateFrame("Button", frameName .. i, UIParent, "CompactDebuffTemplate")
+                        child:SetParent(frame)
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraDebuffFrames[i] = child

@@ -271,6 +271,8 @@ function Debuffs:OnEnable()
                         child = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
                         child:SetParent(frame)
                         child:Hide()
+                        child.baseSize = width;
+                        child.maxHeight = width;
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraDebuffFrames[i] = child
                     end

@@ -428,22 +428,26 @@ function Buffs:OnDisable()
             -- frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = buffFrame.cooldown
-            cooldown:SetDrawEdge(cooldown.original.edge)
-            cooldown:SetDrawSwipe(cooldown.original.swipe)
-            cooldown:SetReverse(cooldown.original.reverse)
-            cooldown.text:Hide()
-            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+            if cooldown and cooldown.original then
+                cooldown:SetDrawEdge(cooldown.original.edge)
+                cooldown:SetDrawSwipe(cooldown.original.swipe)
+                cooldown:SetReverse(cooldown.original.reverse)
+                cooldown.text:Hide()
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+                end
             end
 
             local count = buffFrame.count
-            count:ClearAllPoints()
-            count:SetPoint("BOTTOMRIGHT", 5, 0)
-            count:SetFont(count.original.font:GetFont())
-            count:SetShadowColor(count.original.shadowColor.r, count.original.shadowColor.g, count.original.shadowColor.b, count.original.shadowColor.a)
-            count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
-            count:SetJustifyH(count.original.justifyH)
-            count:SetJustifyV(count.original.justifyV)
+            if count and count.original then
+                count:ClearAllPoints()
+                count:SetPoint("BOTTOMRIGHT", 5, 0)
+                count:SetFont(count.original.font:GetFont())
+                count:SetShadowColor(count.original.shadowColor.r, count.original.shadowColor.g, count.original.shadowColor.b, count.original.shadowColor.a)
+                count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
+                count:SetJustifyH(count.original.justifyH)
+                count:SetJustifyV(count.original.justifyV)
+            end
         end
     end
     RaidFrameSettings:IterateRoster(restoreBuffFrames)

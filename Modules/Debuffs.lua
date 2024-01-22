@@ -151,7 +151,7 @@ function Debuffs:OnEnable()
         local lastShownDebuff;
         for i = maxDebuffs, 1, -1 do
             local debuff = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
-            if debuff:IsShown() then
+            if debuff and debuff:IsShown() then
                 lastShownDebuff = debuff
                 break
             end
@@ -476,22 +476,26 @@ function Debuffs:OnDisable()
             -- frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = debuffFrame.cooldown
-            cooldown:SetDrawEdge(cooldown.original.edge)
-            cooldown:SetDrawSwipe(cooldown.original.swipe)
-            cooldown:SetReverse(cooldown.original.reverse)
-            cooldown.text:Hide()
-            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+            if cooldown and cooldown.original then
+                cooldown:SetDrawEdge(cooldown.original.edge)
+                cooldown:SetDrawSwipe(cooldown.original.swipe)
+                cooldown:SetReverse(cooldown.original.reverse)
+                cooldown.text:Hide()
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+                end
             end
 
             local count = debuffFrame.count
-            count:ClearAllPoints()
-            count:SetPoint("BOTTOMRIGHT", 5, 0)
-            count:SetFont(count.original.font:GetFont())
-            count:SetJustifyH(count.original.justifyH)
-            count:SetJustifyV(count.original.justifyV)
-            count:SetShadowColor(count.original.shadowColor.r, count.original.shadowColor.g, count.original.shadowColor.b, count.original.shadowColor.a)
-            count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
+            if count and count.original then
+                count:ClearAllPoints()
+                count:SetPoint("BOTTOMRIGHT", 5, 0)
+                count:SetFont(count.original.font:GetFont())
+                count:SetJustifyH(count.original.justifyH)
+                count:SetJustifyV(count.original.justifyV)
+                count:SetShadowColor(count.original.shadowColor.r, count.original.shadowColor.g, count.original.shadowColor.b, count.original.shadowColor.a)
+                count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
+            end
         end
         if frame.PrivateAuraAnchors then
             for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do

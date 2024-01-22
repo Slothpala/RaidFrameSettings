@@ -12,6 +12,7 @@ local defaults = {
             ["*"]   = true,
             Buffs   = false,
             Debuffs = false,
+            RaidMark = false,
             CustomScale = false,
             AuraHighlight = false,
         },
@@ -119,6 +120,14 @@ local defaults = {
                 x_offset    = 0,
                 y_offset    = 0,
                 scaleFactor = 1,
+            },
+            RaidMark = {
+                position    = 5,
+                x_offset    = 0,
+                y_offset    = 0,
+                width       = 20,
+                height      = 20,
+                alpha       = 1,
             },
             RangeAlpha = {
                 statusbar  = 0.3,

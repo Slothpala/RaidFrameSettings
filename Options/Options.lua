@@ -667,8 +667,17 @@ local options = {
                                     name = "",
                                     type = "description",
                                 },
-                                maxbuffs = {
+                                maxbuffsAuto = {
                                     order = 11,
+                                    name = "Auto Max buffes",
+                                    type = "toggle",
+                                    get = "GetStatus",
+                                    set = "SetStatus",
+                                    width = 0.9,
+                                },
+                                maxbuffs = {
+                                    disabled = function() return RaidFrameSettings.db.profile.Buffs.Display.maxbuffsAuto end,
+                                    order = 11.1,
                                     name = "Max buffes",
                                     type = "range",
                                     get = "GetStatus",
@@ -676,7 +685,7 @@ local options = {
                                     min = 3,
                                     softMax = 10,
                                     step = 1,
-                                    width = 1.4,
+                                    width = 0.9,
                                 },
                                 framestrata = {
                                     order = 12,

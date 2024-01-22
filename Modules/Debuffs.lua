@@ -162,6 +162,30 @@ function Debuffs:OnEnable()
         blacklist[tonumber(spellId)] = true
     end
 
+    local function updatePrivateAuras(frame)
+        if not frame.PrivateAuraAnchors or not frame_registry[frame] then
+            return
+        end
+
+        local lastShownDebuff;
+        for i = maxDebuffs, 1, -1 do
+            local debuff = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
+            if debuff:IsShown() then
+                lastShownDebuff = debuff
+                break
+            end
+        end
+        frame.PrivateAuraAnchor1:ClearAllPoints()
+        if lastShownDebuff then
+            frame.PrivateAuraAnchor1:SetPoint(debuffPoint, lastShownDebuff, debuffRelativePoint, 0, 0)
+        else
+            frame.PrivateAuraAnchor1:SetPoint(point, frame.Debuff1, relativePoint, 0, 0)
+        end
+        frame.PrivateAuraAnchor2:ClearAllPoints()
+        frame.PrivateAuraAnchor2:SetPoint(debuffPoint, frame.PrivateAuraAnchor1, debuffRelativePoint, 0, 0)
+    end
+    self:HookFunc("CompactUnitFrame_UpdatePrivateAuras", updatePrivateAuras)
+
     local function updateAnchors(frame, endingIndex)
         local first, prev, isBossAura
         for i = 1, endingIndex and endingIndex > maxDebuffs and maxDebuffs or endingIndex or maxDebuffs do
@@ -187,6 +211,7 @@ function Debuffs:OnEnable()
                 first:SetPoint(point, frame, relativePoint, x_offset - boss_width + width, y_offset)
             end
         end
+        updatePrivateAuras(frame)
     end
     local function hideAllDebuffs(frame)
         if frame.debuffFrames and frame.debuffs and frame_registry[frame] then
@@ -215,30 +240,6 @@ function Debuffs:OnEnable()
         end
     end
     self:HookFunc("CompactUnitFrame_HideAllDebuffs", hideAllDebuffs)
-
-    local function updatePrivateAuras(frame)
-        if not frame.PrivateAuraAnchors or not frame_registry[frame] then
-            return
-        end
-
-        local lastShownDebuff;
-        for i = maxDebuffs, 1, -1 do
-            local debuff = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
-            if debuff:IsShown() then
-                lastShownDebuff = debuff
-                break
-            end
-        end
-        frame.PrivateAuraAnchor1:ClearAllPoints()
-        if lastShownDebuff then
-            frame.PrivateAuraAnchor1:SetPoint(debuffPoint, lastShownDebuff, debuffRelativePoint, 0, 0)
-        else
-            frame.PrivateAuraAnchor1:SetPoint(point, frame.Debuff1, relativePoint, 0, 0)
-        end
-        frame.PrivateAuraAnchor2:ClearAllPoints()
-        frame.PrivateAuraAnchor2:SetPoint(debuffPoint, frame.PrivateAuraAnchor1, debuffRelativePoint, 0, 0)
-    end
-    self:HookFunc("CompactUnitFrame_UpdatePrivateAuras", updatePrivateAuras)
 
     local function GetTimerText(remain)
         if remain < 0 then
@@ -280,9 +281,8 @@ function Debuffs:OnEnable()
                 for i = #frame.debuffFrames + 1, maxDebuffs do
                     local child = frame_registry[frame].extraDebuffFrames[i]
                     if not child then
-                        child = CreateFrame("Button", frameName .. i, frame, "CompactDebuffTemplate")
+                        child = CreateFrame("Button", frameName .. i, UIParent, "CompactDebuffTemplate")
                         child:Hide()
-                        child:SetPoint("BOTTOMLEFT", _G[frameName .. i - 1], "BOTTOMRIGHT")
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraDebuffFrames[i] = child
                     end
@@ -380,7 +380,6 @@ function Debuffs:OnEnable()
             end
         end
         hideAllDebuffs(frame)
-        updateAnchors(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", createDebuffFrames)
 
@@ -450,7 +449,7 @@ function Debuffs:OnEnable()
                 end
             end
         end
-        updateAnchors(frame)
+        hideAllDebuffs(frame)
     end)
 end
 

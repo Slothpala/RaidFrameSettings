@@ -30,14 +30,6 @@ function RaidMark:UpdateRaidMarker(frame)
     end
 end
 
-local frame = CreateFrame("Frame", "RaidFrameSettingsBuff", UIParent)
-frame:SetScript("OnEvent", function(self, event, ...)
-    if event ~= "RAID_TARGET_UPDATE" then
-        return
-    end
-    RaidMark:UpdateAllRaidmark()
-end)
-
 function RaidMark:UpdateAllRaidmark()
     RaidFrameSettings:IterateRoster(function(frame)
         RaidMark:UpdateRaidMarker(frame)
@@ -52,21 +44,33 @@ function RaidMark:OnEnable()
         (dbRaidMark.position == 4 and "LEFT") or (dbRaidMark.position == 5 and "CENTER") or (dbRaidMark.position == 6 and "RIGHT") or
         (dbRaidMark.position == 7 and "BOTTOMLEFT") or (dbRaidMark.position == 8 and "BOTTOM") or (dbRaidMark.position == 9 and "BOTTOMRIGHT")
     alpha = dbRaidMark.alpha
-    frame:RegisterEvent("RAID_TARGET_UPDATE")
-    RaidFrameSettings:IterateRoster(function(frame)
+
+    local function initRaidMark(frame, force)
         if not frame.raidmark then
             frame.raidmark = frame:CreateTexture(nil, "OVERLAY")
+            force = true
         end
-        frame.raidmark:Hide()
-        frame.raidmark:ClearAllPoints()
-        frame.raidmark:SetPoint(point, x_offset, y_offset)
-        frame.raidmark:SetSize(width, height)
-        frame.raidmark:SetAlpha(alpha)
+        if force then
+            frame.raidmark:Hide()
+            frame.raidmark:ClearAllPoints()
+            frame.raidmark:SetPoint(point, x_offset, y_offset)
+            frame.raidmark:SetSize(width, height)
+            frame.raidmark:SetAlpha(alpha)
+        end
+    end
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", initRaidMark)
+
+    RaidFrameSettings:IterateRoster(function(frame)
+        initRaidMark(frame, true)
     end)
     self:UpdateAllRaidmark()
+
+    self:RegisterEvent("RAID_TARGET_UPDATE", function()
+        self:UpdateAllRaidmark()
+    end)
 end
 
 function RaidMark:OnDisable()
-    frame:UnregisterEvent("RAID_TARGET_UPDATE")
+    self:UnregisterEvent("RAID_TARGET_UPDATE")
     self:UpdateAllRaidmark()
 end

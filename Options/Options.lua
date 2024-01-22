@@ -2246,7 +2246,7 @@ function RaidFrameSettings:CreatePositionEntry(spellID, pos)
             },
             x = {
                 order = 3,
-                name = "X",
+                name = "X by Icon",
                 type = "input",
                 pattern = "^[%d.]+$",
                 usage = "please enter a number",
@@ -2259,7 +2259,7 @@ function RaidFrameSettings:CreatePositionEntry(spellID, pos)
             },
             y = {
                 order = 4,
-                name = "Y",
+                name = "Y by Icon",
                 type = "input",
                 pattern = "^[%d.]+$",
                 usage = "please enter a number",

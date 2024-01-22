@@ -402,11 +402,12 @@ end
 function Buffs:OnDisable()
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
-        if not frame_registry[frame] then
-            return
+        if frame_registry[frame] then
+            frame_registry[frame].dirty = true
+            for _, extraBuffFrame in pairs(frame_registry[frame].extraBuffFrames) do
+                extraBuffFrame:Hide()
+            end
         end
-        frame_registry[frame].dirty = true
-
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
@@ -416,16 +417,17 @@ function Buffs:OnDisable()
         frame.buffFrames[1]:ClearAllPoints();
         frame.buffFrames[1]:SetPoint(buffPos, frame, "BOTTOMRIGHT", -3, buffOffset);
         for i=1, #frame.buffFrames do
-            frame.buffFrames[i]:SetSize(Display, Display)
-            frame.buffFrames[i].icon:SetTexCoord(0,1,0,1)
+            local buffFrame = frame.buffFrames[i]
+            buffFrame:SetSize(Display, Display)
+            buffFrame.icon:SetTexCoord(0,1,0,1)
             if ( i > 1 ) then
-                frame.buffFrames[i]:ClearAllPoints();
-                frame.buffFrames[i]:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
+                buffFrame:ClearAllPoints();
+                buffFrame:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
             end
-            frame.buffFrames[i]:SetFrameStrata(frame:GetFrameStrata())
+            buffFrame:SetFrameStrata(frame:GetFrameStrata())
             -- frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
-            local cooldown = frame.buffFrames[i].cooldown
+            local cooldown = buffFrame.cooldown
             cooldown:SetDrawEdge(cooldown.original.edge)
             cooldown:SetDrawSwipe(cooldown.original.swipe)
             cooldown:SetReverse(cooldown.original.reverse)
@@ -434,7 +436,7 @@ function Buffs:OnDisable()
                 OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
             end
 
-            local count = frame.buffFrames[i].count
+            local count = buffFrame.count
             count:ClearAllPoints()
             count:SetPoint("BOTTOMRIGHT", 5, 0)
             count:SetFont(count.original.font:GetFont())
@@ -442,6 +444,7 @@ function Buffs:OnDisable()
             count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
             count:SetJustifyH(count.original.justifyH)
             count:SetJustifyV(count.original.justifyV)
+            buffFrame:Show()
         end
     end
     RaidFrameSettings:IterateRoster(restoreBuffFrames)

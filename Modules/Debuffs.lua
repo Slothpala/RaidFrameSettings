@@ -257,7 +257,6 @@ function Debuffs:OnEnable()
             frame_registry[frame].dirty = false
 
             if maxDebuffs > #frame.debuffFrames then
-                local frameName = frame:GetName() .. "Debuff"
                 for i = #frame.debuffFrames + 1, maxDebuffs do
                     local child = frame_registry[frame].extraDebuffFrames[i]
                     if not child then

@@ -21,17 +21,18 @@ local AuraUtil_ForEachAura                    = AuraUtil.ForEachAura
 
 local frame_registry = {}
 
-function Debuffs:HookFrame(frame)
-    self:RemoveHandler(frame, "OnEvent")
-    self:HookScript(frame, "OnEvent", function(frame, event, unit, updateInfo)
-        if event ~= "PLAYER_REGEN_ENABLED" then
-            return
+local frame = CreateFrame("Frame", "RaidFrameSettingsDebuff", UIParent)
+frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+frame:SetScript("OnEvent", function(self, event, ...)
+	if event ~= "PLAYER_REGEN_ENABLED" then
+        return
+	end
+    for frame, v in pairs(frame_registry) do
+        if v.lockdown and v.dirty then
+            createDebuffFrames(frame)
         end
-        if frame_registry[frame] and frame_registry[frame].lockdown then
-            DefaultCompactUnitFrameSetup(frame)
-        end
-    end)
-end
+    end
+end)
 
 function Debuffs:OnEnable()
         --Debuffframe size
@@ -259,7 +260,6 @@ function Debuffs:OnEnable()
             return
         end
         if not frame_registry[frame] then
-            self:HookFrame(frame)
             frame_registry[frame] = {
                 lockdown          = false,
                 dirty             = true,

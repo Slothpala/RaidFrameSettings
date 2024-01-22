@@ -173,11 +173,12 @@ function Buffs:OnEnable()
     end
     local hideAllBuffs = function(frame)
         if frame.buffFrames and frame.buffs and frame_registry[frame] then
-            for i = 1, PositionMax do
-                local idx = frame_registry[frame].positionStart + i
+            local idx = frame_registry[frame].positionStart + 1
+            while frame_registry[frame].extraBuffFrames[idx] do
                 local buffFrame = frame_registry[frame].extraBuffFrames[idx]
                 buffFrame:Hide()
                 CooldownFrame_Clear(buffFrame.cooldown)
+                idx = idx + 1
             end
             frame.buffs:Iterate(function(auraInstanceID, aura)
                 if Position[aura.spellId] then

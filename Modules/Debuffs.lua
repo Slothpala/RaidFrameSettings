@@ -202,7 +202,7 @@ function Debuffs:OnEnable()
         updatePrivateAuras(frame)
     end
     local function hideAllDebuffs(frame)
-        if frame.debuffFrames and frame.debuffs and frame_registry[frame] then
+        if frame.debuffFrames and frame.debuffs and frame_registry[frame] and frame:IsVisible() then
             local frameNum = 1
             frame.debuffs:Iterate(function(auraInstanceID, aura)
                 if frameNum > maxDebuffs then
@@ -274,10 +274,6 @@ function Debuffs:OnEnable()
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraDebuffFrames[i] = child
                     end
-                    if not frame.debuffFrames[i] then
-                        frame.debuffFrames[i] = child
-                    end
-                    frame["Debuff" .. i] = child
                 end
             end
 
@@ -373,7 +369,7 @@ function Debuffs:OnEnable()
 
 
     local utilSetDebuff = function(debuffFrame, aura)
-        if debuffFrame:IsForbidden() or not aura then
+        if debuffFrame:IsForbidden() or not debuffFrame:IsVisible() or not aura then
             return
         end
         local frame = debuffFrame:GetParent()

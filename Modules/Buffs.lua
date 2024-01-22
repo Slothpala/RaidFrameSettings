@@ -159,7 +159,7 @@ function Buffs:OnEnable()
         end
     end
     local hideAllBuffs = function(frame)
-        if frame.buffFrames and frame.buffs and frame_registry[frame] then
+        if frame.buffFrames and frame.buffs and frame_registry[frame] and frame:IsVisible() then
             local idx = frame_registry[frame].positionStart + 1
             while frame_registry[frame].extraBuffFrames[idx] do
                 local buffFrame = frame_registry[frame].extraBuffFrames[idx]
@@ -353,7 +353,7 @@ function Buffs:OnEnable()
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", createBuffFrames)
     local utilSetBuff = function(buffFrame, aura)
-        if buffFrame:IsForbidden() then
+        if buffFrame:IsForbidden() or not buffFrame:IsVisible() then
             return
         end
         local frame = buffFrame:GetParent()

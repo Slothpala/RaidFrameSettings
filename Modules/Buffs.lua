@@ -14,19 +14,6 @@ local SetPoint = SetPoint
 
 local frame_registry = {}
 
-local frame = CreateFrame("Frame", "RaidFrameSettingsBuff", UIParent)
-frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-frame:SetScript("OnEvent", function(self, event, ...)
-	if event ~= "PLAYER_REGEN_ENABLED" then
-        return
-	end
-    for frame, v in pairs(frame_registry) do
-        if v.lockdown and v.dirty then
-            createBuffFrames(frame)
-        end
-    end
-end)
-
 function Buffs:OnEnable()
     --Buff size
     local width  = RaidFrameSettings.db.profile.Buffs.Display.width
@@ -255,7 +242,7 @@ function Buffs:OnEnable()
                 for i = #frame.buffFrames + 1, frameMaxBuffs do
                     local child = frame_registry[frame].extraBuffFrames[i]
                     if not child then
-                        child = CreateFrame("Button", nil, UIParent, "CompactBuffTemplate")
+                        child = CreateFrame("Button", nil, nil, "CompactBuffTemplate")
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraBuffFrames[i] = child
@@ -267,7 +254,7 @@ function Buffs:OnEnable()
                     local idx = frame_registry[frame].positionStart + i
                     local child = frame_registry[frame].extraBuffFrames[idx]
                     if not child then
-                        child = CreateFrame("Button", nil, UIParent, "CompactBuffTemplate")
+                        child = CreateFrame("Button", nil, nil, "CompactBuffTemplate")
                         child:SetParent(frame)
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
@@ -400,6 +387,13 @@ function Buffs:OnEnable()
             end
         end
         hideAllBuffs(frame)
+    end)
+    self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+        for frame, v in pairs(frame_registry) do
+            if v.lockdown and v.dirty then
+                createBuffFrames(frame)
+            end
+        end
     end)
 end
 

@@ -21,19 +21,6 @@ local AuraUtil_ForEachAura                    = AuraUtil.ForEachAura
 
 local frame_registry = {}
 
-local frame = CreateFrame("Frame", "RaidFrameSettingsDebuff", UIParent)
-frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-frame:SetScript("OnEvent", function(self, event, ...)
-	if event ~= "PLAYER_REGEN_ENABLED" then
-        return
-	end
-    for frame, v in pairs(frame_registry) do
-        if v.lockdown and v.dirty then
-            createDebuffFrames(frame)
-        end
-    end
-end)
-
 function Debuffs:OnEnable()
         --Debuffframe size
     local width = RaidFrameSettings.db.profile.Debuffs.Display.width
@@ -281,7 +268,7 @@ function Debuffs:OnEnable()
                 for i = #frame.debuffFrames + 1, maxDebuffs do
                     local child = frame_registry[frame].extraDebuffFrames[i]
                     if not child then
-                        child = CreateFrame("Button", frameName .. i, UIParent, "CompactDebuffTemplate")
+                        child = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
                         child:SetParent(frame)
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
@@ -451,6 +438,13 @@ function Debuffs:OnEnable()
             end
         end
         hideAllDebuffs(frame)
+    end)
+    self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+        for frame, v in pairs(frame_registry) do
+            if v.lockdown and v.dirty then
+                createDebuffFrames(frame)
+            end
+        end
     end)
 end
 

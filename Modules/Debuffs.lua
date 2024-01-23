@@ -214,18 +214,6 @@ function Debuffs:OnEnable()
                 local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
                 CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
 				frameNum = frameNum + 1
-                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-				frameNum = frameNum + 1
-                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-				frameNum = frameNum + 1
-                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-				frameNum = frameNum + 1
-                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-				frameNum = frameNum + 1
 				return false
 			end)
             for i = frameNum, maxDebuffs do

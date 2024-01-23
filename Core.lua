@@ -64,6 +64,7 @@ end
 
 function RaidFrameSettings:ReloadConfig()
     self:GetProfiles()
+    self:LoadUserInputEntrys()
     self:Disable()
     self:Enable()
 end

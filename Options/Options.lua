@@ -2322,6 +2322,7 @@ end
 
 function RaidFrameSettings:LoadUserInputEntrys()
     --debuff blacklist
+    options.args.Auras.args.Debuffs.args.Blacklist.args.BlacklistedAuras.args = {}
     local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
     for spellID,name in pairs(blacklist) do
         local type = type(name)
@@ -2334,12 +2335,13 @@ function RaidFrameSettings:LoadUserInputEntrys()
         RaidFrameSettings:CreateBlacklistEntry("Debuffs", name, spellID)       
     end
     --buff blacklist
+    options.args.Auras.args.Buffs.args.Blacklist.args.BlacklistedAuras.args = {}
     blacklist = RaidFrameSettings.db.profile.Buffs.Blacklist
     for spellID,name in pairs(blacklist) do
         RaidFrameSettings:CreateBlacklistEntry("Buffs", name, spellID)       
     end
-
     --buff position list
+    options.args.Auras.args.Buffs.args.Position.args.PositionedAuras.args = {}
     local positionlist = RaidFrameSettings.db.profile.Buffs.Position
     for spellID, pos in pairs(positionlist) do
         RaidFrameSettings:CreatePositionEntry(spellID, pos)

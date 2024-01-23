@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.19.3] - 2024-01-23
+#### Fixes
+* Fixed an issue that caused the options to be unusable on the classic versions.
+
 ### Version [2.19.2] - 2024-01-17
 #### Fixes
 * AuraHighlight: module works again without HealrhBars module enabled

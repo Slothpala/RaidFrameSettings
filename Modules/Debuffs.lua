@@ -16,8 +16,6 @@ local SetTexture = SetTexture
 local SetTexCoord = SetTexCoord
 local SetTextureSliceMargins = SetTextureSliceMargins
 local SetTextureSliceMode  = SetTextureSliceMode
-local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
-local AuraUtil_ForEachAura                    = AuraUtil.ForEachAura
 
 local frame_registry = {}
 
@@ -55,6 +53,12 @@ function Debuffs:OnEnable()
     else
         resizeAura = function(debuffFrame)
             debuffFrame:SetSize(width, height)
+            if debuffFrame.added then
+                debuffFrame.icon:SetTexCoord(0,1,0,1)
+                debuffFrame.border:SetTexture("Interface/Buttons/UI-Debuff-Overlays")
+                debuffFrame.border:SetTexCoord(0.296875,0.5703125,0,0.515625)
+                debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
+            end
         end
     end
     --Debuffframe position
@@ -263,6 +267,7 @@ function Debuffs:OnEnable()
                         child = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
                         child:SetParent(frame)
                         child:Hide()
+                        child.added = true
                         child.baseSize = width
                         child.maxHeight = width
                         child.cooldown:SetHideCountdownNumbers(true)
@@ -283,13 +288,11 @@ function Debuffs:OnEnable()
                 local cooldown = debuffFrame.cooldown
                 if not cooldown.original then
                     cooldown.original = {
-                        edge = cooldown:GetDrawEdge(),
                         swipe = cooldown:GetDrawSwipe(),
                         reverse = cooldown:GetReverse(),
                         noCooldownCount = cooldown.noCooldownCount
                     }
                 end
-                cooldown:SetDrawEdge(edge)
                 cooldown:SetDrawSwipe(swipe)
                 cooldown:SetReverse(reverse)
                 cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
@@ -420,8 +423,10 @@ function Debuffs:OnEnable()
             for i=1, maxDebuffs do
                 local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
                 if debuffFrame.auraInstanceID then
-                    local aura = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
-                    utilSetDebuff(debuffFrame, aura)
+                    local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
+                    if aura then
+                        utilSetDebuff(debuffFrame, aura)
+                    end
                 end
             end
         end
@@ -471,16 +476,20 @@ function Debuffs:OnDisable()
                 debuffFrame:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0)
             end
             debuffFrame:SetFrameStrata(frame:GetFrameStrata())
-            -- frame.debuffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = debuffFrame.cooldown
             if cooldown and cooldown.original then
-                cooldown:SetDrawEdge(cooldown.original.edge)
                 cooldown:SetDrawSwipe(cooldown.original.swipe)
                 cooldown:SetReverse(cooldown.original.reverse)
                 cooldown.text:Hide()
                 if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
                     OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+                end
+            end
+            if debuffFrame.auraInstanceID then
+                local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
+                if aura then
+                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                 end
             end
         end

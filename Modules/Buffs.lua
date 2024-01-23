@@ -41,6 +41,9 @@ function Buffs:OnEnable()
     else
         resizeAura = function(buffFrame)
             buffFrame:SetSize(width, height)
+            if buffFrame.added then
+                buffFrame.icon:SetTexCoord(0,1,0,1)
+            end
         end
     end
     --Buffframe position
@@ -246,6 +249,7 @@ function Buffs:OnEnable()
                         child = CreateFrame("Button", nil, nil, "CompactBuffTemplate")
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
+                        child.added = true
                         frame_registry[frame].extraBuffFrames[i] = child
                     end
                 end
@@ -259,6 +263,7 @@ function Buffs:OnEnable()
                         child:SetParent(frame)
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
+                        child.added = true
                         frame_registry[frame].extraBuffFrames[idx] = child
                     end
                 end
@@ -276,13 +281,11 @@ function Buffs:OnEnable()
                 local cooldown = buffFrame.cooldown
                 if not cooldown.original then
                     cooldown.original = {
-                        edge = cooldown:GetDrawEdge(),
                         swipe = cooldown:GetDrawSwipe(),
                         reverse = cooldown:GetReverse(),
                         noCooldownCount = cooldown.noCooldownCount
                     }
                 end
-                cooldown:SetDrawEdge(edge)
                 cooldown:SetDrawSwipe(swipe)
                 cooldown:SetReverse(reverse)
 
@@ -296,7 +299,6 @@ function Buffs:OnEnable()
                 count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
                 count:SetJustifyH(Stacks.JustifyH)
                 count:SetJustifyV(Stacks.JustifyV)
-                count.fontobj = count:GetFontObject()
                 count:SetFont(Stacks.Font, Stacks.FontSize, Stacks.OutlineMode)
                 count:SetVertexColor(Stacks.FontColor.r, Stacks.FontColor.g, Stacks.FontColor.b)
                 count:SetShadowColor(Stacks.ShadowColor.r, Stacks.ShadowColor.g, Stacks.ShadowColor.b, Stacks.ShadowColor.a)
@@ -378,7 +380,9 @@ function Buffs:OnEnable()
                 local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
                 if buffFrame.auraInstanceID then
                     local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
-                    utilSetBuff(buffFrame, aura)
+                    if aura then
+                        utilSetBuff(buffFrame, aura)
+                    end
                 end
             end
         end
@@ -420,16 +424,20 @@ function Buffs:OnDisable()
                 buffFrame:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0)
             end
             buffFrame:SetFrameStrata(frame:GetFrameStrata())
-            -- frame.buffFrames[i]:SetFrameLevel(frame:GetFrameLevel() + 1)
 
             local cooldown = buffFrame.cooldown
             if cooldown and cooldown.original then
-                cooldown:SetDrawEdge(cooldown.original.edge)
                 cooldown:SetDrawSwipe(cooldown.original.swipe)
                 cooldown:SetReverse(cooldown.original.reverse)
                 cooldown.text:Hide()
                 if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
                     OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
+                end
+            end
+            if buffFrame.auraInstanceID then
+                local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
+                if aura then
+                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)                    
                 end
             end
         end

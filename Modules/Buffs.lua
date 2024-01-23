@@ -41,7 +41,6 @@ function Buffs:OnEnable()
     else
         resizeAura = function(buffFrame)
             buffFrame:SetSize(width, height)
-            buffFrame.icon:SetTexCoord(0,1,0,1)
         end
     end
     --Buffframe position

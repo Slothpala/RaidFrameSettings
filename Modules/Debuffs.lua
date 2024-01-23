@@ -294,18 +294,10 @@ function Debuffs:OnEnable()
                 cooldown:SetReverse(reverse)
                 cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
 
-                local count = debuffFrame.count
-                if not count.original then
-                    local r, g, b, a = count:GetShadowColor()
-                    local x, y = count:GetShadowOffset()
-                    count.original = {
-                        font = count:GetFontObject(),
-                        justifyH = count:GetJustifyH(),
-                        justifyV = count:GetJustifyV(),
-                        shadowColor = { r = r, g = g, b = b, a = a },
-                        shadowOffset = { x = x, y = y },
-                    }
+                if not cooldown.count then
+                    cooldown.count = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
                 end
+                local count = cooldown.count
                 count:ClearAllPoints()
                 count:SetPoint(Stacks.Position, Stacks.X_Offset, Stacks.Y_Offset)
                 count:SetJustifyH(Stacks.JustifyH)
@@ -401,14 +393,17 @@ function Debuffs:OnEnable()
                 color = debuffColors.Bleed
             end
         end
-        debuffFrame.count:SetVertexColor(color.r, color.g, color.b)
 
         local cooldown = debuffFrame.cooldown
+        cooldown:SetDrawEdge(edge)
         local text = cooldown.text
         if text then
             cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
             text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
         end
+        cooldown.count:SetVertexColor(color.r, color.g, color.b)
+        cooldown.count:SetText(debuffFrame.count:GetText())
+        debuffFrame.count:Hide()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", utilSetDebuff)
 
@@ -486,17 +481,6 @@ function Debuffs:OnDisable()
                 if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
                     OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.original.noCooldownCount)
                 end
-            end
-
-            local count = debuffFrame.count
-            if count and count.original then
-                count:ClearAllPoints()
-                count:SetPoint("BOTTOMRIGHT", 5, 0)
-                count:SetFont(count.original.font:GetFont())
-                count:SetJustifyH(count.original.justifyH)
-                count:SetJustifyV(count.original.justifyV)
-                count:SetShadowColor(count.original.shadowColor.r, count.original.shadowColor.g, count.original.shadowColor.b, count.original.shadowColor.a)
-                count:SetShadowOffset(count.original.shadowOffset.x, count.original.shadowOffset.y)
             end
         end
         if frame.PrivateAuraAnchors then

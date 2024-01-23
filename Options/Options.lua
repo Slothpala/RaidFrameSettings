@@ -2248,7 +2248,7 @@ function RaidFrameSettings:CreatePositionEntry(spellID, pos)
                 order = 3,
                 name = "X by Icon",
                 type = "input",
-                pattern = "^[%d.]+$",
+                pattern = "^[0-9%-]+$",
                 usage = "please enter a number",
                 get = function() return tostring(pos.x) end,
                 set = function(_, x)
@@ -2261,7 +2261,7 @@ function RaidFrameSettings:CreatePositionEntry(spellID, pos)
                 order = 4,
                 name = "Y by Icon",
                 type = "input",
-                pattern = "^[%d.]+$",
+                pattern = "^[0-9%-]+$",
                 usage = "please enter a number",
                 get = function() return tostring(pos.y) end,
                 set = function(_, y)

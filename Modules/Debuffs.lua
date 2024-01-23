@@ -55,10 +55,6 @@ function Debuffs:OnEnable()
     else
         resizeAura = function(debuffFrame)
             debuffFrame:SetSize(width, height)
-            debuffFrame.icon:SetTexCoord(0,1,0,1)
-            debuffFrame.border:SetTexture("Interface/Buttons/UI-Debuff-Overlays")
-            debuffFrame.border:SetTexCoord(0.296875,0.5703125,0,0.515625)
-            debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
         end
     end
     --Debuffframe position
@@ -468,6 +464,7 @@ function Debuffs:OnDisable()
             debuffFrame.border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
             debuffFrame.border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)
             debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
+            debuffFrame.border:SetVertexColor(1,0,0)
             debuffFrame.icon:SetTexCoord(0,1,0,1)
             if ( i > 1 ) then
                 debuffFrame:ClearAllPoints()

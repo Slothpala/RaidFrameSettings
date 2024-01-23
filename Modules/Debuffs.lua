@@ -406,7 +406,7 @@ function Debuffs:OnEnable()
             text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
         end
         cooldown.count:SetVertexColor(color.r, color.g, color.b)
-        cooldown.count:SetText(debuffFrame.count:GetText())
+        cooldown.count:SetText(debuffFrame.count:IsShown() and debuffFrame.count:GetText() or "")
         debuffFrame.count:Hide()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", utilSetDebuff)

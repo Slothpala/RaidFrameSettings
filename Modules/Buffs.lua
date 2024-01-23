@@ -360,7 +360,7 @@ function Buffs:OnEnable()
         cooldown:SetDrawEdge(edge)
         cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
         cooldown.text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
-        cooldown.count:SetText(buffFrame.count:GetText())
+        cooldown.count:SetText(buffFrame.count:IsShown() and buffFrame.count:GetText() or "")
         buffFrame.count:Hide()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", utilSetBuff)

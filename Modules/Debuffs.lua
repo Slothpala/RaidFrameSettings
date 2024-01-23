@@ -55,6 +55,10 @@ function Debuffs:OnEnable()
     else
         resizeAura = function(debuffFrame)
             debuffFrame:SetSize(width, height)
+            debuffFrame.icon:SetTexCoord(0,1,0,1)
+            debuffFrame.border:SetTexture("Interface/Buttons/UI-Debuff-Overlays")
+            debuffFrame.border:SetTexCoord(0.296875,0.5703125,0,0.515625)
+            debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
         end
     end
     --Debuffframe position
@@ -207,6 +211,18 @@ function Debuffs:OnEnable()
                 if blacklist[aura.spellId] then
                     return false
                 end
+                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
+                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+				frameNum = frameNum + 1
+                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
+                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+				frameNum = frameNum + 1
+                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
+                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+				frameNum = frameNum + 1
+                local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
+                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+				frameNum = frameNum + 1
                 local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
                 CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
 				frameNum = frameNum + 1

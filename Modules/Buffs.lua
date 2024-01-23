@@ -41,6 +41,7 @@ function Buffs:OnEnable()
     else
         resizeAura = function(buffFrame)
             buffFrame:SetSize(width, height)
+            buffFrame.icon:SetTexCoord(0,1,0,1)
         end
     end
     --Buffframe position
@@ -155,6 +156,7 @@ function Buffs:OnEnable()
             local buffFrame = frame_registry[frame].extraBuffFrames[frame_registry[frame].positionStart + v.idx]
             buffFrame:ClearAllPoints()
             buffFrame:SetPoint(v.point, frame, v.point, v.x_offset, v.y_offset)
+            DevTool:AddData(v.idx, "v.idx "..frame.unit)
             resizeAura(buffFrame)
         end
     end

@@ -87,6 +87,8 @@ local defaults = {
             Blacklist = {
                 --spellID = true
             },
+            Whitelist = {
+            },
         },
         AuraHighlight = {
             Config = {

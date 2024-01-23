@@ -10,6 +10,7 @@ local SetSize = SetSize
 local SetTexCoord = SetTexCoord
 local ClearAllPoints = ClearAllPoints
 local SetPoint = SetPoint
+local AuraUtil_ForEachAura = AuraUtil.ForEachAura
 
 function Buffs:OnEnable()
     --Buff size
@@ -69,6 +70,11 @@ function Buffs:OnEnable()
     for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
+    --blacklist
+    local whitelist = {}
+    for spellId, value in pairs(RaidFrameSettings.db.profile.Buffs.Whitelist) do
+        whitelist[tonumber(spellId)] = value
+    end
     local resizeBuffFrame = function(buffFrame, aura)
         if aura and blacklist[aura.spellId] then
             buffFrame:SetSize(0.1,0.1)
@@ -77,8 +83,25 @@ function Buffs:OnEnable()
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", resizeBuffFrame)
+    local function processAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs,ignoreDispelDebuffs)
+        if frame.unit:match("na") then --this will exclude nameplates and arena
+            return
+        end
+        if not frame.buffs then
+            return
+        end
+        if not aura.isHelpful or not whitelist[aura.spellId] then
+            return
+        end
+        if not whitelist[aura.spellId].other and not UnitIsUnit("player", aura.sourceUnit) then
+            return
+        end
+        frame.buffs[aura.auraInstanceID] = aura
+    end
+    self:HookFunc("CompactUnitFrame_ProcessAura", processAura)
     RaidFrameSettings:IterateRoster(function(frame)
         updateAnchors(frame)
+        CompactUnitFrame_UpdateAuras(frame)
         if frame.buffFrames then
             for i=1, #frame.buffFrames do
                 local buffFrame = frame.buffFrames[i]

@@ -712,6 +712,40 @@ local options = {
                                 },                           
                             },
                         },
+                        Whitelist = {
+                            order = 3,
+                            name = "Whitelist",
+                            type = "group",
+                            args = {
+                                add = {
+                                    order = 1,
+                                    name = "add aura by spellid to whitelist",
+                                    type = "input",
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, new_spellID)
+                                        local info = {
+                                            name     = "",
+                                            other    = false,
+                                        }
+                                        info.name = #new_spellID <= 10 and select(1, GetSpellInfo(new_spellID)) or "|cffff0000aura not found|r"
+                                        RaidFrameSettings.db.profile.Buffs.Whitelist[new_spellID] = info
+                                        RaidFrameSettings:CreateWhitelistEntry("Buffs", new_spellID, info)
+                                        RaidFrameSettings:ReloadConfig()
+                                    end,
+                                    width = 1.5,
+                                },
+                                WhitelistedAuras = {
+                                    order = 2,
+                                    name = "Whitelisted Buffs",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+    
+                                    },
+                                },
+                            },
+                        },
                     },  
                 },
                 Debuffs = {
@@ -1370,6 +1404,65 @@ function RaidFrameSettings:RemoveBlacklistEntry(catergory, name, spellID)
     options.args.Auras.args[catergory].args.Blacklist.args.BlacklistedAuras.args[name..spellID] = nil
 end
 
+function RaidFrameSettings:CreateWhitelistEntry(category, spellID, info)
+    local newEntry = {
+        type = "group",
+        name = "",
+        args = {
+            spell = {
+                order = 1,
+                name = info.name,
+                type = "input",
+                get = function() return spellID end,
+                set = function(_, new_spellID)
+                    if new_spellID == spellID then
+                        return
+                    end
+
+                    RaidFrameSettings.db.profile[category].Whitelist[spellID] = nil
+                    RaidFrameSettings:RemoveWhitelistEntry(category, spellID)
+
+                    info.name = #new_spellID <= 10 and select(1, GetSpellInfo(new_spellID)) or "|cffff0000aura not found|r"
+                    RaidFrameSettings.db.profile[category].Whitelist[new_spellID] = info
+                    RaidFrameSettings:CreateWhitelistEntry(category, new_spellID, info)
+
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.8,
+            },
+            y_offset = {
+                order = 2,
+                name = "Other's buff",
+                type = "toggle",
+                get = function() return info.other end,
+                set = function(_, other)
+                    info.other = other
+                    RaidFrameSettings:ReloadConfig()
+                end,
+                width = 0.8,
+            },
+            remove = {
+                order = 3,
+                name = "Remove",
+                desc = "",
+                type = "execute",
+                width = 0.5,
+                func = function()
+                    RaidFrameSettings.db.profile[category].Whitelist[spellID] = nil
+                    RaidFrameSettings:RemoveWhitelistEntry(category, spellID)
+                    RaidFrameSettings:ReloadConfig()
+                end,
+            },
+        },
+        width = "full",
+    }
+    options.args.Auras.args[category].args.Whitelist.args.WhitelistedAuras.args[spellID] = newEntry
+end
+
+function RaidFrameSettings:RemoveWhitelistEntry(category, spellID)
+    options.args.Auras.args[category].args.Whitelist.args.WhitelistedAuras.args[spellID] = nil
+end
+
 function RaidFrameSettings:LoadUserInputEntrys()
     --debuff blacklist
     local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
@@ -1387,5 +1480,10 @@ function RaidFrameSettings:LoadUserInputEntrys()
     blacklist = RaidFrameSettings.db.profile.Buffs.Blacklist
     for spellID,name in pairs(blacklist) do
         RaidFrameSettings:CreateBlacklistEntry("Buffs", name, spellID)       
+    end
+    --buff whitelist list
+    local whitelist = RaidFrameSettings.db.profile.Buffs.Whitelist
+    for spellID, info in pairs(whitelist) do
+        RaidFrameSettings:CreateWhitelistEntry("Buffs", spellID, info)
     end
 end

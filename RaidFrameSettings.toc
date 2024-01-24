@@ -25,6 +25,7 @@ Options\OptionsFrame.lua
 #Utils 
 Utils\GroupType.lua
 Utils\ProfileSwitcher.lua
+Utils\CooldownText.lua
 
 #Modules
 modules.xml

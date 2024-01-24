@@ -172,7 +172,6 @@ function Buffs:OnEnable()
                     local idx = frame_registry[frame].positionStart + Position[aura.spellId].idx
                     local buffFrame = frame_registry[frame].extraBuffFrames[idx]
                     CompactUnitFrame_UtilSetBuff(buffFrame, aura)
-                    return false
                 end
             end)
 
@@ -352,14 +351,20 @@ function Buffs:OnEnable()
             return
         end
 
-        buffFrame.aura = aura
-        
         local cooldown = buffFrame.cooldown
         cooldown:SetDrawEdge(edge)
-        cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
-        cooldown.text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
-        cooldown.count:SetText(buffFrame.count:IsShown() and buffFrame.count:GetText() or "")
-        buffFrame.count:Hide()
+        local text = cooldown.text
+        if text then
+            cooldown.expirationTime = (cooldown:GetCooldownTimes() + cooldown:GetCooldownDuration()) / 1000
+            cooldown.text:SetText(GetTimerText(cooldown.expirationTime - GetTime()))
+        end
+        if buffFrame.count:IsShown() then
+            cooldown.count:SetText(buffFrame.count:GetText())
+            cooldown.count:Show()
+            buffFrame.count:Hide()
+        else
+            cooldown.count:Hide()
+        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", utilSetBuff)
 

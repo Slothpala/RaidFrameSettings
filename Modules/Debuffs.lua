@@ -53,12 +53,6 @@ function Debuffs:OnEnable()
     else
         resizeAura = function(debuffFrame)
             debuffFrame:SetSize(width, height)
-            if debuffFrame.added then
-                debuffFrame.icon:SetTexCoord(0,1,0,1)
-                debuffFrame.border:SetTexture("Interface/Buttons/UI-Debuff-Overlays")
-                debuffFrame.border:SetTexCoord(0.296875,0.5703125,0,0.515625)
-                debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
-            end
         end
     end
     --Debuffframe position
@@ -267,12 +261,15 @@ function Debuffs:OnEnable()
                         child = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
                         child:SetParent(frame)
                         child:Hide()
-                        child.added = true
                         child.baseSize = width
                         child.maxHeight = width
                         child.cooldown:SetHideCountdownNumbers(true)
                         frame_registry[frame].extraDebuffFrames[i] = child
                     end
+                    child.icon:SetTexCoord(0,1,0,1)
+                    child.border:SetTexture("Interface/Buttons/UI-Debuff-Overlays")
+                    child.border:SetTexCoord(0.296875,0.5703125,0,0.515625)
+                    child.border:SetTextureSliceMargins(0,0,0,0)
                 end
             end
 

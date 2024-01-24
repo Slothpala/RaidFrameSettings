@@ -41,9 +41,6 @@ function Buffs:OnEnable()
     else
         resizeAura = function(buffFrame)
             buffFrame:SetSize(width, height)
-            if buffFrame.added then
-                buffFrame.icon:SetTexCoord(0,1,0,1)
-            end
         end
     end
     --Buffframe position
@@ -249,9 +246,9 @@ function Buffs:OnEnable()
                         child = CreateFrame("Button", nil, nil, "CompactBuffTemplate")
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
-                        child.added = true
                         frame_registry[frame].extraBuffFrames[i] = child
                     end
+                    child.icon:SetTexCoord(0,1,0,1)
                 end
             end
             if PositionMax > 0 then
@@ -263,9 +260,9 @@ function Buffs:OnEnable()
                         child:SetParent(frame)
                         child:Hide()
                         child.cooldown:SetHideCountdownNumbers(true)
-                        child.added = true
                         frame_registry[frame].extraBuffFrames[idx] = child
                     end
+                    child.icon:SetTexCoord(0,1,0,1)
                 end
             end
 

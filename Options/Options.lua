@@ -21,6 +21,134 @@ local Overabsorb_disabled = function() return not RaidFrameSettings.db.profile.M
 --LibDDI-1.0
 local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
+--[[
+    tmp locals
+]]
+local auraPositionSpellId = ""
+
+local function getFontOptions()
+    local font_options = {
+        font = {
+            order = 1,
+            type = "select",
+            dialogControl = "LSM30_Font", 
+            name = "Font",
+            values = Media:HashTable("font"), 
+            get = "GetStatus",
+            set = "SetStatus",
+        },
+        outlinemode = {
+            order = 2,
+            name = "Outlinemode",
+            type = "select",
+            values = {"None", "Outline", "Thick Outline", "Monochrome", "Monochrome Outline", "Monochrome Thick Outline"},
+            sorting = {1,2,3,4,5,6},
+            get = "GetStatus",
+            set = "SetStatus",
+        },
+        newline = {
+            order = 3,
+            type = "description",
+            name = "",
+        },
+        fontSize = {
+            order = 4,
+            name = "Font Size",
+            type = "range",
+            get = "GetStatus",
+            set = "SetStatus",
+            min = 1,
+            max = 40,
+            step = 1,
+        },
+        fontColor = {
+            order = 5,
+            type = "color",
+            name = "Font Color", 
+            get = "GetColor",
+            set = "SetColor",
+            width = 0.8,
+        },
+        shadowColor = {
+            order = 6,
+            type = "color",
+            name = "Shadow Color", 
+            get = "GetColor",
+            set = "SetColor",
+            hasAlpha = true,
+            width = 0.8,
+        },
+        xOffsetShadow = {
+            order = 7,
+            name = "Shadow x-offset",
+            type = "range",
+            get = "GetStatus",
+            set = "SetStatus",
+            softMin = -4,
+            softMax = 4,
+            step = 0.1,
+            width = 0.8,
+        },
+        yOffsetShadow = {
+            order = 8,
+            name = "Shadow y-offset",
+            type = "range",
+            get = "GetStatus",
+            set = "SetStatus",
+            softMin = -4,
+            softMax = 4,
+            step = 0.1,
+            width = 0.8,
+        },
+        newline2 = {
+            order = 9,
+            type = "description",
+            name = "",
+        },
+        point = {
+            order = 10,
+            name = "Anchor",
+            type = "select",
+            values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+            sorting = {1,2,3,4,5,6,7,8,9},
+            get = "GetStatus",
+            set = "SetStatus",
+        },
+        relativePoint = {
+            order = 11,
+            name = "to Frames",
+            type = "select",
+            values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+            sorting = {1,2,3,4,5,6,7,8,9},
+            get = "GetStatus",
+            set = "SetStatus",
+        },
+        xOffsetFont = {
+            order = 12,
+            name = "x - offset",
+            type = "range",
+            get = "GetStatus",
+            set = "SetStatus",
+            softMin = -25,
+            softMax = 25,
+            step = 1,
+            width = 0.8,
+        },
+        yOffsetFont = {
+            order = 13,
+            name = "y - offset",
+            type = "range",
+            get = "GetStatus",
+            set = "SetStatus",
+            softMin = -25,
+            softMax = 25,
+            step = 1,
+            width = 0.8,
+        },
+    }
+    return font_options
+end
+
 local profiles = {}
 local options = {
     name = "Raid Frame Settings",
@@ -549,7 +677,7 @@ local options = {
             order = 4,
             name = "Auras",
             type = "group",
-            childGroups = "tab",
+            --childGroups = "tab",
             hidden = function()
                 if not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs then 
                     return true
@@ -564,101 +692,196 @@ local options = {
                     type = "group",
                     childGroups = "tab",
                     args = {
-                        Display = {
+                        Buffs = { --name of the group is a workaround to not have several Set/Get functions just for that
                             order = 1,
                             name = "Display",
                             type = "group",
+                            childGroups = "tab",
                             args = {
-                                width = {
+                                BuffFramesDisplay = {
                                     order = 1,
-                                    name = "width",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    min = 1,
-                                    max = 50,
-                                    step = 1,
-                                    width = 1,
+                                    name = "Buff Frames",
+                                    type = "group",
+                                    args = {
+                                        width = {
+                                            order = 1,
+                                            name = "width",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 1,
+                                            max = 50,
+                                            step = 1,
+                                            width = 1,
+                                        },
+                                        height = {
+                                            order = 2,
+                                            name = "height",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 1,
+                                            max = 50,
+                                            step = 1,
+                                            width = 1,
+                                        },
+                                        cleanIcons = {
+                                            order = 2.1,
+                                            type = "toggle",
+                                            name = "use clean icons",
+                                            -- and replace it with a 1pixel border #later
+                                            desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
+                                        newline = {
+                                            order = 3,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        point = {
+                                            order = 4,
+                                            name = "Buffframe anchor",
+                                            type = "select",
+                                            values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+                                            sorting = {1,2,3,4,5,6,7,8,9},
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
+                                        relativePoint = {
+                                            order = 5,
+                                            name = "to Frames",
+                                            type = "select",
+                                            values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+                                            sorting = {1,2,3,4,5,6,7,8,9},
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
+                                        orientation = {
+                                            order = 6,
+                                            name = "direction of growth",
+                                            type = "select",
+                                            values = {"Left", "Right", "Up", "Down"},
+                                            sorting = {1,2,3,4},
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.8,
+                                        },
+                                        newline2 = {
+                                            order = 7,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        xOffset = {
+                                            order = 8,
+                                            name = "x - offset",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
+                                        yOffset = {
+                                            order = 9,
+                                            name = "y - offset",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
+                                        newline3 = {
+                                            order = 10,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        swipe = {
+                                            order = 11,
+                                            type = "toggle",
+                                            name = "Show \"Swipe\"", 
+                                            desc = "Show the swipe radial overlay",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.8,
+                                        },
+                                        edge = {
+                                            order = 12,
+                                            type = "toggle",
+                                            name = "Show \"Edge\"", 
+                                            desc = "Show the glowing edge at the end of the radial overlay",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.8,
+                                        },
+                                        inverse = {
+                                            order = 13,
+                                            type = "toggle",
+                                            name = "Inverse", 
+                                            desc = "Invert the direction of the radial overlay",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.6,
+                                        },
+                                        timerText = {
+                                            order = 14,
+                                            type = "toggle",
+                                            name = "Show Duration Timer Text", 
+                                            desc = "Show an aura timer",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 1.2,
+                                        },
+                                    },
                                 },
-                                height = {
+                                DurationDisplay = {
                                     order = 2,
-                                    name = "height",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    min = 1,
-                                    max = 50,
-                                    step = 1,
-                                    width = 1,
+                                    name = "Duration",
+                                    type = "group",
+                                    args = getFontOptions()
                                 },
-                                clean_icons = {
-                                    order = 2.1,
-                                    type = "toggle",
-                                    name = "use clean icons",
-                                    -- and replace it with a 1pixel border #later
-                                    desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                },
-                                newline = {
+                                StacksDisplay = {
                                     order = 3,
-                                    name = "",
-                                    type = "description",
+                                    name = "Stacks",
+                                    type = "group",
+                                    args = getFontOptions()
                                 },
-                                point = {
+                                AuraPosition = {
                                     order = 4,
-                                    name = "Buffframe anchor",
-                                    type = "select",
-                                    values = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"},
-                                    sorting = {1,2,3,4},
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                },
-                                relativePoint = {
-                                    order = 5,
-                                    name = "to Frames",
-                                    type = "select",
-                                    values = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"},
-                                    sorting = {1,2,3,4},
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                },
-                                orientation = {
-                                    order = 6,
-                                    name = "direction of growth",
-                                    type = "select",
-                                    values = {"LEFT", "RIGHT", "UP", "DOWN"},
-                                    sorting = {1,2,3,4},
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    width = 0.8,
-                                },
-                                newline2 = {
-                                    order = 7,
-                                    name = "",
-                                    type = "description",
-                                },
-                                x_offset = {
-                                    order = 8,
-                                    name = "x - offset",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    softMin = -100,
-                                    softMax = 100,
-                                    step = 1,
-                                    width = 1.4,
-                                },
-                                y_offset = {
-                                    order = 9,
-                                    name = "y - offset",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    softMin = -100,
-                                    softMax = 100,
-                                    step = 1,
-                                    width = 1.4,
+                                    name = "Aura Position",
+                                    type = "group",
+                                    args = {
+                                        addAura = {
+                                            order = 1,
+                                            name = "Enter spellId:",
+                                            type = "input",
+                                            pattern = "^%d+$",
+                                            usage = "please enter a number",
+                                            set = function(_, value)
+                                                RaidFrameSettings.db.profile.Buffs.AuraPosition[value] = {
+                                                    ["spellId"] = tonumber(value),
+                                                    point = 1,
+                                                    relativePoint = 1,
+                                                    xOffset = 0,
+                                                    yOffset = 0,
+                                                }
+                                                RaidFrameSettings:CreateAuraPositionEntry(value)
+                                                RaidFrameSettings:UpdateModule("Buffs")
+                                            end
+                                        },
+                                        auraList = {
+                                            order = 2,
+                                            name = "Auras:",
+                                            type = "group",
+                                            inline = true,
+                                            args = {
+
+                                            },
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -667,47 +890,27 @@ local options = {
                             name = "Blacklist",
                             type = "group",
                             args = {
-                                add = {
+                                addAura = {
                                     order = 1,
-                                    name = "add aura by spellid to blacklist",
+                                    name = "Enter spellId:",
                                     desc = "",
                                     type = "input",
                                     width = 1.5,
                                     pattern = "^%d+$",
                                     usage = "please enter a number",
-                                    set = function(info,spellID)
-                                        local name = #spellID <= 10 and select(1,GetSpellInfo(spellID)) or "|cffff0000aura not found|r" 
-                                        RaidFrameSettings.db.profile.Buffs.Blacklist[spellID] = name
-                                        RaidFrameSettings:CreateBlacklistEntry("Buffs", name, spellID)
-                                        RaidFrameSettings:Print(spellID.."("..name..") added to blacklist")
-                                        RaidFrameSettings:ReloadConfig()
-                                    end,
-                                },
-                                remove = {
-                                    order = 2,
-                                    name = "remove aura from blacklist",
-                                    desc = "",
-                                    type = "input",
-                                    width = 1.5,
-                                    pattern = "^%d+$",
-                                    usage = "please enter a number",
-                                    set = function(info,spellID)
-                                        local name = RaidFrameSettings.db.profile.Buffs.Blacklist[spellID]
-                                        if name then
-                                            RaidFrameSettings.db.profile.Buffs.Blacklist[spellID] = nil
-                                            RaidFrameSettings:RemoveBlacklistEntry("Buffs", name, spellID)
-                                            RaidFrameSettings:Print(spellID.."("..name..") removed from blacklist")
-                                        end
-                                        RaidFrameSettings:ReloadConfig()
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Buffs.Blacklist[value] = true
+                                        RaidFrameSettings:CreateBlacklistEntry(value, "Buffs")
+                                        RaidFrameSettings:UpdateModule("Buffs")
                                     end,
                                 },
                                 BlacklistedAuras = {
                                     order = 4,
-                                    name = "Blacklisted Buffs",
+                                    name = "Blacklist:",
                                     type = "group",
                                     inline = true,
                                     args = {
-                                        --will be created based on blacklist entries in the db by LoadUserInputEntrys
+
                                     },
                                 },                           
                             },
@@ -721,113 +924,174 @@ local options = {
                     type = "group",
                     childGroups = "tab",
                     args = {
-                        Display = {
+                        Debuffs = {
                             order = 1,
                             name = "Display",
                             type = "group",
+                            childGroups = "tab",
                             args = {
-                                width = {
+                                DebuffFramesDisplay = {
                                     order = 1,
-                                    name = "width",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    min = 1,
-                                    max = 50,
-                                    step = 1,
-                                    width = 1,
+                                    name = "Debuff Frames",
+                                    type = "group",
+                                    args = {
+                                        width = {
+                                            order = 1,
+                                            name = "width",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 1,
+                                            max = 50,
+                                            step = 1,
+                                            width = 1,
+                                        },
+                                        height = {
+                                            order = 2,
+                                            name = "height",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 1,
+                                            max = 50,
+                                            step = 1,
+                                            width = 1,
+                                        },
+                                        increase = {
+                                            order = 2.1,
+                                            name = "boss aura increase",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 1,
+                                            max = 2,
+                                            step = 0.1,
+                                            width = 0.8,
+                                            isPercent = true,
+                                        },
+                                        cleanIcons = {
+                                            order = 2.2,
+                                            type = "toggle",
+                                            name = "use clean icons",
+                                            -- and replace it with a 1pixel border #later
+                                            desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
+                                        newline = {
+                                            order = 3,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        point = {
+                                            order = 4,
+                                            name = "Debuffframe anchor",
+                                            type = "select",
+                                            values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+                                            sorting = {1,2,3,4,5,6,7,8,9},
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
+                                        relativePoint = {
+                                            order = 5,
+                                            name = "to Frames",
+                                            type = "select",
+                                            values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+                                            sorting = {1,2,3,4,5,6,7,8,9},
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
+                                        orientation = {
+                                            order = 6,
+                                            name = "direction of growth",
+                                            type = "select",
+                                            values = {"Left", "Right", "Up", "Down"},
+                                            sorting = {1,2,3,4},
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.8,
+                                        },
+                                        newline2 = {
+                                            order = 7,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        xOffset = {
+                                            order = 8,
+                                            name = "x - offset",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
+                                        yOffset = {
+                                            order = 9,
+                                            name = "y - offset",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            softMin = -100,
+                                            softMax = 100,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
+                                        newline3 = {
+                                            order = 10,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        swipe = {
+                                            order = 11,
+                                            type = "toggle",
+                                            name = "Show \"Swipe\"", 
+                                            desc = "Show the swipe radial overlay",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.8,
+                                        },
+                                        edge = {
+                                            order = 12,
+                                            type = "toggle",
+                                            name = "Show \"Edge\"", 
+                                            desc = "Show the glowing edge at the end of the radial overlay",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.8,
+                                        },
+                                        inverse = {
+                                            order = 13,
+                                            type = "toggle",
+                                            name = "Inverse", 
+                                            desc = "Invert the direction of the radial overlay",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.6,
+                                        },
+                                        timerText = {
+                                            order = 14,
+                                            type = "toggle",
+                                            name = "Show Duration Timer Text", 
+                                            desc = "Show an aura timer",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 1.2,
+                                        },
+                                    },
                                 },
-                                height = {
+                                DurationDisplay = {
                                     order = 2,
-                                    name = "height",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    min = 1,
-                                    max = 50,
-                                    step = 1,
-                                    width = 1,
+                                    name = "Duration",
+                                    type = "group",
+                                    args = getFontOptions()
                                 },
-                                increase = {
-                                    order = 2.1,
-                                    name = "boss aura increase",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    min = 1,
-                                    max = 2,
-                                    step = 0.1,
-                                    width = 0.8,
-                                    isPercent = true,
-                                },
-                                clean_icons = {
-                                    order = 2.2,
-                                    type = "toggle",
-                                    name = "use clean icons",
-                                    -- and replace it with a 1pixel border #later
-                                    desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                },
-                                newline = {
+                                StacksDisplay = {
                                     order = 3,
-                                    name = "",
-                                    type = "description",
-                                },
-                                point = {
-                                    order = 4,
-                                    name = "Debuffframe anchor",
-                                    type = "select",
-                                    values = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"},
-                                    sorting = {1,2,3,4},
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                },
-                                relativePoint = {
-                                    order = 5,
-                                    name = "to Frames",
-                                    type = "select",
-                                    values = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT"},
-                                    sorting = {1,2,3,4},
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                },
-                                orientation = {
-                                    order = 6,
-                                    name = "direction of growth",
-                                    type = "select",
-                                    values = {"LEFT", "RIGHT", "UP", "DOWN"},
-                                    sorting = {1,2,3,4},
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    width = 0.8,
-                                },
-                                newline2 = {
-                                    order = 7,
-                                    name = "",
-                                    type = "description",
-                                },
-                                x_offset = {
-                                    order = 8,
-                                    name = "x - offset",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    softMin = -100,
-                                    softMax = 100,
-                                    step = 1,
-                                    width = 1.4,
-                                },
-                                y_offset = {
-                                    order = 9,
-                                    name = "y - offset",
-                                    type = "range",
-                                    get = "GetStatus",
-                                    set = "SetStatus",
-                                    softMin = -100,
-                                    softMax = 100,
-                                    step = 1,
-                                    width = 1.4,
+                                    name = "Stacks",
+                                    type = "group",
+                                    args = getFontOptions()
                                 },
                             },
                         },
@@ -836,47 +1100,27 @@ local options = {
                             name = "Blacklist",
                             type = "group",
                             args = {
-                                add = {
+                                addAura = {
                                     order = 1,
-                                    name = "add aura by spellid to blacklist",
+                                    name = "Enter spellId:",
                                     desc = "",
                                     type = "input",
                                     width = 1.5,
                                     pattern = "^%d+$",
                                     usage = "please enter a number",
-                                    set = function(info,spellID)
-                                        local name = #spellID <= 10 and select(1,GetSpellInfo(spellID)) or "|cffff0000aura not found|r" 
-                                        RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID] = name
-                                        RaidFrameSettings:CreateBlacklistEntry("Debuffs", name, spellID)
-                                        RaidFrameSettings:Print(spellID.."("..name..") added to blacklist")
-                                        RaidFrameSettings:ReloadConfig()
-                                    end,
-                                },
-                                remove = {
-                                    order = 2,
-                                    name = "remove aura from blacklist",
-                                    desc = "",
-                                    type = "input",
-                                    width = 1.5,
-                                    pattern = "^%d+$",
-                                    usage = "please enter a number",
-                                    set = function(info,spellID)
-                                        local name = RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID]
-                                        if name then
-                                            RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID] = nil
-                                            RaidFrameSettings:RemoveBlacklistEntry("Debuffs", name, spellID)
-                                            RaidFrameSettings:Print(spellID.."("..name..") removed from blacklist")
-                                        end
-                                        RaidFrameSettings:ReloadConfig()
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Debuffs.Blacklist[value] = true
+                                        RaidFrameSettings:CreateBlacklistEntry(value, "Debuffs")
+                                        RaidFrameSettings:UpdateModule("Debuffs")
                                     end,
                                 },
                                 BlacklistedAuras = {
                                     order = 4,
-                                    name = "Blacklisted Debuffs",
+                                    name = "Blacklist:",
                                     type = "group",
                                     inline = true,
                                     args = {
-                                        --will be created based on blacklist entries in the db by LoadUserInputEntrys
+
                                     },
                                 },                           
                             },
@@ -1354,38 +1598,155 @@ function RaidFrameSettings:GetOptionsTable()
     return options
 end
 
-function RaidFrameSettings:CreateBlacklistEntry(catergory, name, spellID)
-    local newEntry = {
-        type = "input",
-        name = name,
-        get = function() return spellID end,
-        set = function() end,
-        dialogControl = "SFX-Info-URL",
-        width = full,
+function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
+    local dbObj = self.db.profile[category].Blacklist
+    local optionsPos = options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args
+    --TODO improve to only call GetSpellInfo once
+    local spellName = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r"
+    local icon = select(3, GetSpellInfo(spellId))
+    local blacklist_entry = {
+        order = 1,
+        name = "",
+        type = "group",
+        inline = true,
+        args = {
+            auraInfo = {
+                order = 1,
+                image = icon,
+                imageCoords = {0.1,0.9,0.1,0.9},
+                name = spellName,
+                type = "description",
+                width = 1.5,
+            },
+            remove = {
+                order = 2,
+                name = "remove",
+                type = "execute",
+                func = function()
+                    self.db.profile[category].Blacklist[spellId] = nil
+                    optionsPos[spellId] = nil
+                    RaidFrameSettings:UpdateModule(category)
+                end,
+                width = 0.5,
+            },  
+        },
     }
-    options.args.Auras.args[catergory].args.Blacklist.args.BlacklistedAuras.args[name..spellID] = newEntry
+    optionsPos[spellId] = blacklist_entry
 end
 
-function RaidFrameSettings:RemoveBlacklistEntry(catergory, name, spellID)
-    options.args.Auras.args[catergory].args.Blacklist.args.BlacklistedAuras.args[name..spellID] = nil
+
+function RaidFrameSettings:CreateAuraPositionEntry(spellId)
+    local dbObj = self.db.profile.Buffs.AuraPosition[spellId]
+    local optionsPos = options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args
+    --TODO improve to only call GetSpellInfo once
+    local spellName, _, icon = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r"
+    local icon = select(3, GetSpellInfo(spellId))
+    local aura_entry = {
+        order = 1,
+        name = spellName,
+        type = "group",
+        inline = true,
+        args = {
+            auraInfo = {
+                order = 1,
+                name = "",
+                image = icon,
+                imageCoords = {0.1,0.9,0.1,0.9},
+                type = "description",
+                width = 0.5,
+            },
+            point = {
+                order = 2,
+                name = "anchor",
+                type = "select",
+                values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+                sorting = {1,2,3,4,5,6,7,8,9},
+                get = function()
+                    return dbObj.point
+                end,
+                set = function(_, value)
+                    dbObj.point = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                width = 0.8,
+            },
+            relativePoint = {
+                order = 3,
+                name = "to Frames",
+                type = "select",
+                values = {"Top Left", "Top", "Top Right", "Left", "Center", "Right", "Bottom Left", "Bottom", "Bottom Right"},
+                sorting = {1,2,3,4,5,6,7,8,9},
+                get = function()
+                    return dbObj.relativePoint
+                end,
+                set = function(_, value)
+                    dbObj.relativePoint = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                width = 0.8,
+            },
+            xOffset = {
+                order = 4,
+                name = "x - offset",
+                type = "range",
+                get = function()
+                    return dbObj.xOffset
+                end,
+                set = function(_, value)
+                    dbObj.xOffset = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                softMin = -100,
+                softMax = 100,
+                step = 1,
+                width = 0.6,
+            },
+            yOffset = {
+                order = 5,
+                name = "y - offset",
+                type = "range",
+                get = function()
+                    return dbObj.yOffset
+                end,
+                set = function(_, value)
+                    dbObj.yOffset = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                softMin = -100,
+                softMax = 100,
+                step = 1,
+                width = 0.6,
+            },
+            remove = {
+                order = 6,
+                name = "remove",
+                type = "execute",
+                func = function()
+                    self.db.profile.Buffs.AuraPosition[spellId] = nil
+                    optionsPos[spellId] = nil
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                width = 0.5,
+            },
+        },
+    }
+    optionsPos[spellId] = aura_entry
 end
 
 function RaidFrameSettings:LoadUserInputEntrys()
-    --debuff blacklist
-    local blacklist = RaidFrameSettings.db.profile.Debuffs.Blacklist
-    for spellID,name in pairs(blacklist) do
-        local type = type(name)
-        if type ~= "string" then
-            local spellName = #spellID <= 10 and select(1,GetSpellInfo(spellID)) or "|cffff0000aura not found|r" 
-            RaidFrameSettings.db.profile.Debuffs.Blacklist[spellID] = spellName
-            RaidFrameSettings:CreateBlacklistEntry("Debuffs", spellName, spellID)
-            return
+    --blacklists
+    for _, category in pairs({
+        "Buffs",
+        "Debuffs",
+    }) do
+        options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args = {}
+        for spellId in pairs(self.db.profile[category].Blacklist) do
+            self:CreateBlacklistEntry(spellId, category)
         end
-        RaidFrameSettings:CreateBlacklistEntry("Debuffs", name, spellID)       
     end
-    --buff blacklist
-    blacklist = RaidFrameSettings.db.profile.Buffs.Blacklist
-    for spellID,name in pairs(blacklist) do
-        RaidFrameSettings:CreateBlacklistEntry("Buffs", name, spellID)       
+    --aura positions
+    options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args = {}
+    for aura in pairs(self.db.profile.Buffs.AuraPosition) do 
+        self:CreateAuraPositionEntry(aura)
     end
 end

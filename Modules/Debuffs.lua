@@ -17,6 +17,10 @@ local SetTextureSliceMode  = SetTextureSliceMode
 local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 
 function Debuffs:OnEnable()
+    local fake = nil
+    if not fake then
+        return
+    end
     --Debuffframe size
     local width = RaidFrameSettings.db.profile.Debuffs.Display.width
     local height = RaidFrameSettings.db.profile.Debuffs.Display.height

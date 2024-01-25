@@ -63,10 +63,20 @@ function CooldownText:StopCooldownText(Cooldown)
     end
 end
 
+function CooldownText:DisableCooldownText(Cooldown)
+    if not Cooldown._rfs_cd_text then 
+        return 
+    end
+    self:StopCooldownText(Cooldown)
+    Cooldown._rfs_cd_text:Hide()
+end
+
 --The position of _rfs_cd_text on the frame aswell as the font should be set in the module
 function CooldownText:CreateOrGetCooldownFontString(Cooldown)
     if not Cooldown._rfs_cd_text then
         Cooldown._rfs_cd_text = Cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
     end
+    Cooldown._rfs_cd_text:Show()
     return Cooldown._rfs_cd_text
 end
+

@@ -39,7 +39,7 @@ function Debuffs:OnEnable()
         blacklist[tonumber(spellId)] = true
     end
     --user placed 
-    local userPlaced = {} --i will bring this at a later date for Debuffs
+    local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
     --Debuff size
     local width  = frameOpt.width
     local height = frameOpt.height
@@ -137,7 +137,7 @@ function Debuffs:OnEnable()
             cooldown:SetDrawEdge(frameOpt.edge)
         end
     end
-    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", updateAnchors)
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
     local onSetDebuff = function(debuffFrame, aura)
         if debuffFrame:IsForbidden() then --not sure if this is still neede but when i created it at the start if dragonflight it was

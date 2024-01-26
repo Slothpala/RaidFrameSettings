@@ -66,6 +66,7 @@ function RaidFrameSettings:ReloadConfig()
     self:GetProfiles()
     self:Disable()
     self:Enable()
+    self:LoadUserInputEntrys()
 end
 
 --Addon compartment 

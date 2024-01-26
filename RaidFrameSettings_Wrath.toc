@@ -13,7 +13,6 @@ embeds.xml
 
 #Config
 Core.lua
-HookRegistry.lua
 Roster.lua
 ProfileSharing.lua
 DB\DB.lua
@@ -23,6 +22,7 @@ Options\OptionsFrame.lua
 #Utils 
 Utils\GroupType.lua
 Utils\ProfileSwitcher.lua
+Utils\HookRegistry.lua
 
 #Modules
 modules_wrath.xml

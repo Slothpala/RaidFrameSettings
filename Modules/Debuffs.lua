@@ -1,5 +1,6 @@
 --[[
     Created by Slothpala 
+    The aura indicator position and the aura timers are greatly inspired by a pull request from: https://github.com/excorp
 --]]
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings

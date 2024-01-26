@@ -10,15 +10,24 @@ local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
 
 --Debuffframe size
+--WoW Api
+local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 local SetSize = SetSize
-local IsForbidden = IsForbidden
+local SetTexCoord = SetTexCoord
 local ClearAllPoints = ClearAllPoints
 local SetPoint = SetPoint
-local SetTexture = SetTexture
-local SetTexCoord = SetTexCoord
-local SetTextureSliceMargins = SetTextureSliceMargins
-local SetTextureSliceMode  = SetTextureSliceMode
-local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+local Hide = Hide
+local SetFont = SetFont
+local SetTextColor = SetTextColor
+local SetShadowColor = SetShadowColor
+local SetShadowOffset = SetShadowOffset
+local SetDrawSwipe = SetDrawSwipe
+local SetReverse = SetReverse
+local SetDrawEdge = SetDrawEdge
+local IsForbidden = IsForbidden
+--Lua
+local next = next
+
 
 function Debuffs:OnEnable()
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
@@ -36,7 +45,7 @@ function Debuffs:OnEnable()
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
     --blacklist
     local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
+    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
     --user placed 

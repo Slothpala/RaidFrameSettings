@@ -192,14 +192,31 @@ function Debuffs:OnDisable()
         frame.debuffFrames[1]:ClearAllPoints()
         frame.debuffFrames[1]:SetPoint(debuffPos, frame, "BOTTOMLEFT", 3, debuffOffset)
         for i=1, #frame.debuffFrames do
-            frame.debuffFrames[i].border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
-            frame.debuffFrames[i].border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)
-            frame.debuffFrames[i].border:SetTextureSliceMargins(0,0,0,0)
-            frame.debuffFrames[i].icon:SetTexCoord(0,1,0,1)
+            local debuffFrame = frame.debuffFrames[i]
+            debuffFrame.border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
+            debuffFrame.border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)
+            debuffFrame.border:SetTextureSliceMargins(0,0,0,0)
+            debuffFrame.icon:SetTexCoord(0,1,0,1)
             if ( i > 1 ) then
-                frame.debuffFrames[i]:ClearAllPoints();
-                frame.debuffFrames[i]:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
+                debuffFrame:ClearAllPoints();
+                debuffFrame:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
             end
+            local cooldown = debuffFrame.cooldown
+            cooldown:SetDrawSwipe(true)
+            cooldown:SetReverse(false)
+            cooldown:SetDrawEdge(false)
+            CDT:DisableCooldownText(cooldown)
+            --TODO
+            --[[
+                find global font for stacks and restore properly
+            ]]
+            local stackText = debuffFrame.count
+            stackText:ClearAllPoints()
+            stackText:SetPoint("BOTTOMRIGHT", debuffFrame, "BOTTOMRIGHT", 0, 0)
+            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
+            stackText:SetTextColor(1,1,1,1)
+            stackText:SetShadowColor(0,0,0)
+            stackText:SetShadowOffset(0,0)
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

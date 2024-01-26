@@ -186,12 +186,21 @@ function Buffs:OnDisable()
                 buffFrame:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
             end
             local cooldown = buffFrame.cooldown
+            cooldown:SetDrawSwipe(true)
+            cooldown:SetReverse(true)
+            cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
             --TODO
             --[[
-                restore stack display
-                numbers font
+                find global font for stacks and restore properly
             ]]
+            local stackText = buffFrame.count
+            stackText:ClearAllPoints()
+            stackText:SetPoint("BOTTOMRIGHT", buffFrame, "BOTTOMRIGHT", 0, 0)
+            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
+            stackText:SetTextColor(1,1,1,1)
+            stackText:SetShadowColor(0,0,0)
+            stackText:SetShadowOffset(0,0)
         end
     end
     addon:IterateRoster(restoreBuffFrames)

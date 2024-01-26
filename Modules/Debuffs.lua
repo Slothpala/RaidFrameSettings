@@ -40,7 +40,7 @@ function Debuffs:OnEnable()
     end
     --user placed 
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
-    --Debuff size
+    --Debuffframe size
     local width  = frameOpt.width
     local height = frameOpt.height
     local boss_width  = width * frameOpt.increase

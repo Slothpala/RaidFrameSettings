@@ -12,7 +12,25 @@ local Media = LibStub("LibSharedMedia-3.0")
 --[[
     --TODO local references here
 ]]
+--WoW Api
 local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+local SetSize = SetSize
+local SetTexCoord = SetTexCoord
+local ClearAllPoints = ClearAllPoints
+local SetPoint = SetPoint
+local Hide = Hide
+local SetFont = SetFont
+local SetTextColor = SetTextColor
+local SetShadowColor = SetShadowColor
+local SetShadowOffset = SetShadowOffset
+local SetDrawSwipe = SetDrawSwipe
+local SetReverse = SetReverse
+local SetDrawEdge = SetDrawEdge
+--Lua
+local next = next
+
+
+
 
 function Buffs:OnEnable()
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay

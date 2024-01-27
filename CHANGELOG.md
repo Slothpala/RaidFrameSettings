@@ -1,6 +1,9 @@
 # **Changelog**
-### Version [2.20.0] - 2024-01-26
+### Version [2.20.1] - 2024-01-26
+#### Fixes
+* Fixed a typo that caused the debuff blacklist to use the buff blacklist values.
 
+### Version [2.20.0] - 2024-01-26
 #### Added
 * CooldownText.lua -> util to create and handle cooldown texts on "Cooldown" frames.
 * Helper.lua -> utils file with 3 helper functions to reduce the lines of code in the modules themselves with the following functions for now:

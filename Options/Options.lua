@@ -158,7 +158,7 @@ local options = {
     args = {
         Version = {
             order = 0,
-            name = "@project-version@",
+            name = "2.20.1",
             type = "group",
             disabled = true,
             args = {},
@@ -1107,8 +1107,38 @@ local options = {
                                 },
                             },
                         },
-                        Blacklist = {
+						Increase = {
                             order = 2,
+                            name = "Increase",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Debuffs.Increase[value] = true
+                                        RaidFrameSettings:CreateIncreaseEntry(value, "Debuffs")
+                                        RaidFrameSettings:UpdateModule("Debuffs")
+                                    end,
+                                },
+                                IncreasedAuras = {
+                                    order = 4,
+                                    name = "Increase:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },                           
+                            },
+                        },
+                        Blacklist = {
+                            order = 3,
                             name = "Blacklist",
                             type = "group",
                             args = {
@@ -1646,6 +1676,42 @@ function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
     optionsPos[spellId] = blacklist_entry
 end
 
+function RaidFrameSettings:CreateIncreaseEntry(spellId)
+    local dbObj = self.db.profile.Debuffs.Increase
+    local optionsPos = options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args
+    --TODO improve to only call GetSpellInfo once
+    local spellName = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r"
+    local icon = select(3, GetSpellInfo(spellId))
+    local increase_entry = {
+        order = 1,
+        name = "",
+        type = "group",
+        inline = true,
+        args = {
+            auraInfo = {
+                order = 1,
+                image = icon,
+                imageCoords = {0.1,0.9,0.1,0.9},
+                name = spellName,
+                type = "description",
+                width = 1.5,
+            },
+            remove = {
+                order = 2,
+                name = "remove",
+                type = "execute",
+                func = function()
+                    self.db.profile.Debuffs.Increase[spellId] = nil
+                    optionsPos[spellId] = nil
+                    RaidFrameSettings:UpdateModule("Debuffs")
+                end,
+                width = 0.5,
+            },  
+        },
+    }
+    optionsPos[spellId] = increase_entry
+end
+
 
 function RaidFrameSettings:CreateAuraPositionEntry(spellId)
     local dbObj = self.db.profile.Buffs.AuraPosition[spellId]
@@ -1756,6 +1822,11 @@ function RaidFrameSettings:LoadUserInputEntrys()
         options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args = {}
         for spellId in pairs(self.db.profile[category].Blacklist) do
             self:CreateBlacklistEntry(spellId, category)
+        end
+		
+		options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args = {}
+        for spellId in pairs(self.db.profile.Debuffs.Increase) do
+            self:CreateIncreaseEntry(spellId)
         end
     end
     --aura positions

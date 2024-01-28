@@ -48,6 +48,11 @@ function Debuffs:OnEnable()
     for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
+	--increase
+    local increase = {}
+    for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
+        increase[tonumber(spellId)] = true
+    end
     --user placed 
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
     --Debuffframe size
@@ -157,7 +162,7 @@ function Debuffs:OnEnable()
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         local parentFrame = debuffFrame:GetParent()
-        if aura and aura.isBossAura then
+        if aura and (aura.isBossAura or increase[aura.spellId]) then
             debuffFrame:SetSize(boss_width, boss_height)
         else
             debuffFrame:SetSize(width, height)

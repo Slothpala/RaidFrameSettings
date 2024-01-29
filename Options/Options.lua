@@ -1680,9 +1680,9 @@ end
 function RaidFrameSettings:CreateIncreaseEntry(spellId)
     local dbObj = self.db.profile.Debuffs.Increase
     local optionsPos = options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args
-    --TODO improve to only call GetSpellInfo once
-    local spellName = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r"
-    local icon = select(3, GetSpellInfo(spellId))
+    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+        spellName, _, icon = GetSpellInfo(spellId)
+    end
     local increase_entry = {
         order = 1,
         name = "",
@@ -1693,7 +1693,7 @@ function RaidFrameSettings:CreateIncreaseEntry(spellId)
                 order = 1,
                 image = icon,
                 imageCoords = {0.1,0.9,0.1,0.9},
-                name = spellName,
+                name = (spellName or "|cffff0000aura not found|r") .. " (" .. spellId .. ")",
                 type = "description",
                 width = 1.5,
             },

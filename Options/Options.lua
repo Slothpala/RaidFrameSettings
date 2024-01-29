@@ -1643,9 +1643,10 @@ end
 function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
     local dbObj = self.db.profile[category].Blacklist
     local optionsPos = options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args
-    --TODO improve to only call GetSpellInfo once
-    local spellName = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r"
-    local icon = select(3, GetSpellInfo(spellId))
+    local spellName, _, icon 
+    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+        spellName, _, icon = GetSpellInfo(spellId)
+    end
     local blacklist_entry = {
         order = 1,
         name = "",
@@ -1656,7 +1657,7 @@ function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
                 order = 1,
                 image = icon,
                 imageCoords = {0.1,0.9,0.1,0.9},
-                name = spellName,
+                name = (spellName or "|cffff0000aura not found|r") .. " (" .. spellId .. ")",
                 type = "description",
                 width = 1.5,
             },
@@ -1716,12 +1717,13 @@ end
 function RaidFrameSettings:CreateAuraPositionEntry(spellId)
     local dbObj = self.db.profile.Buffs.AuraPosition[spellId]
     local optionsPos = options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args
-    --TODO improve to only call GetSpellInfo once
-    local spellName, _, icon = #spellId <= 10 and select(1,GetSpellInfo(spellId)) or "|cffff0000aura not found|r"
-    local icon = select(3, GetSpellInfo(spellId))
+    local spellName, _, icon 
+    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+        spellName, _, icon = GetSpellInfo(spellId)
+    end
     local aura_entry = {
         order = 1,
-        name = spellName,
+        name = "|cffFFFFFF" .. (spellName or "|cffff0000aura not found|r") .. " (" .. spellId .. ") |r",
         type = "group",
         inline = true,
         args = {

@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.20.2] - 2024-01-29
+#### Changed 
+* Aura Position & Blacklist entries now inculde the spellId
+
 ### Version [2.20.1] - 2024-01-26
 #### Fixes
 * Fixed a typo that caused the debuff blacklist to use the buff blacklist values.

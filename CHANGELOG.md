@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.20.3-beta] - 2024-01-29
+#### Added
+* Buffs & Debuffs module for classic
+
 ### Version [2.20.2] - 2024-01-29
 #### Changed 
 * Aura Position & Blacklist entries now inculde the spellId

@@ -24,7 +24,6 @@ local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 --[[
     tmp locals
 ]]
-local auraPositionSpellId = ""
 
 local function getFontOptions()
     local font_options = {
@@ -208,7 +207,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Buffs = {
-                            hidden = not isRetail,
+                            hidden = isVanilla,
                             order = 5,
                             type = "toggle",
                             name = "Buffs",
@@ -217,7 +216,7 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Debuffs = {
-                            hidden = not isRetail,
+                            hidden = isVanilla,
                             order = 6,
                             type = "toggle",
                             name = "Debuffs",
@@ -685,13 +684,12 @@ local options = {
             },
         },
         Auras = {
-            hidden = not isRetail,
             order = 4,
             name = "Auras",
             type = "group",
             childGroups = "tab",
             hidden = function()
-                if not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs then 
+                if ( not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs ) or isVanilla then 
                     return true
                 end
                 return false

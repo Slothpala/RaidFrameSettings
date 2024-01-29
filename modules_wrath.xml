@@ -3,4 +3,6 @@
     <Script file="Modules\Fonts.lua"/>
     <Script file="Modules\RoleIcon.lua"/>
     <Script file="Modules\Range.lua"/>
+    <Script file="Modules\Buffs_Classic.lua"/>
+    <Script file="Modules\Debuffs_Classic.lua"/>
 </Ui>

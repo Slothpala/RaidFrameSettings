@@ -182,6 +182,9 @@ function Debuffs:OnEnable()
                         if blacklist[aura.spellId] then
                             debuffFrame:Hide()
                         else
+                            if aura.isBossAura or increase[aura.spellId] then
+                                debuffFrame:SetSize(boss_width, boss_height)
+                            end
                             debuffFrame:Show()
                         end
                     end

@@ -1110,6 +1110,7 @@ local options = {
 						Increase = {
                             order = 2,
                             name = "Increase",
+                            desc = "Set up auras to have the same size increase as boss auras.",
                             type = "group",
                             args = {
                                 addAura = {

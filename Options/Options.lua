@@ -1680,6 +1680,7 @@ end
 function RaidFrameSettings:CreateIncreaseEntry(spellId)
     local dbObj = self.db.profile.Debuffs.Increase
     local optionsPos = options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args
+    local spellName, _, icon 
     if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
         spellName, _, icon = GetSpellInfo(spellId)
     end
@@ -1825,11 +1826,11 @@ function RaidFrameSettings:LoadUserInputEntrys()
         for spellId in pairs(self.db.profile[category].Blacklist) do
             self:CreateBlacklistEntry(spellId, category)
         end
-		
-		options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args = {}
-        for spellId in pairs(self.db.profile.Debuffs.Increase) do
-            self:CreateIncreaseEntry(spellId)
-        end
+    end
+    --aura increase
+    options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args = {}
+    for spellId in pairs(self.db.profile.Debuffs.Increase) do
+        self:CreateIncreaseEntry(spellId)
     end
     --aura positions
     options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args = {}

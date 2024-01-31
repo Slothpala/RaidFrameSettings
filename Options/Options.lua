@@ -1105,8 +1105,39 @@ local options = {
                                 },
                             },
                         },
-                        Blacklist = {
+						Increase = {
                             order = 2,
+                            name = "Increase",
+                            desc = "Set up auras to have the same size increase as boss auras.",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Debuffs.Increase[value] = true
+                                        RaidFrameSettings:CreateIncreaseEntry(value, "Debuffs")
+                                        RaidFrameSettings:UpdateModule("Debuffs")
+                                    end,
+                                },
+                                IncreasedAuras = {
+                                    order = 4,
+                                    name = "Increase:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },                           
+                            },
+                        },
+                        Blacklist = {
+                            order = 3,
                             name = "Blacklist",
                             type = "group",
                             args = {
@@ -1645,6 +1676,43 @@ function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
     optionsPos[spellId] = blacklist_entry
 end
 
+function RaidFrameSettings:CreateIncreaseEntry(spellId)
+    local dbObj = self.db.profile.Debuffs.Increase
+    local optionsPos = options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args
+    local spellName, _, icon 
+    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+        spellName, _, icon = GetSpellInfo(spellId)
+    end
+    local increase_entry = {
+        order = 1,
+        name = "",
+        type = "group",
+        inline = true,
+        args = {
+            auraInfo = {
+                order = 1,
+                image = icon,
+                imageCoords = {0.1,0.9,0.1,0.9},
+                name = (spellName or "|cffff0000aura not found|r") .. " (" .. spellId .. ")",
+                type = "description",
+                width = 1.5,
+            },
+            remove = {
+                order = 2,
+                name = "remove",
+                type = "execute",
+                func = function()
+                    self.db.profile.Debuffs.Increase[spellId] = nil
+                    optionsPos[spellId] = nil
+                    RaidFrameSettings:UpdateModule("Debuffs")
+                end,
+                width = 0.5,
+            },  
+        },
+    }
+    optionsPos[spellId] = increase_entry
+end
+
 
 function RaidFrameSettings:CreateAuraPositionEntry(spellId)
     local dbObj = self.db.profile.Buffs.AuraPosition[spellId]
@@ -1757,6 +1825,11 @@ function RaidFrameSettings:LoadUserInputEntrys()
         for spellId in pairs(self.db.profile[category].Blacklist) do
             self:CreateBlacklistEntry(spellId, category)
         end
+    end
+    --aura increase
+    options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args = {}
+    for spellId in pairs(self.db.profile.Debuffs.Increase) do
+        self:CreateIncreaseEntry(spellId)
     end
     --aura positions
     options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args = {}

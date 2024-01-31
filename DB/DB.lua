@@ -102,6 +102,9 @@ local defaults = {
             Blacklist = {
                 --[[spellID = name                ]]--
             },
+			Increase = {
+                --[[spellID = name                ]]--
+            },
         },
         Buffs = {
             BuffFramesDisplay = {

@@ -1,7 +1,10 @@
 # **Changelog**
-### Version [2.20.3-beta] - 2024-01-29
+
+### Version [2.21.0] - 2024-01-30
 #### Added
-* Buffs & Debuffs module for classic
+* Debuff aura increase
+* Buffs/Debuffs wotlk
+* descriptions for aura increase
 
 ### Version [2.20.2] - 2024-01-29
 #### Changed 

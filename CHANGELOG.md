@@ -5,6 +5,10 @@
 * Debuff aura increase
 * Buffs/Debuffs wotlk
 * descriptions for aura increase
+* Option to select a battleground profile
+
+#### Changed 
+* Changed the method of how child groups get choosen under the "Auras" section from tabs to dropdown
 
 ### Version [2.20.2] - 2024-01-29
 #### Changed 

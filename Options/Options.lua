@@ -738,7 +738,7 @@ local options = {
                                         cleanIcons = {
                                             order = 2.1,
                                             type = "toggle",
-                                            name = "use clean icons",
+                                            name = "Clean Icons",
                                             -- and replace it with a 1pixel border #later
                                             desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
                                             get = "GetStatus",
@@ -969,21 +969,21 @@ local options = {
                                         },
                                         increase = {
                                             order = 2.1,
-                                            name = "boss aura increase",
+                                            name = "Aura increase",
+                                            desc = "This will increase the size of \34Boss Auras\34 and the auras added in the \34Increase\34 section. Boss Auras are auras that the game deems to be more important by default.",
                                             type = "range",
                                             get = "GetStatus",
                                             set = "SetStatus",
                                             min = 1,
                                             max = 2,
                                             step = 0.1,
-                                            width = 0.8,
+                                            width = 1,
                                             isPercent = true,
                                         },
                                         cleanIcons = {
                                             order = 2.2,
                                             type = "toggle",
-                                            name = "use clean icons",
-                                            -- and replace it with a 1pixel border #later
+                                            name = "Clean Icons",
                                             desc = "Crop the border. Keep the aspect ratio of icons when width is not equal to height.",
                                             get = "GetStatus",
                                             set = "SetStatus",

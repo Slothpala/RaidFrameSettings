@@ -687,7 +687,7 @@ local options = {
             order = 4,
             name = "Auras",
             type = "group",
-            childGroups = "tab",
+            childGroups = "select",
             hidden = function()
                 if ( not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs ) or isVanilla then 
                     return true
@@ -1587,9 +1587,26 @@ local options = {
                                 RaidFrameSettings:LoadGroupBasedProfile()
                             end,
                         },
+                        battleground = {
+                            order = 4,
+                            name = "Battleground",
+                            type = "select",
+                            values = profiles,
+                            get = function() 
+                                for i,value in pairs(profiles) do
+                                    if value == RaidFrameSettings.db.global.GroupProfiles.battleground then
+                                        return i
+                                    end
+                                end
+                            end,
+                            set = function(info,value) 
+                                RaidFrameSettings.db.global.GroupProfiles.battleground = profiles[value]
+                                RaidFrameSettings:LoadGroupBasedProfile()
+                            end,
+                        },
                         description = {
-                            order = 3,
-                            name = "The profiles you select above will load based on the type of group you are in (raid or party), if you want to use the same profile for all cases select it for both raid and party.",
+                            order = 5,
+                            name = "The profiles you select above will be loaded based on the type of group you are in, if you want to use the same profile for all cases select it for all cases.",
                             fontSize = "medium",
                             type = "description",
                         },

@@ -1,6 +1,6 @@
 # **Changelog**
 
-### Version [2.21.0] - 2024-01-30
+### Version [2.21.0] - 2024-01-31
 #### Added
 * Debuff aura increase
 * Buffs/Debuffs wotlk

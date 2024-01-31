@@ -217,6 +217,7 @@ local defaults = {
             party = "Default",
             raid = "Default",
             arena = "Default",
+            battleground = "Default",
         },
     },
 }

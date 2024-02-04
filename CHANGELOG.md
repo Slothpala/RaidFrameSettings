@@ -1,4 +1,53 @@
 # **Changelog**
+
+### Version [2.21.0] - 2024-01-31
+#### Added
+* Debuff aura increase
+* Buffs/Debuffs wotlk
+* descriptions for aura increase
+* Option to select a battleground profile
+
+#### Changed 
+* Changed the method of how child groups get choosen under the "Auras" section from tabs to dropdown
+
+### Version [2.20.2] - 2024-01-29
+#### Changed 
+* Aura Position & Blacklist entries now inculde the spellId
+
+### Version [2.20.1] - 2024-01-26
+#### Fixes
+* Fixed a typo that caused the debuff blacklist to use the buff blacklist values.
+
+### Version [2.20.0] - 2024-01-26
+#### Added
+* CooldownText.lua -> util to create and handle cooldown texts on "Cooldown" frames.
+* Helper.lua -> utils file with 3 helper functions to reduce the lines of code in the modules themselves with the following functions for now:
+    * ConvertDbNumberToOutlinemode
+    * ConvertDbNumberToPosition
+    * GetAuraGrowthOrientationPoints
+* CPU Impact explanatory note added.
+
+#### Changed 
+* Overhauled Buffs & Debuffs module:
+    * Buffs & Debuffs:
+        * Overhauled Blacklist interface for Buffs & Debuffs, blacklist entries now have an icon in front of them and can be removed using the "remove" button.
+        * Changed the way blacklisted auras are handled. They are now hidden instead of resized, and all other buff-/debuffframes are reanchored accordingly.
+        * More anchor options have been added.
+        * Options to control the behavior of the "Swipe" overlay have been added. 
+        * Auras now have a duration timer text that can be disabled.
+        * The display options panel got overhauled and options for the new duration timer and the stacks count have been added.
+    * Buffs: 
+        * New feature added "Aura Position", which allows certain auras to be freely placed on the frame, separate from the other buffs (similar feature coming soon for debuffs).
+* HookRegistry.lua moved to Utils folder
+* Updated modules CPU Impact notes. 
+
+#### Fixes
+* AuraHighlight: Missing auras will now only count in auras applied by the player.
+
+### Version [2.19.3] - 2024-01-23
+#### Fixes
+* Fixed an issue that caused the options to be unusable on the classic versions.
+
 ### Version [2.19.2] - 2024-01-17
 #### Fixes
 * AuraHighlight: module works again without HealrhBars module enabled

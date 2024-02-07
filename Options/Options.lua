@@ -217,7 +217,6 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Buffs = {
-                            hidden = isVanilla,
                             order = 5,
                             type = "toggle",
                             name = "Buffs",
@@ -226,7 +225,6 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Debuffs = {
-                            hidden = isVanilla,
                             order = 6,
                             type = "toggle",
                             name = "Debuffs",
@@ -699,10 +697,7 @@ local options = {
             type = "group",
             childGroups = "select",
             hidden = function()
-                if ( not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs ) or isVanilla then 
-                    return true
-                end
-                return false
+                return not RaidFrameSettings.db.profile.Module.Buffs and not RaidFrameSettings.db.profile.Module.Debuffs 
             end,
             args = {
                 Buffs = {

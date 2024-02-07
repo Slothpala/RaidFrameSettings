@@ -9,7 +9,7 @@ local point
 local alpha
 
 function RaidMark:UpdateRaidMarker(frame)
-    if not frame.raidmark then
+    if not frame.raidmark or not frame.unit or frame.unit:match("na") then
         return
     end
 

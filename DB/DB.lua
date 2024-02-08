@@ -72,59 +72,14 @@ local defaults = {
                 edge = true,
                 inverse = false,
                 timerText = true,
+                maxdebuffs = 3,
+                frameStrata = 1,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
                 outlinemode = 2,
                 fontSize = 14,
-                fontColor = {r=1,g=1,b=1,a=1},
-                shadowColor = {r=0,g=0,b=0,a=1},
-                xOffsetShadow = 0,
-                yOffsetShadow = 0,
-                point = 1,
-                relativePoint = 1,
-                xOffsetFont = -4,
-                yOffsetFont = 4,
-            },
-            StacksDisplay = {
-                font = "Friz Quadrata TT",
-                outlinemode = 2,
-                fontSize = 12,
-                fontColor = {r=1,g=1,b=0,a=1},
-                shadowColor = {r=0,g=0,b=0,a=1},
-                xOffsetShadow = 0,
-                yOffsetShadow = 0,
-                point = 9,
-                relativePoint = 9,
-                xOffsetFont = 0,
-                yOffsetFont = 0,
-            },
-            Blacklist = {
-                --[[spellID = name                ]]--
-            },
-			Increase = {
-                --[[spellID = name                ]]--
-            },
-        },
-        Buffs = {
-            BuffFramesDisplay = {
-                width = 28,
-                height = 24,
-                cleanIcons = true,
-                point = 9,
-                relativePoint = 9,
-                xOffset = -4,
-                yOffset = 4,
-                orientation = 1,
-                swipe = true,
-                edge = true,
-                inverse = true,
-                timerText = true,
-            },
-            DurationDisplay = {
-                font = "Friz Quadrata TT",
-                outlinemode = 2,
-                fontSize = 14,
+                debuffColor = true,
                 fontColor = {r=1,g=1,b=1,a=1},
                 shadowColor = {r=0,g=0,b=0,a=1},
                 xOffsetShadow = 0,
@@ -151,7 +106,67 @@ local defaults = {
 
             },
             Blacklist = {
+                --[[spellID = name                ]]--
+            },
+			Increase = {
+                --[[spellID = name                ]]--
+            },
+            Whitelist = {
+                
+            },
+        },
+        Buffs = {
+            BuffFramesDisplay = {
+                width = 28,
+                height = 24,
+                cleanIcons = true,
+                point = 9,
+                relativePoint = 9,
+                xOffset = -4,
+                yOffset = 4,
+                orientation = 1,
+                swipe = true,
+                edge = true,
+                inverse = true,
+                timerText = true,
+                maxbuffsAuto = true,
+                maxbuffs = 3,
+                frameStrata = 1,
+            },
+            DurationDisplay = {
+                font = "Friz Quadrata TT",
+                outlinemode = 2,
+                fontSize = 14,
+                fontColor = {r=1,g=1,b=1,a=1},
+                shadowColor = {r=0,g=0,b=0,a=1},
+                xOffsetShadow = 0,
+                yOffsetShadow = 0,
+                point = 1,
+                relativePoint = 1,
+                xOffsetFont = -4,
+                yOffsetFont = 4,
+            },
+            StacksDisplay = {
+                font = "Friz Quadrata TT",
+                outlinemode = 2,
+                fontSize = 12,
+                fontColor = {r=0,g=1,b=1,a=1},
+                shadowColor = {r=0,g=0,b=0,a=1},
+                xOffsetShadow = 0,
+                yOffsetShadow = 0,
+                point = 9,
+                relativePoint = 9,
+                xOffsetFont = 0,
+                yOffsetFont = 0,
+            },
+            AuraPosition = {
+
+            },
+            Blacklist = {
                 --spellID = true
+            },
+            Whitelist = {
+
             },
         },
         AuraHighlight = {
@@ -203,6 +218,11 @@ local defaults = {
             },
             Overabsorb = {
                 glowAlpha = 1,
+            },
+            TimerTextLimit = {
+                sec = 60,
+                min = 3600,
+                hour = 86400,
             },
         },
         PorfileManagement = {

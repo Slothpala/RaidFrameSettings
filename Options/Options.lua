@@ -148,6 +148,20 @@ local function getFontOptions()
     return font_options
 end
 
+
+local function getDebuffDurationOptions()
+    local options = getFontOptions()
+    options.debuffColor = {
+        order = 4.1,
+        name = "Debuff Colored",
+        type = "toggle",
+        get = "GetStatus",
+        set = "SetStatus",
+        width = 0.8,
+    }
+    return options
+end
+
 local profiles = {}
 local options = {
     name = "Raid Frame Settings",
@@ -840,6 +854,40 @@ local options = {
                                             set = "SetStatus",
                                             width = 1.2,
                                         },
+                                        newline4 = {
+                                            order = 40,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        maxbuffsAuto = {
+                                            order = 41,
+                                            name = "Auto Max buffes",
+                                            type = "toggle",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 0.9,
+                                        },
+                                        maxbuffs = {
+                                            disabled = function() return RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.maxbuffsAuto end,
+                                            order = 42,
+                                            name = "Max buffes",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 3,
+                                            softMax = 10,
+                                            step = 1,
+                                            width = 0.9,
+                                        },
+                                        framestrata = {
+                                            order = 43,
+                                            name = "Frame Strata",
+                                            type = "select",
+                                            values = { "Inherited", "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP" },
+                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
                                     },
                                 },
                                 DurationDisplay = {
@@ -912,6 +960,38 @@ local options = {
                                 BlacklistedAuras = {
                                     order = 4,
                                     name = "Blacklist:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },                           
+                            },
+                        },
+                        Whitelist = {
+                            order = 3,
+                            name = "Whitelist",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Buffs.Whitelist[value] = {
+                                            other = false,
+                                        }
+                                        RaidFrameSettings:CreateWhitelistEntry(value, "Buffs")
+                                        RaidFrameSettings:UpdateModule("Buffs")
+                                    end,
+                                },
+                                WhitelistedAuras = {
+                                    order = 4,
+                                    name = "Whitelist:",
                                     type = "group",
                                     inline = true,
                                     args = {
@@ -1084,13 +1164,38 @@ local options = {
                                             set = "SetStatus",
                                             width = 1.2,
                                         },
+                                        newline4 = {
+                                            order = 40,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        maxdebuffs = {
+                                            order = 41,
+                                            name = "Max Debuffes",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 3,
+                                            softMax = 10,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
+                                        framestrata = {
+                                            order = 42,
+                                            name = "Frame Strata",
+                                            type = "select",
+                                            values = { "Inherited", "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP" },
+                                            sorting = { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                        },
                                     },
                                 },
                                 DurationDisplay = {
                                     order = 2,
                                     name = "Duration",
                                     type = "group",
-                                    args = getFontOptions()
+                                    args = getDebuffDurationOptions()
                                 },
                                 StacksDisplay = {
                                     order = 3,
@@ -1153,6 +1258,38 @@ local options = {
                                 BlacklistedAuras = {
                                     order = 4,
                                     name = "Blacklist:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },                           
+                            },
+                        },
+                        Whitelist = {
+                            order = 4,
+                            name = "Whitelist",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Debuffs.Whitelist[value] = {
+                                            other = false,
+                                        }
+                                        RaidFrameSettings:CreateWhitelistEntry(value, "Debuffs")
+                                        RaidFrameSettings:UpdateModule("Debuffs")
+                                    end,
+                                },
+                                WhitelistedAuras = {
+                                    order = 4,
+                                    name = "Whitelist:",
                                     type = "group",
                                     inline = true,
                                     args = {
@@ -1516,6 +1653,48 @@ local options = {
                         },
                     },
                 },
+                TimerTextLimit = {
+                    hidden = isClassic or Overabsorb_disabled,
+                    order = 7,
+                    name = "TimerText Format Limit (by seconds)",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        sec = {
+                            order = 1,
+                            name = "Second Limit",
+                            type = "input",
+                            get = function() return tostring(RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.sec) end,
+                            set = function(info, value)
+                                RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.sec = tonumber(value)
+                            end,
+                            pattern = "^%d+$",
+                            usage = "Display in minutes if second limit is exceeded. (please enter a number)",
+                        },
+                        min = {
+                            order = 2,
+                            name = "Minute Limit",
+                            type = "input",
+                            get = function() return tostring(RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.min) end,
+                            set = function(info, value)
+                                RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.min = tonumber(value)
+                            end,
+                            pattern = "^%d+$",
+                            usage = "Display in hours if minute limit is exceeded. (please enter a number)",
+                        },
+                        hour = {
+                            order = 3,
+                            name = "Hour Limit",
+                            type = "input",
+                            get = function() return tostring(RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.hour) end,
+                            set = function(info, value)
+                                RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.hour = tonumber(value)
+                            end,
+                            pattern = "^%d+$",
+                            usage = "Display in days if hour limit is exceeded. (please enter a number)",
+                        },
+                    },
+                },
             },
         },
         PorfileManagement = {
@@ -1649,6 +1828,56 @@ end
 
 function RaidFrameSettings:GetOptionsTable()
     return options
+end
+
+function RaidFrameSettings:CreateWhitelistEntry(spellId, category)
+    local dbObj = self.db.profile[category].Whitelist[spellId]
+    local optionsPos = options.args.Auras.args[category].args.Whitelist.args.WhitelistedAuras.args
+    local spellName, _, icon 
+    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+        spellName, _, icon = GetSpellInfo(spellId)
+    end
+    local whitelist_entry = {
+        order = 1,
+        name = "",
+        type = "group",
+        inline = true,
+        args = {
+            auraInfo = {
+                order = 1,
+                image = icon,
+                imageCoords = {0.1,0.9,0.1,0.9},
+                name = (spellName or "|cffff0000aura not found|r") .. " (" .. spellId .. ")",
+                type = "description",
+                width = 1.5,
+            },
+            remove = {
+                order = 2,
+                name = "remove",
+                type = "execute",
+                func = function()
+                    self.db.profile[category].Whitelist[spellId] = nil
+                    optionsPos[spellId] = nil
+                    RaidFrameSettings:UpdateModule(category)
+                end,
+                width = 0.5,
+            },  
+        },
+    }
+    if category == "Buffs" then
+        whitelist_entry.args.others = {
+            order = 1.1,
+            name = "Other's buff",
+            type = "toggle",
+            get = function() return dbObj.other end,
+            set = function(_, other)
+                dbObj.other = other
+                RaidFrameSettings:UpdateModule(category)
+            end,
+            width = 0.8,
+        }
+    end
+    optionsPos[spellId] = whitelist_entry
 end
 
 function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
@@ -1836,6 +2065,16 @@ function RaidFrameSettings:LoadUserInputEntrys()
         options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args = {}
         for spellId in pairs(self.db.profile[category].Blacklist) do
             self:CreateBlacklistEntry(spellId, category)
+        end
+    end
+    --whitelists
+    for _, category in pairs({
+        "Buffs",
+        "Debuffs",
+    }) do
+        options.args.Auras.args[category].args.Whitelist.args.WhitelistedAuras.args = {}
+        for spellId in pairs(self.db.profile[category].Whitelist) do
+            self:CreateWhitelistEntry(spellId, category)
         end
     end
     --aura increase

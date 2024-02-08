@@ -33,6 +33,22 @@ function addon:ConvertDbNumberToPosition(number)
     return position or ""
 end
 
+function addon:ConvertDbNumberToFrameStrata(number)
+    local positions = {
+        [1] = "Inherited",
+        [2] = "BACKGROUND",
+        [3] = "LOW",
+        [4] = "MEDIUM",
+        [5] = "HIGH",
+        [6] = "DIALOG",
+        [7] = "FULLSCREEN",
+        [8] = "FULLSCREEN_DIALOG",
+        [9] = "TOOLTIP",
+    }
+    local position = positions[number]
+    return position or ""
+end
+
 --[[
 
 ]]

@@ -139,7 +139,10 @@ function Buffs:OnEnable()
                 cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
             end
             --Stack Settings
-            local stackText = buffFrame.count
+            if not cooldown.count then
+                cooldown.count = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
+            end
+            local stackText = cooldown.count
             stackText:ClearAllPoints()
             stackText:SetPoint(stackOpt.point, buffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
             stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
@@ -156,10 +159,20 @@ function Buffs:OnEnable()
 
     local onSetBuff = function(buffFrame, aura)
         local cooldown = buffFrame.cooldown
-        CDT:StartCooldownText(buffFrame.cooldown)
+        CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         local parentFrame = buffFrame:GetParent()
         updateAnchors(parentFrame)
+        if not cooldown.count then
+            return
+        end
+        if buffFrame.count:IsShown() then
+            cooldown.count:SetText(buffFrame.count:GetText())
+            cooldown.count:Show()
+            buffFrame.count:Hide()
+        else
+            cooldown.count:Hide()
+        end
      end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 
@@ -209,17 +222,9 @@ function Buffs:OnDisable()
             cooldown:SetReverse(true)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
-            --TODO
-            --[[
-                find global font for stacks and restore properly
-            ]]
-            local stackText = buffFrame.count
-            stackText:ClearAllPoints()
-            stackText:SetPoint("BOTTOMRIGHT", buffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
-            stackText:SetTextColor(1,1,1,1)
-            stackText:SetShadowColor(0,0,0)
-            stackText:SetShadowOffset(0,0)
+            if cooldown.count then
+                cooldown.count:Hide()
+            end
         end
     end
     addon:IterateRoster(restoreBuffFrames)

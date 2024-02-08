@@ -139,7 +139,10 @@ function Debuffs:OnEnable()
                 cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
             end
             --Stack Settings
-            local stackText = debuffFrame.count
+            if not cooldown.count then
+                cooldown.count = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
+            end
+            local stackText = cooldown.count
             stackText:ClearAllPoints()
             stackText:SetPoint(stackOpt.point, debuffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
             stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
@@ -168,6 +171,16 @@ function Debuffs:OnEnable()
             debuffFrame:SetSize(width, height)
         end
         updateAnchors(parentFrame)
+        if not cooldown.count then
+            return
+        end
+        if debuffFrame.count:IsShown() then
+            cooldown.count:SetText(debuffFrame.count:GetText())
+            cooldown.count:Show()
+            debuffFrame.count:Hide()
+        else
+            cooldown.count:Hide()
+        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
 
@@ -224,18 +237,9 @@ function Debuffs:OnDisable()
             cooldown:SetReverse(false)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
-            --TODO
-            --[[
-                find global font for stacks and restore properly
-            ]]
-            local stackText = debuffFrame.count
-            stackText:ClearAllPoints()
-            stackText:SetPoint("BOTTOMRIGHT", debuffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
-            stackText:SetTextColor(1,1,1,1)
-            stackText:SetShadowColor(0,0,0)
-            stackText:SetShadowOffset(0,0)
-        end
+            if cooldown.count then
+                cooldown.count:Hide()
+            end
     end
     addon:IterateRoster(restoreDebuffFrames)
 end

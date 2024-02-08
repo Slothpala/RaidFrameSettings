@@ -32,8 +32,6 @@ local next = next
 local frame_registry = {}
 
 function Buffs:OnEnable()
-    CDT.TimerTextLimit = addon.db.profile.MinorModules.TimerTextLimit
-
     local frameOpt = CopyTable(addon.db.profile.Buffs.BuffFramesDisplay)
     frameOpt.framestrata = addon:ConvertDbNumberToFrameStrata(frameOpt.framestrata)
     --Timer
@@ -106,16 +104,6 @@ function Buffs:OnEnable()
         local cooldown = buffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
-        if not cooldown.count then
-            return
-        end
-        if buffFrame.count:IsShown() then
-            cooldown.count:SetText(buffFrame.count:GetText())
-            cooldown.count:Show()
-            buffFrame.count:Hide()
-        else
-            cooldown.count:Hide()
-        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 

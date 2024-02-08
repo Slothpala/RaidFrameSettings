@@ -53,11 +53,6 @@ function Buffs:OnEnable()
     for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
-    --whitelist
-    local whitelist = {}
-    for spellId, value in pairs(addon.db.profile.Buffs.Whitelist) do
-        whitelist[tonumber(spellId)] = value
-    end
     --user placed
     local userPlaced = {}
     local userPlacedIdx = 1
@@ -106,15 +101,6 @@ function Buffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
-    local function onProcessAura(frame, aura)
-        if not frame_registry[frame] or not frame.buffs or not aura.isHelpful then
-            return
-        end
-        if whitelist[aura.spellId] and (whitelist[aura.spellId].other or UnitIsUnit(aura.sourceUnit, "player")) then
-            frame.buffs[aura.auraInstanceID] = aura
-        end
-    end
-    self:HookFunc("CompactUnitFrame_ProcessAura", onProcessAura)
 
     local onSetBuff = function(buffFrame, aura)
         local cooldown = buffFrame.cooldown
@@ -137,16 +123,6 @@ function Buffs:OnEnable()
         if not frame_registry[frame] or not frame.buffs or not frame:IsVisible() then
             return
         end
-
-        -- remove blacklisted aura
-        --[[
-        frame.buffs:Iterate(function(auraInstanceID, aura)
-            if blacklist[aura.spellId] then
-                frame.buffs[aura.auraInstanceID] = nil
-                return false
-            end
-        end)
-        ]]
 
         -- set placed aura / other aura
         local frameNum = 1
@@ -254,20 +230,9 @@ function Buffs:OnEnable()
                     cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
                     cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b, durationOpt.shadowColor.a)
                     cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
-                    if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                        if not cooldown.OmniCC then
-                            cooldown.OmniCC = {
-                                noCooldownCount = cooldown.noCooldownCount,
-                            }
-                        end
-                        OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
-                    end
                 end
                 --Stack Settings
-                if not cooldown.count then
-                    cooldown.count = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
-                end
-                local stackText = cooldown.count
+                local stackText = buffFrame.count
                 stackText:ClearAllPoints()
                 stackText:SetPoint(stackOpt.point, buffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
                 stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
@@ -363,17 +328,18 @@ function Buffs:OnDisable()
             cooldown:SetReverse(true)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
-            if cooldown.count then
-                cooldown.count:Hide()
-            end
-            if cooldown.OmniCC then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
-                cooldown.OmniCC = nil
-            end
+            --TODO
+            --[[
+                find global font for stacks and restore properly
+            ]]
+            local stackText = buffFrame.count
+            stackText:ClearAllPoints()
+            stackText:SetPoint("BOTTOMRIGHT", buffFrame, "BOTTOMRIGHT", 0, 0)
+            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
+            stackText:SetTextColor(1,1,1,1)
+            stackText:SetShadowColor(0,0,0)
+            stackText:SetShadowOffset(0,0)
         end
-
-        CompactUnitFrame_UpdateAuras(frame)
     end
     addon:IterateRoster(restoreBuffFrames)
-    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end

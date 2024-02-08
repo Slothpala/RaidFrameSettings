@@ -31,17 +31,6 @@ local next = next
 local frame_registry = {}
 
 function Debuffs:OnEnable()
-    local debuffColors = {
-        Curse   = { r = 0.6, g = 0.0, b = 1.0 },
-        Disease = { r = 0.6, g = 0.4, b = 0.0 },
-        Magic   = { r = 0.2, g = 0.6, b = 1.0 },
-        Poison  = { r = 0.0, g = 0.6, b = 0.0 },
-        Bleed   = { r = 0.8, g = 0.0, b = 0.0 },
-    }
-    local Bleeds = addonTable.Bleeds
-
-    CDT.TimerTextLimit = addon.db.profile.MinorModules.TimerTextLimit
-    
     local frameOpt = CopyTable(addon.db.profile.Debuffs.DebuffFramesDisplay)
     frameOpt.framestrata = addon:ConvertDbNumberToFrameStrata(frameOpt.framestrata)
     --Timer
@@ -60,11 +49,6 @@ function Debuffs:OnEnable()
     local blacklist = {}
     for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
-    end
-    --whitelist
-    local whitelist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Whitelist) do
-        whitelist[tonumber(spellId)] = value
     end
 	--increase
     local increase = {}
@@ -125,17 +109,6 @@ function Debuffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
-
-    local function onProcessAura(frame, aura)
-        if not frame_registry[frame] or not frame.debuffs or not aura.isHarmful then
-            return
-        end
-        if whitelist[aura.spellId] then
-            frame.debuffs[aura.auraInstanceID] = aura
-        end
-    end
-    self:HookFunc("CompactUnitFrame_ProcessAura", onProcessAura)
-
     local onSetDeuff = function(debuffFrame, aura)
         if debuffFrame:IsForbidden() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return
@@ -143,35 +116,10 @@ function Debuffs:OnEnable()
         local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
-
-        local color = durationOpt.fontColor
-        if durationOpt.debuffColor then
-            if aura.dispelName then
-                color = debuffColors[aura.dispelName]
-            end
-            if Bleeds[aura.spellId] then
-                color = debuffColors.Bleed
-            end
-        end
-        local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
-        cooldownText:SetVertexColor(color.r, color.g, color.b)
-        debuffFrame.border:SetVertexColor(color.r, color.g, color.b)
-
         if aura and (aura.isBossAura or increase[aura.spellId]) then
             debuffFrame:SetSize(boss_width, boss_height)
         else
             debuffFrame:SetSize(width, height)
-        end
-
-        if not cooldown.count then
-            return
-        end
-        if debuffFrame.count:IsShown() then
-            cooldown.count:SetText(debuffFrame.count:GetText())
-            cooldown.count:Show()
-            debuffFrame.count:Hide()
-        else
-            cooldown.count:Hide()
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDeuff)
@@ -323,20 +271,9 @@ function Debuffs:OnEnable()
                     cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
                     cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b, durationOpt.shadowColor.a)
                     cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
-                    if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                        if not cooldown.OmniCC then
-                            cooldown.OmniCC = {
-                                noCooldownCount = cooldown.noCooldownCount,
-                            }
-                        end
-                        OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
-                    end
                 end
                 --Stack Settings
-                if not cooldown.count then
-                    cooldown.count = cooldown:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
-                end
-                local stackText = cooldown.count
+                local stackText = debuffFrame.count
                 stackText:ClearAllPoints()
                 stackText:SetPoint(stackOpt.point, debuffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
                 stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
@@ -436,17 +373,18 @@ function Debuffs:OnDisable()
             cooldown:SetReverse(false)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
-            if cooldown.count then
-                cooldown.count:Hide()
-            end
-            if cooldown.OmniCC then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
-                cooldown.OmniCC = nil
-            end
+            --TODO
+            --[[
+                find global font for stacks and restore properly
+            ]]
+            local stackText = debuffFrame.count
+            stackText:ClearAllPoints()
+            stackText:SetPoint("BOTTOMRIGHT", debuffFrame, "BOTTOMRIGHT", 0, 0)
+            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
+            stackText:SetTextColor(1,1,1,1)
+            stackText:SetShadowColor(0,0,0)
+            stackText:SetShadowOffset(0,0)
         end
-
-        CompactUnitFrame_UpdateAuras(frame)
     end
     addon:IterateRoster(restoreDebuffFrames)
-    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end

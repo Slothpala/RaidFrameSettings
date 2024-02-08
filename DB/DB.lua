@@ -188,7 +188,7 @@ local defaults = {
                 scaleFactor = 1,
             },
             RaidMark = {
-                position    = 5,
+                point       = 5,
                 x_offset    = 0,
                 y_offset    = 0,
                 width       = 20,

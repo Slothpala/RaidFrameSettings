@@ -148,6 +148,19 @@ local function getFontOptions()
     return font_options
 end
 
+local function getDebuffDurationOptions()
+    local options = getFontOptions()
+    options.debuffColor = {
+        order = 4.1,
+        name = "Debuff Colored",
+        type = "toggle",
+        get = "GetStatus",
+        set = "SetStatus",
+        width = 0.8,
+    }
+    return options
+end
+
 local profiles = {}
 local options = {
     name = "Raid Frame Settings",
@@ -1090,7 +1103,7 @@ local options = {
                                     order = 2,
                                     name = "Duration",
                                     type = "group",
-                                    args = getFontOptions()
+                                    args = getDebuffDurationOptions()
                                 },
                                 StacksDisplay = {
                                     order = 3,

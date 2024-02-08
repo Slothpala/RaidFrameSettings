@@ -77,6 +77,7 @@ local defaults = {
                 font = "Friz Quadrata TT",
                 outlinemode = 2,
                 fontSize = 14,
+                debuffColor = true,
                 fontColor = {r=1,g=1,b=1,a=1},
                 shadowColor = {r=0,g=0,b=0,a=1},
                 xOffsetShadow = 0,

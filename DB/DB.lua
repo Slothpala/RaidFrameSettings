@@ -204,6 +204,11 @@ local defaults = {
             Overabsorb = {
                 glowAlpha = 1,
             },
+            TimerTextLimit = {
+                sec = 60,
+                min = 3600,
+                hour = 86400,
+            },
         },
         PorfileManagement = {
             GroupProfiles = {

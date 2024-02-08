@@ -1516,6 +1516,48 @@ local options = {
                         },
                     },
                 },
+                TimerTextLimit = {
+                    hidden = isClassic or Overabsorb_disabled,
+                    order = 7,
+                    name = "TimerText Format Limit (by seconds)",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        sec = {
+                            order = 1,
+                            name = "Second Limit",
+                            type = "input",
+                            get = function() return tostring(RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.sec) end,
+                            set = function(info, value)
+                                RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.sec = tonumber(value)
+                            end,
+                            pattern = "^%d+$",
+                            usage = "Display in minutes if second limit is exceeded. (please enter a number)",
+                        },
+                        min = {
+                            order = 2,
+                            name = "Minute Limit",
+                            type = "input",
+                            get = function() return tostring(RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.min) end,
+                            set = function(info, value)
+                                RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.min = tonumber(value)
+                            end,
+                            pattern = "^%d+$",
+                            usage = "Display in hours if minute limit is exceeded. (please enter a number)",
+                        },
+                        hour = {
+                            order = 3,
+                            name = "Hour Limit",
+                            type = "input",
+                            get = function() return tostring(RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.hour) end,
+                            set = function(info, value)
+                                RaidFrameSettings.db.profile.MinorModules.TimerTextLimit.hour = tonumber(value)
+                            end,
+                            pattern = "^%d+$",
+                            usage = "Display in days if hour limit is exceeded. (please enter a number)",
+                        },
+                    },
+                },
             },
         },
         PorfileManagement = {

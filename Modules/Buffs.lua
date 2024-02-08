@@ -33,6 +33,8 @@ local next = next
 
 
 function Buffs:OnEnable()
+    CDT.TimerTextLimit = addon.db.profile.MinorModules.TimerTextLimit
+
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Buffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values

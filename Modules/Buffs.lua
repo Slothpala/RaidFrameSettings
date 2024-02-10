@@ -29,10 +29,13 @@ local SetDrawEdge = SetDrawEdge
 --Lua
 local next = next
 
-
-
+local org_SpellGetVisibilityInfo
+local module_enabled
+local blacklist = {}
 
 function Buffs:OnEnable()
+    module_enabled = true
+
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Buffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -47,7 +50,9 @@ function Buffs:OnEnable()
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
     --blacklist
-    local blacklist = {}
+    for k in pairs(blacklist) do
+        blacklist[k] = nil
+    end
     for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
@@ -94,14 +99,25 @@ function Buffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
+    if not org_SpellGetVisibilityInfo then
+        org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+        SpellGetVisibilityInfo = function(spellId, visType)
+            if module_enabled then
+                if blacklist[spellId] then
+                    return true, false, false
+                end
+            end
+            return org_SpellGetVisibilityInfo(spellId, visType)
+        end
+    end
+
     local function updateAnchors(frame)
         local anchorSet, prevFrame
         for i=1, #frame.buffFrames do
             local buffFrame = frame.buffFrames[i]
             local aura = buffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID) or nil
-            local hide = aura and blacklist[aura.spellId] or false
             local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -109,14 +125,11 @@ function Buffs:OnEnable()
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
             end
-            if hide then
-                buffFrame:Hide()
-            end
             if place and not hide then   
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = buffFrame
             end
         end
@@ -182,10 +195,18 @@ function Buffs:OnEnable()
             updateAnchors(frame)
         end
     end)
+
+    if InCombatLockdown() then
+        EventRegistry:TriggerEvent("PLAYER_REGEN_DISABLED")
+    else
+        EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
+    end
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
+    module_enabled = false
+
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
@@ -223,4 +244,10 @@ function Buffs:OnDisable()
         end
     end
     addon:IterateRoster(restoreBuffFrames)
+
+    if InCombatLockdown() then
+        EventRegistry:TriggerEvent("PLAYER_REGEN_DISABLED")
+    else
+        EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
+    end
 end

@@ -28,8 +28,13 @@ local IsForbidden = IsForbidden
 --Lua
 local next = next
 
+local org_SpellGetVisibilityInfo
+local module_enabled
+local blacklist = {}
 
 function Debuffs:OnEnable()
+    module_enabled = true
+
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -44,7 +49,9 @@ function Debuffs:OnEnable()
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
     --blacklist
-    local blacklist = {}
+    for k in pairs(blacklist) do
+        blacklist[k] = nil
+    end
     for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
@@ -94,14 +101,25 @@ function Debuffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
+    if not org_SpellGetVisibilityInfo then
+        org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+        SpellGetVisibilityInfo = function(spellId, visType)
+            if module_enabled then
+                if blacklist[spellId] then
+                    return true, false, false
+                end
+            end
+            return org_SpellGetVisibilityInfo(spellId, visType)
+        end
+    end
+
     local function updateAnchors(frame)
         local anchorSet, prevFrame
         for i=1, #frame.debuffFrames do
             local debuffFrame = frame.debuffFrames[i]
             local aura = debuffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID) or nil
-            local hide = aura and blacklist[aura.spellId] or false
             local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -109,14 +127,11 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then   
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = debuffFrame
             end
         end
@@ -179,23 +194,27 @@ function Debuffs:OnEnable()
                 if debuffFrame.auraInstanceID then
                     local aura = GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
                     if aura then
-                        if blacklist[aura.spellId] then
-                            debuffFrame:Hide()
-                        else
-                            if aura.isBossAura or increase[aura.spellId] then
-                                debuffFrame:SetSize(boss_width, boss_height)
-                            end
-                            debuffFrame:Show()
+                        if aura.isBossAura or increase[aura.spellId] then
+                            debuffFrame:SetSize(boss_width, boss_height)
                         end
+                        debuffFrame:Show()
                     end
                 end
             end
         end
     end)
+
+    if InCombatLockdown() then
+        EventRegistry:TriggerEvent("PLAYER_REGEN_DISABLED")
+    else
+        EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
+    end
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
+    module_enabled = false
+
     self:DisableHooks()
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
@@ -238,4 +257,10 @@ function Debuffs:OnDisable()
         end
     end
     addon:IterateRoster(restoreDebuffFrames)
+
+    if InCombatLockdown() then
+        EventRegistry:TriggerEvent("PLAYER_REGEN_DISABLED")
+    else
+        EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
+    end
 end

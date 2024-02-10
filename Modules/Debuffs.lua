@@ -39,6 +39,15 @@ function Debuffs:OnEnable()
     }
     local Bleeds = addonTable.Bleeds
 
+    if addon.db.profile.Module.AuraHighlight then
+        local dbObj = addon.db.profile.AuraHighlight.DebuffColors
+        debuffColors.Curse = dbObj.Curse
+        debuffColors.Disease = dbObj.Disease
+        debuffColors.Magic = dbObj.Magic
+        debuffColors.Poison = dbObj.Poison
+        debuffColors.Bleed = dbObj.Bleed
+    end
+
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values

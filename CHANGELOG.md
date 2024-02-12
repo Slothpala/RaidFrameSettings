@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [2.22.0] - 2024-02-12
+#### Added
+* Buffs / Debuffs modules for classic (vanilla/sod)
+#### Changed 
+* Buff and debuff stack text is now displayed above the swipe animation.
 
 ### Version [2.21.0] - 2024-01-31
 #### Added

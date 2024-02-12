@@ -114,17 +114,7 @@ function Debuffs:OnEnable()
             return
         end
         local cooldown = debuffFrame.cooldown
-        -- If buffFrame.cooldown is not present, the frame has not been modified by the addon.
-        if not cooldown.count then
-            return
-        end
         CDT:StartCooldownText(cooldown)
-        cooldown:SetDrawEdge(frameOpt.edge)
-        if aura and (aura.isBossAura or increase[aura.spellId]) then
-            debuffFrame:SetSize(boss_width, boss_height)
-        else
-            debuffFrame:SetSize(width, height)
-        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDeuff)
 
@@ -315,7 +305,7 @@ function Debuffs:OnEnable()
             resizeDebuffFrame(debuffFrame)
         end
 
-        onHideAllDebuffs(frame)
+        CompactUnitFrame_UpdateAuras(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -324,7 +314,6 @@ function Debuffs:OnEnable()
     end
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
-        CompactUnitFrame_UpdateAuras(frame)
     end)
 
     self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
@@ -334,7 +323,6 @@ function Debuffs:OnEnable()
             end
         end
     end)
-
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
@@ -392,6 +380,7 @@ function Debuffs:OnDisable()
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
         end
+        CompactUnitFrame_UpdateAuras(frame)
     end
     addon:IterateRoster(restoreDebuffFrames)
 end

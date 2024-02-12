@@ -104,20 +104,7 @@ function Buffs:OnEnable()
         if buffFrame:IsForbidden() or not buffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return
         end
-        -- If buffFrame.cooldown is not present, the frame has not been modified by the addon.
-        local cooldown = buffFrame.cooldown
-        if not cooldown.count then
-            return
-        end
         CDT:StartCooldownText(cooldown)
-        cooldown:SetDrawEdge(frameOpt.edge)
-        if buffFrame.count:IsShown() then
-            cooldown.count:SetText(buffFrame.count:GetText())
-            cooldown.count:Show()
-            buffFrame.count:Hide()
-        else
-            cooldown.count:Hide()
-        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 
@@ -272,7 +259,7 @@ function Buffs:OnEnable()
             resizeBuffFrame(buffFrame)
         end
 
-        onHideAllBuffs(frame)
+        CompactUnitFrame_UpdateAuras(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -281,9 +268,6 @@ function Buffs:OnEnable()
     end
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
-        if frame_registry[frame] then
-            CompactUnitFrame_UpdateAuras(frame)
-        end
     end)
 
     self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
@@ -345,6 +329,7 @@ function Buffs:OnDisable()
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
         end
+        CompactUnitFrame_UpdateAuras(frame)
     end
     addon:IterateRoster(restoreBuffFrames)
 end

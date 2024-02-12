@@ -156,6 +156,7 @@ function Buffs:OnEnable()
             cooldown:SetDrawSwipe(frameOpt.swipe)
             cooldown:SetReverse(frameOpt.inverse)
             cooldown:SetDrawEdge(frameOpt.edge)
+            stackText:SetParent(cooldown)
         end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)

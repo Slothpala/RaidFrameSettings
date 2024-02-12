@@ -1,19 +1,14 @@
 local _, addonTable = ...
-local RaidFrameSettings = addonTable.RaidFrameSettings
-local RaidMark = RaidFrameSettings:NewModule("RaidMark")
+local addon = addonTable.RaidFrameSettings
+local RaidMark = addon:NewModule("RaidMark")
 Mixin(RaidMark, addonTable.hooks)
-
-local width, height
-local x_offset, y_offset
-local point
-local alpha
 
 function RaidMark:UpdateRaidMarker(frame)
     if not frame.raidmark or not frame.unit or frame.unit:match("na") then
         return
     end
 
-    if not RaidFrameSettings.db.profile.Module.RaidMark then
+    if not addon.db.profile.Module.RaidMark then
         frame.raidmark:Hide()
         return
     end
@@ -31,19 +26,14 @@ function RaidMark:UpdateRaidMarker(frame)
 end
 
 function RaidMark:UpdateAllRaidmark()
-    RaidFrameSettings:IterateRoster(function(frame)
+    addon:IterateRoster(function(frame)
         RaidMark:UpdateRaidMarker(frame)
     end)
 end
 
 function RaidMark:OnEnable()
-    local dbRaidMark = RaidFrameSettings.db.profile.MinorModules.RaidMark
-    width, height = dbRaidMark.width, dbRaidMark.height
-    x_offset, y_offset = dbRaidMark.x_offset, dbRaidMark.y_offset
-    point = (dbRaidMark.position == 1 and "TOPLEFT") or (dbRaidMark.position == 2 and "TOP") or (dbRaidMark.position == 3 and "TOPRIGHT") or
-        (dbRaidMark.position == 4 and "LEFT") or (dbRaidMark.position == 5 and "CENTER") or (dbRaidMark.position == 6 and "RIGHT") or
-        (dbRaidMark.position == 7 and "BOTTOMLEFT") or (dbRaidMark.position == 8 and "BOTTOM") or (dbRaidMark.position == 9 and "BOTTOMRIGHT")
-    alpha = dbRaidMark.alpha
+    local raidmarkOpt = CopyTable(addon.db.profile.MinorModules.RaidMark)
+    raidmarkOpt.point = addon:ConvertDbNumberToPosition(raidmarkOpt.point)
 
     local function initRaidMark(frame, force)
         if not frame.raidmark then
@@ -53,14 +43,14 @@ function RaidMark:OnEnable()
         if force then
             frame.raidmark:Hide()
             frame.raidmark:ClearAllPoints()
-            frame.raidmark:SetPoint(point, x_offset, y_offset)
-            frame.raidmark:SetSize(width, height)
-            frame.raidmark:SetAlpha(alpha)
+            frame.raidmark:SetPoint(raidmarkOpt.point, raidmarkOpt.x_offset, raidmarkOpt.y_offset)
+            frame.raidmark:SetSize(raidmarkOpt.width, raidmarkOpt.height)
+            frame.raidmark:SetAlpha(raidmarkOpt.alpha)
         end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", initRaidMark)
 
-    RaidFrameSettings:IterateRoster(function(frame)
+    addon:IterateRoster(function(frame)
         initRaidMark(frame, true)
     end)
     self:UpdateAllRaidmark()

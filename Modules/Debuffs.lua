@@ -162,6 +162,10 @@ function Debuffs:OnEnable()
             return 
         end
         local cooldown = debuffFrame.cooldown
+        -- If cooldown.count is not present, the frame has not been modified by the addon.
+        if not cooldown.count then
+            return
+        end
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         local parentFrame = debuffFrame:GetParent()
@@ -171,9 +175,6 @@ function Debuffs:OnEnable()
             debuffFrame:SetSize(width, height)
         end
         updateAnchors(parentFrame)
-        if not cooldown.count then
-            return
-        end
         if debuffFrame.count:IsShown() then
             cooldown.count:SetText(debuffFrame.count:GetText())
             cooldown.count:Show()
@@ -240,6 +241,7 @@ function Debuffs:OnDisable()
             if cooldown.count then
                 cooldown.count:Hide()
             end
+        end
     end
     addon:IterateRoster(restoreDebuffFrames)
 end

@@ -159,13 +159,14 @@ function Buffs:OnEnable()
 
     local onSetBuff = function(buffFrame, aura)
         local cooldown = buffFrame.cooldown
+        -- If cooldown.count is not present, the frame has not been modified by the addon.
+        if not cooldown.count then
+            return
+        end
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         local parentFrame = buffFrame:GetParent()
         updateAnchors(parentFrame)
-        if not cooldown.count then
-            return
-        end
         if buffFrame.count:IsShown() then
             cooldown.count:SetText(buffFrame.count:GetText())
             cooldown.count:Show()

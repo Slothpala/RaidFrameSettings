@@ -101,14 +101,28 @@ function Buffs:OnEnable()
 
 
     local onSetBuff = function(buffFrame, aura)
+        if buffFrame:IsForbidden() or not buffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
+            return
+        end
+        -- If buffFrame.cooldown is not present, the frame has not been modified by the addon.
         local cooldown = buffFrame.cooldown
+        if not cooldown.count then
+            return
+        end
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
+        if buffFrame.count:IsShown() then
+            cooldown.count:SetText(buffFrame.count:GetText())
+            cooldown.count:Show()
+            buffFrame.count:Hide()
+        else
+            cooldown.count:Hide()
+        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 
     local onHideAllBuffs = function(frame)
-        if not frame_registry[frame] or not frame.buffs or not frame:IsVisible() then
+        if not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return
         end
 
@@ -152,7 +166,7 @@ function Buffs:OnEnable()
     self:HookFunc("CompactUnitFrame_HideAllBuffs", onHideAllBuffs)
 
     local function onFrameSetup(frame)
-        if frame.maxBuffs == 0 then
+        if frame.maxBuffs == 0 or not frame.buffs then
             return
         end
 
@@ -166,13 +180,14 @@ function Buffs:OnEnable()
             }
         end
 
+        if InCombatLockdown() then
+            frame_registry[frame].lockdown = true
+            return
+        end
+        frame_registry[frame].lockdown = false
+
         if frame_registry[frame].dirty then
-            if InCombatLockdown() then
-                frame_registry[frame].lockdown = true
-                return
-            end
             frame_registry[frame].maxBuffs = frameOpt.maxbuffsAuto and frame.maxBuffs or frameOpt.maxbuffs
-            frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
             local placedAuraStart = frame.maxBuffs + 1
@@ -284,14 +299,16 @@ end
 function Buffs:OnDisable()
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
-        if frame_registry[frame] then
-            frame_registry[frame].dirty = true
-            for _, buffFrame in pairs(frame.buffFrames) do
-                buffFrame:Hide()
-            end
-            for _, extraBuffFrame in pairs(frame_registry[frame].extraBuffFrames) do
-                extraBuffFrame:Hide()
-            end
+        -- The add-on will only restore frames that it has modified.
+        if not frame_registry[frame] then
+            return
+        end
+        frame_registry[frame].dirty = true
+        for _, buffFrame in pairs(frame.buffFrames) do
+            buffFrame:Hide()
+        end
+        for _, extraBuffFrame in pairs(frame_registry[frame].extraBuffFrames) do
+            extraBuffFrame:Hide()
         end
 
         local frameWidth = frame:GetWidth()

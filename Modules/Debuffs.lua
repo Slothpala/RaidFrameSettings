@@ -110,10 +110,14 @@ function Debuffs:OnEnable()
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
     local onSetDeuff = function(debuffFrame, aura)
-        if debuffFrame:IsForbidden() then --not sure if this is still neede but when i created it at the start if dragonflight it was
+        if debuffFrame:IsForbidden() or not debuffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return
         end
         local cooldown = debuffFrame.cooldown
+        -- If buffFrame.cooldown is not present, the frame has not been modified by the addon.
+        if not cooldown.count then
+            return
+        end
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         if aura and (aura.isBossAura or increase[aura.spellId]) then
@@ -125,7 +129,7 @@ function Debuffs:OnEnable()
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDeuff)
 
     local function onUpdatePrivateAuras(frame)
-        if not frame.PrivateAuraAnchors or not frame_registry[frame] then
+        if not frame.PrivateAuraAnchors or not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible()then
             return
         end
 
@@ -149,7 +153,7 @@ function Debuffs:OnEnable()
     self:HookFunc("CompactUnitFrame_UpdatePrivateAuras", onUpdatePrivateAuras)
 
     local onHideAllDebuffs = function(frame)
-        if not frame_registry[frame] or not frame.debuffs or not frame:IsVisible() then
+        if not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return
         end
 
@@ -195,7 +199,7 @@ function Debuffs:OnEnable()
     self:HookFunc("CompactUnitFrame_HideAllDebuffs", onHideAllDebuffs)
 
     local function onFrameSetup(frame)
-        if frame.maxDebuffs == 0 then
+        if frame.maxDebuffs == 0 or not frame.debuffs then
             return
         end
 
@@ -209,13 +213,14 @@ function Debuffs:OnEnable()
             }
         end
 
+        if InCombatLockdown() then
+            frame_registry[frame].lockdown = true
+            return
+        end
+        frame_registry[frame].lockdown = false
+
         if frame_registry[frame].dirty then
-            if InCombatLockdown() then
-                frame_registry[frame].lockdown = true
-                return
-            end
             frame_registry[frame].maxDebuffs = frameOpt.maxdebuffs
-            frame_registry[frame].lockdown = false
             frame_registry[frame].dirty = false
 
             local placedAuraStart = frame.maxDebuffs + 1
@@ -336,14 +341,16 @@ end
 function Debuffs:OnDisable()
     self:DisableHooks()
     local restoreDebuffFrames = function(frame)
-        if frame_registry[frame] then
-            frame_registry[frame].dirty = true
-            for _, debuffFrame in pairs(frame.debuffFrames) do
-                debuffFrame:Hide()
-            end
-            for _, extraDebuffFrame in pairs(frame_registry[frame].extraDebuffFrames) do
-                extraDebuffFrame:Hide()
-            end
+        -- The add-on will only restore frames that it has modified.
+        if not frame_registry[frame] then
+            return
+        end
+        frame_registry[frame].dirty = true
+        for _, debuffFrame in pairs(frame.debuffFrames) do
+            debuffFrame:Hide()
+        end
+        for _, extraDebuffFrame in pairs(frame_registry[frame].extraDebuffFrames) do
+            extraDebuffFrame:Hide()
         end
 
         local frameWidth = frame:GetWidth()

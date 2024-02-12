@@ -28,8 +28,30 @@ local IsForbidden = IsForbidden
 --Lua
 local next = next
 
+local org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+local module_enabled
+local whitelist = {}
+
+SpellGetVisibilityInfo = function(spellId, visType)
+    if module_enabled then
+        if whitelist[spellId] then
+            return false
+        end
+    end
+    return org_SpellGetVisibilityInfo(spellId, visType)
+end
+
+function Debuffs:SetSpellGetVisibilityInfo(enable)
+    module_enabled = enable
+    if InCombatLockdown() then
+        EventRegistry:TriggerEvent("PLAYER_REGEN_DISABLED")
+    else
+        EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
+    end
+end
 
 function Debuffs:OnEnable()
+    self:SetSpellGetVisibilityInfo(true)
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -47,6 +69,13 @@ function Debuffs:OnEnable()
     local blacklist = {}
     for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
+    end
+    --whitelist
+    for k in pairs(whitelist) do
+        whitelist[k] = nil
+    end
+    for spellId, value in pairs(addon.db.profile.Debuffs.Whitelist) do
+        whitelist[tonumber(spellId)] = value
     end
 	--increase
     local increase = {}
@@ -151,6 +180,7 @@ function Debuffs:OnEnable()
             cooldown:SetReverse(frameOpt.inverse)
             cooldown:SetDrawEdge(frameOpt.edge)
         end
+        CompactUnitFrame_UpdateAuras(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -173,30 +203,13 @@ function Debuffs:OnEnable()
 
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
-        if frame.debuffFrames then
-            for i=1, #frame.debuffFrames do
-                local debuffFrame = frame.debuffFrames[i]
-                if debuffFrame.auraInstanceID then
-                    local aura = GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
-                    if aura then
-                        if blacklist[aura.spellId] then
-                            debuffFrame:Hide()
-                        else
-                            if aura.isBossAura or increase[aura.spellId] then
-                                debuffFrame:SetSize(boss_width, boss_height)
-                            end
-                            debuffFrame:Show()
-                        end
-                    end
-                end
-            end
-        end
     end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
     self:DisableHooks()
+    self:SetSpellGetVisibilityInfo(false)
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -236,6 +249,7 @@ function Debuffs:OnDisable()
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
         end
+        CompactUnitFrame_UpdateAuras(frame)
     end
     addon:IterateRoster(restoreDebuffFrames)
 end

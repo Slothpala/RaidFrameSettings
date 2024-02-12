@@ -29,10 +29,33 @@ local SetDrawEdge = SetDrawEdge
 --Lua
 local next = next
 
+local org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+local module_enabled
+local whitelist = {}
 
+SpellGetVisibilityInfo = function(spellId, visType)
+    if module_enabled then
+        if whitelist[spellId] then
+            if whitelist[spellId].other then
+                return true, false, true
+                end
+            return true, true, false
+        end
+    end
+    return org_SpellGetVisibilityInfo(spellId, visType)
+end
 
+function Buffs:SetSpellGetVisibilityInfo(enable)
+    module_enabled = enable
+    if InCombatLockdown() then
+        EventRegistry:TriggerEvent("PLAYER_REGEN_DISABLED")
+    else
+        EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
+    end
+end
 
 function Buffs:OnEnable()
+    self:SetSpellGetVisibilityInfo(true)
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Buffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -50,6 +73,13 @@ function Buffs:OnEnable()
     local blacklist = {}
     for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
+    end
+    --whitelist
+    for k in pairs(whitelist) do
+        whitelist[k] = nil
+    end
+    for spellId, value in pairs(addon.db.profile.Buffs.Whitelist) do
+        whitelist[tonumber(spellId)] = value
     end
     --user placed
     local userPlaced = {}
@@ -151,6 +181,7 @@ function Buffs:OnEnable()
             cooldown:SetReverse(frameOpt.inverse)
             cooldown:SetDrawEdge(frameOpt.edge)
         end
+        CompactUnitFrame_UpdateAuras(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -165,28 +196,13 @@ function Buffs:OnEnable()
 
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
-        if frame.buffFrames then
-            for i=1, #frame.buffFrames do
-                local buffFrame = frame.buffFrames[i]
-                if buffFrame.auraInstanceID then
-                    local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
-                    if aura then
-                        if blacklist[aura.spellId] then
-                            buffFrame:Hide()
-                        else
-                            buffFrame:Show()
-                        end
-                    end
-                end
-            end
-            updateAnchors(frame)
-        end
     end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
     self:DisableHooks()
+    self:SetSpellGetVisibilityInfo(false)
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -221,6 +237,7 @@ function Buffs:OnDisable()
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
         end
+        CompactUnitFrame_UpdateAuras(frame)
     end
     addon:IterateRoster(restoreBuffFrames)
 end

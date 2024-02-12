@@ -920,6 +920,38 @@ local options = {
                                 },                           
                             },
                         },
+                        Whitelist = {
+                            order = 3,
+                            name = "Whitelist",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Buffs.Whitelist[value] = {
+                                            other = false,
+                                        }
+                                        RaidFrameSettings:CreateWhitelistEntry(value, "Buffs")
+                                        RaidFrameSettings:UpdateModule("Buffs")
+                                    end,
+                                },
+                                WhitelistedAuras = {
+                                    order = 4,
+                                    name = "Whitelist:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },                           
+                            },
+                        },
                     },  
                 },
                 Debuffs = {
@@ -1153,6 +1185,38 @@ local options = {
                                 BlacklistedAuras = {
                                     order = 4,
                                     name = "Blacklist:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },                           
+                            },
+                        },
+                        Whitelist = {
+                            order = 4,
+                            name = "Whitelist",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Debuffs.Whitelist[value] = {
+                                            other = false,
+                                        }
+                                        RaidFrameSettings:CreateWhitelistEntry(value, "Debuffs")
+                                        RaidFrameSettings:UpdateModule("Debuffs")
+                                    end,
+                                },
+                                WhitelistedAuras = {
+                                    order = 4,
+                                    name = "Whitelist:",
                                     type = "group",
                                     inline = true,
                                     args = {
@@ -1651,6 +1715,56 @@ function RaidFrameSettings:GetOptionsTable()
     return options
 end
 
+function RaidFrameSettings:CreateWhitelistEntry(spellId, category)
+    local dbObj = self.db.profile[category].Whitelist[spellId]
+    local optionsPos = options.args.Auras.args[category].args.Whitelist.args.WhitelistedAuras.args
+    local spellName, _, icon 
+    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+        spellName, _, icon = GetSpellInfo(spellId)
+    end
+    local whitelist_entry = {
+        order = 1,
+        name = "",
+        type = "group",
+        inline = true,
+        args = {
+            auraInfo = {
+                order = 1,
+                image = icon,
+                imageCoords = {0.1,0.9,0.1,0.9},
+                name = (spellName or "|cffff0000aura not found|r") .. " (" .. spellId .. ")",
+                type = "description",
+                width = 1.5,
+            },
+            remove = {
+                order = 2,
+                name = "remove",
+                type = "execute",
+                func = function()
+                    self.db.profile[category].Whitelist[spellId] = nil
+                    optionsPos[spellId] = nil
+                    RaidFrameSettings:UpdateModule(category)
+                end,
+                width = 0.5,
+            },  
+        },
+    }
+    if category == "Buffs" then
+        whitelist_entry.args.others = {
+            order = 1.1,
+            name = "Other's buff",
+            type = "toggle",
+            get = function() return dbObj.other end,
+            set = function(_, other)
+                dbObj.other = other
+                RaidFrameSettings:UpdateModule(category)
+            end,
+            width = 0.8,
+        }
+    end
+    optionsPos[spellId] = whitelist_entry
+end
+
 function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
     local dbObj = self.db.profile[category].Blacklist
     local optionsPos = options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args
@@ -1836,6 +1950,16 @@ function RaidFrameSettings:LoadUserInputEntrys()
         options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args = {}
         for spellId in pairs(self.db.profile[category].Blacklist) do
             self:CreateBlacklistEntry(spellId, category)
+        end
+    end
+    --whitelists
+    for _, category in pairs({
+        "Buffs",
+        "Debuffs",
+    }) do
+        options.args.Auras.args[category].args.Whitelist.args.WhitelistedAuras.args = {}
+        for spellId in pairs(self.db.profile[category].Whitelist) do
+            self:CreateWhitelistEntry(spellId, category)
         end
     end
     --aura increase

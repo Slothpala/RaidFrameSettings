@@ -105,6 +105,9 @@ local defaults = {
 			Increase = {
                 --[[spellID = name                ]]--
             },
+            Whitelist = {
+                
+            },
         },
         Buffs = {
             BuffFramesDisplay = {
@@ -152,6 +155,9 @@ local defaults = {
             },
             Blacklist = {
                 --spellID = true
+            },
+            Whitelist = {
+
             },
         },
         AuraHighlight = {

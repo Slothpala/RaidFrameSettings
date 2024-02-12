@@ -167,13 +167,12 @@ function Buffs:OnEnable()
             }
         end
 
-        if InCombatLockdown() then
-            frame_registry[frame].lockdown = true
-            return
-        end
-        frame_registry[frame].lockdown = false
-
         if frame_registry[frame].dirty then
+            if InCombatLockdown() then
+                frame_registry[frame].lockdown = true
+                return
+            end
+            frame_registry[frame].lockdown = false
             frame_registry[frame].maxBuffs = frameOpt.maxbuffsAuto and frame.maxBuffs or frameOpt.maxbuffs
             frame_registry[frame].dirty = false
 

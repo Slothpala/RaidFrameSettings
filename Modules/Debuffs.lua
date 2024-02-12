@@ -203,13 +203,12 @@ function Debuffs:OnEnable()
             }
         end
 
-        if InCombatLockdown() then
-            frame_registry[frame].lockdown = true
-            return
-        end
-        frame_registry[frame].lockdown = false
-
         if frame_registry[frame].dirty then
+            if InCombatLockdown() then
+                frame_registry[frame].lockdown = true
+                return
+            end
+            frame_registry[frame].lockdown = false
             frame_registry[frame].maxDebuffs = frameOpt.maxdebuffs
             frame_registry[frame].dirty = false
 

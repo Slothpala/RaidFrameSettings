@@ -110,6 +110,31 @@ function Debuffs:OnEnable()
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
     local function updateAnchors(frame)
+        local anchorSet, prevFrame
+        for i=1, #frame.debuffFrames do
+            local debuffFrame = frame.debuffFrames[i]
+            local aura = debuffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID) or nil
+            local hide = aura and blacklist[aura.spellId] or false
+            local place = aura and userPlaced[aura.spellId] or false
+            if not anchorSet and not hide and not place then 
+                debuffFrame:ClearAllPoints()
+                debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
+                anchorSet = true
+            else
+                debuffFrame:ClearAllPoints()
+                debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
+            end
+            if hide then
+                debuffFrame:Hide()
+            end
+            if place and not hide then   
+                debuffFrame:ClearAllPoints()
+                debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
+            end
+            if not hide and not place then
+                prevFrame = debuffFrame
+            end
+        end
     end
 
     local function onUpdatePrivateAuras(frame)

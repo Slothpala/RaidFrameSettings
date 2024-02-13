@@ -99,15 +99,6 @@ function Buffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
-
-    local onSetBuff = function(buffFrame, aura)
-        if buffFrame:IsForbidden() or not buffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
-            return
-        end
-        CDT:StartCooldownText(cooldown)
-    end
-    self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
-
     local onHideAllBuffs = function(frame)
         if not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return
@@ -262,6 +253,16 @@ function Buffs:OnEnable()
         CompactUnitFrame_UpdateAuras(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
+
+    local onSetBuff = function(buffFrame, aura)
+        if buffFrame:IsForbidden() or not buffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
+            return
+        end
+        local cooldown = buffFrame.cooldown
+        CDT:StartCooldownText(cooldown)
+        cooldown:SetDrawEdge(frameOpt.edge)
+    end
+    self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 
     for _, v in pairs(frame_registry) do
         v.dirty = true

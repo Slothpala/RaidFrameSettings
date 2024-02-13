@@ -109,15 +109,6 @@ function Debuffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
-    local onSetDeuff = function(debuffFrame, aura)
-        if debuffFrame:IsForbidden() or not debuffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
-            return
-        end
-        local cooldown = debuffFrame.cooldown
-        CDT:StartCooldownText(cooldown)
-    end
-    self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDeuff)
-
     local function onUpdatePrivateAuras(frame)
         if not frame.PrivateAuraAnchors or not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible()then
             return
@@ -308,6 +299,21 @@ function Debuffs:OnEnable()
         CompactUnitFrame_UpdateAuras(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
+
+    local onSetDeuff = function(debuffFrame, aura)
+        if debuffFrame:IsForbidden() or not debuffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
+            return
+        end
+        local cooldown = debuffFrame.cooldown
+        CDT:StartCooldownText(cooldown)
+        cooldown:SetDrawEdge(frameOpt.edge)
+        if aura and (aura.isBossAura or increase[aura.spellId]) then
+            debuffFrame:SetSize(boss_width, boss_height)
+        else
+            debuffFrame:SetSize(width, height)
+        end
+    end
+    self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDeuff)
 
     for _, v in pairs(frame_registry) do
         v.dirty = true

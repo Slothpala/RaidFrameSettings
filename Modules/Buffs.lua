@@ -99,6 +99,9 @@ function Buffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
+    local function updateAnchors(frame)
+    end
+
     local onHideAllBuffs = function(frame)
         if not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return

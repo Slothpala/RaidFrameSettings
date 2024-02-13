@@ -109,6 +109,9 @@ function Debuffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
 
+    local function updateAnchors(frame)
+    end
+
     local function onUpdatePrivateAuras(frame)
         if not frame.PrivateAuraAnchors or not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible()then
             return

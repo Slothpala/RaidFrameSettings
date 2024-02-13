@@ -873,7 +873,7 @@ local options = {
                                                     xOffset = 0,
                                                     yOffset = 0,
                                                 }
-                                                RaidFrameSettings:CreateAuraPositionEntry(value)
+                                                RaidFrameSettings:CreateAuraPositionEntry(value, "Buffs")
                                                 RaidFrameSettings:UpdateModule("Buffs")
                                             end
                                         },
@@ -1097,6 +1097,40 @@ local options = {
                                     name = "Stacks",
                                     type = "group",
                                     args = getFontOptions()
+                                },
+                                AuraPosition = {
+                                    order = 4,
+                                    name = "Aura Position",
+                                    type = "group",
+                                    args = {
+                                        addAura = {
+                                            order = 1,
+                                            name = "Enter spellId:",
+                                            type = "input",
+                                            pattern = "^%d+$",
+                                            usage = "please enter a number",
+                                            set = function(_, value)
+                                                RaidFrameSettings.db.profile.Debuffs.AuraPosition[value] = {
+                                                    ["spellId"] = tonumber(value),
+                                                    point = 1,
+                                                    relativePoint = 1,
+                                                    xOffset = 0,
+                                                    yOffset = 0,
+                                                }
+                                                RaidFrameSettings:CreateAuraPositionEntry(value, "Debuffs")
+                                                RaidFrameSettings:UpdateModule("Debuffs")
+                                            end
+                                        },
+                                        auraList = {
+                                            order = 2,
+                                            name = "Auras:",
+                                            type = "group",
+                                            inline = true,
+                                            args = {
+
+                                            },
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -1725,10 +1759,9 @@ function RaidFrameSettings:CreateIncreaseEntry(spellId)
     optionsPos[spellId] = increase_entry
 end
 
-
-function RaidFrameSettings:CreateAuraPositionEntry(spellId)
-    local dbObj = self.db.profile.Buffs.AuraPosition[spellId]
-    local optionsPos = options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args
+function RaidFrameSettings:CreateAuraPositionEntry(spellId, category)
+    local dbObj = self.db.profile[category].AuraPosition[spellId]
+    local optionsPos = options.args.Auras.args[category].args[category].args.AuraPosition.args.auraList.args
     local spellName, _, icon 
     if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
         spellName, _, icon = GetSpellInfo(spellId)
@@ -1760,7 +1793,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.point = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.6,
             },
@@ -1775,7 +1808,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.relativePoint = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.6,
             },
@@ -1788,7 +1821,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.xOffset = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 softMin = -100,
                 softMax = 100,
@@ -1804,7 +1837,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.yOffset = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 softMin = -100,
                 softMax = 100,
@@ -1816,9 +1849,9 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 name = "remove",
                 type = "execute",
                 func = function()
-                    self.db.profile.Buffs.AuraPosition[spellId] = nil
+                    self.db.profile[category].AuraPosition[spellId] = nil
                     optionsPos[spellId] = nil
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.5,
             },
@@ -1828,14 +1861,19 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
 end
 
 function RaidFrameSettings:LoadUserInputEntrys()
-    --blacklists
     for _, category in pairs({
         "Buffs",
         "Debuffs",
     }) do
+        --blacklists
         options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args = {}
         for spellId in pairs(self.db.profile[category].Blacklist) do
             self:CreateBlacklistEntry(spellId, category)
+        end
+        --aura positions
+        options.args.Auras.args[category].args[category].args.AuraPosition.args.auraList.args = {}
+        for aura in pairs(self.db.profile[category].AuraPosition) do
+            self:CreateAuraPositionEntry(aura, category)
         end
     end
     --aura increase

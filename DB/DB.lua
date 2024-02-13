@@ -99,6 +99,9 @@ local defaults = {
                 xOffsetFont = 0,
                 yOffsetFont = 0,
             },
+            AuraPosition = {
+
+            },
             Blacklist = {
                 --[[spellID = name                ]]--
             },

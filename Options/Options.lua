@@ -730,8 +730,21 @@ local options = {
                                             step = 1,
                                             width = 1,
                                         },
-                                        cleanIcons = {
+                                        increase = {
                                             order = 2.1,
+                                            name = "Aura increase",
+                                            desc = "This will increase the size of the auras added in the \34Increase\34 section.",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 1,
+                                            max = 2,
+                                            step = 0.1,
+                                            width = 1,
+                                            isPercent = true,
+                                        },
+                                        cleanIcons = {
+                                            order = 2.2,
                                             type = "toggle",
                                             name = "Clean Icons",
                                             -- and replace it with a 1pixel border #later
@@ -890,8 +903,39 @@ local options = {
                                 },
                             },
                         },
-                        Blacklist = {
+                        Increase = {
                             order = 2,
+                            name = "Increase",
+                            desc = "Set up auras to a big aura like a boss aura.",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    desc = "",
+                                    type = "input",
+                                    width = 1.5,
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Buffs.Increase[value] = true
+                                        RaidFrameSettings:CreateIncreaseEntry(value, "Buffs")
+                                        RaidFrameSettings:UpdateModule("Buffs")
+                                    end,
+                                },
+                                IncreasedAuras = {
+                                    order = 4,
+                                    name = "Increase:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },                           
+                            },
+                        },
+                        Blacklist = {
+                            order = 3,
                             name = "Blacklist",
                             type = "group",
                             args = {
@@ -1688,9 +1732,9 @@ function RaidFrameSettings:CreateBlacklistEntry(spellId, category)
     optionsPos[spellId] = blacklist_entry
 end
 
-function RaidFrameSettings:CreateIncreaseEntry(spellId)
-    local dbObj = self.db.profile.Debuffs.Increase
-    local optionsPos = options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args
+function RaidFrameSettings:CreateIncreaseEntry(spellId, category)
+    local dbObj = self.db.profile[category].Increase
+    local optionsPos = options.args.Auras.args[category].args.Increase.args.IncreasedAuras.args
     local spellName, _, icon 
     if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
         spellName, _, icon = GetSpellInfo(spellId)
@@ -1714,9 +1758,9 @@ function RaidFrameSettings:CreateIncreaseEntry(spellId)
                 name = "remove",
                 type = "execute",
                 func = function()
-                    self.db.profile.Debuffs.Increase[spellId] = nil
+                    self.db.profile[category].Increase[spellId] = nil
                     optionsPos[spellId] = nil
-                    RaidFrameSettings:UpdateModule("Debuffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.5,
             },  
@@ -1828,20 +1872,20 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
 end
 
 function RaidFrameSettings:LoadUserInputEntrys()
-    --blacklists
     for _, category in pairs({
         "Buffs",
         "Debuffs",
     }) do
+        --blacklists
         options.args.Auras.args[category].args.Blacklist.args.BlacklistedAuras.args = {}
         for spellId in pairs(self.db.profile[category].Blacklist) do
             self:CreateBlacklistEntry(spellId, category)
         end
-    end
-    --aura increase
-    options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args = {}
-    for spellId in pairs(self.db.profile.Debuffs.Increase) do
-        self:CreateIncreaseEntry(spellId)
+        --aura increase
+        options.args.Auras.args[category].args.Increase.args.IncreasedAuras.args = {}
+        for spellId in pairs(self.db.profile[category].Increase) do
+            self:CreateIncreaseEntry(spellId, category)
+        end
     end
     --aura positions
     options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args = {}

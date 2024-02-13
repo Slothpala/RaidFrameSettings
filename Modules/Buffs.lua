@@ -51,6 +51,11 @@ function Buffs:OnEnable()
     for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
+    --increase
+    local increase = {}
+    for spellId, value in pairs(addon.db.profile.Buffs.Increase) do
+        increase[tonumber(spellId)] = true
+    end
     --user placed
     local userPlaced = {}
     for _, auraInfo in pairs(addon.db.profile.Buffs.AuraPosition) do 
@@ -64,6 +69,8 @@ function Buffs:OnEnable()
     --Buff size
     local width  = frameOpt.width
     local height = frameOpt.height
+    local big_width  = width * frameOpt.increase
+    local big_height = height * frameOpt.increase
     local resizeBuffFrame
     if frameOpt.cleanIcons then
         local left, right, top, bottom = 0.1, 0.9, 0.1, 0.9
@@ -159,6 +166,11 @@ function Buffs:OnEnable()
         local cooldown = buffFrame.cooldown
         CDT:StartCooldownText(buffFrame.cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
+        if aura and increase[aura.spellId] then
+            buffFrame:SetSize(big_width, big_height)
+        else
+            buffFrame:SetSize(width, height)
+        end
         local parentFrame = buffFrame:GetParent()
         updateAnchors(parentFrame)
      end

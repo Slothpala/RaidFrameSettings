@@ -111,6 +111,7 @@ local defaults = {
                 width = 28,
                 height = 24,
                 cleanIcons = true,
+                increase = 1.2,
                 point = 9,
                 relativePoint = 9,
                 xOffset = -4,
@@ -149,6 +150,9 @@ local defaults = {
             },
             AuraPosition = {
 
+            },
+            Increase = {
+                --[[spellID = name                ]]--
             },
             Blacklist = {
                 --spellID = true

@@ -294,7 +294,7 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
-    local onSetDeuff = function(debuffFrame, aura)
+    local onSetDebuff = function(debuffFrame, aura)
         if debuffFrame:IsForbidden() or not debuffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return
         end
@@ -307,7 +307,7 @@ function Debuffs:OnEnable()
             debuffFrame:SetSize(width, height)
         end
     end
-    self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDeuff)
+    self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
 
     for _, v in pairs(frame_registry) do
         v.dirty = true

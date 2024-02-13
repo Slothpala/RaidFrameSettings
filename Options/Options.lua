@@ -1881,9 +1881,4 @@ function RaidFrameSettings:LoadUserInputEntrys()
     for spellId in pairs(self.db.profile.Debuffs.Increase) do
         self:CreateIncreaseEntry(spellId)
     end
-    --aura positions
-    options.args.Auras.args.Buffs.args.Buffs.args.AuraPosition.args.auraList.args = {}
-    for aura in pairs(self.db.profile.Buffs.AuraPosition) do 
-        self:CreateAuraPositionEntry(aura)
-    end
 end

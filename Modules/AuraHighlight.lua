@@ -4,6 +4,7 @@ local RaidFrameSettings = addonTable.RaidFrameSettings
 local module = RaidFrameSettings:NewModule("AuraHighlight")
 Mixin(module, addonTable.hooks)
 local LCD --LibCanDispel or custom defined in OnEnable
+local LCG --libCustomGlow
 
 local playerClass = select(2,UnitClass("player"))
 local SetStatusBarColor = SetStatusBarColor
@@ -33,9 +34,27 @@ local blockColorUpdate = {}
 
 local updateHealthColor 
 
+local useHealthBarColor
+local useHealthBarGlow
+
+local glowOpt = {
+    lines     = nil,
+    frequency = nil,
+    length    = nil,
+    thickness = 3,
+    XOffset   = nil,
+    YOffset   = nil,
+    border    = true,
+}
+
 local function toDebuffColor(frame, dispelName)
     blockColorUpdate[frame] = true
-    frame.healthBar:SetStatusBarColor(debuffColors[dispelName].r, debuffColors[dispelName].g, debuffColors[dispelName].b)
+    if useHealthBarColor then
+        frame.healthBar:SetStatusBarColor(debuffColors[dispelName].r, debuffColors[dispelName].g, debuffColors[dispelName].b)
+    end
+    if useHealthBarGlow then
+        module:Glow(frame, debuffColors[dispelName])
+    end
 end
 
 local function updateColor(frame)
@@ -97,6 +116,48 @@ local function updateAurasIncremental(frame, updateInfo)
     updateColor(frame)
 end
 
+function module:Glow(frame, rgb)
+    if not LCG then
+        LCG = LibStub("LibCustomGlow-1.0")
+    end
+    if not frame then
+        return
+    end
+    if not frame._rfs_glow_frame then
+        frame._rfs_glow_frame = CreateFrame("Frame", nil, frame)
+        frame._rfs_glow_frame:SetAllPoints(frame)
+        frame._rfs_glow_frame:SetSize(frame:GetSize())
+    end
+    local glow_frame = frame._rfs_glow_frame
+
+    if not rgb then
+        -- glow off
+        if glow_frame.started then
+            LCG.PixelGlow_Stop(frame._rfs_glow_frame)
+            glow_frame.started = false
+        end
+        return
+    end
+
+    -- glow on
+    if glow_frame.started then
+        LCG.PixelGlow_Stop(frame._rfs_glow_frame)
+        glow_frame.started = false
+    end
+    LCG.PixelGlow_Start(
+        glow_frame,
+        {rgb.r, rgb.g, rgb.b, 1},
+        glowOpt.lines,
+        glowOpt.frequency,
+        glowOpt.length,
+        glowOpt.thickness,
+        glowOpt.XOffset,
+        glowOpt.YOffset,
+        glowOpt.border and true or false
+    )
+    glow_frame.started = true
+end
+
 function module:HookFrame(frame)
     auraMap[frame] = {}
     auraMap[frame].debuffs = {}
@@ -143,77 +204,52 @@ function module:SetUpdateHealthColor()
         end
         return false
     end
+    local r,g,b = 0,1,0
+    local useClassColors
     if RaidFrameSettings.db.profile.Module.HealthBars then
         local selected = RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode
-        local useClassColors = selected == 1 and true or false
-        local useOverrideColor = selected == 2 and true or false
-        local useCustomColor = selected == 3 and true or false
-        if useClassColors then
-            updateHealthColor = function(frame)
-                if not frame or not frame.unit then 
-                    return 
-                end
-                blockColorUpdate[frame] = false
-                if hasMissingAura(frame) then
-                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
-                else
-                    local _, englishClass = UnitClass(frame.unit)
-                    local r,g,b = GetClassColor(englishClass)
-                    frame.healthBar:SetStatusBarColor(r,g,b)
-                end
-            end
-        elseif useOverrideColor then
-            updateHealthColor = function(frame)
-                if not frame then 
-                    return 
-                end
-                blockColorUpdate[frame] = false
-                if hasMissingAura(frame) then
-                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
-                else
-                    frame.healthBar:SetStatusBarColor(0,1,0)
-                end
-            end
-        elseif useCustomColor then
+        if selected == 1 then
+            useClassColors = true
+        elseif selected == 2 then
+            -- r,g,b = 0,1,0 -- r,g,b default = 0,1,0
+
+        elseif selected == 3 then
             local color = RaidFrameSettings.db.profile.HealthBars.Colors.statusbar
-            updateHealthColor = function(frame)
-                if not frame then 
-                    return 
-                end
-                blockColorUpdate[frame] = false
-                if hasMissingAura(frame) then
-                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
-                else
-                    frame.healthBar:SetStatusBarColor(color.r,color.g,color.b) 
-                end
-            end
+            r,g,b = color.r,color.g,color.b
         end
     else
         if C_CVar.GetCVar("raidFramesDisplayClassColor") == "0" then
-            updateHealthColor = function(frame)
-                if not frame then 
-                    return 
-                end
-                blockColorUpdate[frame] = false
-                if hasMissingAura(frame) then
-                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
-                else
-                    frame.healthBar:SetStatusBarColor(0,1,0)
-                end
+            -- r,g,b = 0,1,0 -- r,g,b default = 0,1,0
+        else
+            useClassColors = true
+        end
+    end
+
+    updateHealthColor = function(frame)
+        if not frame then
+            return
+        end
+        blockColorUpdate[frame] = false
+        if hasMissingAura(frame) then
+            if useHealthBarColor then
+                frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
+            end
+            if useHealthBarGlow then
+                module:Glow(frame, missingAuraColor)
             end
         else
-            updateHealthColor = function(frame)
-                if not frame or not frame.unit then 
-                    return 
+            if useClassColors then
+                if not frame.unit then
+                    return
                 end
-                blockColorUpdate[frame] = false
-                if hasMissingAura(frame) then
-                    frame.healthBar:SetStatusBarColor(missingAuraColor.r,missingAuraColor.g,missingAuraColor.b)
-                else
-                    local _, englishClass = UnitClass(frame.unit)
-                    local r,g,b = GetClassColor(englishClass)
-                    frame.healthBar:SetStatusBarColor(r,g,b)
-                end
+                local _, englishClass = UnitClass(frame.unit)
+                r,g,b = GetClassColor(englishClass)
+            end
+            if useHealthBarColor then
+                frame.healthBar:SetStatusBarColor(r,g,b)
+            end
+            if useHealthBarGlow then
+                module:Glow(frame, false)
             end
         end
     end
@@ -231,6 +267,8 @@ end
 function module:OnEnable()
     self:SetUpdateHealthColor()
     local dbObj = RaidFrameSettings.db.profile.AuraHighlight
+    useHealthBarColor = dbObj.Config.useHealthBarColor
+    useHealthBarGlow = dbObj.Config.useHealthBarGlow
     aura_missing_list = dbObj.MissingAura[addonTable.playerClass].spellIDs
     missingAuraColor = dbObj.MissingAura.missingAuraColor
     if dbObj.Config.operation_mode == 1 then
@@ -280,5 +318,18 @@ end
 
 function module:OnDisable()
     self:DisableHooks()
+    RaidFrameSettings:IterateRoster(function(frame)
+        local r, g, b = 0, 1, 0
+        if C_CVar.GetCVar("raidFramesDisplayClassColor") == "0" then
+            -- r,g,b = 0,1,0 -- this is default
+        else
+            if frame.unit then
+                local _, englishClass = UnitClass(frame.unit)
+                r, g, b = GetClassColor(englishClass)
+            end
+        end
+        frame.healthBar:SetStatusBarColor(r, g, b)
+        module:Glow(frame, false)
+    end)
 end
 

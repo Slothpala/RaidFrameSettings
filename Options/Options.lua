@@ -1822,6 +1822,59 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 width = 0.5,
             },
+            newline = {
+                order = 8,
+                type = "description",
+                name = "",
+            },
+            setSize = {
+                order = 9,
+                type = "toggle",
+                name = "Set Size",
+                desc = "",
+                get = function()
+                    return dbObj.setSize
+                end,
+                set = function(_, value)
+                    dbObj.setSize = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                width = 0.5,
+            },
+            width = {
+                order = 10,
+                hidden = function() return not dbObj.setSize end,
+                name = "Icon Width",
+                type = "range",
+                get = function()
+                    return dbObj.width
+                end,
+                set = function(_, value)
+                    dbObj.width = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                softMin = -100,
+                softMax = 100,
+                step = 1,
+                width = 0.8,
+            },
+            height = {
+                order = 11,
+                hidden = function() return not dbObj.setSize end,
+                name = "Icon Height",
+                type = "range",
+                get = function()
+                    return dbObj.height
+                end,
+                set = function(_, value)
+                    dbObj.height = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                softMin = -100,
+                softMax = 100,
+                step = 1,
+                width = 0.8,
+            },
         },
     }
     optionsPos[spellId] = aura_entry

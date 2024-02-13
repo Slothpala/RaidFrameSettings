@@ -245,9 +245,7 @@ function module:SetUpdateHealthColor()
                 local _, englishClass = UnitClass(frame.unit)
                 r,g,b = GetClassColor(englishClass)
             end
-            if useHealthBarColor then
-                frame.healthBar:SetStatusBarColor(r,g,b)
-            end
+            frame.healthBar:SetStatusBarColor(r,g,b)
             if useHealthBarGlow then
                 module:Glow(frame, false)
             end

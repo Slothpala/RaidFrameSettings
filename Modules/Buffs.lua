@@ -52,7 +52,6 @@ function Buffs:SetSpellGetVisibilityInfo(enable)
 end
 
 function Buffs:OnEnable()
-    self:SetSpellGetVisibilityInfo(true)
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Buffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -182,6 +181,8 @@ function Buffs:OnEnable()
         updateAnchors(parentFrame)
      end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
+
+    self:SetSpellGetVisibilityInfo(true)
 
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)

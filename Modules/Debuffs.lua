@@ -51,7 +51,6 @@ function Debuffs:SetSpellGetVisibilityInfo(enable)
 end
 
 function Debuffs:OnEnable()
-    self:SetSpellGetVisibilityInfo(true)
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -192,6 +191,8 @@ function Debuffs:OnEnable()
         updateAnchors(parentFrame)
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
+
+    self:SetSpellGetVisibilityInfo(true)
 
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)

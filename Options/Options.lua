@@ -872,6 +872,9 @@ local options = {
                                                     relativePoint = 1,
                                                     xOffset = 0,
                                                     yOffset = 0,
+                                                    setSize = false,
+                                                    width = RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.width,
+                                                    height = RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.height,
                                                 }
                                                 RaidFrameSettings:CreateAuraPositionEntry(value)
                                                 RaidFrameSettings:UpdateModule("Buffs")
@@ -1853,8 +1856,8 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                     dbObj.width = value
                     RaidFrameSettings:UpdateModule("Buffs")
                 end,
-                softMin = -100,
-                softMax = 100,
+                min = 1,
+                max = 50,
                 step = 1,
                 width = 0.8,
             },
@@ -1870,8 +1873,8 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                     dbObj.height = value
                     RaidFrameSettings:UpdateModule("Buffs")
                 end,
-                softMin = -100,
-                softMax = 100,
+                min = 1,
+                max = 50,
                 step = 1,
                 width = 0.8,
             },

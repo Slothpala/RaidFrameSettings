@@ -152,18 +152,12 @@ function Buffs:OnEnable()
             frame_registry[frame] = {
                 maxBuffs        = frameOpt.maxbuffsAuto and frame.maxBuffs or frameOpt.maxbuffs,
                 placedAuraStart = 0,
-                lockdown        = false,
                 dirty           = true,
                 extraBuffFrames = {},
             }
         end
 
         if frame_registry[frame].dirty then
-            if InCombatLockdown() then
-                frame_registry[frame].lockdown = true
-                return
-            end
-            frame_registry[frame].lockdown = false
             frame_registry[frame].maxBuffs = frameOpt.maxbuffsAuto and frame.maxBuffs or frameOpt.maxbuffs
             frame_registry[frame].dirty = false
 
@@ -270,14 +264,6 @@ function Buffs:OnEnable()
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
     end)
-
-    self:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-        for frame, v in pairs(frame_registry) do
-            if v.lockdown and v.dirty then
-                onFrameSetup(frame)
-            end
-        end
-    end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
@@ -288,7 +274,6 @@ function Buffs:OnDisable()
         if not frame_registry[frame] then
             return
         end
-        frame_registry[frame].dirty = true
         for _, buffFrame in pairs(frame.buffFrames) do
             buffFrame:Hide()
         end

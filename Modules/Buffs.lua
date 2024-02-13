@@ -44,11 +44,9 @@ end
 
 function Buffs:SetSpellGetVisibilityInfo(enable)
     module_enabled = enable
-    if InCombatLockdown() then
-        EventRegistry:TriggerEvent("PLAYER_REGEN_DISABLED")
-    else
-        EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
-    end
+    -- Trigger an event to initialize the local value of cachedVisualizationInfo in AuraUtil
+    -- Only use the PLAYER_REGEN_ENABLED event because the module is only enabled/disabled when not in combat
+    EventRegistry:TriggerEvent("PLAYER_REGEN_ENABLED")
 end
 
 function Buffs:OnEnable()

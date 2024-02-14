@@ -36,6 +36,9 @@ local whitelist = {}
 SpellGetVisibilityInfo = function(spellId, visType)
     if module_enabled then
         if whitelist[spellId] then
+            if whitelist[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+                return true, false, false
+            end
             if whitelist[spellId].other then
                 return true, false, true
                 end

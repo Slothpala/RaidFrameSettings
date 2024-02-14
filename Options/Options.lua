@@ -936,6 +936,7 @@ local options = {
                                     set = function(_, value)
                                         RaidFrameSettings.db.profile.Buffs.Whitelist[value] = {
                                             other = false,
+                                            hideInCombat = false,
                                         }
                                         RaidFrameSettings:CreateWhitelistEntry(value, "Buffs")
                                         RaidFrameSettings:UpdateModule("Buffs")
@@ -1208,7 +1209,7 @@ local options = {
                                     usage = "please enter a number",
                                     set = function(_, value)
                                         RaidFrameSettings.db.profile.Debuffs.Whitelist[value] = {
-                                            other = false,
+                                            hideInCombat = false,
                                         }
                                         RaidFrameSettings:CreateWhitelistEntry(value, "Debuffs")
                                         RaidFrameSettings:UpdateModule("Debuffs")
@@ -1736,8 +1737,19 @@ function RaidFrameSettings:CreateWhitelistEntry(spellId, category)
                 type = "description",
                 width = 1.5,
             },
-            remove = {
+            hideInCombat = {
                 order = 2,
+                name = "Hide In Combat",
+                type = "toggle",
+                get = function() return dbObj.hideInCombat end,
+                set = function(_, other)
+                    dbObj.hideInCombat = other
+                    RaidFrameSettings:UpdateModule(category)
+                end,
+                width = 0.8,
+            },
+            remove = {
+                order = 3,
                 name = "remove",
                 type = "execute",
                 func = function()
@@ -1746,7 +1758,7 @@ function RaidFrameSettings:CreateWhitelistEntry(spellId, category)
                     RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.5,
-            },  
+            },
         },
     }
     if category == "Buffs" then

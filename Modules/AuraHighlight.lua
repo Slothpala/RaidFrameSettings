@@ -148,13 +148,14 @@ function module:Glow(frame, rgb)
         LCG.PixelGlow_Stop(frame._rfs_glow_frame)
         glow_frame.started = false
     end
+    local scale = frame:GetParent():GetScale() or 1
     LCG.PixelGlow_Start(
         glow_frame,
         {rgb.r, rgb.g, rgb.b, 1},
         glowOpt.lines,
         glowOpt.frequency,
         glowOpt.length,
-        glowOpt.thickness,
+        glowOpt.thickness and glowOpt.thickness * scale,
         glowOpt.XOffset,
         glowOpt.YOffset,
         glowOpt.border and true or false

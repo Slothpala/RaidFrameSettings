@@ -140,7 +140,11 @@ function module:Glow(frame, rgb)
     end
 
     -- glow on
+    local scale = frame:GetParent():GetScale() or 1
     if glow_frame.started then
+        if glow_frame.color.r == rgb.r and glow_frame.color.g == rgb.g and glow_frame.color.b == rgb.b and glow_frame.scale == scale then
+            return
+        end
         LCG.PixelGlow_Stop(frame._rfs_glow_frame)
         glow_frame.started = false
     end
@@ -156,6 +160,8 @@ function module:Glow(frame, rgb)
         glowOpt.border and true or false
     )
     glow_frame.started = true
+    glow_frame.color = rgb
+    glow_frame.scale = scale
 end
 
 function module:HookFrame(frame)

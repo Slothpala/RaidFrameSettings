@@ -1666,7 +1666,7 @@ function RaidFrameSettings:CreateAuraFilterEntry(spellId, category)
     if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
         spellName, _, icon = GetSpellInfo(spellId)
     end
-    local whitelist_entry = {
+    local aurafilter_entry = {
         order = 1,
         name = "",
         type = "group",
@@ -1720,7 +1720,7 @@ function RaidFrameSettings:CreateAuraFilterEntry(spellId, category)
                 name = "remove",
                 type = "execute",
                 func = function()
-                    self.db.profile[category].Whitelist[spellId] = nil
+                    self.db.profile[category].AuraFilter[spellId] = nil
                     options[spellId] = nil
                     RaidFrameSettings:UpdateModule(category)
                 end,
@@ -1728,7 +1728,7 @@ function RaidFrameSettings:CreateAuraFilterEntry(spellId, category)
             },
         },
     }
-    options[spellId] = whitelist_entry
+    options[spellId] = aurafilter_entry
 end
 
 function RaidFrameSettings:CreateIncreaseEntry(spellId)

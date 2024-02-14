@@ -31,18 +31,25 @@ local next = next
 
 local org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local module_enabled
-local whitelist = {}
+local filteredAuras = {}
 
 SpellGetVisibilityInfo = function(spellId, visType)
     if module_enabled then
-        if whitelist[spellId] then
-            if whitelist[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+        if filteredAuras[spellId] then
+            if filteredAuras[spellId].show then
+                -- show
+                if filteredAuras[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+                    return true, false, false
+                end
+                if filteredAuras[spellId].other then
+                    return true, false, true
+                end
+                return true, true, false
+    
+            else
+                -- hide
                 return true, false, false
             end
-            if whitelist[spellId].other then
-                return true, false, true
-                end
-            return true, true, false
         end
     end
     return org_SpellGetVisibilityInfo(spellId, visType)
@@ -69,17 +76,12 @@ function Buffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
+    --aura filter
+    for k in pairs(filteredAuras) do
+        filteredAuras[k] = nil
     end
-    --whitelist
-    for k in pairs(whitelist) do
-        whitelist[k] = nil
-    end
-    for spellId, value in pairs(addon.db.profile.Buffs.Whitelist) do
-        whitelist[tonumber(spellId)] = value
+    for spellId, value in pairs(addon.db.profile.Buffs.AuraFilter) do
+        filteredAuras[tonumber(spellId)] = value
     end
     --user placed
     local userPlaced = {}
@@ -129,9 +131,8 @@ function Buffs:OnEnable()
         for i=1, #frame.buffFrames do
             local buffFrame = frame.buffFrames[i]
             local aura = buffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID) or nil
-            local hide = aura and blacklist[aura.spellId] or false
             local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -139,14 +140,11 @@ function Buffs:OnEnable()
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
             end
-            if hide then
-                buffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = buffFrame
             end
         end

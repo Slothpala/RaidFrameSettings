@@ -99,14 +99,11 @@ local defaults = {
                 xOffsetFont = 0,
                 yOffsetFont = 0,
             },
-            Blacklist = {
-                --[[spellID = name                ]]--
-            },
 			Increase = {
                 --[[spellID = name                ]]--
             },
-            Whitelist = {
-                
+            AuraFilter = {
+
             },
         },
         Buffs = {
@@ -153,10 +150,7 @@ local defaults = {
             AuraPosition = {
 
             },
-            Blacklist = {
-                --spellID = true
-            },
-            Whitelist = {
+            AuraFilter = {
 
             },
         },

@@ -30,15 +30,22 @@ local next = next
 
 local org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
 local module_enabled
-local whitelist = {}
+local filteredAuras = {}
 
 SpellGetVisibilityInfo = function(spellId, visType)
     if module_enabled then
-        if whitelist[spellId] then
-            if whitelist[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+        if filteredAuras[spellId] then
+            if filteredAuras[spellId].show then
+                -- show
+                if filteredAuras[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+                    return true, false, false
+                end
+                return false
+    
+            else
+                -- hide
                 return true, false, false
             end
-            return false
         end
     end
     return org_SpellGetVisibilityInfo(spellId, visType)
@@ -65,17 +72,12 @@ function Debuffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
+    --aura filter
+    for k in pairs(filteredAuras) do
+        filteredAuras[k] = nil
     end
-    --whitelist
-    for k in pairs(whitelist) do
-        whitelist[k] = nil
-    end
-    for spellId, value in pairs(addon.db.profile.Debuffs.Whitelist) do
-        whitelist[tonumber(spellId)] = value
+    for spellId, value in pairs(addon.db.profile.Debuffs.AuraFilter) do
+        filteredAuras[tonumber(spellId)] = value
     end
 	--increase
     local increase = {}
@@ -128,9 +130,8 @@ function Debuffs:OnEnable()
         for i=1, #frame.debuffFrames do
             local debuffFrame = frame.debuffFrames[i]
             local aura = debuffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID) or nil
-            local hide = aura and blacklist[aura.spellId] or false
             local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -138,14 +139,11 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = debuffFrame
             end
         end

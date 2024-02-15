@@ -274,7 +274,9 @@ function Buffs:OnEnable()
             resizeBuffFrame(buffFrame)
         end
 
-        CompactUnitFrame_UpdateAuras(frame)
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
+        end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -345,7 +347,9 @@ function Buffs:OnDisable()
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
         end
-        CompactUnitFrame_UpdateAuras(frame)
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
+        end
     end
     addon:IterateRoster(restoreBuffFrames)
 end

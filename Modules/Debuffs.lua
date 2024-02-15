@@ -320,7 +320,9 @@ function Debuffs:OnEnable()
             resizeDebuffFrame(debuffFrame)
         end
 
-        CompactUnitFrame_UpdateAuras(frame)
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
+        end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -401,7 +403,9 @@ function Debuffs:OnDisable()
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
         end
-        CompactUnitFrame_UpdateAuras(frame)
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
+        end
     end
     addon:IterateRoster(restoreDebuffFrames)
 end

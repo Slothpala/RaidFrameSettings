@@ -159,6 +159,15 @@ function Buffs:OnEnable()
         local cooldown = buffFrame.cooldown
         CDT:StartCooldownText(buffFrame.cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
+        if aura then
+            if aura.applications > 0 then
+                if aura.duration == 0 then
+                    buffFrame.count:SetParent(buffFrame)
+                else
+                    buffFrame.count:SetParent(cooldown)
+                end
+            end
+        end
         local parentFrame = buffFrame:GetParent()
         updateAnchors(parentFrame)
      end

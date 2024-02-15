@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.22.1] - 2024-02-15
+#### Added
+* Aura gap option for buff and debuff modules for retail and classic.
+
 ### Version [2.22.0] - 2024-02-12
 #### Added
 * Buffs / Debuffs modules for classic (vanilla/sod)

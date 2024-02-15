@@ -99,6 +99,36 @@ function Buffs:OnEnable()
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint, followOffsetX, followOffsetY = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation, frameOpt.gap)
 
+    --[[
+    local function updateAnchors(frame)
+        local anchorSet, prevFrame
+        for i=1, #frame.buffFrames do
+            local buffFrame = frame.buffFrames[i]
+            local aura = buffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID) or nil
+            local hide = aura and blacklist[aura.spellId] or false
+            local place = aura and userPlaced[aura.spellId] or false
+            if not anchorSet and not hide and not place then 
+                buffFrame:ClearAllPoints()
+                buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
+                anchorSet = true
+            else
+                buffFrame:ClearAllPoints()
+                buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
+            end
+            if hide then
+                buffFrame:Hide()
+            end
+            if place and not hide then   
+                buffFrame:ClearAllPoints()
+                buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
+            end
+            if not hide and not place then
+                prevFrame = buffFrame
+            end
+        end
+    end
+    ]]
+
     local onHideAllBuffs = function(frame)
         if not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return

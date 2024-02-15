@@ -53,20 +53,31 @@ end
 
 ]]
 --number = db value for growth direction 1 = Left, 2 = Right, 3 = Up, 4 = Down
-function addon:GetAuraGrowthOrientationPoints(number) 
-    local point, relativePoint
+function addon:GetAuraGrowthOrientationPoints(number, gap)
+    if gap == nil then
+        gap = 0
+    end
+    local point, relativePoint, offsetX, offsetY
     if number == 1 then
         point = "BOTTOMRIGHT"
         relativePoint = "BOTTOMLEFT"
+        offsetX = -gap
+        offsetY = 0
     elseif number == 2 then
         point = "BOTTOMLEFT"
         relativePoint = "BOTTOMRIGHT"
+        offsetX = gap
+        offsetY = 0
     elseif number == 3 then
         point = "BOTTOMLEFT"
         relativePoint = "TOPLEFT"
+        offsetX = 0
+        offsetY = gap
     else
         point = "TOPLEFT"
         relativePoint = "BOTTOMLEFT"
+        offsetX = 0
+        offsetY = -gap
     end
-    return point, relativePoint
+    return point, relativePoint, offsetX, offsetY
 end

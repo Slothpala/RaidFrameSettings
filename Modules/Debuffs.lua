@@ -107,7 +107,7 @@ function Debuffs:OnEnable()
     --Debuffframe position
     local point = addon:ConvertDbNumberToPosition(frameOpt.point)
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
-    local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
+    local followPoint, followRelativePoint, followOffsetX, followOffsetY = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation, frameOpt.gap)
 
     local function onUpdatePrivateAuras(frame)
         if not frame.PrivateAuraAnchors or not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible()then
@@ -277,7 +277,7 @@ function Debuffs:OnEnable()
                 anchorSet = true
             else
                 debuffFrame:ClearAllPoints()
-                debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
+                debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
             prevFrame = debuffFrame
             resizeDebuffFrame(debuffFrame)

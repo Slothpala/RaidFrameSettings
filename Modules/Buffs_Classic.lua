@@ -96,7 +96,7 @@ function Buffs:OnEnable()
     --Buffframe position
     local point = addon:ConvertDbNumberToPosition(frameOpt.point)
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
-    local followPoint, followRelativePoint = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation)
+    local followPoint, followRelativePoint, followOffsetX, followOffsetY = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation, frameOpt.gap)
 
 
     local function updateAnchors(frame)
@@ -113,7 +113,7 @@ function Buffs:OnEnable()
                 anchorSet = true
             else
                 buffFrame:ClearAllPoints()
-                buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
+                buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
             if hide then
                 buffFrame:Hide()

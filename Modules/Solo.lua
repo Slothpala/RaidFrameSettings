@@ -4,11 +4,11 @@ local addon = addonTable.RaidFrameSettings
 local Solo = addon:NewModule("Solo")
 Mixin(Solo, addonTable.hooks)
 
-local last
+local last = false
 function Solo:OnEnable()
     local function onUpdateVisibility()
         local solo = true
-        if IsInGroup() or IsInRaid() then
+        if IsInGroup() then
             solo = false
         end
         if solo == false and last == false then
@@ -17,12 +17,15 @@ function Solo:OnEnable()
         CompactPartyFrame:SetShown(solo)
         last = solo
     end
-
     self:HookFunc(CompactPartyFrame, "UpdateVisibility", onUpdateVisibility);
     CompactPartyFrame:SetShown(true)
+    PartyFrame:UpdatePaddingAndLayout()
 end
 
 function Solo:OnDisable()
     self:DisableHooks()
-    CompactPartyFrame:SetShown(false)
+    if not IsInGroup() then
+        CompactPartyFrame:SetShown(false)
+        last = false
+    end
 end

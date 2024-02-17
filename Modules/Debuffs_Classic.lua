@@ -32,6 +32,22 @@ local IsForbidden = IsForbidden
 local next = next
 local select = select
 
+local org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+local module_enabled
+local blacklist = {}
+
+SpellGetVisibilityInfo = function(spellId, visType)
+    if module_enabled then
+        if blacklist[spellId] then
+            return true, false, false
+        end
+    end
+    return org_SpellGetVisibilityInfo(spellId, visType)
+end
+
+function Debuffs:SetSpellGetVisibilityInfo(enable)
+    module_enabled = enable
+end
 
 function Debuffs:OnEnable()
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
@@ -48,7 +64,9 @@ function Debuffs:OnEnable()
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
     --blacklist
-    local blacklist = {}
+    for k in pairs(blacklist) do
+        blacklist[k] = nil
+    end
     for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
@@ -96,9 +114,8 @@ function Debuffs:OnEnable()
             local debuffFrame = frame.debuffFrames[i]
             local id = debuffFrame:GetID()
             local spellId = id and not debuffFrame.isBossBuff and select(10, UnitDebuff(frame.unit, id)) or id and debuffFrame.isBossBuff and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -106,14 +123,11 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = debuffFrame
             end
         end
@@ -149,6 +163,9 @@ function Debuffs:OnEnable()
             cooldown:SetDrawEdge(frameOpt.edge)
             stackText:SetParent(cooldown)
         end
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
+        end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -169,6 +186,8 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
 
+    self:SetSpellGetVisibilityInfo(true)
+
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
     end)
@@ -177,6 +196,7 @@ end
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
     self:DisableHooks()
+    self:SetSpellGetVisibilityInfo(false)
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -214,6 +234,9 @@ function Debuffs:OnDisable()
             stackText:SetTextColor(1,1,1,1)
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
+        end
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

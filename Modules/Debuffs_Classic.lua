@@ -156,19 +156,11 @@ function Debuffs:OnEnable()
         if debuffFrame:IsForbidden() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return 
         end
-        local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId
-        if isBossBuff then
-            name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitBuff(unit, index, filter)
-        else
-            name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitDebuff(unit, index, filter)
-        end
         local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         local parentFrame = debuffFrame:GetParent()
-        if userPlaced[spellId] and userPlaced[spellId].setSize then
-            debuffFrame:SetSize(userPlaced[spellId].width, userPlaced[spellId].height)
-        elseif isBossAura then
+        if isBossAura then
             debuffFrame:SetSize(boss_width, boss_height)
         else
             debuffFrame:SetSize(width, height)

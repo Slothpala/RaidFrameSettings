@@ -22,7 +22,7 @@ end
 
 local function updateRoster()
     Roster = {}
-    local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or addonTable.isClassic --IsInRaid() returns true in arena even though we need party frame names
+    local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or addonTable.isWrath --IsInRaid() returns true in arena even though we need party frame names
     if useRaid then 
         if showSeparateGroups() then
             for i=1, 8 do

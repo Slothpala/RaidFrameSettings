@@ -161,7 +161,11 @@ function Buffs:OnEnable()
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
-    local onSetBuff = function(buffFrame)
+    local onSetBuff = function(buffFrame, unit, index, filter)
+        local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura = UnitBuff(unit, index, filter)
+        if GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE then
+            CompactUnitFrame_UpdateCooldownFrame(buffFrame, expirationTime, duration, false)
+        end
         local cooldown = buffFrame.cooldown
         CDT:StartCooldownText(buffFrame.cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)

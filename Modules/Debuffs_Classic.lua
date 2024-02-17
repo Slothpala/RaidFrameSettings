@@ -3,6 +3,7 @@
     The aura indicator position and the aura timers are greatly inspired by a pull request from: https://github.com/excorp
 --]]
 local _, addonTable = ...
+local isVanilla, isWrath, isClassic, isRetail = addonTable.isVanilla, addonTable.isWrath, addonTable.isClassic, addonTable.isRetail
 local addon = addonTable.RaidFrameSettings
 local Debuffs = addon:NewModule("Debuffs")
 Mixin(Debuffs, addonTable.hooks)
@@ -32,6 +33,31 @@ local IsForbidden = IsForbidden
 local next = next
 local select = select
 
+local module_enabled
+local filteredAuras = {}
+
+local org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+SpellGetVisibilityInfo = function(spellId, visType)
+    if module_enabled then
+        if filteredAuras[spellId] then
+            if filteredAuras[spellId].show then
+                -- show
+                if filteredAuras[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+                    return true, false, false
+                end
+                return false
+            else
+                -- hide
+                return true, false, false
+            end
+        end
+    end
+    return org_SpellGetVisibilityInfo(spellId, visType)
+end
+
+function Debuffs:SetSpellGetVisibilityInfo(enabled)
+    module_enabled = enabled
+end
 
 function Debuffs:OnEnable()
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
@@ -47,10 +73,12 @@ function Debuffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
+    --aura filter
+    for k in pairs(filteredAuras) do
+        filteredAuras[k] = nil
+    end
+    for spellId, value in pairs(addon.db.profile.Debuffs.AuraFilter) do
+        filteredAuras[tonumber(spellId)] = value
     end
     --user placed 
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
@@ -96,9 +124,8 @@ function Debuffs:OnEnable()
             local debuffFrame = frame.debuffFrames[i]
             local id = debuffFrame:GetID()
             local spellId = id and not debuffFrame.isBossBuff and select(10, UnitDebuff(frame.unit, id)) or id and debuffFrame.isBossBuff and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -109,11 +136,11 @@ function Debuffs:OnEnable()
             if hide then
                 debuffFrame:Hide()
             end
-            if place and not hide then   
+            if place then   
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = debuffFrame
             end
         end
@@ -149,6 +176,9 @@ function Debuffs:OnEnable()
             cooldown:SetDrawEdge(frameOpt.edge)
             stackText:SetParent(cooldown)
         end
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
+        end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -169,6 +199,8 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
 
+    self:SetSpellGetVisibilityInfo(true)
+
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
     end)
@@ -177,6 +209,7 @@ end
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
     self:DisableHooks()
+    self:SetSpellGetVisibilityInfo(false)
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -214,6 +247,9 @@ function Debuffs:OnDisable()
             stackText:SetTextColor(1,1,1,1)
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
+        end
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

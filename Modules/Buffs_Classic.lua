@@ -33,8 +33,34 @@ local SetDrawEdge = SetDrawEdge
 local next = next
 local select = select
 
+local module_enabled
+local filteredAuras = {}
 
+local org_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+SpellGetVisibilityInfo = function(spellId, visType)
+    if module_enabled then
+        if filteredAuras[spellId] then
+            if filteredAuras[spellId].show then
+                -- show
+                if filteredAuras[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+                    return true, false, false
+                end
+                if filteredAuras[spellId].other then
+                    return true, false, true
+                end
+                return true, true, false
+            else
+                -- hide
+                return true, false, false
+            end
+        end
+    end
+    return org_SpellGetVisibilityInfo(spellId, visType)
+end
 
+function Buffs:SetSpellGetVisibilityInfo(enabled)
+    module_enabled = enabled
+end
 
 function Buffs:OnEnable()
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
@@ -50,10 +76,12 @@ function Buffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
+    --aura filter
+    for k in pairs(filteredAuras) do
+        filteredAuras[k] = nil
+    end
+    for spellId, value in pairs(addon.db.profile.Buffs.AuraFilter) do
+        filteredAuras[tonumber(spellId)] = value
     end
     --user placed
     local userPlaced = {}
@@ -105,9 +133,8 @@ function Buffs:OnEnable()
             local buffFrame = frame.buffFrames[i]
             local id = buffFrame:GetID()
             local spellId = id and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -115,14 +142,11 @@ function Buffs:OnEnable()
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                buffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then   
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = buffFrame
             end
         end
@@ -158,6 +182,9 @@ function Buffs:OnEnable()
             cooldown:SetDrawEdge(frameOpt.edge)
             stackText:SetParent(cooldown)
         end
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
+        end
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
@@ -170,6 +197,8 @@ function Buffs:OnEnable()
      end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 
+    self:SetSpellGetVisibilityInfo(true)
+
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
     end)
@@ -178,6 +207,7 @@ end
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
     self:DisableHooks()
+    self:SetSpellGetVisibilityInfo(false)
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -211,6 +241,9 @@ function Buffs:OnDisable()
             stackText:SetTextColor(1,1,1,1)
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
+        end
+        if frame.unit then
+            CompactUnitFrame_UpdateAuras(frame)
         end
     end
     addon:IterateRoster(restoreBuffFrames)

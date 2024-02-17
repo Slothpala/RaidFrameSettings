@@ -161,10 +161,18 @@ function Buffs:OnEnable()
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
 
-    local onSetBuff = function(buffFrame)
+    local onSetBuff = function(buffFrame, unit, index, filter)
+        local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura = UnitBuff(unit, index, filter)
         local cooldown = buffFrame.cooldown
         CDT:StartCooldownText(buffFrame.cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
+        if count > 0 then
+            if  duration == 0 then
+                buffFrame.count:SetParent(buffFrame)
+            else
+                buffFrame.count:SetParent(cooldown)
+            end
+        end
         local parentFrame = buffFrame:GetParent()
         updateAnchors(parentFrame)
      end

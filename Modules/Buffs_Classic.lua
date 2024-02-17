@@ -178,6 +178,15 @@ end
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
     self:DisableHooks()
+
+    local locale = GetLocale()
+    local stackFont = "Fonts/ARIALN.TTF"
+    if locale == "zhCN" then
+        stackFont = "Fonts/ARKai_T.TTF"
+    elseif locale == "zhTW" then
+        stackFont = "Fonts/BLEI00D.TTF"
+    end
+
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -200,14 +209,10 @@ function Buffs:OnDisable()
             cooldown:SetReverse(true)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
-            --TODO
-            --[[
-                find global font for stacks and restore properly
-            ]]
             local stackText = buffFrame.count
             stackText:ClearAllPoints()
             stackText:SetPoint("BOTTOMRIGHT", buffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
+            stackText:SetFont(stackFont, 12, "OUTLINE, THICK")
             stackText:SetTextColor(1,1,1,1)
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)

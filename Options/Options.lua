@@ -1446,7 +1446,7 @@ local options = {
                     },
                 },
                 RaidMark = {
-                    hidden = isVanilla or RaidMark_disabled,
+                    hidden = RaidMark_disabled,
                     order = 1.1,
                     name = "Raid Mark",
                     type = "group",

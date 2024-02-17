@@ -52,6 +52,11 @@ function Debuffs:OnEnable()
     for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
+    --increase
+    local increase = {}
+    for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
+        increase[tonumber(spellId)] = true
+    end
     --user placed 
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
     --Debuffframe size
@@ -156,11 +161,17 @@ function Debuffs:OnEnable()
         if debuffFrame:IsForbidden() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return 
         end
+        local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId
+        if isBossBuff then
+            name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitBuff(unit, index, filter)
+        else
+            name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitDebuff(unit, index, filter)
+        end
         local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         local parentFrame = debuffFrame:GetParent()
-        if isBossAura then
+        if isBossAura or increase[spellId] then
             debuffFrame:SetSize(boss_width, boss_height)
         else
             debuffFrame:SetSize(width, height)

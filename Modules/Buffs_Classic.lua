@@ -78,8 +78,6 @@ function Buffs:OnEnable()
     --Buff size
     local width  = frameOpt.width
     local height = frameOpt.height
-    local big_width  = width * frameOpt.increase
-    local big_height = height * frameOpt.increase
     local resizeBuffFrame
     if frameOpt.cleanIcons then
         local left, right, top, bottom = 0.1, 0.9, 0.1, 0.9

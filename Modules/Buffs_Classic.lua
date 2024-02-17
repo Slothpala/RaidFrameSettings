@@ -63,6 +63,9 @@ function Buffs:OnEnable()
             relativePoint = addon:ConvertDbNumberToPosition(auraInfo.relativePoint),
             xOffset = auraInfo.xOffset,
             yOffset = auraInfo.yOffset,
+            setSize = auraInfo.setSize,
+            width = auraInfo.width,
+            height = auraInfo.height,
         }
     end
     --Buff size

@@ -200,7 +200,6 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         RaidMark = {
-                            hidden = isVanilla,
                             order = 3.1,
                             type = "toggle",
                             name = "Raid Mark",

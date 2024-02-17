@@ -74,7 +74,7 @@ local defaults = {
                 inverse = false,
                 timerText = true,
                 maxdebuffs = 3,
-                frameStrata = 1,
+                framestrata = 1,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
@@ -129,7 +129,7 @@ local defaults = {
                 timerText = true,
                 maxbuffsAuto = true,
                 maxbuffs = 3,
-                frameStrata = 1,
+                framestrata = 1,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",

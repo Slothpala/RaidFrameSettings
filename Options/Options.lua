@@ -1539,7 +1539,7 @@ local options = {
                     },
                 },
                 TimerTextLimit = {
-                    hidden = isClassic or Overabsorb_disabled,
+                    hidden = Buffs_disabled and Debuffs_disabled,
                     order = 7,
                     name = "TimerText Format Limit (by seconds)",
                     type = "group",

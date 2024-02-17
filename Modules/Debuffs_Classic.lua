@@ -57,6 +57,8 @@ function Debuffs:OnEnable()
     end
     --user placed 
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
+    local userPlacedIdx = 1
+    local maxUserPlaced = 0
     --Debuffframe size
     local width  = frameOpt.width
     local height = frameOpt.height

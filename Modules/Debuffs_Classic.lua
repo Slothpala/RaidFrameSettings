@@ -52,8 +52,16 @@ function Debuffs:OnEnable()
     for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
         blacklist[tonumber(spellId)] = true
     end
-    --user placed 
-    local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
+    --user placed
+    local userPlaced = {}
+    for _, auraInfo in pairs(addon.db.profile.Debuffs.AuraPosition) do 
+        userPlaced[auraInfo.spellId] = {
+            point = addon:ConvertDbNumberToPosition(auraInfo.point),
+            relativePoint = addon:ConvertDbNumberToPosition(auraInfo.relativePoint),
+            xOffset = auraInfo.xOffset,
+            yOffset = auraInfo.yOffset,
+        }
+    end
     --Debuffframe size
     local width  = frameOpt.width
     local height = frameOpt.height

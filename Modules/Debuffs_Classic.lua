@@ -34,6 +34,24 @@ local select = select
 
 
 function Debuffs:OnEnable()
+    local debuffColors = {
+        Curse   = { r = 0.6, g = 0.0, b = 1.0 },
+        Disease = { r = 0.6, g = 0.4, b = 0.0 },
+        Magic   = { r = 0.2, g = 0.6, b = 1.0 },
+        Poison  = { r = 0.0, g = 0.6, b = 0.0 },
+        Bleed   = { r = 0.8, g = 0.0, b = 0.0 },
+    }
+    local Bleeds = addonTable.Bleeds
+
+    if addon.db.profile.Module.AuraHighlight then
+        local dbObj = addon.db.profile.AuraHighlight.DebuffColors
+        debuffColors.Curse = dbObj.Curse
+        debuffColors.Disease = dbObj.Disease
+        debuffColors.Magic = dbObj.Magic
+        debuffColors.Poison = dbObj.Poison
+        debuffColors.Bleed = dbObj.Bleed
+    end
+
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -156,9 +174,33 @@ function Debuffs:OnEnable()
         if debuffFrame:IsForbidden() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return 
         end
+
+        local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId
+        if isBossBuff then
+            name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitBuff(unit, index, filter)
+        else
+            name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitDebuff(unit, index, filter)
+        end
+
         local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
+
+        local color = durationOpt.fontColor
+        if debuffType then
+            color = debuffColors[debuffType]
+        end
+        if Bleeds and Bleeds[spellId] then
+            color = debuffColors.Bleed
+        end
+        debuffFrame.border:SetVertexColor(color.r, color.g, color.b)
+
+        if not durationOpt.debuffColor then
+            color = durationOpt.fontColor
+        end
+        local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
+        cooldownText:SetVertexColor(color.r, color.g, color.b)
+
         local parentFrame = debuffFrame:GetParent()
         if isBossAura then
             debuffFrame:SetSize(boss_width, boss_height)

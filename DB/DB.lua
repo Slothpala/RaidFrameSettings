@@ -14,6 +14,7 @@ local defaults = {
             Debuffs = false,
             CustomScale = false,
             AuraHighlight = false,
+            Solo = false,
         },
         HealthBars = { 
             Textures = { 

@@ -9,4 +9,5 @@
   <Script file="Modules\CustomScale.lua"/>
   <Script file="Modules\BleedDB.lua"/>
   <Script file="Modules\AuraHighlight.lua"/>
+  <Script file="Modules\Solo.lua"/>
 </Ui>

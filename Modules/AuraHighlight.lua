@@ -1,4 +1,5 @@
 local _, addonTable = ...
+local isVanilla, isWrath, isClassic, isRetail = addonTable.isVanilla, addonTable.isWrath, addonTable.isClassic, addonTable.isRetail
 local RaidFrameSettings = addonTable.RaidFrameSettings
 
 local module = RaidFrameSettings:NewModule("AuraHighlight")
@@ -23,7 +24,7 @@ local debuffColors = {
     Bleed   = {r=0.8,g=0.0,b=0.0},
 }
 
-local Bleeds = addonTable.Bleeds
+local Bleeds = addonTable.Bleeds or {}
 local auraMap = {}
 
 local aura_missing_list = {}
@@ -52,21 +53,48 @@ local function updateAurasFull(frame)
     auraMap[frame] = {}
     auraMap[frame].debuffs = {}
     auraMap[frame].missing_list = {}
-    local function HandleHarmAura(aura)
-        if aura.dispelName and LCD:CanDispel(aura.dispelName) then
-            auraMap[frame].debuffs[aura.auraInstanceID] = aura.dispelName
+
+    if isClassic then
+        for i=1, 255 do
+            local debuffName, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = UnitDebuff(frame.displayedUnit, i)
+            if not debuffName then
+                break
+            end
+            local key = spellId.."-"..unitCaster
+            if debuffType and LCD:CanDispel(debuffType) then
+                auraMap[frame].debuffs[key] = debuffType
+            end
+            if Bleeds[spellId] and LCD:CanDispel("Bleed") then 
+                auraMap[frame].debuffs[key] = "Bleed"
+            end
         end
-        if Bleeds[aura.spellId] and LCD:CanDispel("Bleed") then 
-            auraMap[frame].debuffs[aura.auraInstanceID] = "Bleed"
+        for i=1, 255 do
+            local buffName, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura, isBossAura = UnitBuff(frame.displayedUnit, i)
+            if not buffName then
+                break
+            end
+            local key = spellId.."-"..unitCaster
+            if aura_missing_list[spellId] then
+                auraMap[frame].missing_list[key] = spellId
+            end
         end
+    else
+        local function HandleHarmAura(aura)
+            if aura.dispelName and LCD:CanDispel(aura.dispelName) then
+                auraMap[frame].debuffs[aura.auraInstanceID] = aura.dispelName
+            end
+            if Bleeds[aura.spellId] and LCD:CanDispel("Bleed") then 
+                auraMap[frame].debuffs[aura.auraInstanceID] = "Bleed"
+            end
+        end
+        local function HandleHelpAura(aura)
+            if aura_missing_list[aura.spellId] then
+                auraMap[frame].missing_list[aura.auraInstanceID] = aura.spellId
+            end
+        end
+        AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleHarmAura, true)
+        AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, HandleHelpAura, true)
     end
-    local function HandleHelpAura(aura)
-        if aura_missing_list[aura.spellId] and aura.sourceUnit == "player" then
-            auraMap[frame].missing_list[aura.auraInstanceID] = aura.spellId
-        end
-    end
-    AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleHarmAura, true)
-    AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, HandleHelpAura, true)
     updateColor(frame)
 end
 
@@ -110,7 +138,7 @@ function module:HookFrame(frame)
         if event ~= "UNIT_AURA" then
             return
         end
-        if updateInfo.isFullUpdate then 
+        if isClassic or updateInfo.isFullUpdate then 
             updateAurasFull(frame)
         else
             updateAurasIncremental(frame, updateInfo)
@@ -133,7 +161,7 @@ function module:SetUpdateHealthColor()
             return false
         end
         local reverse_missing_list = {}
-        for auraInstanceID, spellId in next, auraMap[frame].missing_list do
+        for _, spellId in next, auraMap[frame].missing_list do
             reverse_missing_list[spellId] = true
         end
         for spellId, name in next, aura_missing_list do

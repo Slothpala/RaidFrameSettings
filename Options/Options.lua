@@ -232,7 +232,6 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         AuraHighlight = {
-                            hidden = not isRetail,
                             order = 8,
                             type = "toggle",
                             name = "Aura Highlight",
@@ -1191,7 +1190,7 @@ local options = {
             order = 5,
             name = "Aura Highlight",
             type = "group",
-            hidden = not isRetail or AuraHighlight_disabled,
+            hidden = AuraHighlight_disabled,
             args = {
                 Config = {
                     order = 1,

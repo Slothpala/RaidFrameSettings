@@ -21,16 +21,50 @@ local UnitClass = UnitClass
 local GetClassColor = GetClassColor
 
 local locale = GetLocale()
-local defaultFont = "Fonts\\FRIZQT__.TTF"
-if locale == "koKR" then
-    defaultFont = "Fonts\\2002.TTF"
-elseif locale == "zhCN" then
-    defaultFont = "Fonts\\ARKai_T.TTF"
-elseif locale == "zhTW" then
-    defaultFont = "Fonts\\blei00d.TTF"
-elseif locale == "ruRU" then
-    defaultFont = "Fonts\\FRIZQT___CYR.TTF"
-end
+local defaultNameFont = {
+    koKR = {
+        font = "Fonts\\FRIZQT__.TTF",
+        height = 10,
+    },
+    zhCN = {
+        font = "Fonts\\ARKai_T.TTF",
+        height = 11,
+    },
+    zhTW = {
+        font = "Fonts\\blei00d.TTF",
+        height = 15,
+    },
+    ruRU = {
+        font = "Fonts\\FRIZQT___CYR.TTF",
+        height = 15,
+    },
+    default = {
+        font = "Fonts\\FRIZQT__.TTF",
+        height = 10,
+    },
+}
+local defaultStatusFont = {
+    koKR = {
+        font = "Fonts\\FRIZQT__.TTF",
+        height = 12,
+    },
+    zhCN = {
+        font = "Fonts\\ARKai_T.TTF",
+        height = 12,
+    },
+    zhTW = {
+        font = "Fonts\\blei00d.TTF",
+        height = 15,
+    },
+    ruRU = {
+        font = "Fonts\\FRIZQT___CYR.TTF",
+        height = 15,
+    },
+    default = {
+        font = "Fonts\\FRIZQT__.TTF",
+        height = 12,
+    },
+}
 
 function Fonts:OnEnable()
     local dbObj = RaidFrameSettings.db.profile.Fonts
@@ -123,18 +157,25 @@ end
 function Fonts:OnDisable()
     local restoreFonts = function(frame)
         --Name
-        frame.name:SetFont(defaultFont, 10,"NONE")
+        local font = defaultNameFont[locale] or defaultNameFont.default
+        frame.name:SetFont(font.font, font.height, "NONE")
         frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
         frame.name:SetPoint("TOPRIGHT", -3, -3)
         frame.name:SetJustifyH("LEFT");
         frame.name:SetVertexColor(1,1,1)
-        --Status
+        frame.name:SetShadowColor(0,0,0)
+        frame.name:SetShadowOffset(1,-1)
+     --Status
+        font = defaultStatusFont[locale] or defaultStatusFont.default
+        frame.name:SetFont(font.font, font.height, "NONE")
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
-        frame.statusText:SetFont(defaultFont, 12,"NONE")
+        frame.statusText:SetFont(font.font, font.height, "NONE")
         frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, frameHeight / 3 - 2)
         frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, frameHeight / 3 - 2)
         frame.statusText:SetVertexColor(0.5,0.5,0.5)
+        frame.statusText:SetShadowColor(0,0,0)
+        frame.statusText:SetShadowOffset(1,-1)
     end
     RaidFrameSettings:IterateRoster(restoreFonts)
 end

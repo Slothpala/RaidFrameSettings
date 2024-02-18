@@ -109,7 +109,7 @@ function Fonts:OnEnable()
         frame.name:ClearAllPoints()
         local res = frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
         if not res then
-            frame.name:SetFont(defaultFont, 10,"NONE")
+            frame.name:SetFont(defaultNameFont.font, defaultNameFont.height, "NONE")
         end
         frame.name:SetWidth((frame:GetWidth()))
         frame.name:SetJustifyH(Name.JustifyH)

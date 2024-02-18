@@ -20,6 +20,18 @@ local GetUnitName = GetUnitName
 local UnitClass = UnitClass
 local GetClassColor = GetClassColor
 
+local locale = GetLocale()
+local defaultFont = "Fonts\\FRIZQT__.TTF"
+if locale == "koKR" then
+    defaultFont = "Fonts\\2002.TTF"
+elseif locale == "zhCN" then
+    defaultFont = "Fonts\\ARKai_T.TTF"
+elseif locale == "zhTW" then
+    defaultFont = "Fonts\\blei00d.TTF"
+elseif locale == "ruRU" then
+    defaultFont = "Fonts\\FRIZQT___CYR.TTF"
+end
+
 function Fonts:OnEnable()
     local dbObj = RaidFrameSettings.db.profile.Fonts
     --Name
@@ -61,7 +73,10 @@ function Fonts:OnEnable()
     local function UpdateFont(frame)
         --Name
         frame.name:ClearAllPoints()
-        frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
+        local res = frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
+        if not res then
+            frame.name:SetFont(defaultFont, 10,"NONE")
+        end
         frame.name:SetWidth((frame:GetWidth()))
         frame.name:SetJustifyH(Name.JustifyH)
         frame.name:SetPoint(Name.Position, frame, Name.Position, Name.X_Offset, Name.Y_Offset )
@@ -108,7 +123,7 @@ end
 function Fonts:OnDisable()
     local restoreFonts = function(frame)
         --Name
-        frame.name:SetFont("Fonts\\FRIZQT__.TTF", 10,"NONE")
+        frame.name:SetFont(defaultFont, 10,"NONE")
         frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
         frame.name:SetPoint("TOPRIGHT", -3, -3)
         frame.name:SetJustifyH("LEFT");
@@ -116,7 +131,7 @@ function Fonts:OnDisable()
         --Status
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
-        frame.statusText:SetFont("Fonts\\FRIZQT__.TTF", 12,"NONE")
+        frame.statusText:SetFont(defaultFont, 12,"NONE")
         frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, frameHeight / 3 - 2)
         frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, frameHeight / 3 - 2)
         frame.statusText:SetVertexColor(0.5,0.5,0.5)

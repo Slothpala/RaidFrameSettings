@@ -109,7 +109,8 @@ function Fonts:OnEnable()
         frame.name:ClearAllPoints()
         local res = frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
         if not res then
-            frame.name:SetFont(defaultNameFont.default.font, defaultNameFont.default.height, "NONE")
+            local font = defaultNameFont[locale] or defaultNameFont.default
+            frame.name:SetFont(font.font, font.height, "NONE")
         end
         frame.name:SetWidth((frame:GetWidth()))
         frame.name:SetJustifyH(Name.JustifyH)
@@ -118,7 +119,11 @@ function Fonts:OnEnable()
         frame.name:SetShadowOffset(Advanced.x_offset,Advanced.y_offset)
         --Status
         frame.statusText:ClearAllPoints()
-        frame.statusText:SetFont(Status.Font, Status.FontSize, Status.Outlinemode)
+        res = frame.statusText:SetFont(Status.Font, Status.FontSize, Status.Outlinemode)
+        if not res then
+            local font = defaultStatusFont[locale] or defaultStatusFont.default
+            frame.name:SetFont(font.font, font.height, "NONE")
+        end
         frame.statusText:SetWidth((frame:GetWidth()))
         frame.statusText:SetJustifyH(Status.JustifyH)
         frame.statusText:SetPoint(Status.Position, frame, Status.Position, Status.X_Offset, Status.Y_Offset )

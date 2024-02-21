@@ -124,7 +124,7 @@ function Fonts:OnDisable()
         frame.name:SetShadowColor(fontObj:GetShadowColor())
         frame.name:SetShadowOffset(fontObj:GetShadowOffset())
         frame.name:ClearAllPoints()
-        frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
+        frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1)
         frame.name:SetPoint("TOPRIGHT", -3, -3);
         frame.name:SetJustifyH("LEFT");
         --Status
@@ -138,7 +138,7 @@ function Fonts:OnDisable()
         local componentScale = min(frameHeight / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH);
         local NATIVE_FONT_SIZE = 12
         local fontName, fontSize, fontFlags = frame.statusText:GetFont();
-        frame.statusText:SetFont(fontName, NATIVE_FONT_SIZE * componentScale, fontFlags);
+        frame.statusText:SetFont(fontName, NATIVE_FONT_SIZE * componentScale, fontFlags)
         frame.statusText:ClearAllPoints()
         frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, frameHeight / 3 - 2)
         frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, frameHeight / 3 - 2)

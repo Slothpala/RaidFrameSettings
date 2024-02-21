@@ -33,7 +33,7 @@ local SetDrawEdge = SetDrawEdge
 local next = next
 local select = select
 
-
+local fontObj = CreateFont("RaidFrameSettingsFont")
 
 
 function Buffs:OnEnable()
@@ -212,10 +212,11 @@ function Buffs:OnDisable()
             local stackText = buffFrame.count
             stackText:ClearAllPoints()
             stackText:SetPoint("BOTTOMRIGHT", buffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont(stackFont, 12, "OUTLINE, THICK")
-            stackText:SetTextColor(1,1,1,1)
-            stackText:SetShadowColor(0,0,0)
-            stackText:SetShadowOffset(0,0)
+            fontObj:SetFontObject("NumberFontNormalSmall")
+            stackText:SetFont(fontObj:GetFont())
+            stackText:SetTextColor(fontObj:GetTextColor())
+            stackText:SetShadowColor(fontObj:GetShadowColor())
+            stackText:SetShadowOffset(fontObj:GetShadowOffset())
         end
     end
     addon:IterateRoster(restoreBuffFrames)

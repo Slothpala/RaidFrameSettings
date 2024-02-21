@@ -28,6 +28,8 @@ local IsForbidden = IsForbidden
 --Lua
 local next = next
 
+local fontObj = CreateFont("RaidFrameSettingsFont")
+
 
 function Debuffs:OnEnable()
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
@@ -237,10 +239,11 @@ function Debuffs:OnDisable()
             local stackText = debuffFrame.count
             stackText:ClearAllPoints()
             stackText:SetPoint("BOTTOMRIGHT", debuffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont(stackFont, 12, "OUTLINE, THICK")
-            stackText:SetTextColor(1,1,1,1)
-            stackText:SetShadowColor(0,0,0)
-            stackText:SetShadowOffset(0,0)
+            fontObj:SetFontObject("NumberFontNormalSmall")
+            stackText:SetFont(fontObj:GetFont())
+            stackText:SetTextColor(fontObj:GetTextColor())
+            stackText:SetShadowColor(fontObj:GetShadowColor())
+            stackText:SetShadowOffset(fontObj:GetShadowOffset())
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

@@ -179,15 +179,6 @@ end
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
     self:DisableHooks()
-
-    local locale = GetLocale()
-    local stackFont = "Fonts/ARIALN.TTF"
-    if locale == "zhCN" then
-        stackFont = "Fonts/ARKai_T.TTF"
-    elseif locale == "zhTW" then
-        stackFont = "Fonts/BLEI00D.TTF"
-    end
-
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()

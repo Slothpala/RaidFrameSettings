@@ -161,6 +161,14 @@ function Debuffs:OnEnable()
                 cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
                 cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b,durationOpt.shadowColor.a)
                 cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    if not cooldown.OmniCC then
+                        cooldown.OmniCC = {
+                            noCooldownCount = cooldown.noCooldownCount,
+                        }
+                    end
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+                end
             end
             --Stack Settings
             local stackText = debuffFrame.count
@@ -236,6 +244,10 @@ function Debuffs:OnDisable()
             cooldown:SetReverse(false)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
+            if cooldown.OmniCC then
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
+                cooldown.OmniCC = nil
+            end
             --TODO
             --[[
                 find global font for stacks and restore properly

@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.22.2] - 2024-02-24
+#### Changed 
+* Enabling an aura timer will now hide the OmniCC aura timer on that aura.
+
 ### Version [2.22.1] - 2024-02-15
 #### Added
 * Aura gap option for buff and debuff modules for retail and classic.

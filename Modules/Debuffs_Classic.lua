@@ -143,7 +143,7 @@ function Debuffs:OnEnable()
             frame_registry[frame].dirty = false
             local placedAuraStart = frame.maxDebuffs + 1
             for i = frame.maxDebuffs + 1, frame_registry[frame].maxDebuffs do
-                local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
+                local debuffFrame = frame_registry[frame].extraDebuffFrames[i]
                 if not debuffFrame then
                     debuffFrame = CreateFrame("Button", nil, frame, "CompactDebuffTemplate")
                     debuffFrame:Hide()
@@ -182,7 +182,7 @@ function Debuffs:OnEnable()
             end
 
             for i = 1, frame_registry[frame].maxDebuffs + maxUserPlaced do
-                local debuffFrame = frame_registry[frame].extraDebuffFrames[i] or frame.debuffFrames[i]
+                local debuffFrame = frame_registry[frame].extraDebuffFrames[i]
                 if frameOpt.framestrata ~= "Inherited" then
                     debuffFrame:SetFrameStrata(frameOpt.framestrata)
                 end
@@ -224,7 +224,7 @@ function Debuffs:OnEnable()
         -- set anchor and resize
         local anchorSet, prevFrame
         for i = 1, frame_registry[frame].maxDebuffs do
-            local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
+            local debuffFrame = frame_registry[frame].extraDebuffFrames[i]
             if not anchorSet then
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
@@ -271,11 +271,14 @@ function Debuffs:OnEnable()
             debuffFrame:SetSize(width, height)
         end
     end
-    self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
+    -- self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
 
     local onUpdateDebuffs = function(frame)
         if not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return
+        end
+        for _, v in pairs(frame.debuffFrames) do
+            v:Hide()
         end
 
         -- set placed aura / other aura
@@ -294,9 +297,11 @@ function Debuffs:OnEnable()
                     local idx = frame_registry[frame].placedAuraStart + userPlaced[spellId].idx - 1
                     local debuffFrame = frame_registry[frame].extraDebuffFrames[idx]
                     CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
+                    onSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
                 elseif frameNum <= frame_registry[frame].maxDebuffs then
-                    local debuffFrame = frame.debuffFrames[frameNum] or frame_registry[frame].extraDebuffFrames[frameNum]
+                    local debuffFrame = frame_registry[frame].extraDebuffFrames[frameNum]
                     CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
+                    onSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
                     frameNum = frameNum + 1
                 end
             end
@@ -315,7 +320,7 @@ function Debuffs:OnEnable()
             end
         end
         for i = frameNum, frame_registry[frame].maxDebuffs do
-            local debuffFrame = frame.debuffFrames[i] or frame_registry[frame].extraDebuffFrames[i]
+            local debuffFrame = frame_registry[frame].extraDebuffFrames[i]
             debuffFrame:Hide()
             CooldownFrame_Clear(debuffFrame.cooldown)
         end
@@ -344,56 +349,10 @@ function Debuffs:OnDisable()
         if not frame_registry[frame] then
             return
         end
-        for _, debuffFrame in pairs(frame.debuffFrames) do
-            debuffFrame:Hide()
-        end
         for _, extraDebuffFrame in pairs(frame_registry[frame].extraDebuffFrames) do
             extraDebuffFrame:Hide()
         end
-
-        local frameWidth = frame:GetWidth()
-        local frameHeight = frame:GetHeight()
-        local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
-        local buffSize = math.min(15, 11 * componentScale)
-        for i=1,#frame.debuffFrames do  
-            frame.debuffFrames[i]:SetSize(buffSize, buffSize)
-        end
-        local powerBarUsedHeight = frame.powerBar:IsShown() and frame.powerBar:GetHeight() or 0
-        local debuffPos, debuffRelativePoint, debuffOffset = "BOTTOMLEFT", "BOTTOMRIGHT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight
-        frame.debuffFrames[1]:ClearAllPoints()
-        frame.debuffFrames[1]:SetPoint(debuffPos, frame, "BOTTOMLEFT", 3, debuffOffset)
-        for i=1, #frame.debuffFrames do
-            local debuffFrame = frame.debuffFrames[i]
-            debuffFrame:SetFrameStrata(frame:GetFrameStrata())
-            debuffFrame.border:SetTexture("Interface\\BUTTONS\\UI-Debuff-Overlays")
-            debuffFrame.border:SetTexCoord(0.296875, 0, 0.296875, 0.515625, 0.5703125, 0, 0.5703125, 0.515625)
-            debuffFrame.icon:SetTexCoord(0,1,0,1)
-            if ( i > 1 ) then
-                debuffFrame:ClearAllPoints();
-                debuffFrame:SetPoint(debuffPos, frame.debuffFrames[i - 1], debuffRelativePoint, 0, 0);
-            end
-            local cooldown = debuffFrame.cooldown
-            cooldown:SetDrawSwipe(true)
-            cooldown:SetReverse(false)
-            cooldown:SetDrawEdge(false)
-            CDT:DisableCooldownText(cooldown)
-            if cooldown.OmniCC then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
-                cooldown.OmniCC = nil
-            end
-            --TODO
-            --[[
-                find global font for stacks and restore properly
-            ]]
-            local stackText = debuffFrame.count
-            stackText:ClearAllPoints()
-            stackText:SetPoint("BOTTOMRIGHT", debuffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
-            stackText:SetTextColor(1,1,1,1)
-            stackText:SetShadowColor(0,0,0)
-            stackText:SetShadowOffset(0,0)
-        end
-        if frame.unit then
+        if frame.unit and frame.unitExists and frame:IsShown() and not frame:IsForbidden() then
             CompactUnitFrame_UpdateAuras(frame)
         end
     end

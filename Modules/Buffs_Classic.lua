@@ -159,7 +159,7 @@ function Buffs:OnEnable()
 
             local placedAuraStart = frame.maxBuffs + 1
             for i = frame.maxBuffs + 1, frame_registry[frame].maxBuffs do
-                local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
+                local buffFrame = frame_registry[frame].extraBuffFrames[i]
                 if not buffFrame then
                     buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
                     buffFrame:Hide()
@@ -184,7 +184,7 @@ function Buffs:OnEnable()
             end
 
             for i = 1, frame_registry[frame].maxBuffs + maxUserPlaced do
-                local buffFrame = frame_registry[frame].extraBuffFrames[i] or frame.buffFrames[i]
+                local buffFrame = frame_registry[frame].extraBuffFrames[i]
                 if frameOpt.framestrata ~= "Inherited" then
                     buffFrame:SetFrameStrata(frameOpt.framestrata)
                 end
@@ -226,7 +226,7 @@ function Buffs:OnEnable()
         -- set anchor and resize
         local anchorSet, prevFrame
         for i = 1, frame_registry[frame].maxBuffs do
-            local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
+            local buffFrame = frame_registry[frame].extraBuffFrames[i]
             if not anchorSet then
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
@@ -273,11 +273,14 @@ function Buffs:OnEnable()
             buffFrame:SetSize(width, height)
         end
     end
-    self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
+    -- self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 
     local onUpdateBuffs = function(frame)
         if not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return
+        end
+        for _, v in pairs(frame.buffFrames) do
+            v:Hide()
         end
 
         -- set placed aura / other aura
@@ -294,9 +297,11 @@ function Buffs:OnEnable()
                     local idx = frame_registry[frame].placedAuraStart + userPlaced[spellId].idx - 1
                     local buffFrame = frame_registry[frame].extraBuffFrames[idx]
                     CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter)
+                    onSetBuff(buffFrame, frame.displayedUnit, index, filter)
                 elseif frameNum <= frame_registry[frame].maxBuffs then
-                    local buffFrame = frame.buffFrames[frameNum] or frame_registry[frame].extraBuffFrames[frameNum]
+                    local buffFrame = frame_registry[frame].extraBuffFrames[frameNum]
                     CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter)
+                    onSetBuff(buffFrame, frame.displayedUnit, index, filter)
                     frameNum = frameNum + 1
                 end
             end
@@ -315,7 +320,7 @@ function Buffs:OnEnable()
             end
         end
         for i = frameNum, math.max(frame_registry[frame].maxBuffs, frame.maxBuffs) do
-            local buffFrame = frame.buffFrames[i] or frame_registry[frame].extraBuffFrames[i]
+            local buffFrame = frame_registry[frame].extraBuffFrames[i]
             buffFrame:Hide()
             CooldownFrame_Clear(buffFrame.cooldown)
         end
@@ -344,52 +349,10 @@ function Buffs:OnDisable()
         if not frame_registry[frame] then
             return
         end
-        for _, buffFrame in pairs(frame.buffFrames) do
-            buffFrame:Hide()
-        end
         for _, extraBuffFrame in pairs(frame_registry[frame].extraBuffFrames) do
             extraBuffFrame:Hide()
         end
-
-        local frameWidth = frame:GetWidth()
-        local frameHeight = frame:GetHeight()
-        local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)
-        local Display = math.min(15, 11 * componentScale)
-        local powerBarUsedHeight = frame.powerBar:IsShown() and frame.powerBar:GetHeight() or 0
-        local buffPos, buffRelativePoint, buffOffset = "BOTTOMRIGHT", "BOTTOMLEFT", CUF_AURA_BOTTOM_OFFSET + powerBarUsedHeight;
-        frame.buffFrames[1]:ClearAllPoints();
-        frame.buffFrames[1]:SetPoint(buffPos, frame, "BOTTOMRIGHT", -3, buffOffset);
-        for i=1, #frame.buffFrames do
-            local buffFrame = frame.buffFrames[i]
-            buffFrame:SetFrameStrata(frame:GetFrameStrata())
-            buffFrame:SetSize(Display, Display)
-            buffFrame.icon:SetTexCoord(0,1,0,1)
-            if ( i > 1 ) then
-                buffFrame:ClearAllPoints();
-                buffFrame:SetPoint(buffPos, frame.buffFrames[i - 1], buffRelativePoint, 0, 0);
-            end
-            local cooldown = buffFrame.cooldown
-            cooldown:SetDrawSwipe(true)
-            cooldown:SetReverse(true)
-            cooldown:SetDrawEdge(false)
-            CDT:DisableCooldownText(cooldown)
-            if cooldown.OmniCC then
-                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
-                cooldown.OmniCC = nil
-            end
-            --TODO
-            --[[
-                find global font for stacks and restore properly
-            ]]
-            local stackText = buffFrame.count
-            stackText:ClearAllPoints()
-            stackText:SetPoint("BOTTOMRIGHT", buffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
-            stackText:SetTextColor(1,1,1,1)
-            stackText:SetShadowColor(0,0,0)
-            stackText:SetShadowOffset(0,0)
-        end
-        if frame.unit then
+        if frame.unit and frame.unitExists and frame:IsShown() and not frame:IsForbidden() then
             CompactUnitFrame_UpdateAuras(frame)
         end
     end

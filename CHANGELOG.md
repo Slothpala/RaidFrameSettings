@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.22.3] - 2024-03-23
+#### Changed
+* Interface version updated to 100206
+
 ### Version [2.22.2] - 2024-02-24
 #### Changed 
 * Enabling an aura timer will now hide the OmniCC aura timer on that aura.

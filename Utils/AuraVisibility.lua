@@ -37,6 +37,9 @@ end
         only from self: return true, true, false
 ]]
 function addon:Dump_cachedVisualizationInfo()
+    if InCombatLockdown() then
+        return
+    end
     EventRegistry:TriggerEvent("PLAYER_SPECIALIZATION_CHANGED")
 end
 

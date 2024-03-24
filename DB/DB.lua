@@ -57,6 +57,10 @@ local defaults = {
                 y_offset = 0,
             },
         },
+        Blacklist = {
+            
+        },
+        oldBlacklistsImported = false,
         Debuffs = {
             DebuffFramesDisplay = {
                 width = 24,

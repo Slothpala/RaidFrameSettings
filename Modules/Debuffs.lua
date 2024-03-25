@@ -45,11 +45,6 @@ function Debuffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
 	--increase
     local increase = {}
     for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
@@ -101,9 +96,8 @@ function Debuffs:OnEnable()
         for i=1, #frame.debuffFrames do
             local debuffFrame = frame.debuffFrames[i]
             local aura = debuffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID) or nil
-            local hide = aura and blacklist[aura.spellId] or false
             local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -111,14 +105,11 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then   
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = debuffFrame
             end
         end
@@ -189,15 +180,8 @@ function Debuffs:OnEnable()
                 local debuffFrame = frame.debuffFrames[i]
                 if debuffFrame.auraInstanceID then
                     local aura = GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
-                    if aura then
-                        if blacklist[aura.spellId] then
-                            debuffFrame:Hide()
-                        else
-                            if aura.isBossAura or increase[aura.spellId] then
-                                debuffFrame:SetSize(boss_width, boss_height)
-                            end
-                            debuffFrame:Show()
-                        end
+                    if aura and aura.isBossAura or increase[aura.spellId] then
+                        debuffFrame:SetSize(boss_width, boss_height)
                     end
                 end
             end

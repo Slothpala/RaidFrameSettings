@@ -1,4 +1,22 @@
 # **Changelog**
+### Version [2.22.5] - 2024-03-25
+#### Changed
+* AuraVisibility.lua now checks if a watchlist entry is flagged as debuff.
+* Options.lua updated Watchlist module desc. Added a second input field to separate buffs and debuffs for the watchlist. Watchlist entrys spellIds are now color coded to indicate if they are a buff or a debuff.
+
+### Version [2.22.4] - 2024-03-24
+#### Added
+* Utils -> AuraVisibilty.lua that can be used to blacklist or enable auras.
+* Modules -> Watchlist.lua this module allows tracking buffs that are not shown by default + alter wether a watched buff should be shown only from you, in combat
+* Modules -> Blacklist.lua this module replaces the old blacklist feature of the Buffs and Debuffs modules. The old blacklists will be imported.
+
+#### Changed
+* Modules -> Buffs.lua + Buffs_Classic.lua + Debuffs.lua + Debuffs_Classic.lua removed the module specific blacklist features.
+
+### Version [2.22.3] - 2024-03-23
+#### Changed
+* Interface version updated to 100206
+
 ### Version [2.22.2] - 2024-02-24
 #### Changed 
 * Enabling an aura timer will now hide the OmniCC aura timer on that aura.

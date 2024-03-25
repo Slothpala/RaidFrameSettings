@@ -46,11 +46,6 @@ function Buffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
     --user placed
     local userPlaced = {}
     for _, auraInfo in pairs(addon.db.profile.Buffs.AuraPosition) do 
@@ -99,9 +94,8 @@ function Buffs:OnEnable()
         for i=1, #frame.buffFrames do
             local buffFrame = frame.buffFrames[i]
             local aura = buffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID) or nil
-            local hide = aura and blacklist[aura.spellId] or false
             local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -109,14 +103,11 @@ function Buffs:OnEnable()
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                buffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then   
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = buffFrame
             end
         end
@@ -171,26 +162,7 @@ function Buffs:OnEnable()
         updateAnchors(parentFrame)
      end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
-
-    addon:IterateRoster(function(frame)
-        onFrameSetup(frame)
-        if frame.buffFrames then
-            for i=1, #frame.buffFrames do
-                local buffFrame = frame.buffFrames[i]
-                if buffFrame.auraInstanceID then
-                    local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID)
-                    if aura then
-                        if blacklist[aura.spellId] then
-                            buffFrame:Hide()
-                        else
-                            buffFrame:Show()
-                        end
-                    end
-                end
-            end
-            updateAnchors(frame)
-        end
-    end)
+    addon:IterateRoster(onFrameSetup)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua

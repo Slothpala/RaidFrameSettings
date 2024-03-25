@@ -4,4 +4,6 @@
     <Script file="Modules\Range.lua"/>
     <Script file="Modules\Buffs_Classic.lua"/>
     <Script file="Modules\Debuffs_Classic.lua"/>
+    <Script file="Modules\Blacklist.lua"/>
+    <Script file="Modules\Watchlist.lua"/>
 </Ui>

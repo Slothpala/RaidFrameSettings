@@ -49,11 +49,6 @@ function Debuffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
     --user placed 
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
     --Debuffframe size
@@ -98,9 +93,8 @@ function Debuffs:OnEnable()
             local debuffFrame = frame.debuffFrames[i]
             local id = debuffFrame:GetID()
             local spellId = id and not debuffFrame.isBossBuff and select(10, UnitDebuff(frame.unit, id)) or id and debuffFrame.isBossBuff and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -108,10 +102,7 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then   
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
@@ -179,9 +170,7 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
 
-    addon:IterateRoster(function(frame)
-        onFrameSetup(frame)
-    end)
+    addon:IterateRoster(onFrameSetup)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua

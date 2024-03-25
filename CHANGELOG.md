@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [2.22.5] - 2024-03-25
+#### Changed
+* AuraVisibility.lua now checks if a watchlist entry is flagged as debuff.
+* Options.lua updated Watchlist module desc. Added a second input field to separate buffs and debuffs for the watchlist. Watchlist entrys spellIds are now color coded to indicate if they are a buff or a debuff.
+
 ### Version [2.22.4] - 2024-03-24
 #### Added
 * Utils -> AuraVisibilty.lua that can be used to blacklist or enable auras.

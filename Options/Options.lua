@@ -262,7 +262,7 @@ local options = {
                             order = 10,
                             type = "toggle",
                             name = "Watchlist",
-                            desc = "Configure the raid frames to display buffs that are not shown by default. Additionally, track buffs from other healers or players, and choose whether to display these auras only when they originate from you or set them to only be shown out of combat.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r",
+                            desc = "Configure raid frames to show auras that are not shown by default (e.g. defensive cooldowns). Additionally, track auras from other healers or players, and choose whether to display these auras only when they originate from you or set them to only be shown out of combat.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
@@ -733,9 +733,9 @@ local options = {
             name = "Watchlist",
             type = "group",
             args = {
-                addAura = {
+                addBuff = {
                     order = 1,
-                    name = "Enter spellId:",
+                    name = "Enter |cff00ff00buff|r spellId:",
                     type = "input",
                     pattern = "^%d+$",
                     usage = "please enter a number",
@@ -745,8 +745,22 @@ local options = {
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
-                auraList = {
+                addDebuff = {
                     order = 2,
+                    name = "Enter |cffFF474Ddebuff|r spellId:",
+                    type = "input",
+                    pattern = "^%d+$",
+                    usage = "please enter a number",
+                    set = function(_, value)
+                        RaidFrameSettings.db.profile.Watchlist[value] = {
+                            spellIsDebuff = true,
+                        }
+                        RaidFrameSettings:CreateWatchlistEntry(value)
+                        RaidFrameSettings:UpdateModule("Watchlist")
+                    end,
+                },
+                auraList = {
+                    order = 3,
                     name = "Auras:",
                     type = "group",
                     inline = true,
@@ -1733,6 +1747,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
     if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
         spellName, _, icon = GetSpellInfo(spellId)
     end
+    local spellIdColorCode = dbObj[spellId].spellIsDebuff and "cffFF474D" or "cff00ff00"
     local Watchlist_entry = {
         order = pos or 1,
         name = "",
@@ -1743,7 +1758,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 order = 1,
                 image = icon,
                 imageCoords = {0.1,0.9,0.1,0.9},
-                name = (spellName or "|cffff0000aura not found|r") .. " (" .. spellId .. ")",
+                name = (spellName or "|cffff0000aura not found|r") .. " (|" .. spellIdColorCode .. spellId .. "|r)",
                 type = "description",
                 width = 1.5,
             },

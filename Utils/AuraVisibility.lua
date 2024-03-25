@@ -48,15 +48,20 @@ SpellGetVisibilityInfo = function(spellId, visType)
     if blacklist[spellId] then
         return true, false, false
     end
+
     if watchlist[spellId] then
-        if watchlist[spellId].hideInCombat and visType == "RAID_INCOMBAT" then
+        local watchEntry = watchlist[spellId]
+        if watchEntry.hideInCombat and visType == "RAID_INCOMBAT" then
             return true, false, false
-        end
-        if watchlist[spellId].ownOnly then
+        elseif watchEntry.ownOnly then
             return true, true, false
-        end
-        return true, false, true
+        elseif watchEntry.spellIsDebuff then
+            return false
+        else
+            return true, false, true
+        end        
     end
+
     return orig_SpellGetVisibilityInfo(spellId, visType)
 end
 

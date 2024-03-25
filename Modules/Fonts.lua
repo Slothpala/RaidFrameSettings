@@ -20,6 +20,8 @@ local GetUnitName = GetUnitName
 local UnitClass = UnitClass
 local GetClassColor = GetClassColor
 
+local fontObj = CreateFont("RaidFrameSettingsFont")
+
 function Fonts:OnEnable()
     local dbObj = RaidFrameSettings.db.profile.Fonts
     --Name
@@ -61,7 +63,11 @@ function Fonts:OnEnable()
     local function UpdateFont(frame)
         --Name
         frame.name:ClearAllPoints()
-        frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
+        local res = frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
+        if not res then
+            fontObj:SetFontObject("GameFontHighlightSmall")
+            frame.name:SetFont(fontObj:GetFont())
+        end
         frame.name:SetWidth((frame:GetWidth()))
         frame.name:SetJustifyH(Name.JustifyH)
         frame.name:SetPoint(Name.Position, frame, Name.Position, Name.X_Offset, Name.Y_Offset )
@@ -69,7 +75,11 @@ function Fonts:OnEnable()
         frame.name:SetShadowOffset(Advanced.x_offset,Advanced.y_offset)
         --Status
         frame.statusText:ClearAllPoints()
-        frame.statusText:SetFont(Status.Font, Status.FontSize, Status.Outlinemode)
+        res = frame.statusText:SetFont(Status.Font, Status.FontSize, Status.Outlinemode)
+        if not res then
+            fontObj:SetFontObject("GameFontDisable")
+            frame.statusText:SetFont(fontObj:GetFont())
+        end
         frame.statusText:SetWidth((frame:GetWidth()))
         frame.statusText:SetJustifyH(Status.JustifyH)
         frame.statusText:SetPoint(Status.Position, frame, Status.Position, Status.X_Offset, Status.Y_Offset )
@@ -108,18 +118,31 @@ end
 function Fonts:OnDisable()
     local restoreFonts = function(frame)
         --Name
-        frame.name:SetFont("Fonts\\FRIZQT__.TTF", 10,"NONE")
-        frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);
-        frame.name:SetPoint("TOPRIGHT", -3, -3)
+        fontObj:SetFontObject("GameFontHighlightSmall")
+        frame.name:SetFont(fontObj:GetFont())
+        frame.name:SetVertexColor(fontObj:GetTextColor())
+        frame.name:SetShadowColor(fontObj:GetShadowColor())
+        frame.name:SetShadowOffset(fontObj:GetShadowOffset())
+        frame.name:ClearAllPoints()
+        frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1)
+        frame.name:SetPoint("TOPRIGHT", -3, -3);
         frame.name:SetJustifyH("LEFT");
-        frame.name:SetVertexColor(1,1,1)
         --Status
+        fontObj:SetFontObject("GameFontDisable")
+        frame.statusText:SetFont(fontObj:GetFont())
+        frame.statusText:SetVertexColor(fontObj:GetTextColor())
+        frame.statusText:SetShadowColor(fontObj:GetShadowColor())
+        frame.statusText:SetShadowOffset(fontObj:GetShadowOffset())
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
-        frame.statusText:SetFont("Fonts\\FRIZQT__.TTF", 12,"NONE")
+        local componentScale = min(frameHeight / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH);
+        local NATIVE_FONT_SIZE = 12
+        local fontName, fontSize, fontFlags = frame.statusText:GetFont();
+        frame.statusText:SetFont(fontName, NATIVE_FONT_SIZE * componentScale, fontFlags)
+        frame.statusText:ClearAllPoints()
         frame.statusText:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 3, frameHeight / 3 - 2)
         frame.statusText:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -3, frameHeight / 3 - 2)
-        frame.statusText:SetVertexColor(0.5,0.5,0.5)
+        frame.statusText:SetHeight(12 * componentScale)
     end
     RaidFrameSettings:IterateRoster(restoreFonts)
 end

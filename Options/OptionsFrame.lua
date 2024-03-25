@@ -37,7 +37,15 @@ end
 frame:Hide()
 local r,g,b = PANEL_BACKGROUND_COLOR:GetRGB()
 frame.Bg:SetColorTexture(r,g,b,0.9)
-frame:SetScript("OnEvent", frame.Hide)
+frame:SetScript("OnEvent", function(self, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+        frame:Hide()
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+        frame:Show()
+    end
+end)
 tinsert(UISpecialFrames, frame:GetName())
 frame.title = _G["RaidFrameSettingsOptionsTitleText"]
 frame.title:SetText(addonName)

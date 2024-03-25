@@ -1,4 +1,5 @@
 local _, addonTable = ...
+local addon = addonTable.RaidFrameSettings
 addonTable.cooldownText = {}
 local CooldownText = addonTable.cooldownText
 
@@ -11,17 +12,21 @@ local next = next
 local string_format = string.format
 
 --Cooldown Formatting
-local day = 86400
-local hour = 3600
-local min = 60
+CooldownText.TimerTextLimit = {
+    sec = 60,
+    min = 3600,
+    hour = 86400,
+}
 
 local function getTimerText(number)
-    if number < min then
+    if number < CooldownText.TimerTextLimit.sec then
         return Round(number)
-    elseif number < hour then
-        return string_format("%dm", Round( number / min ) )
+    elseif number < CooldownText.TimerTextLimit.min then
+        return string_format("%dm", Round( number / 60 ) )
+    elseif number < CooldownText.TimerTextLimit.hour then
+        return string_format("%dh", Round( number / 3600 ) )
     else
-        return string_format("%dh", Round( number / hour ) )
+        return string_format("%dd", Round( number / 86400 ) )
     end
 end
 

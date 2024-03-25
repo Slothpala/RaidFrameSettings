@@ -30,6 +30,8 @@ local next = next
 
 
 function Debuffs:OnEnable()
+    CDT.TimerTextLimit = addon.db.profile.MinorModules.TimerTextLimit
+
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     --Timer
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values

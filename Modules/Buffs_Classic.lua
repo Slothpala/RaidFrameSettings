@@ -50,11 +50,6 @@ function Buffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
     --user placed
     local userPlaced = {}
     for _, auraInfo in pairs(addon.db.profile.Buffs.AuraPosition) do 
@@ -105,9 +100,8 @@ function Buffs:OnEnable()
             local buffFrame = frame.buffFrames[i]
             local id = buffFrame:GetID()
             local spellId = id and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -115,14 +109,11 @@ function Buffs:OnEnable()
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                buffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then   
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = buffFrame
             end
         end
@@ -143,6 +134,14 @@ function Buffs:OnEnable()
                 cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
                 cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b,durationOpt.shadowColor.a)
                 cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    if not cooldown.OmniCC then
+                        cooldown.OmniCC = {
+                            noCooldownCount = cooldown.noCooldownCount,
+                        }
+                    end
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+                end
             end
             --Stack Settings
             local stackText = buffFrame.count
@@ -170,9 +169,7 @@ function Buffs:OnEnable()
      end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
 
-    addon:IterateRoster(function(frame)
-        onFrameSetup(frame)
-    end)
+    addon:IterateRoster(onFrameSetup)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
@@ -200,6 +197,10 @@ function Buffs:OnDisable()
             cooldown:SetReverse(true)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
+            if cooldown.OmniCC then
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
+                cooldown.OmniCC = nil
+            end
             --TODO
             --[[
                 find global font for stacks and restore properly

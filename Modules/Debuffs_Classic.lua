@@ -47,11 +47,6 @@ function Debuffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
     --increase
     local increase = {}
     for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
@@ -101,9 +96,8 @@ function Debuffs:OnEnable()
             local debuffFrame = frame.debuffFrames[i]
             local id = debuffFrame:GetID()
             local spellId = id and not debuffFrame.isBossBuff and select(10, UnitDebuff(frame.unit, id)) or id and debuffFrame.isBossBuff and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -111,10 +105,7 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then   
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
@@ -139,6 +130,14 @@ function Debuffs:OnEnable()
                 cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
                 cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b,durationOpt.shadowColor.a)
                 cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
+                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                    if not cooldown.OmniCC then
+                        cooldown.OmniCC = {
+                            noCooldownCount = cooldown.noCooldownCount,
+                        }
+                    end
+                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+                end
             end
             --Stack Settings
             local stackText = debuffFrame.count
@@ -180,9 +179,7 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
 
-    addon:IterateRoster(function(frame)
-        onFrameSetup(frame)
-    end)
+    addon:IterateRoster(onFrameSetup)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
@@ -214,6 +211,10 @@ function Debuffs:OnDisable()
             cooldown:SetReverse(false)
             cooldown:SetDrawEdge(false)
             CDT:DisableCooldownText(cooldown)
+            if cooldown.OmniCC then
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
+                cooldown.OmniCC = nil
+            end
             --TODO
             --[[
                 find global font for stacks and restore properly

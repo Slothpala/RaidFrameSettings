@@ -51,11 +51,6 @@ function Buffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Buffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
     --user placed
     local userPlaced = {}
     local userPlacedIdx = 1
@@ -115,9 +110,8 @@ function Buffs:OnEnable()
             local buffFrame = frame.buffFrames[i]
             local id = buffFrame:GetID()
             local spellId = id and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -125,14 +119,11 @@ function Buffs:OnEnable()
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                buffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = buffFrame
             end
         end
@@ -259,6 +250,7 @@ function Buffs:OnEnable()
         if not cooldown._rfs_cd_text then
             return
         end
+        CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
         local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura = UnitBuff(unit, index, filter)
         if GetClassicExpansionLevel() < LE_EXPANSION_BURNING_CRUSADE then
             CompactUnitFrame_UpdateCooldownFrame(buffFrame, expirationTime, duration, false)
@@ -296,11 +288,9 @@ function Buffs:OnEnable()
                 if userPlaced[spellId] then
                     local idx = frame_registry[frame].placedAuraStart + userPlaced[spellId].idx - 1
                     local buffFrame = frame_registry[frame].extraBuffFrames[idx]
-                    CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter)
                     onSetBuff(buffFrame, frame.displayedUnit, index, filter)
                 elseif frameNum <= frame_registry[frame].maxBuffs then
                     local buffFrame = frame_registry[frame].extraBuffFrames[frameNum]
-                    CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter)
                     onSetBuff(buffFrame, frame.displayedUnit, index, filter)
                     frameNum = frameNum + 1
                 end
@@ -333,9 +323,8 @@ function Buffs:OnEnable()
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
         if frame.unit then
-            if frame:IsShown() then
-                frame.Hide()
-                frame.Show()
+            if frame.unitExists and frame:IsShown() and not frame:IsForbidden() then
+                CompactUnitFrame_UpdateAuras(frame)
             end
         end
     end)

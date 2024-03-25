@@ -45,17 +45,12 @@ function Debuffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
-	--increase
+    --increase
     local increase = {}
     for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
         increase[tonumber(spellId)] = true
     end
-    --user placed 
+    --user placed
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
     local userPlacedIdx = 1
     local maxUserPlaced = 0
@@ -115,9 +110,8 @@ function Debuffs:OnEnable()
         for i=1, #frame.debuffFrames do
             local debuffFrame = frame.debuffFrames[i]
             local aura = debuffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID) or nil
-            local hide = aura and blacklist[aura.spellId] or false
             local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -125,14 +119,11 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, 0, 0)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
-            if not hide and not place then
+            if not place then
                 prevFrame = debuffFrame
             end
         end
@@ -142,7 +133,7 @@ function Debuffs:OnEnable()
     local onSetDebuff
 
     local function onUpdatePrivateAuras(frame)
-        if not frame.PrivateAuraAnchors or not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible()then
+        if not frame.PrivateAuraAnchors or not frame_registry[frame] or frame:IsForbidden() or not frame:IsVisible() then
             return
         end
 
@@ -179,18 +170,12 @@ function Debuffs:OnEnable()
             if userPlaced[aura.spellId] then
                 local idx = frame_registry[frame].placedAuraStart + userPlaced[aura.spellId].idx - 1
                 local debuffFrame = frame_registry[frame].extraDebuffFrames[idx]
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                 onSetDebuff(debuffFrame, aura)
-                return false
-            end
-
-            if blacklist[aura.spellId] then
                 return false
             end
 
             if frameNum <= frame_registry[frame].maxDebuffs then
                 local debuffFrame = frame_registry[frame].extraDebuffFrames[frameNum]
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                 onSetDebuff(debuffFrame, aura)
                 frameNum = frameNum + 1
             end
@@ -238,8 +223,7 @@ function Debuffs:OnEnable()
             for i = 1, frame_registry[frame].maxDebuffs do
                 local debuffFrame = frame_registry[frame].extraDebuffFrames[i]
                 if not debuffFrame then
-                    debuffFrame = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
-                    debuffFrame:SetParent(frame)
+                    debuffFrame = CreateFrame("Button", nil, frame, "CompactDebuffTemplate")
                     debuffFrame:Hide()
                     debuffFrame.baseSize = width
                     debuffFrame.maxHeight = width
@@ -258,8 +242,7 @@ function Debuffs:OnEnable()
                 local idx = placedAuraStart + place.idx - 1
                 local debuffFrame = frame_registry[frame].extraDebuffFrames[idx]
                 if not debuffFrame then
-                    debuffFrame = CreateFrame("Button", nil, nil, "CompactBuffTemplate")
-                    debuffFrame:SetParent(frame)
+                    debuffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
                     debuffFrame:Hide()
                     debuffFrame.baseSize = width
                     debuffFrame.maxHeight = width
@@ -341,6 +324,7 @@ function Debuffs:OnEnable()
         if debuffFrame:IsForbidden() or not debuffFrame:IsVisible() then --not sure if this is still neede but when i created it at the start if dragonflight it was
             return
         end
+        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
         local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
@@ -358,9 +342,8 @@ function Debuffs:OnEnable()
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
         if frame.unit then
-            if frame:IsShown() then
-                frame.Hide()
-                frame.Show()
+            if frame.unitExists and frame:IsShown() and not frame:IsForbidden() then
+                CompactUnitFrame_UpdateAuras(frame)
             end
         end
     end)

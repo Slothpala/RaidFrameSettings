@@ -86,8 +86,10 @@ function addon:IterateRoster(callback)
     if needsUpdate then
         updateRoster()
     end
-    for unit,frame in next, Roster do
-        callback(frame)
+    for unit, frame in next, Roster do
+        if frame.unit and frame.unitExists and frame:IsShown() and not frame:IsForbidden() then
+            callback(frame)
+        end
     end
 end
 

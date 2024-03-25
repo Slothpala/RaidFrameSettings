@@ -57,6 +57,20 @@ local defaults = {
                 y_offset = 0,
             },
         },
+        Blacklist = {  
+            --[[
+                spellId = true,
+            ]]
+        },
+        Watchlist = {  
+            --[[
+                spellId = {
+                    ownOnly = true/false,
+                    hideInCombat = true/false,
+                }
+            ]]
+        },
+        oldBlacklistsImported = false,
         Debuffs = {
             DebuffFramesDisplay = {
                 width = 24,

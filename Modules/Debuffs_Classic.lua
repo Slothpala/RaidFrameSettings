@@ -50,11 +50,6 @@ function Debuffs:OnEnable()
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --blacklist
-    local blacklist = {}
-    for spellId, value in pairs(addon.db.profile.Debuffs.Blacklist) do
-        blacklist[tonumber(spellId)] = true
-    end
     --user placed 
     local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
     local userPlacedIdx = 1
@@ -101,9 +96,8 @@ function Debuffs:OnEnable()
             local debuffFrame = frame.debuffFrames[i]
             local id = debuffFrame:GetID()
             local spellId = id and not debuffFrame.isBossBuff and select(10, UnitDebuff(frame.unit, id)) or id and debuffFrame.isBossBuff and select(10, UnitBuff(frame.unit, id)) or nil
-            local hide = spellId and blacklist[spellId] or false
             local place = spellId and userPlaced[spellId] or false
-            if not anchorSet and not hide and not place then 
+            if not anchorSet and not place then
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -111,10 +105,7 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if hide then
-                debuffFrame:Hide()
-            end
-            if place and not hide then   
+            if place then
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
             end
@@ -256,6 +247,7 @@ function Debuffs:OnEnable()
         if not cooldown._rfs_cd_text then
             return
         end
+        CompactUnitFrame_UtilSetDebuff(debuffFrame, unit, index, filter, isBossAura, isBossBuff)
         local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId
         if isBossBuff then
             name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId = UnitBuff(unit, index, filter)
@@ -296,11 +288,9 @@ function Debuffs:OnEnable()
                 if userPlaced[spellId] then
                     local idx = frame_registry[frame].placedAuraStart + userPlaced[spellId].idx - 1
                     local debuffFrame = frame_registry[frame].extraDebuffFrames[idx]
-                    CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
                     onSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
                 elseif frameNum <= frame_registry[frame].maxDebuffs then
                     local debuffFrame = frame_registry[frame].extraDebuffFrames[frameNum]
-                    CompactUnitFrame_UtilSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
                     onSetDebuff(debuffFrame, frame.displayedUnit, index, filter, isBossAura, isBossBuff)
                     frameNum = frameNum + 1
                 end
@@ -333,9 +323,8 @@ function Debuffs:OnEnable()
     addon:IterateRoster(function(frame)
         onFrameSetup(frame)
         if frame.unit then
-            if frame:IsShown() then
-                frame.Hide()
-                frame.Show()
+            if frame.unitExists and frame:IsShown() and not frame:IsForbidden() then
+                CompactUnitFrame_UpdateAuras(frame)
             end
         end
     end)

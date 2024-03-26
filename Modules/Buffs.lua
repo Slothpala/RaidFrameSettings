@@ -52,6 +52,7 @@ function Buffs:OnEnable()
             relativePoint = addon:ConvertDbNumberToPosition(auraInfo.relativePoint),
             xOffset = auraInfo.xOffset,
             yOffset = auraInfo.yOffset,
+            scale = auraInfo.scale,
         }
     end
     --Buff size
@@ -104,6 +105,7 @@ function Buffs:OnEnable()
             if place then   
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
+                buffFrame:SetScale(userPlaced[aura.spellId].scale)
             end
             if not place then
                 prevFrame = buffFrame

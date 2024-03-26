@@ -1,4 +1,7 @@
 # **Changelog**
+### Version [2.22.7] - 2024-03-26
+* Moved Aura Position one row up and added ab option to scale user placed auras.
+
 ### Version [2.22.6] - 2024-03-26
 * Small visual improvements to the watchlist and an option to import the most important def CDs for all classes have been added.
 

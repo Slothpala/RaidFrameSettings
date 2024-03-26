@@ -109,6 +109,7 @@ function Buffs:OnEnable()
             end
             if not place then
                 prevFrame = buffFrame
+                buffFrame:SetScale(1)
             end
         end
     end

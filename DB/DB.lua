@@ -87,6 +87,8 @@ local defaults = {
                 edge = true,
                 inverse = false,
                 timerText = true,
+                maxdebuffs = 3,
+                framestrata = 1,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
@@ -114,6 +116,9 @@ local defaults = {
                 xOffsetFont = 0,
                 yOffsetFont = 0,
             },
+            AuraPosition = {
+
+            },
             Blacklist = {
                 --[[spellID = name                ]]--
             },
@@ -136,6 +141,9 @@ local defaults = {
                 edge = true,
                 inverse = true,
                 timerText = true,
+                maxbuffsAuto = true,
+                maxbuffs = 3,
+                framestrata = 1,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",

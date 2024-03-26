@@ -74,7 +74,7 @@ function addon:GetPersonalCooldowns()
             48707, -- Anti Magic Shell
             48792, -- Icebound Fortitude
             --DH
-            198589, -- Blur
+            212800, -- Blur
             196555, -- Netherwalk
             187827, -- Metamorphosis
             --Druid
@@ -93,16 +93,15 @@ function addon:GetPersonalCooldowns()
             113862, -- Greater Invisibility
             414658, -- Ice Cold
             --Monk
-            122470, -- Touch of Karma
+            125174, -- Touch of Karma
             122278, -- Dampen Harm
             122783, -- Diffuse Magic
-            115203, -- Fortifying Brew
+            120954, -- Fortifying Brew
             --Paladin
             642, -- Divine Shield
             31850, -- Ardent Defender
             403876, -- Divine Protection Retri
             498, -- Divine Protection Holy
-            387174, -- Eye of Tyr
             86659, -- Guardian of Ancient Kings
             212641, -- Guardian of Ancient Kings + Glyph of Queens
             184662, -- Shield of Vengance
@@ -119,10 +118,11 @@ function addon:GetPersonalCooldowns()
             108416, -- Dark Pact
             104773, -- Unending Resolve
             -- Warrior
-            118038, -- Die by the Swort
+            118038, -- Die by the Sword
             184364, -- Enraged Regeneration
             12975, -- Last Stand
             871, -- Shield Wall
+            23920, -- Spell Reflection
         }) do 
             table.insert(defensives, tostring(spellId))
         end

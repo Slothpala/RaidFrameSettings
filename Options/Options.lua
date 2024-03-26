@@ -718,7 +718,7 @@ local options = {
                 },
                 auraList = {
                     order = 2,
-                    name = "Auras:",
+                    name = "Blacklisted auras:",
                     type = "group",
                     inline = true,
                     args = {
@@ -735,7 +735,7 @@ local options = {
             args = {
                 addBuff = {
                     order = 1,
-                    name = "Enter |cff00ff00buff|r spellId:",
+                    name = "Enter a |cff00ff00buff|r spellId:",
                     type = "input",
                     pattern = "^%d+$",
                     usage = "please enter a number",
@@ -747,7 +747,7 @@ local options = {
                 },
                 addDebuff = {
                     order = 2,
-                    name = "Enter |cffFF474Ddebuff|r spellId:",
+                    name = "Enter a |cffFF474Ddebuff|r spellId:",
                     type = "input",
                     pattern = "^%d+$",
                     usage = "please enter a number",
@@ -759,8 +759,35 @@ local options = {
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
-                auraList = {
+                importOptions = {
                     order = 3,
+                    name = "Import presets:",
+                    type = "group",
+                    inline = true,
+                    args = {
+                        retailDefensiveCooldowns = {
+                            order = 1,
+                            hidden = not isRetail,
+                            name = "Personal Defs",
+                            desc = "Import the most imporant personal defensive cooldowns for all classes.",
+                            type = "execute",
+                            func = function()
+                                local defensives = RaidFrameSettings:GetPersonalCooldowns()
+                                for i=1, #defensives do 
+                                    local spellId = defensives[i] 
+                                    if not RaidFrameSettings.db.profile.Watchlist[spellId] then
+                                        RaidFrameSettings.db.profile.Watchlist[spellId] = {}
+                                        RaidFrameSettings:CreateWatchlistEntry(spellId)
+                                    end
+                                end
+                                RaidFrameSettings:UpdateModule("Watchlist")
+                            end,
+                            width = 0.8,
+                        },
+                    },
+                },
+                auraList = {
+                    order = 4,
                     name = "Auras:",
                     type = "group",
                     inline = true,
@@ -1748,6 +1775,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
         spellName, _, icon = GetSpellInfo(spellId)
     end
     local spellIdColorCode = dbObj[spellId].spellIsDebuff and "cffFF474D" or "cff00ff00"
+    local auraName = spellName or "|cffff0000aura not found|r"
     local Watchlist_entry = {
         order = pos or 1,
         name = "",
@@ -1757,8 +1785,10 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
             auraInfo = {
                 order = 1,
                 image = icon,
+                imageWidth = 25,
+                imageHeight = 25,
                 imageCoords = {0.1,0.9,0.1,0.9},
-                name = (spellName or "|cffff0000aura not found|r") .. " (|" .. spellIdColorCode .. spellId .. "|r)",
+                name = auraName .. " (|" .. spellIdColorCode .. spellId .. "|r)",
                 type = "description",
                 width = 1.5,
             },
@@ -1766,7 +1796,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 order = 2,
                 type = "toggle",
                 name = "Mine only",
-                desc = "Only display the buff if the player (you) is the source unit.",
+                desc = "Only display " .. auraName ..  " if the player (you) is the source unit.",
                 get = function()
                     return dbObj[spellId].ownOnly 
                 end,
@@ -1779,7 +1809,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 order = 3,
                 type = "toggle",
                 name = "Hide in combat",
-                desc = "Hide the buff during combat.",
+                desc = "Hide" .. auraName .. " during combat.",
                 get = function()
                     return dbObj[spellId].hideInCombat 
                 end,

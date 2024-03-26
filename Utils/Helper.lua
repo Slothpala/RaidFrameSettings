@@ -65,3 +65,70 @@ function addon:GetAuraGrowthOrientationPoints(number, gap)
     end
     return point, relativePoint, offsetX, offsetY
 end
+
+function addon:GetPersonalCooldowns()
+    local defensives = {}
+    if addonTable.isRetail then
+        for _, spellId in pairs({
+            --DK
+            48707, -- Anti Magic Shell
+            48792, -- Icebound Fortitude
+            --DH
+            198589, -- Blur
+            196555, -- Netherwalk
+            187827, -- Metamorphosis
+            --Druid
+            22812, -- Barkskin
+            200851, -- Rage of the Sleeper
+            61336, -- Survival Instincts
+            --Evoker
+            363916, -- Obsidian Scales
+            374348, -- Renewing Blaze
+            --Hunter
+            186265, -- Aspect of the Turtle
+            264735, -- Survival of the Fittest
+            --Mage
+            45438, -- Ice Block
+            342246, -- Alter Time
+            113862, -- Greater Invisibility
+            414658, -- Ice Cold
+            --Monk
+            122470, -- Touch of Karma
+            122278, -- Dampen Harm
+            122783, -- Diffuse Magic
+            115203, -- Fortifying Brew
+            --Paladin
+            642, -- Divine Shield
+            31850, -- Ardent Defender
+            403876, -- Divine Protection Retri
+            498, -- Divine Protection Holy
+            387174, -- Eye of Tyr
+            86659, -- Guardian of Ancient Kings
+            184662, -- Shield of Vengance
+            -- Priest
+            19236, -- Desperate Prayer
+            47585, -- Dispersion
+            -- Rogue
+            31224, -- Cloak of Shadows
+            5277, -- Evasion
+            1966, -- Feint
+            -- Shaman
+            108271, -- Astral Shift
+            -- Warlock
+            108416, -- Dark Pact
+            104773, -- Unending Resolve
+            -- Warrior
+            118038, -- Die by the Swort
+            184364, -- Enraged Regeneration
+            12975, -- Last Stand
+            871, -- Shield Wall
+        }) do 
+            table.insert(defensives, tostring(spellId))
+        end
+    elseif addonTable.isWrath then
+
+    elseif addonTable.isVanilla then
+
+    end
+    return defensives
+end

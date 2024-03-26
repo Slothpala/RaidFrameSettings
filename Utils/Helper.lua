@@ -104,6 +104,7 @@ function addon:GetPersonalCooldowns()
             498, -- Divine Protection Holy
             387174, -- Eye of Tyr
             86659, -- Guardian of Ancient Kings
+            212641, -- Guardian of Ancient Kings + Glyph of Queens
             184662, -- Shield of Vengance
             -- Priest
             19236, -- Desperate Prayer

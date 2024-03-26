@@ -1,4 +1,7 @@
 # **Changelog**
+### Version [2.22.6] - 2024-03-26
+* Small visual improvements to the watchlist and an option to import the most important def CDs for all classes have been added.
+
 ### Version [2.22.5] - 2024-03-25
 #### Changed
 * AuraVisibility.lua now checks if a watchlist entry is flagged as debuff.

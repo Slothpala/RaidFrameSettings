@@ -999,6 +999,9 @@ local options = {
                                                     relativePoint = 1,
                                                     xOffset = 0,
                                                     yOffset = 0,
+                                                    setSize = false,
+                                                    width = RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.width,
+                                                    height = RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.height,
                                                 }
                                                 RaidFrameSettings:CreateAuraPositionEntry(value)
                                                 RaidFrameSettings:UpdateModule("Buffs")
@@ -1968,6 +1971,59 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                     RaidFrameSettings:UpdateModule("Buffs")
                 end,
                 width = 0.5,
+            },
+            newline = {
+                order = 8,
+                type = "description",
+                name = "",
+            },
+            setSize = {
+                order = 9,
+                type = "toggle",
+                name = "Set Size",
+                desc = "",
+                get = function()
+                    return dbObj.setSize
+                end,
+                set = function(_, value)
+                    dbObj.setSize = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                width = 0.5,
+            },
+            width = {
+                order = 10,
+                hidden = function() return not dbObj.setSize end,
+                name = "Icon Width",
+                type = "range",
+                get = function()
+                    return dbObj.width
+                end,
+                set = function(_, value)
+                    dbObj.width = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                min = 1,
+                max = 50,
+                step = 1,
+                width = 0.8,
+            },
+            height = {
+                order = 11,
+                hidden = function() return not dbObj.setSize end,
+                name = "Icon Height",
+                type = "range",
+                get = function()
+                    return dbObj.height
+                end,
+                set = function(_, value)
+                    dbObj.height = value
+                    RaidFrameSettings:UpdateModule("Buffs")
+                end,
+                min = 1,
+                max = 50,
+                step = 1,
+                width = 0.8,
             },
         },
     }

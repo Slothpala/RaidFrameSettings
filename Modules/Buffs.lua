@@ -52,6 +52,9 @@ function Buffs:OnEnable()
             relativePoint = addon:ConvertDbNumberToPosition(auraInfo.relativePoint),
             xOffset = auraInfo.xOffset,
             yOffset = auraInfo.yOffset,
+            setSize = auraInfo.setSize,
+            width = auraInfo.width,
+            height = auraInfo.height,
         }
     end
     --Buff size
@@ -156,6 +159,11 @@ function Buffs:OnEnable()
         local cooldown = buffFrame.cooldown
         CDT:StartCooldownText(buffFrame.cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
+        if aura and userPlaced[aura.spellId] and userPlaced[aura.spellId].setSize then
+            buffFrame:SetSize(userPlaced[aura.spellId].width, userPlaced[aura.spellId].height)
+        else
+            buffFrame:SetSize(width, height)
+        end
         local parentFrame = buffFrame:GetParent()
         updateAnchors(parentFrame)
      end

@@ -148,12 +148,11 @@ function Buffs:OnEnable()
 
     local function AnchorBuffFrames(frame)
         -- Setup user placed indicators
-        for spellId, info in pairs(buffFrameRegister[frame].userPlaced) do
-            local buffFrame = info.buffFrame
-            local place = userPlaced[spellId]
+        for spellId, auraInfo in pairs(userPlaced) do
+            local buffFrame = buffFrameRegister[frame].userPlaced[spellId].buffFrame
             buffFrame:ClearAllPoints()
-            buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
-            buffFrame:SetScale(place.scale)
+            buffFrame:SetPoint(auraInfo.point, frame, auraInfo.relativePoint, auraInfo.xOffset, auraInfo.yOffset)
+            buffFrame:SetScale(auraInfo.scale)
         end
         -- Setup dynamic group
         local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs
@@ -237,13 +236,13 @@ function Buffs:OnEnable()
                 CompactUnitFrame_UtilSetBuff(buffFrame, aura)
                 return false
             end
-            local exeedingLimit = frameNum > numBuffFrames
-            if exeedingLimit and numUserPlaced == 0 then
+            local exceedingLimit = frameNum > numBuffFrames
+            if exceedingLimit and numUserPlaced == 0 then
                 -- Only return true if we have no placed auras otherwise we have to iterate over all buffs
                 return true
             end
             -- Make sure we don't set more buffs than we have frames for
-            if not exeedingLimit then
+            if not exceedingLimit then
                 -- Set the buff 
                 local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
                 CompactUnitFrame_UtilSetBuff(buffFrame, aura)

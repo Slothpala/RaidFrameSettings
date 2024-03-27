@@ -31,11 +31,21 @@ local buffFrameRegister = {
         frame = {
             userPlaced = {
                 spellId = {
-                    buffFrame = ...,
-                    place = {} -- pos info
+                    buffFrame = buffFrame,
+                    place = {
+                        point = ,
+                        relativePoint = ,
+                        xOffset = ,
+                        yOffset = ,
+                        scale = , 
+                    } 
                 }
             }
-            dynamicGroup = {}
+            dynamicGroup = {
+                [1] = frame,
+                [2] = frame,
+                ...
+            }
         }
     ]]
 }

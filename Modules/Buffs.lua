@@ -1,7 +1,7 @@
 --[[
     Created by Slothpala
-    The aura indicator position and the aura timers are greatly inspired by a pull request from: https://github.com/excorp
 --]]
+
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
 local Buffs = addon:NewModule("Buffs")
@@ -9,16 +9,11 @@ Mixin(Buffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
 
---[[
-    --TODO local references here
-]]
---WoW Api
-local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+-- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
 local ClearAllPoints = ClearAllPoints
 local SetPoint = SetPoint
-local Hide = Hide
 local SetFont = SetFont
 local SetTextColor = SetTextColor
 local SetShadowColor = SetShadowColor
@@ -26,27 +21,29 @@ local SetShadowOffset = SetShadowOffset
 local SetDrawSwipe = SetDrawSwipe
 local SetReverse = SetReverse
 local SetDrawEdge = SetDrawEdge
---Lua
+-- Lua
 local next = next
 
+local buffFrameRegister = {}
 
 function Buffs:OnEnable()
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
-    --Timer
+    -- Timer display options
     local durationOpt = CopyTable(addon.db.profile.Buffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
     durationOpt.font = Media:Fetch("font", durationOpt.font)
     durationOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(durationOpt.outlinemode)
     durationOpt.point = addon:ConvertDbNumberToPosition(durationOpt.point)
     durationOpt.relativePoint = addon:ConvertDbNumberToPosition(durationOpt.relativePoint)
-    --Stack
+    -- Stack display options
     local stackOpt = CopyTable(addon.db.profile.Buffs.StacksDisplay)
     stackOpt.font = Media:Fetch("font", stackOpt.font)
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-    --user placed
+    -- Aura Position
+    local numUserPlaced = 0 
     local userPlaced = {}
-    for _, auraInfo in pairs(addon.db.profile.Buffs.AuraPosition) do 
+    for i, auraInfo in pairs(addon.db.profile.Buffs.AuraPosition) do 
         userPlaced[auraInfo.spellId] = {
             point = addon:ConvertDbNumberToPosition(auraInfo.point),
             relativePoint = addon:ConvertDbNumberToPosition(auraInfo.relativePoint),
@@ -54,11 +51,12 @@ function Buffs:OnEnable()
             yOffset = auraInfo.yOffset,
             scale = auraInfo.scale or 1,
         }
+        numUserPlaced = numUserPlaced + 1
     end
-    --Buff size
+    -- Buff size
     local width  = frameOpt.width
     local height = frameOpt.height
-    local resizeBuffFrame
+    local ResizeBuffFrame
     if frameOpt.cleanIcons then
         local left, right, top, bottom = 0.1, 0.9, 0.1, 0.9
         if height ~= width then
@@ -74,25 +72,96 @@ function Buffs:OnEnable()
                 right = right - scale_factor
             end
         end
-        resizeBuffFrame = function(buffFrame)
+        ResizeBuffFrame = function(buffFrame)
             buffFrame:SetSize(width, height)
             buffFrame.icon:SetTexCoord(left,right,top,bottom)
         end
     else
-        resizeBuffFrame = function(buffFrame)
+        ResizeBuffFrame = function(buffFrame)
             buffFrame:SetSize(width, height)
         end
     end
-    --Buffframe position
+
+    local function SetUpBuffDisplay(buffFrame)
+        -- Timer Settings
+        local cooldown = buffFrame.cooldown
+        if frameOpt.timerText then
+            local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
+            cooldownText:ClearAllPoints()
+            cooldownText:SetPoint(durationOpt.point, buffFrame, durationOpt.relativePoint, durationOpt.xOffsetFont, durationOpt.yOffsetFont)
+            cooldownText:SetFont(durationOpt.font, durationOpt.fontSize, durationOpt.outlinemode)
+            cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
+            cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b,durationOpt.shadowColor.a)
+            cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
+            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                if not cooldown.OmniCC then
+                    cooldown.OmniCC = {
+                        noCooldownCount = cooldown.noCooldownCount,
+                    }
+                end
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+            end
+        end
+        -- Stack Settings
+        local stackText = buffFrame.count
+        stackText:ClearAllPoints()
+        stackText:SetPoint(stackOpt.point, buffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
+        stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
+        stackText:SetTextColor(stackOpt.fontColor.r, stackOpt.fontColor.g, stackOpt.fontColor.b)
+        stackText:SetShadowColor(stackOpt.shadowColor.r, stackOpt.shadowColor.g, stackOpt.shadowColor.b,stackOpt.shadowColor.a)
+        stackText:SetShadowOffset(stackOpt.xOffsetShadow, stackOpt.yOffsetShadow)
+        -- Swipe Settings
+        cooldown:SetDrawSwipe(frameOpt.swipe)
+        cooldown:SetReverse(frameOpt.inverse)
+        cooldown:SetDrawEdge(frameOpt.edge)
+        stackText:SetParent(cooldown)
+    end
+
+    -- Setup the buff frame visuals
+    local function OnFrameSetup(frame)
+        local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
+        if not buffFrameRegister[frame] then
+            buffFrameRegister[frame] = {}
+        end
+        for i=1, numBuffFrames do
+            local buffFrame = frame.buffFrames[i] 
+            if not buffFrame then
+                buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
+            end
+            buffFrameRegister[frame][i] = buffFrame
+            ResizeBuffFrame(buffFrame)
+            SetUpBuffDisplay(buffFrame)
+        end
+    end
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
+
+    local OnSetBuff = function(buffFrame, aura)
+        local cooldown = buffFrame.cooldown
+        CDT:StartCooldownText(cooldown)
+        cooldown:SetDrawEdge(frameOpt.edge)
+    end
+    self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
+
+    -- Setup anchors. 
     local point = addon:ConvertDbNumberToPosition(frameOpt.point)
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint, followOffsetX, followOffsetY = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation, frameOpt.gap)
 
-    local function updateAnchors(frame)
+    local function OnUpdateAuras(frame)
+        local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
         local anchorSet, prevFrame
-        for i=1, #frame.buffFrames do
-            local buffFrame = frame.buffFrames[i]
-            local aura = buffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, buffFrame.auraInstanceID) or nil
+        local frameNum = 1
+        local auras = {}
+        frame.buffs:Iterate(function(auraInstanceID, aura)
+            if frameNum > numBuffFrames then
+                return true
+            end
+            -- only set buffs for extra buff frames
+            local buffFrame = buffFrameRegister[frame][frameNum]
+            if frameNum > frame.maxBuffs then
+                CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+            end
+            -- reanchor frames 
             local place = aura and userPlaced[aura.spellId] or false
             if not anchorSet and not place then 
                 buffFrame:ClearAllPoints()
@@ -105,65 +174,23 @@ function Buffs:OnEnable()
             if place then   
                 buffFrame:ClearAllPoints()
                 buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
-                buffFrame:SetScale(userPlaced[aura.spellId].scale)
-            end
-            if not place then
+                buffFrame:SetScale(place.scale)
+            else
                 prevFrame = buffFrame
                 buffFrame:SetScale(1)
             end
-        end
-    end
 
-    local function onFrameSetup(frame)
-        updateAnchors(frame)
-        for i=1, #frame.buffFrames do
-            local buffFrame = frame.buffFrames[i]
-            resizeBuffFrame(buffFrame)
-            --Timer Settings
-            local cooldown = buffFrame.cooldown
-            if frameOpt.timerText then
-                local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
-                cooldownText:ClearAllPoints()
-                cooldownText:SetPoint(durationOpt.point, buffFrame, durationOpt.relativePoint, durationOpt.xOffsetFont, durationOpt.yOffsetFont)
-                cooldownText:SetFont(durationOpt.font, durationOpt.fontSize, durationOpt.outlinemode)
-                cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
-                cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b,durationOpt.shadowColor.a)
-                cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
-                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                    if not cooldown.OmniCC then
-                        cooldown.OmniCC = {
-                            noCooldownCount = cooldown.noCooldownCount,
-                        }
-                    end
-                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
-                end
-            end
-            --Stack Settings
-            local stackText = buffFrame.count
-            stackText:ClearAllPoints()
-            stackText:SetPoint(stackOpt.point, buffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
-            stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
-            stackText:SetTextColor(stackOpt.fontColor.r, stackOpt.fontColor.g, stackOpt.fontColor.b)
-            stackText:SetShadowColor(stackOpt.shadowColor.r, stackOpt.shadowColor.g, stackOpt.shadowColor.b,stackOpt.shadowColor.a)
-            stackText:SetShadowOffset(stackOpt.xOffsetShadow, stackOpt.yOffsetShadow)
-            --Swipe Settings
-            cooldown:SetDrawSwipe(frameOpt.swipe)
-            cooldown:SetReverse(frameOpt.inverse)
-            cooldown:SetDrawEdge(frameOpt.edge)
-            stackText:SetParent(cooldown)
-        end
+            frameNum = frameNum + 1
+            
+            return false
+        end)
     end
-    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
+    self:HookFunc("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
 
-    local onSetBuff = function(buffFrame, aura)
-        local cooldown = buffFrame.cooldown
-        CDT:StartCooldownText(buffFrame.cooldown)
-        cooldown:SetDrawEdge(frameOpt.edge)
-        local parentFrame = buffFrame:GetParent()
-        updateAnchors(parentFrame)
-     end
-    self:HookFunc("CompactUnitFrame_UtilSetBuff", onSetBuff)
-    addon:IterateRoster(onFrameSetup)
+    addon:IterateRoster(function(frame)
+        OnFrameSetup(frame)
+        OnUpdateAuras(frame)
+    end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua

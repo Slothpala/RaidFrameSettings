@@ -967,6 +967,34 @@ local options = {
                                             set = "SetStatus",
                                             width = 1.2,
                                         },
+                                        newline4 = {
+                                            order = 15,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        extraBuffFrames = {
+                                            order = 16,
+                                            type = "toggle",
+                                            name = "More buff icons", 
+                                            desc = "Increase the number of buff frames.",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 1,
+                                        },
+                                        numBuffFrames = {
+                                            order = 17,
+                                            disabled = function()
+                                                return not RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.extraBuffFrames
+                                            end,
+                                            name = "number of icons",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 5,
+                                            max = 10,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
                                     },
                                 },
                                 DurationDisplay = {

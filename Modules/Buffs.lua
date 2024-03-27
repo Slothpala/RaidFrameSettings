@@ -24,7 +24,19 @@ local SetDrawEdge = SetDrawEdge
 -- Lua
 local next = next
 
-local buffFrameRegister = {}
+local buffFrameRegister = {
+    --[[
+        frame = {
+            userPlaced = {
+                spellId = {
+                    buffFrame = ...,
+                    place = {} -- pos info
+                }
+            }
+            dynamicGroup = {}
+        }
+    ]]
+}
 
 function Buffs:OnEnable()
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
@@ -117,21 +129,70 @@ function Buffs:OnEnable()
         stackText:SetParent(cooldown)
     end
 
+    -- Anchor the buffFrames
+    local point = addon:ConvertDbNumberToPosition(frameOpt.point)
+    local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
+    local followPoint, followRelativePoint, followOffsetX, followOffsetY = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation, frameOpt.gap)
+
+    local function AnchorBuffFrames(frame)
+        -- Setup user placed indicators
+        for spellId, info in pairs(buffFrameRegister[frame].userPlaced) do
+            local buffFrame = info.buffFrame
+            local place = userPlaced[spellId]
+            buffFrame:ClearAllPoints()
+            buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
+            buffFrame:SetScale(place.scale)
+        end
+        -- Setup dynamic group
+        local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs
+        local anchorSet, prevFrame
+        for i=1, numBuffFrames do
+            local buffFrame = buffFrameRegister[frame].dynamicGroup[i]
+            if not anchorSet then 
+                buffFrame:ClearAllPoints()
+                buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
+                anchorSet = true
+            else
+                buffFrame:ClearAllPoints()
+                buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
+            end
+            prevFrame = buffFrame
+        end
+    end
+
     -- Setup the buff frame visuals
     local function OnFrameSetup(frame)
-        local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
+        -- Create or find assigned buff frames
         if not buffFrameRegister[frame] then
             buffFrameRegister[frame] = {}
+            buffFrameRegister[frame].userPlaced = {}
+            buffFrameRegister[frame].dynamicGroup = {}
         end
-        for i=1, numBuffFrames do
-            local buffFrame = frame.buffFrames[i] 
+        -- Create user placed buff frames
+        for spellId, info in pairs(userPlaced) do
+            if not buffFrameRegister[frame].userPlaced[spellId] then
+                buffFrameRegister[frame].userPlaced[spellId] = {}
+            end
+            local buffFrame = buffFrameRegister[frame].userPlaced[spellId].buffFrame
             if not buffFrame then
                 buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
+                buffFrameRegister[frame].userPlaced[spellId].buffFrame = buffFrame
             end
-            buffFrameRegister[frame][i] = buffFrame
             ResizeBuffFrame(buffFrame)
             SetUpBuffDisplay(buffFrame)
         end
+        -- Create dynamic buff frames
+        local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
+        for i=1, numBuffFrames do
+            local buffFrame = buffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
+            if not buffFrame then
+                buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
+            end
+            buffFrameRegister[frame].dynamicGroup[i] = buffFrame
+            ResizeBuffFrame(buffFrame)
+            SetUpBuffDisplay(buffFrame)
+        end
+        AnchorBuffFrames(frame)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
@@ -142,46 +203,41 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
-    -- Setup anchors. 
-    local point = addon:ConvertDbNumberToPosition(frameOpt.point)
-    local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
-    local followPoint, followRelativePoint, followOffsetX, followOffsetY = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation, frameOpt.gap)
-
     local function OnUpdateAuras(frame)
+        -- To not have to constantly reanchor the buff frames we don't use blizzards at all
+        if frame.buffFrames then
+            for _, buffFrame in next, frame.buffFrames do
+                buffFrame:Hide()
+            end
+        end
         local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
-        local anchorSet, prevFrame
         local frameNum = 1
-        local auras = {}
+        -- Set the auras
         frame.buffs:Iterate(function(auraInstanceID, aura)
-            if frameNum > numBuffFrames then
+            -- Exclude unwanted frames
+            if not buffFrameRegister[frame] or frame:IsForbidden() or not frame:IsVisible() then
                 return true
             end
-            -- only set buffs for extra buff frames
-            local buffFrame = buffFrameRegister[frame][frameNum]
-            if frameNum > frame.maxBuffs then
+            -- Place user placed auras since we always have buff frames for them
+            local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
+            if place then
+                local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
                 CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                return false
             end
-            -- reanchor frames 
-            local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not place then 
-                buffFrame:ClearAllPoints()
-                buffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
-                anchorSet = true
-            else
-                buffFrame:ClearAllPoints()
-                buffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
+            local exeedingLimit = frameNum > numBuffFrames
+            if exeedingLimit and numUserPlaced == 0 then
+                -- Only return true if we have no placed auras otherwise we have to iterate over all buffs
+                return true
             end
-            if place then   
-                buffFrame:ClearAllPoints()
-                buffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
-                buffFrame:SetScale(place.scale)
-            else
-                prevFrame = buffFrame
-                buffFrame:SetScale(1)
+            -- Make sure we don't set more buffs than we have frames for
+            if not exeedingLimit then
+                -- Set the buff 
+                local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
+                CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                -- Increase counter only for non placed
+                frameNum = frameNum + 1
             end
-
-            frameNum = frameNum + 1
-            
             return false
         end)
     end

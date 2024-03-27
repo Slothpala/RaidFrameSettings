@@ -178,7 +178,7 @@ function Debuffs:OnEnable()
                 local debuffFrame = frame.debuffFrames[i]
                 if debuffFrame.auraInstanceID then
                     local aura = GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
-                    if aura and aura.isBossAura or increase[aura.spellId] then
+                    if aura ~= nil and aura.isBossAura or increase[aura.spellId] then
                         debuffFrame:SetSize(boss_width, boss_height)
                     end
                 end

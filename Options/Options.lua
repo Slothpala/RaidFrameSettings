@@ -967,6 +967,34 @@ local options = {
                                             set = "SetStatus",
                                             width = 1.2,
                                         },
+                                        newline4 = {
+                                            order = 15,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        extraBuffFrames = {
+                                            order = 16,
+                                            type = "toggle",
+                                            name = "Adjust the number of buff icons", 
+                                            desc = "Adjust the number of buff icons in the dynamic buff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 1.5,
+                                        },
+                                        numBuffFrames = {
+                                            order = 17,
+                                            disabled = function()
+                                                return not RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.extraBuffFrames
+                                            end,
+                                            name = "number of icons",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 0,
+                                            max = 10,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
                                     },
                                 },
                                 DurationDisplay = {
@@ -1822,6 +1850,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
             remove = {
                 order = 4,
                 name = "remove",
+                desc = "Remove " .. auraName .. " from the watchlist.", 
                 type = "execute",
                 func = function()
                     self.db.profile.Watchlist[spellId] = nil

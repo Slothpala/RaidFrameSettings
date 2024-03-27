@@ -58,9 +58,7 @@ local defaults = {
             },
         },
         Blacklist = {  
-            --[[
-                spellId = true,
-            ]]
+            ["206151"] = true, -- Challanger's Burden
         },
         Watchlist = {  
             --[[
@@ -136,6 +134,8 @@ local defaults = {
                 edge = true,
                 inverse = true,
                 timerText = true,
+                extraBuffFrames = false,
+                numBuffFrames = 5,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",

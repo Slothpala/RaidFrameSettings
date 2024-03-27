@@ -21,8 +21,10 @@ local SetShadowOffset = SetShadowOffset
 local SetDrawSwipe = SetDrawSwipe
 local SetReverse = SetReverse
 local SetDrawEdge = SetDrawEdge
+local SetScale = SetScale
 -- Lua
 local next = next
+local pairs = pairs
 
 local buffFrameRegister = {
     --[[

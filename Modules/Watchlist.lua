@@ -11,7 +11,6 @@ function Watchlist:OnEnable()
         addon:AppendAuraWatchlist(tonumber(spellId), info)
     end
     addon:Dump_cachedVisualizationInfo()
-    addon:IterateRoster(CompactUnitFrame_UpdateAuras)
 end
 
 function Watchlist:OnDisable()
@@ -19,5 +18,4 @@ function Watchlist:OnDisable()
         addon:RemoveAuraFromWatchlist(tonumber(spellId))
     end
     addon:Dump_cachedVisualizationInfo()
-    addon:IterateRoster(CompactUnitFrame_UpdateAuras)
 end

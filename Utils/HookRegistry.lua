@@ -113,6 +113,7 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
     callbacks[obj][functionName][self] = hookfunc
     if not hooked[obj] or not hooked[obj][functionName] then
         hooksecurefunc(obj, functionName, function(frame, ...)
+            --TODO optimize
             local frame = frame
             if not frame then
                 return

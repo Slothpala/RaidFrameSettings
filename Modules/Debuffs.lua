@@ -190,11 +190,6 @@ function Debuffs:OnEnable()
         end
     end
 
-    -- Setup the private aura anchor
-    local function OnUpdatePrivateAuras(frame)
-
-    end
-
     -- Setup the debuff frame visuals
     local function OnFrameSetup(frame)
         -- Create or find assigned debuff frames
@@ -257,7 +252,7 @@ function Debuffs:OnEnable()
 
     -- Setup private aura anchor
     local function OnUpdatePrivateAuras(frame)
-        if not frame.PrivateAuraAnchors or not debuffFrameRegister[frame] or frame:IsForbidden() or not frame:IsVisible() then
+        if not frame.PrivateAuraAnchors or not debuffFrameRegister[frame] or not frame:IsVisible() then
             return
         end
 
@@ -282,7 +277,7 @@ function Debuffs:OnEnable()
 
     local function OnUpdateAuras(frame)
         -- Exclude unwanted frames
-        if not debuffFrameRegister[frame] then
+        if not debuffFrameRegister[frame] or not frame:IsVisible() then
             return true
         end
         -- To not have to constantly reanchor the buff frames we don't use blizzards at all

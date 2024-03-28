@@ -215,6 +215,10 @@ function Buffs:OnEnable()
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
     local function OnUpdateAuras(frame)
+        -- Exclude unwanted frames
+        if not buffFrameRegister[frame] or frame:IsForbidden() or not frame:IsVisible() then
+            return true
+        end
         -- To not have to constantly reanchor the buff frames we don't use blizzards at all
         if frame.buffFrames then
             for _, buffFrame in next, frame.buffFrames do
@@ -225,10 +229,6 @@ function Buffs:OnEnable()
         local frameNum = 1
         -- Set the auras
         frame.buffs:Iterate(function(auraInstanceID, aura)
-            -- Exclude unwanted frames
-            if not buffFrameRegister[frame] or frame:IsForbidden() or not frame:IsVisible() then
-                return true
-            end
             -- Place user placed auras since we always have buff frames for them
             local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
             if place then

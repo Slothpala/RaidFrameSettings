@@ -216,7 +216,7 @@ function Buffs:OnEnable()
 
     local function OnUpdateAuras(frame)
         -- Exclude unwanted frames
-        if not buffFrameRegister[frame] or frame:IsForbidden() or not frame:IsVisible() then
+        if not buffFrameRegister[frame] or not frame:IsVisible() then
             return true
         end
         -- To not have to constantly reanchor the buff frames we don't use blizzards at all
@@ -252,7 +252,7 @@ function Buffs:OnEnable()
             return false
         end)
     end
-    self:HookFunc("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
+    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)

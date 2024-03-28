@@ -233,7 +233,9 @@ function Buffs:OnEnable()
             local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
             if place then
                 local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
-                CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
+                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                end
                 return false
             end
             local exceedingLimit = frameNum > numBuffFrames
@@ -245,7 +247,9 @@ function Buffs:OnEnable()
             if not exceedingLimit then
                 -- Set the buff 
                 local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
-                CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                if buffFrame then
+                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                end
                 -- Increase counter only for non placed
                 frameNum = frameNum + 1
             end

@@ -15,6 +15,9 @@ function Blacklist:OnEnable()
 end
 
 function Blacklist:OnDisable()
+    if addon:IsModuleEnabled("Debuffs") then
+        addon:UpdateModule("Debuffs")
+    end
     for spellId, value in pairs(addon.db.profile.Blacklist) do
         addon:RemoveAuraFromBlacklist(tonumber(spellId))
     end

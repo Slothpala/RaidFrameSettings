@@ -113,7 +113,7 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
     callbacks[obj][functionName][self] = hookfunc
     if not hooked[obj] or not hooked[obj][functionName] then
         hooksecurefunc(obj, functionName, function(frame, ...)
-            if not frame or frame:IsForbidden() or not frame:IsVisible() then 
+            if not frame or frame:IsForbidden() or not frame:IsShown() then 
                 return 
             end
             local name = frame:GetName()

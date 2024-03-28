@@ -216,7 +216,7 @@ function Buffs:OnEnable()
 
     local function OnUpdateAuras(frame)
         -- Exclude unwanted frames
-        if not buffFrameRegister[frame] then
+        if not buffFrameRegister[frame] or not frame:IsVisible() then
             return true
         end
         -- To not have to constantly reanchor the buff frames we don't use blizzards at all

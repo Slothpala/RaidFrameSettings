@@ -81,6 +81,14 @@ function Debuffs:OnEnable()
     for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
         increase[tonumber(spellId)] = true
     end
+    -- Blacklist 
+    local blacklist = nil
+    if addon:IsModuleEnabled("Blacklist") then
+        blacklist = {}
+        for spellId, value in pairs(addon.db.profile.Blacklist) do
+            blacklist[tonumber(spellId)] = true
+        end
+    end
     -- Debuff size
     local width  = frameOpt.width
     local height = frameOpt.height
@@ -293,11 +301,17 @@ function Debuffs:OnEnable()
                 return false
             end
             ]]
+            -- Check if blacklisted
+            if blacklist and blacklist[aura.spellId] then
+                return false
+            end
             -- Place user placed auras since we always have debuff frames for them
             local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
             if place then
                 local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].debuffFrame
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
+                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                end
                 return false
             end
             local exceedingLimit = frameNum > numDebuffFrames
@@ -309,7 +323,9 @@ function Debuffs:OnEnable()
             if not exceedingLimit then
                 -- Set the debuff 
                 local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
-                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                if debuffFrame then
+                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                end
                 -- Increase counter only for non placed
                 frameNum = frameNum + 1
             end

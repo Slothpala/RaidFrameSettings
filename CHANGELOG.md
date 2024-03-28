@@ -1,4 +1,16 @@
 # **Changelog**
+### Version [2.24.0] - 2024-03-28
+#### Fixes
+* Watchlist and Blacklist modules no longer update currently affected auras. This was done to avoid a taint issue.
+
+#### Added
+* Aura position feature for debuffs.
+
+#### Changed
+* Extra debuff frames arrived.
+    * The backend of the debuff module has been reworked. The user now has the option to adjust the number of buff icons displayed on the raid frame (from 0 to 10). If you need more please let me know.
+* Debuffs module now checks for blacklisted auras on top of AuraVisibilty util as some auras were still be shown.
+
 ### Version [2.23.0] - 2024-03-27
 #### Changed
 * Extra buff frames finally arrived! 

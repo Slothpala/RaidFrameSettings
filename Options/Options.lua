@@ -1302,6 +1302,7 @@ local options = {
                         },
                         AuraPosition = {
                             order = 3,
+                            hidden = not isRetail,
                             name = "Aura Position",
                             type = "group",
                             args = {

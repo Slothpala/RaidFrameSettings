@@ -1033,7 +1033,7 @@ local options = {
                                             yOffset = 0,
                                             scale = 1,
                                         }
-                                        RaidFrameSettings:CreateAuraPositionEntry(value)
+                                        RaidFrameSettings:CreateAuraPositionEntry(value, "Buffs")
                                         RaidFrameSettings:UpdateModule("Buffs")
                                     end
                                 },
@@ -1223,6 +1223,36 @@ local options = {
                                             set = "SetStatus",
                                             width = 1.2,
                                         },
+                                        newline4 = {
+                                            order = 15,
+                                            name = "",
+                                            type = "description",
+                                        },
+                                        customCount = {
+                                            hidden = not isRetail,
+                                            order = 16,
+                                            type = "toggle",
+                                            name = "Adjust the number of debuff icons", 
+                                            desc = "Adjust the number of debuff icons in the dynamic debuff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 1.5,
+                                        },
+                                        numFrames = {
+                                            hidden = not isRetail,
+                                            order = 17,
+                                            disabled = function()
+                                                return not RaidFrameSettings.db.profile.Debuffs.DebuffFramesDisplay.customCount
+                                            end,
+                                            name = "number of icons",
+                                            type = "range",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            min = 0,
+                                            max = 10,
+                                            step = 1,
+                                            width = 1.4,
+                                        },
                                     },
                                 },
                                 DurationDisplay = {
@@ -1268,6 +1298,41 @@ local options = {
 
                                     },
                                 },                           
+                            },
+                        },
+                        AuraPosition = {
+                            order = 3,
+                            name = "Aura Position",
+                            type = "group",
+                            args = {
+                                addAura = {
+                                    order = 1,
+                                    name = "Enter spellId:",
+                                    type = "input",
+                                    pattern = "^%d+$",
+                                    usage = "please enter a number",
+                                    set = function(_, value)
+                                        RaidFrameSettings.db.profile.Debuffs.AuraPosition[value] = {
+                                            ["spellId"] = tonumber(value),
+                                            point = 1,
+                                            relativePoint = 1,
+                                            xOffset = 0,
+                                            yOffset = 0,
+                                            scale = 1,
+                                        }
+                                        RaidFrameSettings:CreateAuraPositionEntry(value, "Debuffs")
+                                        RaidFrameSettings:UpdateModule("Debuffs")
+                                    end
+                                },
+                                auraList = {
+                                    order = 2,
+                                    name = "Auras:",
+                                    type = "group",
+                                    inline = true,
+                                    args = {
+
+                                    },
+                                },
                             },
                         },
                     },  
@@ -1764,7 +1829,8 @@ function RaidFrameSettings:CreateBlacklistEntry(spellId, pos)
     local dbObj = self.db.profile.Blacklist
     local optionsPos = options.args.Blacklist.args.auraList.args
     local spellName, _, icon 
-    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+    --TODO crate function that returns relevant information to not do it in every entry function
+    if  #spellId <= 10 then --passing more than 10 characters to GetSpellInfo cause an stackoverflow
         spellName, _, icon = GetSpellInfo(spellId)
     end
     local blacklist_entry = {
@@ -1802,7 +1868,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
     local dbObj = self.db.profile.Watchlist
     local optionsPos = options.args.Watchlist.args.auraList.args
     local spellName, _, icon 
-    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+    if  #spellId <= 10 then --passing more than 10 characters to GetSpellInfo cause an stackoverflow
         spellName, _, icon = GetSpellInfo(spellId)
     end
     local spellIdColorCode = dbObj[spellId].spellIsDebuff and "cffFF474D" or "cff00ff00"
@@ -1871,7 +1937,7 @@ function RaidFrameSettings:CreateIncreaseEntry(spellId)
     local dbObj = self.db.profile.Debuffs.Increase
     local optionsPos = options.args.Auras.args.Debuffs.args.Increase.args.IncreasedAuras.args
     local spellName, _, icon 
-    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+    if  #spellId <= 10 then --passing more than 10 characters to GetSpellInfo cause an stackoverflow
         spellName, _, icon = GetSpellInfo(spellId)
     end
     local increase_entry = {
@@ -1905,11 +1971,11 @@ function RaidFrameSettings:CreateIncreaseEntry(spellId)
 end
 
 
-function RaidFrameSettings:CreateAuraPositionEntry(spellId)
-    local dbObj = self.db.profile.Buffs.AuraPosition[spellId]
-    local optionsPos = options.args.Auras.args.Buffs.args.AuraPosition.args.auraList.args
+function RaidFrameSettings:CreateAuraPositionEntry(spellId, category)
+    local dbObj = self.db.profile[category].AuraPosition[spellId]
+    local optionsPos = options.args.Auras.args[category].args.AuraPosition.args.auraList.args
     local spellName, _, icon 
-    if  #spellId <= 10 then --spellId's longer than 10 intergers cause an overflow error
+    if  #spellId <= 10 then --passing more than 10 characters to GetSpellInfo cause an stackoverflow
         spellName, _, icon = GetSpellInfo(spellId)
     end
     local aura_entry = {
@@ -1939,7 +2005,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.point = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.6,
             },
@@ -1954,7 +2020,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.relativePoint = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.6,
             },
@@ -1967,7 +2033,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.xOffset = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 softMin = -100,
                 softMax = 100,
@@ -1983,7 +2049,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.yOffset = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 softMin = -100,
                 softMax = 100,
@@ -1999,7 +2065,7 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 end,
                 set = function(_, value)
                     dbObj.scale = value
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 min = 0.1,
                 max = 3,
@@ -2012,9 +2078,9 @@ function RaidFrameSettings:CreateAuraPositionEntry(spellId)
                 name = "remove",
                 type = "execute",
                 func = function()
-                    self.db.profile.Buffs.AuraPosition[spellId] = nil
+                    self.db.profile[category].AuraPosition[spellId] = nil
                     optionsPos[spellId] = nil
-                    RaidFrameSettings:UpdateModule("Buffs")
+                    RaidFrameSettings:UpdateModule(category)
                 end,
                 width = 0.5,
             },
@@ -2038,7 +2104,7 @@ function RaidFrameSettings:LoadUserInputEntrys()
         end
         self.db.profile.oldBlacklistsImported = true
     end
-    options.args.Blacklist.args.auraList.args = {} --dumo to not have entrys left on profile swap or reset
+    options.args.Blacklist.args.auraList.args = {} --dump to not have entrys left on profile swap or reset
     for spellId in pairs(self.db.profile.Blacklist) do
         self:CreateBlacklistEntry(spellId)
     end
@@ -2053,8 +2119,13 @@ function RaidFrameSettings:LoadUserInputEntrys()
         self:CreateIncreaseEntry(spellId)
     end
     --aura positions
-    options.args.Auras.args.Buffs.args.AuraPosition.args.auraList.args = {}
-    for aura in pairs(self.db.profile.Buffs.AuraPosition) do 
-        self:CreateAuraPositionEntry(aura)
+    for _, category in pairs({
+        "Buffs",
+        "Debuffs",
+    }) do
+        options.args.Auras.args[category].args.AuraPosition.args.auraList.args = {}
+        for aura in pairs(self.db.profile[category].AuraPosition) do 
+            self:CreateAuraPositionEntry(aura, category)
+        end
     end
 end

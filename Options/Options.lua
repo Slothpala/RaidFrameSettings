@@ -2,6 +2,8 @@
     Created by Slothpala 
     Options:
     Create an options table for the GUI
+    I know it's a bit messy, but I'm planning to create a new, more intuitive UI for The War Within, so I won't be spending any time cleaning this up.
+    The same goes for localisation. I don't want to waste people's time translating it, only to have to redo it a few months later.
 --]]
 local _, addonTable = ...
 local isVanilla, isWrath, isClassic, isRetail = addonTable.isVanilla, addonTable.isWrath, addonTable.isClassic, addonTable.isRetail
@@ -259,13 +261,26 @@ local options = {
                             set = "SetModuleStatus",
                         },
                         Watchlist = {
-                            order = 10,
+                            order = 11,
                             type = "toggle",
                             name = "Watchlist",
                             desc = "Configure raid frames to show auras that are not shown by default (e.g. defensive cooldowns). Additionally, track auras from other healers or players, and choose whether to display these auras only when they originate from you or set them to only be shown out of combat.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
+                        MinimapButton = {
+                            order = 12,
+                            type = "toggle",
+                            name = "Minimap Icon",
+                            desc = "Toggle the minimap icon on or off.",
+                            get = function()
+                                return RaidFrameSettings.db.global.MinimapButton.enabled 
+                            end,
+                            set = function(_, value)
+                                RaidFrameSettings.db.global.MinimapButton.enabled = value
+                                RaidFrameSettings:UpdateModule("MinimapButton")
+                            end,
+                        },  
                     },
                 },
                 DescriptionBox = {

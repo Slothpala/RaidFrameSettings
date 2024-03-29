@@ -240,6 +240,9 @@ local defaults = {
             arena = "Default",
             battleground = "Default",
         },
+        MinimapButton = {
+            enabled = true,
+        },
     },
 }
 

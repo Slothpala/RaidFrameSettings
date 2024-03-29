@@ -11,4 +11,5 @@
   <Script file="Modules\AuraHighlight.lua"/>
   <Script file="Modules\Blacklist.lua"/>
   <Script file="Modules\Watchlist.lua"/>
+  <Script file="Modules\FrameColorSkin.lua"/>
 </Ui>

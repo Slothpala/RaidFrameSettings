@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [2.24.2] - 2024-03-29
+#### Added
+* Minimap icon
+
+#### Changed
+* Once again, the Options Window will re-appear after combat ends. I don't know why I removed it in the first place.
+
 ### Version [2.24.1] - 2024-03-29
 #### Added
 * FrameColor Skin

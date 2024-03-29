@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [2.25.0] - 2024-03-29
+#### Changed
+* Reworked Buffs for classic to match feature parity with retail.
+
+#### Fixes
+* Fixed an issue with the roster cache building that affected the classic version if the user was not playing with KeepGroupsTogether, which also fixed an issue with the cache building when changing the edit mode layout between Separate Groups and Combine Groups.
+
 ### Version [2.24.2] - 2024-03-29
 #### Added
 * Minimap icon

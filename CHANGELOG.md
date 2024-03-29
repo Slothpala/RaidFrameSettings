@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.24.1] - 2024-03-29
+#### Added
+* FrameColor Skin
+
 ### Version [2.24.0] - 2024-03-28
 #### Fixes
 * Watchlist and Blacklist modules no longer update currently affected auras. This was done to avoid a taint issue.

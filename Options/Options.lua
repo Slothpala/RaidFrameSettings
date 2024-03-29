@@ -988,7 +988,6 @@ local options = {
                                             type = "description",
                                         },
                                         extraBuffFrames = {
-                                            hidden = not isRetail,
                                             order = 16,
                                             type = "toggle",
                                             name = "Adjust the number of buff icons", 
@@ -998,7 +997,6 @@ local options = {
                                             width = 1.5,
                                         },
                                         numBuffFrames = {
-                                            hidden = not isRetail,
                                             order = 17,
                                             disabled = function()
                                                 return not RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.extraBuffFrames

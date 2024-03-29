@@ -6,7 +6,7 @@
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
 
---[[watchlist]]
+--[[Watchlist]]
 
 local watchlist = {}
 

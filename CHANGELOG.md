@@ -8,7 +8,7 @@
 
 #### Changed
 * Extra debuff frames arrived.
-    * The backend of the debuff module has been reworked. The user now has the option to adjust the number of buff icons displayed on the raid frame (from 0 to 10). If you need more please let me know.
+    * The backend of the debuff module has been reworked. The user now has the option to adjust the number of debuff icons displayed on the raid frame (from 0 to 10). If you need more please let me know.
 * Debuffs module now checks for blacklisted auras on top of AuraVisibilty util as some auras were still be shown.
 
 ### Version [2.23.0] - 2024-03-27

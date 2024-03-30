@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [2.25.1] - 2024-03-30
+#### Fixes
+* Buffs, Debuffs and Buffs_Classic modules now hide the addon created aura indicator frames on disable.
+#### Changed
+* Renamed Auras to Auraframe Settings and added a desc field.
+
+
 ### Version [2.25.0] - 2024-03-29
 #### Changed
 * Reworked Buffs for classic to match feature parity with retail.

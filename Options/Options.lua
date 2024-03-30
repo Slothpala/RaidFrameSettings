@@ -731,7 +731,7 @@ local options = {
                         if not spellId then
                             spellIds = RaidFrameSettings:GetSpellIdsByName(value)
                         end
-                        for spellId, iconId in pairs(spellIds) do
+                        for _, spellId in pairs(spellIds) do
                             value = tostring(spellId)
                             RaidFrameSettings.db.profile.Blacklist[value] = true
                             RaidFrameSettings:CreateBlacklistEntry(value)
@@ -768,7 +768,7 @@ local options = {
                         if not spellId then
                             spellIds = RaidFrameSettings:GetSpellIdsByName(value)
                         end
-                        for spellId, iconId in pairs(spellIds) do
+                        for _, spellId in pairs(spellIds) do
                             value = tostring(spellId)
                             RaidFrameSettings.db.profile.Watchlist[value] = {}
                             RaidFrameSettings:CreateWatchlistEntry(value)
@@ -788,7 +788,7 @@ local options = {
                         if not spellId then
                             spellIds = RaidFrameSettings:GetSpellIdsByName(value)
                         end
-                        for spellId, iconId in pairs(spellIds) do
+                        for _, spellId in pairs(spellIds) do
                             value = tostring(spellId)
                             RaidFrameSettings.db.profile.Watchlist[value] = {
                                 spellIsDebuff = true,
@@ -1068,7 +1068,7 @@ local options = {
                                         if not spellId then
                                             spellIds = RaidFrameSettings:GetSpellIdsByName(value)
                                         end
-                                        for spellId, iconId in pairs(spellIds) do
+                                        for _, spellId in pairs(spellIds) do
                                             value = tostring(spellId)
                                             RaidFrameSettings.db.profile.Buffs.AuraPosition[value] = {
                                                 ["spellId"] = tonumber(value),
@@ -1335,7 +1335,7 @@ local options = {
                                         if not spellId then
                                             spellIds = RaidFrameSettings:GetSpellIdsByName(value)
                                         end
-                                        for spellId, iconId in pairs(spellIds) do
+                                        for _, spellId in pairs(spellIds) do
                                             value = tostring(spellId)
                                             RaidFrameSettings.db.profile.Debuffs.Increase[value] = true
                                             RaidFrameSettings:CreateIncreaseEntry(value, "Debuffs")
@@ -1372,7 +1372,7 @@ local options = {
                                         if not spellId then
                                             spellIds = RaidFrameSettings:GetSpellIdsByName(value)
                                         end
-                                        for spellId, iconId in pairs(spellIds) do
+                                        for _, spellId in pairs(spellIds) do
                                             value = tostring(spellId)
                                             RaidFrameSettings.db.profile.Debuffs.AuraPosition[value] = {
                                                 ["spellId"] = tonumber(value),

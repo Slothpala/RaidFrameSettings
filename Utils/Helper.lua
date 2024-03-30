@@ -135,12 +135,32 @@ function addon:GetPersonalCooldowns()
 end
 
 function addon:GetSpellIdsByName(name)
-    local loaded, reason = LoadAddOn("WeakAurasOptions")
-    if not loaded then
-        local spellname, rank, icon, castTime, minRange, maxRange, spellID, originalIcon = GetSpellInfo(name)
-        return spellname and { [spellID] = icon, } or {}
+    local spellIds = {}
+    if not IsAddOnLoaded("WeakAurasOptions") then
+        local loaded, reason = LoadAddOn("WeakAurasOptions")
+        if not loaded then
+            local spellId = select(7, GetSpellInfo(name))
+            if spellId then
+                tinsert(spellIds, spellId)
+            end
+            return spellIds
+        end
+        print(loaded)
     end
-    return WeakAuras.spellCache.GetSpellsMatching(WeakAuras.spellCache.CorrectAuraName(name))
+    if next(WeakAuras.spellCache.Get()) == nil then
+        local spellId = select(7, GetSpellInfo(name))
+        if spellId then
+            tinsert(spellIds, spellId)
+        end
+        return spellIds
+    end
+    local list = WeakAuras.spellCache.GetSpellsMatching(WeakAuras.spellCache.CorrectAuraName(name))
+    if list then
+        for spellId in pairs(list) do
+            tinsert(spellIds, spellId)
+        end
+    end
+    return spellIds
 end
 
 function addon:SafeToNumber(input)

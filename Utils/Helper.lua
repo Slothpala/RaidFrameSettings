@@ -137,7 +137,8 @@ end
 function addon:GetSpellIdsByName(name)
     local loaded, reason = LoadAddOn("WeakAurasOptions")
     if not loaded then
-        return false
+        local spellname, rank, icon, castTime, minRange, maxRange, spellID, originalIcon = GetSpellInfo(name)
+        return spellname and { [spellID] = icon, } or {}
     end
     return WeakAuras.spellCache.GetSpellsMatching(WeakAuras.spellCache.CorrectAuraName(name))
 end

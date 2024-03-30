@@ -103,7 +103,7 @@ function HealthBars:OnEnable()
             C_CVar.SetCVar("raidFramesDisplayClassColor","1")
         end
         updateHealthColor = function(frame)
-            if RaidFrameSettings.db.profile.Module.AuraHighlight then
+            if RaidFrameSettings:IsModuleEnabled("AuraHighlight") then
                 return
             end
             if not frame or not frame.unit then 

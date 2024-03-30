@@ -5,12 +5,15 @@ local _G = _G
 local GetParent = GetParent
 local IsInRaid = IsInRaid
 local IsActiveBattlefieldArena = IsActiveBattlefieldArena
+local IsForbidden = IsForbidden
+local IsShown = IsShown
 local next = next
+local select = select
 
 local Roster = {}
 local needsUpdate = true
 
-local function showSeparateGroups()
+local function ShowSeparateGroups()
     local showSeparateGroups 
     if addonTable.isClassic then
         showSeparateGroups = CompactRaidFrameManager_GetSetting("KeepGroupsTogether")
@@ -20,11 +23,12 @@ local function showSeparateGroups()
     return showSeparateGroups
 end
 
-local function updateRoster()
+local function UpdateRoster()
     Roster = {}
-    local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or addonTable.isClassic --IsInRaid() returns true in arena even though we need party frame names
+    local showSeparateGroups = ShowSeparateGroups()
+    local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or ( addonTable.isClassic and not showSeparateGroups ) --IsInRaid() returns true in arena even though we need party frame names
     if useRaid then 
-        if showSeparateGroups() then
+        if showSeparateGroups then
             for i=1, 8 do
                 for j=1, 5 do
                     local frame = _G["CompactRaidGroup" ..i.. "Member" .. j .. "HealthBar"]
@@ -82,21 +86,26 @@ local function updateRoster()
     return true
 end
 
-function addon:IterateRoster(callback)
-    if needsUpdate then
-        updateRoster()
+local last_showSeparateGroups = ShowSeparateGroups() -- An event or cvar would be nicer but couldn't find one in event trace
+local function CheckRosterCache()
+    local current_showSeparateGroups = ShowSeparateGroups()
+    if needsUpdate or ( last_showSeparateGroups ~= current_showSeparateGroups ) then
+        UpdateRoster()
     end
+    last_showSeparateGroups = current_showSeparateGroups
+end
+
+function addon:IterateRoster(callback)
+    CheckRosterCache()
     for unit, frame in next, Roster do
-        if frame.unit and frame.unitExists and frame:IsShown() and not frame:IsForbidden() then
+        if not frame:IsForbidden() and frame:IsShown() then
             callback(frame)
         end
     end
 end
 
 function addon:GetFrame(unit)
-    if needsUpdate then
-        updateRoster()
-    end
+    CheckRosterCache()
     return Roster[unit]
 end
 

@@ -58,9 +58,7 @@ local defaults = {
             },
         },
         Blacklist = {  
-            --[[
-                spellId = true,
-            ]]
+            ["206151"] = true, -- Challanger's Burden
         },
         Watchlist = {  
             --[[
@@ -87,6 +85,8 @@ local defaults = {
                 edge = true,
                 inverse = false,
                 timerText = true,
+                customCount = false,
+                numFrames = 5,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
@@ -114,6 +114,9 @@ local defaults = {
                 xOffsetFont = 0,
                 yOffsetFont = 0,
             },
+            AuraPosition = {
+
+            },
             Blacklist = {
                 --[[spellID = name                ]]--
             },
@@ -136,6 +139,8 @@ local defaults = {
                 edge = true,
                 inverse = true,
                 timerText = true,
+                extraBuffFrames = false,
+                numBuffFrames = 5,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
@@ -234,6 +239,9 @@ local defaults = {
             raid = "Default",
             arena = "Default",
             battleground = "Default",
+        },
+        MinimapButton = {
+            enabled = true,
         },
     },
 }

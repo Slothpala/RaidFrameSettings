@@ -1,6 +1,5 @@
 --[[
     Created by Slothpala 
-    The aura indicator position and the aura timers are greatly inspired by a pull request from: https://github.com/excorp
 --]]
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
@@ -9,14 +8,11 @@ Mixin(Debuffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
 
---Debuffframe size
---WoW Api
-local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+-- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
 local ClearAllPoints = ClearAllPoints
 local SetPoint = SetPoint
-local Hide = Hide
 local SetFont = SetFont
 local SetTextColor = SetTextColor
 local SetShadowColor = SetShadowColor
@@ -24,40 +20,83 @@ local SetShadowOffset = SetShadowOffset
 local SetDrawSwipe = SetDrawSwipe
 local SetReverse = SetReverse
 local SetDrawEdge = SetDrawEdge
-local IsForbidden = IsForbidden
---Lua
+local SetScale = SetScale
+-- Lua
 local next = next
+local pairs = pairs
 
 local fontObj = CreateFont("RaidFrameSettingsFont")
 
+local debuffFrameRegister = {
+    --[[
+        frame = {
+            userPlaced = {
+                spellId = {
+                    buffFrame = buffFrame,
+                    place = {
+                        point = ,
+                        relativePoint = ,
+                        xOffset = ,
+                        yOffset = ,
+                        scale = , 
+                    } 
+                }
+            }
+            dynamicGroup = {
+                [1] = frame,
+                [2] = frame,
+                ...
+            }
+        }
+    ]]
+}
 
 function Debuffs:OnEnable()
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
-    --Timer
+    -- Timer display options
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
     durationOpt.font = Media:Fetch("font", durationOpt.font)
     durationOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(durationOpt.outlinemode)
     durationOpt.point = addon:ConvertDbNumberToPosition(durationOpt.point)
     durationOpt.relativePoint = addon:ConvertDbNumberToPosition(durationOpt.relativePoint)
-    --Stack
+    -- Stack display options
     local stackOpt = CopyTable(addon.db.profile.Debuffs.StacksDisplay)
     stackOpt.font = Media:Fetch("font", stackOpt.font)
     stackOpt.outlinemode = addon:ConvertDbNumberToOutlinemode(stackOpt.outlinemode)
     stackOpt.point = addon:ConvertDbNumberToPosition(stackOpt.point)
     stackOpt.relativePoint = addon:ConvertDbNumberToPosition(stackOpt.relativePoint)
-	--increase
+    -- Aura Position
+    local numUserPlaced = 0 
+    local userPlaced = {}
+    for i, auraInfo in pairs(addon.db.profile.Debuffs.AuraPosition) do 
+        userPlaced[auraInfo.spellId] = {
+            point = addon:ConvertDbNumberToPosition(auraInfo.point),
+            relativePoint = addon:ConvertDbNumberToPosition(auraInfo.relativePoint),
+            xOffset = auraInfo.xOffset,
+            yOffset = auraInfo.yOffset,
+            scale = auraInfo.scale or 1,
+        }
+        numUserPlaced = numUserPlaced + 1
+    end
+	-- Increased Auras
     local increase = {}
     for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
         increase[tonumber(spellId)] = true
     end
-    --user placed 
-    local userPlaced = {} --i will bring this at a later date for Debuffs including position and size
-    --Debuffframe size
+    -- Blacklist 
+    local blacklist = nil
+    if addon:IsModuleEnabled("Blacklist") then
+        blacklist = {}
+        for spellId, value in pairs(addon.db.profile.Blacklist) do
+            blacklist[tonumber(spellId)] = true
+        end
+    end
+    -- Debuff size
     local width  = frameOpt.width
     local height = frameOpt.height
     local boss_width  = width * frameOpt.increase
     local boss_height = height * frameOpt.increase
-    local resizeDebuffFrame
+    local ResizeDebuffFrame
     if frameOpt.cleanIcons then
         local left, right, top, bottom = 0.1, 0.9, 0.1, 0.9
         if height ~= width then
@@ -73,7 +112,7 @@ function Debuffs:OnEnable()
                 right = right - scale_factor
             end
         end
-        resizeDebuffFrame = function(debuffFrame)
+        ResizeDebuffFrame = function(debuffFrame)
             debuffFrame:SetSize(width, height)
             debuffFrame.icon:SetTexCoord(left,right,top,bottom)
             debuffFrame.border:SetTexture("Interface/AddOns/RaidFrameSettings/Textures/DebuffOverlay_clean_icons.tga")
@@ -82,22 +121,66 @@ function Debuffs:OnEnable()
             debuffFrame.border:SetTextureSliceMode(Enum.UITextureSliceMode.Stretched)
         end
     else
-        resizeDebuffFrame = function(debuffFrame)
+        ResizeDebuffFrame = function(debuffFrame)
             debuffFrame:SetSize(width, height)
         end
     end
-    --Debuffframe position
+
+    -- Setup timer + stack fonts and cooldown settings
+    local function SetUpDebuffDisplay(debuffFrame)
+        -- Timer Settings
+        local cooldown = debuffFrame.cooldown
+        if frameOpt.timerText then
+            local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
+            cooldownText:ClearAllPoints()
+            cooldownText:SetPoint(durationOpt.point, debuffFrame, durationOpt.relativePoint, durationOpt.xOffsetFont, durationOpt.yOffsetFont)
+            cooldownText:SetFont(durationOpt.font, durationOpt.fontSize, durationOpt.outlinemode)
+            cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
+            cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b,durationOpt.shadowColor.a)
+            cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
+            if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
+                if not cooldown.OmniCC then
+                    cooldown.OmniCC = {
+                        noCooldownCount = cooldown.noCooldownCount,
+                    }
+                end
+                OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
+            end
+        end
+        -- Stack Settings
+        local stackText = debuffFrame.count
+        stackText:ClearAllPoints()
+        stackText:SetPoint(stackOpt.point, debuffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
+        stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
+        stackText:SetTextColor(stackOpt.fontColor.r, stackOpt.fontColor.g, stackOpt.fontColor.b)
+        stackText:SetShadowColor(stackOpt.shadowColor.r, stackOpt.shadowColor.g, stackOpt.shadowColor.b,stackOpt.shadowColor.a)
+        stackText:SetShadowOffset(stackOpt.xOffsetShadow, stackOpt.yOffsetShadow)
+        -- Swipe Settings
+        cooldown:SetDrawSwipe(frameOpt.swipe)
+        cooldown:SetReverse(frameOpt.inverse)
+        cooldown:SetDrawEdge(frameOpt.edge)
+        stackText:SetParent(cooldown)
+    end
+
+    -- Anchor the debuffFrames
     local point = addon:ConvertDbNumberToPosition(frameOpt.point)
     local relativePoint = addon:ConvertDbNumberToPosition(frameOpt.relativePoint)
     local followPoint, followRelativePoint, followOffsetX, followOffsetY = addon:GetAuraGrowthOrientationPoints(frameOpt.orientation, frameOpt.gap)
-
-    local function updateAnchors(frame)
+    
+    local function AnchorDebuffFrames(frame)
+        -- Setup user placed indicators
+        for spellId, auraInfo in pairs(userPlaced) do
+            local debuffFrame = debuffFrameRegister[frame].userPlaced[spellId].debuffFrame
+            debuffFrame:ClearAllPoints()
+            debuffFrame:SetPoint(auraInfo.point, frame, auraInfo.relativePoint, auraInfo.xOffset, auraInfo.yOffset)
+            debuffFrame:SetScale(auraInfo.scale)
+        end
+        -- Setup dynamic group
+        local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs 
         local anchorSet, prevFrame
-        for i=1, #frame.debuffFrames do
-            local debuffFrame = frame.debuffFrames[i]
-            local aura = debuffFrame.auraInstanceID and frame.unit and GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID) or nil
-            local place = aura and userPlaced[aura.spellId] or false
-            if not anchorSet and not place then 
+        for i=1, numDebuffFrames do
+            local debuffFrame = debuffFrameRegister[frame].dynamicGroup[i]
+            if not anchorSet then 
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
                 anchorSet = true
@@ -105,87 +188,154 @@ function Debuffs:OnEnable()
                 debuffFrame:ClearAllPoints()
                 debuffFrame:SetPoint(followPoint, prevFrame, followRelativePoint, followOffsetX, followOffsetY)
             end
-            if place then   
-                debuffFrame:ClearAllPoints()
-                debuffFrame:SetPoint(place.point, frame, place.relativePoint, place.xOffset, place.yOffset)
-            end
-            if not place then
-                prevFrame = debuffFrame
-            end
+            prevFrame = debuffFrame
         end
     end
 
-    local function onFrameSetup(frame)
-        updateAnchors(frame)
-        for i=1, #frame.debuffFrames do
-            local debuffFrame = frame.debuffFrames[i]
-            resizeDebuffFrame(debuffFrame)
-            --Timer Settings
-            local cooldown = debuffFrame.cooldown
-            if frameOpt.timerText then
-                local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
-                cooldownText:ClearAllPoints()
-                cooldownText:SetPoint(durationOpt.point, debuffFrame, durationOpt.relativePoint, durationOpt.xOffsetFont, durationOpt.yOffsetFont)
-                cooldownText:SetFont(durationOpt.font, durationOpt.fontSize, durationOpt.outlinemode)
-                cooldownText:SetTextColor(durationOpt.fontColor.r, durationOpt.fontColor.g, durationOpt.fontColor.b)
-                cooldownText:SetShadowColor(durationOpt.shadowColor.r, durationOpt.shadowColor.g, durationOpt.shadowColor.b,durationOpt.shadowColor.a)
-                cooldownText:SetShadowOffset(durationOpt.xOffsetShadow, durationOpt.yOffsetShadow)
-                if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
-                    if not cooldown.OmniCC then
-                        cooldown.OmniCC = {
-                            noCooldownCount = cooldown.noCooldownCount,
-                        }
-                    end
-                    OmniCC.Cooldown.SetNoCooldownCount(cooldown, true)
-                end
+    -- Setup the debuff frame visuals
+    local function OnFrameSetup(frame)
+        -- Create or find assigned debuff frames
+        if not debuffFrameRegister[frame] then
+            debuffFrameRegister[frame] = {}
+            debuffFrameRegister[frame].userPlaced = {}
+            debuffFrameRegister[frame].dynamicGroup = {}
+        end
+        -- Create user placed debuff frames
+        for spellId, info in pairs(userPlaced) do
+            if not debuffFrameRegister[frame].userPlaced[spellId] then
+                debuffFrameRegister[frame].userPlaced[spellId] = {}
             end
-            --Stack Settings
-            local stackText = debuffFrame.count
-            stackText:ClearAllPoints()
-            stackText:SetPoint(stackOpt.point, debuffFrame, stackOpt.relativePoint, stackOpt.xOffsetFont, stackOpt.yOffsetFont)
-            stackText:SetFont(stackOpt.font, stackOpt.fontSize, stackOpt.outlinemode)
-            stackText:SetTextColor(stackOpt.fontColor.r, stackOpt.fontColor.g, stackOpt.fontColor.b)
-            stackText:SetShadowColor(stackOpt.shadowColor.r, stackOpt.shadowColor.g, stackOpt.shadowColor.b,stackOpt.shadowColor.a)
-            stackText:SetShadowOffset(stackOpt.xOffsetShadow, stackOpt.yOffsetShadow)
-            --Swipe Settings
-            cooldown:SetDrawSwipe(frameOpt.swipe)
-            cooldown:SetReverse(frameOpt.inverse)
-            cooldown:SetDrawEdge(frameOpt.edge)
-            stackText:SetParent(cooldown)
+            local debuffFrame = debuffFrameRegister[frame].userPlaced[spellId].debuffFrame
+            if not debuffFrame then
+                debuffFrame = CreateFrame("Button", nil, frame, "CompactDebuffTemplate")
+                debuffFrame.baseSize = 1
+                debuffFrame.maxHeight = 1
+                debuffFrameRegister[frame].userPlaced[spellId].debuffFrame = debuffFrame
+            end
+            ResizeDebuffFrame(debuffFrame)
+            SetUpDebuffDisplay(debuffFrame)
+        end
+        -- Create dynamic debuff frames
+        local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs 
+        for i=1, numDebuffFrames do
+            local debuffFrame = debuffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
+            if not debuffFrame then
+                debuffFrame = CreateFrame("Button", nil, frame, "CompactDebuffTemplate")
+                debuffFrame.baseSize = 1
+                debuffFrame.maxHeight = 1
+            end
+            debuffFrameRegister[frame].dynamicGroup[i] = debuffFrame
+            ResizeDebuffFrame(debuffFrame)
+            SetUpDebuffDisplay(debuffFrame)
+        end
+        AnchorDebuffFrames(frame)
+        -- Setup private aura size
+        if frame.PrivateAuraAnchors then
+            for _, privateAuraAnchor in ipairs(frame.PrivateAuraAnchors) do
+                privateAuraAnchor:SetSize(width, height)
+            end
         end
     end
-    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", onFrameSetup)
+    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
-    local onSetDebuff = function(debuffFrame, aura)
-        if debuffFrame:IsForbidden() then --not sure if this is still neede but when i created it at the start if dragonflight it was
-            return 
-        end
+    -- Start cooldown timers and resize the debuff frame
+    local function OnSetDebuff(debuffFrame, aura)
+        local cooldown = debuffFrame.cooldown
         local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
-        local parentFrame = debuffFrame:GetParent()
         if aura and (aura.isBossAura or increase[aura.spellId]) then
             debuffFrame:SetSize(boss_width, boss_height)
         else
             debuffFrame:SetSize(width, height)
         end
-        updateAnchors(parentFrame)
     end
-    self:HookFunc("CompactUnitFrame_UtilSetDebuff", onSetDebuff)
+    self:HookFunc("CompactUnitFrame_UtilSetDebuff", OnSetDebuff)
 
-    addon:IterateRoster(function(frame)
-        onFrameSetup(frame)
-        if frame.debuffFrames then
-            for i=1, #frame.debuffFrames do
-                local debuffFrame = frame.debuffFrames[i]
-                if debuffFrame.auraInstanceID then
-                    local aura = GetAuraDataByAuraInstanceID(frame.unit, debuffFrame.auraInstanceID)
-                    if aura and aura.isBossAura or increase[aura.spellId] then
-                        debuffFrame:SetSize(boss_width, boss_height)
-                    end
-                end
+    -- Setup private aura anchor
+    local function OnUpdatePrivateAuras(frame)
+        if not frame.PrivateAuraAnchors or not debuffFrameRegister[frame] or not frame:IsVisible() then
+            return
+        end
+
+        local lastShownDebuffFrame
+        local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs 
+        for i = numDebuffFrames, 1, -1 do
+            local debuffFrame = debuffFrameRegister[frame].dynamicGroup[i]
+            if debuffFrame and debuffFrame:IsShown() then
+                lastShownDebuffFrame = debuffFrame
+                break
             end
         end
+
+        frame.PrivateAuraAnchor1:ClearAllPoints()
+        if lastShownDebuffFrame then
+            frame.PrivateAuraAnchor1:SetPoint(followPoint, lastShownDebuffFrame, followRelativePoint, followOffsetX, followOffsetY)
+        else
+            frame.PrivateAuraAnchor1:SetPoint(point, frame, relativePoint, frameOpt.xOffset, frameOpt.yOffset)
+        end
+    end
+    self:HookFuncFiltered("CompactUnitFrame_UpdatePrivateAuras", OnUpdatePrivateAuras)
+
+    local function OnUpdateAuras(frame)
+        -- Exclude unwanted frames
+        if not debuffFrameRegister[frame] or not frame:IsVisible() then
+            return true
+        end
+        -- To not have to constantly reanchor the buff frames we don't use blizzards at all
+        if frame.debuffFrames then
+            for _, debuffFrame in next, frame.debuffFrames do
+                debuffFrame:Hide()
+            end
+        end       
+        local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs  
+        local frameNum = 1
+        -- Set the auras
+        frame.debuffs:Iterate(function(auraInstanceID, aura)
+            --[[
+            -- I don't know what blocked auraInstanceIDs do but blizzard does this check so if issues arise uncomment this
+            if CompactUnitFrame_IsAuraInstanceIDBlocked(frame, auraInstanceID) then
+                return false
+            end
+            ]]
+            -- Check if blacklisted
+            if blacklist and blacklist[aura.spellId] then
+                return false
+            end
+            -- Place user placed auras since we always have debuff frames for them
+            local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
+            if place then
+                local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].debuffFrame
+                if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
+                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                end
+                return false
+            end
+            local exceedingLimit = frameNum > numDebuffFrames
+            if exceedingLimit and numUserPlaced == 0 then
+                -- Only return true if we have no placed auras otherwise we have to iterate over all debuffs
+                return true
+            end
+            -- Make sure we don't set more debuffs than we have frames for
+            if not exceedingLimit then
+                -- Set the debuff 
+                local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
+                if debuffFrame then
+                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                end
+                -- Increase counter only for non placed
+                frameNum = frameNum + 1
+            end
+            return false
+        end)
+
+        OnUpdatePrivateAuras(frame)
+    end
+    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
+
+    addon:IterateRoster(function(frame)
+        OnFrameSetup(frame)
+        OnUpdateAuras(frame)
     end)
 end
 
@@ -223,6 +373,10 @@ function Debuffs:OnDisable()
                 OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
                 cooldown.OmniCC = nil
             end
+            local duration = cooldown:GetCooldownDuration()
+            if duration > 0 then
+                debuffFrame:Show()
+            end
             local stackText = debuffFrame.count
             stackText:ClearAllPoints()
             stackText:SetPoint("BOTTOMRIGHT", debuffFrame, "BOTTOMRIGHT", 0, 0)
@@ -231,6 +385,17 @@ function Debuffs:OnDisable()
             stackText:SetTextColor(fontObj:GetTextColor())
             stackText:SetShadowColor(fontObj:GetShadowColor())
             stackText:SetShadowOffset(fontObj:GetShadowOffset())
+        end
+    end
+    -- Hide our frames
+    for frame, info in pairs(debuffFrameRegister) do
+        for _, indicator in pairs(info.userPlaced) do
+            CooldownFrame_Clear(indicator.debuffFrame.cooldown)
+            indicator.debuffFrame:Hide()
+        end
+        for _, debuffFrame in pairs(info.dynamicGroup) do
+            CooldownFrame_Clear(debuffFrame.cooldown)
+            debuffFrame:Hide()
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

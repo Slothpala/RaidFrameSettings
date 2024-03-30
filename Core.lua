@@ -30,11 +30,12 @@ function RaidFrameSettings:OnInitialize()
 end
 
 function RaidFrameSettings:SlashCommand()
+    local frame = RaidFrameSettings:GetOptionsFrame()
     if InCombatLockdown() then
-        self:Print("Please leave combat and try again.")
+        self:Print("Options will open after combat ends.")
+        frame:RegisterEvent("PLAYER_REGEN_ENABLED")
         return
     end
-    local frame = RaidFrameSettings:GetOptionsFrame()
     if not frame:IsShown() then
         frame:Show()
     else
@@ -56,6 +57,11 @@ function RaidFrameSettings:OnDisable()
         module:Disable()
     end
 end
+
+function RaidFrameSettings:IsModuleEnabled(name)
+    return self.db.profile.Module[name]
+end
+
 
 function RaidFrameSettings:UpdateModule(module_name)
     self:DisableModule(module_name)

@@ -814,7 +814,8 @@ local options = {
         },
         Auras = {
             order = 6,
-            name = "Auras",
+            name = "Auraframe Settings",
+            desc = "Buff & Debuff Frames",
             type = "group",
             childGroups = "select",
             hidden = function()

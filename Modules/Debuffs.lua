@@ -371,6 +371,10 @@ function Debuffs:OnDisable()
                 OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
                 cooldown.OmniCC = nil
             end
+            local duration = cooldown:GetCooldownDuration()
+            if duration > 0 then
+                debuffFrame:Show()
+            end
             --TODO
             --[[
                 find global font for stacks and restore properly
@@ -382,6 +386,17 @@ function Debuffs:OnDisable()
             stackText:SetTextColor(1,1,1,1)
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
+        end
+    end
+    -- Hide our frames
+    for frame, info in pairs(debuffFrameRegister) do
+        for _, indicator in pairs(info.userPlaced) do
+            CooldownFrame_Clear(indicator.debuffFrame.cooldown)
+            indicator.debuffFrame:Hide()
+        end
+        for _, debuffFrame in pairs(info.dynamicGroup) do
+            CooldownFrame_Clear(debuffFrame.cooldown)
+            debuffFrame:Hide()
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

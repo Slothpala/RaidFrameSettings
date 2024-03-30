@@ -293,6 +293,10 @@ function Buffs:OnDisable()
                 OmniCC.Cooldown.SetNoCooldownCount(cooldown, cooldown.OmniCC.noCooldownCount)
                 cooldown.OmniCC = nil
             end
+            local duration = cooldown:GetCooldownDuration()
+            if duration > 0 then
+                buffFrame:Show()
+            end
             --TODO
             --[[
                 find global font for stacks and restore properly
@@ -304,6 +308,17 @@ function Buffs:OnDisable()
             stackText:SetTextColor(1,1,1,1)
             stackText:SetShadowColor(0,0,0)
             stackText:SetShadowOffset(0,0)
+        end
+    end
+    -- Hide our frames
+    for frame, info in pairs(buffFrameRegister) do
+        for _, indicator in pairs(info.userPlaced) do
+            CooldownFrame_Clear(indicator.buffFrame.cooldown)
+            indicator.buffFrame:Hide()
+        end
+        for _, buffFrame in pairs(info.dynamicGroup) do
+            CooldownFrame_Clear(buffFrame.cooldown)
+            buffFrame:Hide()
         end
     end
     addon:IterateRoster(restoreBuffFrames)

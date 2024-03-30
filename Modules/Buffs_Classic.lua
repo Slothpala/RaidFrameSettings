@@ -327,5 +327,16 @@ function Buffs:OnDisable()
             stackText:SetShadowOffset(0,0)
         end
     end
+    -- Hide our frames
+    for frame, info in pairs(buffFrameRegister) do
+        for _, indicator in pairs(info.userPlaced) do
+            CooldownFrame_Clear(indicator.buffFrame.cooldown)
+            indicator.buffFrame:Hide()
+        end
+        for _, buffFrame in pairs(info.dynamicGroup) do
+            CooldownFrame_Clear(buffFrame.cooldown)
+            buffFrame:Hide()
+        end
+    end
     addon:IterateRoster(restoreBuffFrames)
 end

@@ -232,16 +232,17 @@ function Buffs:OnEnable()
 
     local function OnUpdateBuffs(frame)
         -- Exclude unwanted frames
-        if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames or not frame.optionTable.displayBuffs then
+        if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
             return 
         end
         -- To not have to constantly reanchor the buff frames we don't use blizzards at all
-        if frame.buffFrames then
-            for _, buffFrame in next, frame.buffFrames do
-                buffFrame:Hide()
-            end
+        for _, buffFrame in next, frame.buffFrames do
+            buffFrame:Hide()
         end
         local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
+        if numBuffFrames == 0 and numUserPlaced == 0 then
+            return
+        end
         local index = 1
         local frameNum = 1
         local filter = nil

@@ -26,6 +26,7 @@ Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
 Utils\AuraVisibility.lua
+Utils\SpellCache.lua
 
 #Modules
 modules_vanilla.xml

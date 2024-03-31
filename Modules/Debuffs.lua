@@ -239,7 +239,6 @@ function Debuffs:OnEnable()
     -- Start cooldown timers and resize the debuff frame
     local function OnSetDebuff(debuffFrame, aura)
         local cooldown = debuffFrame.cooldown
-        local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
         if aura and (aura.isBossAura or increase[aura.spellId]) then

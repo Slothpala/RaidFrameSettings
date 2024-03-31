@@ -81,6 +81,20 @@ function Buffs:OnEnable()
         }
         numUserPlaced = numUserPlaced + 1
     end
+    -- Blacklist 
+    local blacklist = {}
+    if addon:IsModuleEnabled("Blacklist") then
+        for spellId, value in pairs(addon.db.profile.Blacklist) do
+            blacklist[tonumber(spellId)] = true
+        end
+    end
+    -- Watchlist
+    local watchlist = {}
+    if addon:IsModuleEnabled("Watchlist") then
+        for spellId, info in pairs(addon.db.profile.Watchlist) do
+            watchlist[tonumber(spellId)] = info
+        end
+    end
     -- Buff size
     local width  = frameOpt.width
     local height = frameOpt.height
@@ -230,6 +244,18 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
+    local function ShouldShowWatchlistAura(unit, index)
+        local _, _, _, _, _, _, source, _, _, spellId = UnitBuff(unit, index)
+        local info = watchlist[spellId]
+        if info.hideInCombat then
+            return not InCombatLockdown()
+        elseif ( info.ownOnly and source ~= "player" ) then
+            return false
+        else
+            return true
+        end
+    end
+
     local function OnUpdateBuffs(frame)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
@@ -250,7 +276,7 @@ function Buffs:OnEnable()
         local spellId = true
         while ( spellId ) do
             spellId = select(10, UnitBuff(frame.displayedUnit, index))
-            if ( spellId ) then
+            if ( spellId and not blacklist[spellId] ) then
                 -- Place user placed auras since we always have buff frames for them
                 local place = numUserPlaced > 0 and userPlaced[spellId] 
                 if place then
@@ -259,7 +285,15 @@ function Buffs:OnEnable()
                         CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter)
                     end
                 elseif not ( frameNum > numBuffFrames ) then
-                    if ( CompactUnitFrame_UtilShouldDisplayBuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossAura(frame.displayedUnit, index, filter, true) ) then
+                    if ( watchlist[spellId] ) then
+                        if ShouldShowWatchlistAura(frame.displayedUnit, index) then
+                            local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
+                            if buffFrame then
+                                CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter)
+                            end
+                            frameNum = frameNum + 1
+                        end
+                    elseif ( CompactUnitFrame_UtilShouldDisplayBuff(frame.displayedUnit, index, filter) and not CompactUnitFrame_UtilIsBossAura(frame.displayedUnit, index, filter, true) ) then
                         local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
                         if buffFrame then
                             CompactUnitFrame_UtilSetBuff(buffFrame, frame.displayedUnit, index, filter)

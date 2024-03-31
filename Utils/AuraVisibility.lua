@@ -36,32 +36,33 @@ end
         from all: return true, false, true
         only from self: return true, true, false
 ]]
-function addon:Dump_cachedVisualizationInfo()
-    if InCombatLockdown() then
-        return
-    end
-    EventRegistry:TriggerEvent("PLAYER_SPECIALIZATION_CHANGED")
-end
-
-local orig_SpellGetVisibilityInfo = SpellGetVisibilityInfo
-SpellGetVisibilityInfo = function(spellId, visType)
-    if blacklist[spellId] then
-        return true, false, false
+if addonTable.isRetail then
+    function addon:Dump_cachedVisualizationInfo()
+        if InCombatLockdown() then
+            return
+        end
+        EventRegistry:TriggerEvent("PLAYER_SPECIALIZATION_CHANGED")
     end
 
-    if watchlist[spellId] then
-        local watchEntry = watchlist[spellId]
-        if watchEntry.hideInCombat and visType == "RAID_INCOMBAT" then
+    local orig_SpellGetVisibilityInfo = SpellGetVisibilityInfo
+    SpellGetVisibilityInfo = function(spellId, visType)
+        if blacklist[spellId] then
             return true, false, false
-        elseif watchEntry.ownOnly then
-            return true, true, false
-        elseif watchEntry.spellIsDebuff then
-            return false
-        else
-            return true, false, true
-        end        
+        end
+
+        if watchlist[spellId] then
+            local watchEntry = watchlist[spellId]
+            if watchEntry.hideInCombat and visType == "RAID_INCOMBAT" then
+                return true, false, false
+            elseif watchEntry.ownOnly then
+                return true, true, false
+            elseif watchEntry.spellIsDebuff then
+                return false
+            else
+                return true, false, true
+            end        
+        end
+
+        return orig_SpellGetVisibilityInfo(spellId, visType)
     end
-
-    return orig_SpellGetVisibilityInfo(spellId, visType)
 end
-

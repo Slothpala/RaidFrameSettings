@@ -7,15 +7,30 @@ local addon = addonTable.RaidFrameSettings
 local Watchlist = addon:NewModule("Watchlist")
 
 function Watchlist:OnEnable()
-    for spellId, info in pairs(addon.db.profile.Watchlist) do
-        addon:AppendAuraWatchlist(tonumber(spellId), info)
+    if addonTable.isRetail then
+        for spellId, info in pairs(addon.db.profile.Watchlist) do
+            addon:AppendAuraWatchlist(tonumber(spellId), info)
+        end
+        addon:Dump_cachedVisualizationInfo()
     end
-    addon:Dump_cachedVisualizationInfo()
+    self:ReloadAffectedModules()
 end
 
 function Watchlist:OnDisable()
-    for spellId, value in pairs(addon.db.profile.Watchlist) do
-        addon:RemoveAuraFromWatchlist(tonumber(spellId))
+    if addonTable.isRetail then
+        for spellId, value in pairs(addon.db.profile.Watchlist) do
+            addon:RemoveAuraFromWatchlist(tonumber(spellId))
+        end
+        addon:Dump_cachedVisualizationInfo()
     end
-    addon:Dump_cachedVisualizationInfo()
+    self:ReloadAffectedModules()
+end
+
+function Watchlist:ReloadAffectedModules()
+    if addon:IsModuleEnabled("Buffs") then
+        addon:UpdateModule("Buffs")
+    end
+    if addon:IsModuleEnabled("Debuffs") then
+        addon:UpdateModule("Debuffs")
+    end
 end

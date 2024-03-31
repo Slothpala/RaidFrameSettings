@@ -1243,7 +1243,6 @@ local options = {
                                             type = "description",
                                         },
                                         customCount = {
-                                            hidden = not isRetail,
                                             order = 16,
                                             type = "toggle",
                                             name = "Adjust the number of debuff icons", 
@@ -1253,7 +1252,6 @@ local options = {
                                             width = 1.5,
                                         },
                                         numFrames = {
-                                            hidden = not isRetail,
                                             order = 17,
                                             disabled = function()
                                                 return not RaidFrameSettings.db.profile.Debuffs.DebuffFramesDisplay.customCount
@@ -1316,7 +1314,6 @@ local options = {
                         },
                         AuraPosition = {
                             order = 3,
-                            hidden = not isRetail,
                             name = "Aura Position",
                             type = "group",
                             args = {

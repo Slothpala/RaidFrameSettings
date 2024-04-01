@@ -333,7 +333,7 @@ local options = {
                         },
                         auralistnote = {
                             order = 3,
-                            name = "In Classic, both Watchlist and Blacklist rely on the Buffs and Debuffs modules to function. In retail, some debuffs can only be hidden with the Debuffs module enabled.",
+                            name = "Watchlist and Blacklist rely on the Buffs and Debuffs modules to work.",
                             fontSize = "medium",
                             type = "description",
                         },

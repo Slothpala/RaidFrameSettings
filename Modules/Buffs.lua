@@ -22,6 +22,7 @@ local SetDrawSwipe = SetDrawSwipe
 local SetReverse = SetReverse
 local SetDrawEdge = SetDrawEdge
 local SetScale = SetScale
+local AuraUtil_ForEachAura = AuraUtil.ForEachAura
 -- Lua
 local next = next
 local pairs = pairs
@@ -76,6 +77,16 @@ function Buffs:OnEnable()
             scale = auraInfo.scale or 1,
         }
         numUserPlaced = numUserPlaced + 1
+    end
+    -- Blacklist 
+    local blacklist = {}
+    if addon:IsModuleEnabled("Blacklist") then
+        blacklist = addon:GetBlacklist()
+    end
+    -- Watchlist
+    local watchlist = {}
+    if addon:IsModuleEnabled("Watchlist") then
+        watchlist = addon:GetWatchlist()
     end
     -- Buff size
     local width  = frameOpt.width
@@ -214,53 +225,82 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
-    local function OnUpdateAuras(frame)
-        -- Exclude unwanted frames
-        if not buffFrameRegister[frame] or not frame:IsVisible() then
+    -- Aura update
+    local function ShouldShowWatchlistAura(aura)
+        local info = watchlist[aura.spellId] or {}
+        if info.hideInCombat then
+            -- TODO combat util
+            return not addonTable.inCombat 
+        elseif ( info.ownOnly and aura.sourceUnit ~= "player" ) then
+            return false
+        else
             return true
         end
+    end
+
+    --CompactUnitFrame_UpdateAurasInternal calles CompactUnitFrame_HideAllBuffs when it determines that buffs have changed and an aura update is indeed needed
+    local function OnHideAllBuffs(frame)
+        -- Exclude unwanted frames
+        if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
+            return 
+        end
         -- To not have to constantly reanchor the buff frames we don't use blizzards at all
-        if frame.buffFrames then
-            for _, buffFrame in next, frame.buffFrames do
-                buffFrame:Hide()
-            end
+        for _, buffFrame in next, frame.buffFrames do
+            buffFrame:Hide()
         end
         local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
-        local frameNum = 1
+        if numBuffFrames == 0 and numUserPlaced == 0 then
+            return
+        end
+        local index = 1
+        local frameNum = 1 
         -- Set the auras
-        frame.buffs:Iterate(function(auraInstanceID, aura)
-            -- Place user placed auras since we always have buff frames for them
-            local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
-            if place then
-                local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
-                if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
-                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+        while ( true ) do
+            local aura = C_UnitAuras.GetBuffDataByIndex(frame.displayedUnit, index)
+            if not aura then
+                break
+            end
+            if not blacklist[aura.spellId] then
+                local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
+                local in_watchlist = watchlist[aura.spellId] 
+                -- Place user placed auras since we always have buff frames for them
+                if place then
+                    local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
+                    if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
+                        if in_watchlist then
+                            if ShouldShowWatchlistAura(aura) then
+                                CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                            end
+                        else
+                            CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                        end
+                    end
+                elseif not ( frameNum > numBuffFrames ) then
+                    if in_watchlist then
+                        if ShouldShowWatchlistAura(aura) then
+                            local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
+                            if buffFrame then
+                                CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                            end
+                            frameNum = frameNum + 1
+                        end
+                    elseif ( AuraUtil.ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) ) then
+                        local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
+                        if buffFrame then
+                            CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                        end
+                        frameNum = frameNum + 1
+                    end
                 end
-                return false
             end
-            local exceedingLimit = frameNum > numBuffFrames
-            if exceedingLimit and numUserPlaced == 0 then
-                -- Only return true if we have no placed auras otherwise we have to iterate over all buffs
-                return true
-            end
-            -- Make sure we don't set more buffs than we have frames for
-            if not exceedingLimit then
-                -- Set the buff 
-                local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
-                if buffFrame then
-                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
-                end
-                -- Increase counter only for non placed
-                frameNum = frameNum + 1
-            end
-            return false
-        end)
+            index = index + 1
+        end
     end
-    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
+    self:HookFuncFiltered("CompactUnitFrame_HideAllBuffs", OnHideAllBuffs)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
-        OnUpdateAuras(frame)
+        OnHideAllBuffs(frame)
     end)
 end
 

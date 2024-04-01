@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [2.26.0] - 2024-03-30
+#### Changed
+* Reworked Debuffs for classic to match feature parity with retail.
+* Changed the Default profile.
+#### Fixes
+* Changed how Blacklist and Watchlist are handeled on classic.
+
 ### Version [2.25.1] - 2024-03-30
 #### Fixes
 * Buffs, Debuffs and Buffs_Classic modules now hide the addon created aura indicator frames on disable.

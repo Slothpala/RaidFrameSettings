@@ -147,6 +147,24 @@ local function getFontOptions()
             step = 1,
             width = 0.8,
         },
+        newline3 = {
+            order = 14,
+            type = "description",
+            name = "",
+        },
+    }
+    return font_options
+end
+
+local function getDebuffDurationOptions()
+    local font_options = getFontOptions()
+    font_options.durationByDebuffColor = {
+        order = 15,
+        name = "Color timer by debuff color.",
+        type = "toggle",
+        get = "GetStatus",
+        set = "SetStatus",
+        width = 1.5,
     }
     return font_options
 end
@@ -743,6 +761,12 @@ local options = {
                         RaidFrameSettings:UpdateModule("Blacklist")
                     end,
                 },
+                newline1 = {
+                    order = 1.1,
+                    name = isRetail and "Auras will be blacklisted on the next application." or "",
+                    fontSize = "medium",
+                    type = "description",
+                },
                 auraList = {
                     order = 2,
                     name = "Blacklisted auras:",
@@ -785,6 +809,12 @@ local options = {
                         RaidFrameSettings:CreateWatchlistEntry(value)
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
+                },
+                newline1 = {
+                    order = 2.1,
+                    name = isRetail and "Auras will be tracked on next application." or "",
+                    fontSize = "medium",
+                    type = "description",
                 },
                 importOptions = {
                     order = 3,
@@ -1283,7 +1313,7 @@ local options = {
                                     order = 2,
                                     name = "Duration",
                                     type = "group",
-                                    args = getFontOptions()
+                                    args = getDebuffDurationOptions()
                                 },
                                 StacksDisplay = {
                                     order = 3,

@@ -24,6 +24,15 @@ local SetScale = SetScale
 -- Lua
 local next = next
 local pairs = pairs
+-- Colors
+-- TODO add addon wide settings for color management
+local debuffColors = {
+    Curse   = {r=0.6,g=0.0,b=1.0},
+    Disease = {r=0.6,g=0.4,b=0.0},
+    Magic   = {r=0.2,g=0.6,b=1.0},
+    Poison  = {r=0.0,g=0.6,b=0.0},
+    Bleed   = {r=0.8,g=0.0,b=0.0},
+}
 
 local debuffFrameRegister = {
     --[[
@@ -238,6 +247,11 @@ function Debuffs:OnEnable()
         local cooldown = debuffFrame.cooldown
         CDT:StartCooldownText(cooldown)
         cooldown:SetDrawEdge(frameOpt.edge)
+        if durationOpt.durationByDebuffColor then
+            local color = debuffColors[aura.dispelName] or durationOpt.fontColor
+            local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
+            cooldownText:SetTextColor(color.r, color.g, color.b)
+        end
         if aura and (aura.isBossAura or increase[aura.spellId]) then
             debuffFrame:SetSize(boss_width, boss_height)
         else

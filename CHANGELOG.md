@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.26.1] - 2024-04-01
+#### Added
+* Option to color the aura duration timer by debuff color.
+
 ### Version [2.26.0] - 2024-03-30
 #### Changed
 * Reworked Debuffs for classic to match feature parity with retail.

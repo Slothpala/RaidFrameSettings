@@ -98,6 +98,7 @@ local defaults = {
                 relativePoint = 1,
                 xOffsetFont = -4,
                 yOffsetFont = 4,
+                durationByDebuffColor = true,
             },
             StacksDisplay = {
                 font = "Friz Quadrata TT",

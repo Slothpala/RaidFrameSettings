@@ -21,6 +21,10 @@ local SetDrawSwipe = SetDrawSwipe
 local SetReverse = SetReverse
 local SetDrawEdge = SetDrawEdge
 local SetScale = SetScale
+local AuraUtil_ForEachAura = AuraUtil.ForEachAura
+local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+local AuraUtil_ShouldDisplayDebuff = AuraUtil.ShouldDisplayDebuff
+--local CompactUnitFrame_UtilSetDebuff = CompactUnitFrame_UtilSetDebuff -- don't do this
 -- Lua
 local next = next
 local pairs = pairs
@@ -53,6 +57,9 @@ local debuffFrameRegister = {
                 [1] = frame,
                 [2] = frame,
                 ...
+            }
+            auraCache = {
+                [aura] = aura,
             }
         }
     ]]
@@ -211,6 +218,7 @@ function Debuffs:OnEnable()
             debuffFrameRegister[frame] = {}
             debuffFrameRegister[frame].userPlaced = {}
             debuffFrameRegister[frame].dynamicGroup = {}
+            debuffFrameRegister[frame].auraCache = {}
         end
         -- Create user placed debuff frames
         for spellId, info in pairs(userPlaced) do
@@ -296,6 +304,8 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdatePrivateAuras", OnUpdatePrivateAuras)
 
+    -- Aura update
+    -- FIXME Improve performance
     local function ShouldShowWatchlistAura(aura)
         local info = watchlist[aura.spellId] or {}
         if info.hideInCombat then
@@ -308,7 +318,46 @@ function Debuffs:OnEnable()
         end
     end
 
-    local function OnUpdateAuras(frame)
+    -- User the unitAuraUpdateInfo provided by UpdateAuras
+    local function GetAuraCache(frame, unitAuraUpdateInfo)
+        local auraCache = debuffFrameRegister[frame].auraCache or {}
+        if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
+            auraCache = {}
+            local function HandleAura(aura)
+                if blacklist[aura.spellId] then
+                    return
+                end
+                auraCache[aura.auraInstanceID] = aura
+            end
+            AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleAura, true)
+            return auraCache
+        else
+            if unitAuraUpdateInfo.addedAuras then
+                for _, aura in pairs(unitAuraUpdateInfo.addedAuras) do
+                    if aura.isHarmful then
+                        auraCache[aura.auraInstanceID] = aura
+                    end
+                end
+            end
+            if unitAuraUpdateInfo.updatedAuraInstanceIDs then
+                for _, auraInstanceID  in pairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+                    if auraCache[auraInstanceID] then
+                        auraCache[auraInstanceID] = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
+                    end
+                end
+            end
+            if unitAuraUpdateInfo.removedAuraInstanceIDs then
+                for _, auraInstanceID in pairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+                    if auraCache[auraInstanceID] then
+                        auraCache[auraInstanceID] = nil
+                    end
+                end
+            end
+            return auraCache
+        end
+    end
+
+    local function OnUpdateAuras(frame, unitAuraUpdateInfo)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() or not frame.debuffFrames then
             return true
@@ -317,54 +366,49 @@ function Debuffs:OnEnable()
         for _, debuffFrame in next, frame.debuffFrames do
             debuffFrame:Hide()
         end
+        -- Check if we can exit early
         local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs  
-        if numDebuffFrames == 0 and numUserPlaced == 0 then
+        local hasPlacedAuras = numUserPlaced > 0
+        if numDebuffFrames == 0 and not hasPlacedAuras then
             return
         end
-        local index = 1
         local frameNum = 1 
+        local auraCache = GetAuraCache(frame, unitAuraUpdateInfo)
         -- Set the auras
-        while ( true ) do
-            local aura = C_UnitAuras.GetDebuffDataByIndex(frame.displayedUnit, index)
-            if not aura then
-                break
-            end
-            if not blacklist[aura.spellId] then
-                local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
-                local in_watchlist = watchlist[aura.spellId] 
-                -- Place user placed auras since we always have buff frames for them
-                if place then
-                    local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].debuffFrame
-                    if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
-                        if in_watchlist then
-                            if ShouldShowWatchlistAura(aura) then
-                                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-                            end
-                        else
+        for auraInstanceID, aura in pairs(auraCache) do
+            local place = hasPlacedAuras and userPlaced[aura.spellId]  
+            local in_watchlist = watchlist[aura.spellId] 
+            -- Start with user placed auras as we always have space for them
+            if place then
+                local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].debuffFrame
+                if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
+                    if in_watchlist then
+                        if ShouldShowWatchlistAura(aura) then
                             CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                         end
+                    else
+                        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                     end
-                elseif not ( frameNum > numDebuffFrames ) then
-                    if in_watchlist then
-                        if ShouldShowWatchlistAura(aura) then 
-                            local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
-                            if debuffFrame then
-                                CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
-                            end
-                            frameNum = frameNum + 1
-                        end
-                    elseif ( AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) ) then
+                end
+            elseif not ( frameNum > numDebuffFrames ) then
+                if in_watchlist then
+                    if ShouldShowWatchlistAura(aura) then
                         local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
                         if debuffFrame then
                             CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                         end
                         frameNum = frameNum + 1
                     end
+                elseif ( AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) ) then
+                    local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
+                    if debuffFrame then
+                        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                    end
+                    frameNum = frameNum + 1
                 end
             end
-            index = index + 1
         end
-
+        debuffFrameRegister[frame].auraCache = auraCache
         OnUpdatePrivateAuras(frame)
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)

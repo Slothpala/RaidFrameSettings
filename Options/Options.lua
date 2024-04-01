@@ -333,7 +333,7 @@ local options = {
                         },
                         auralistnote = {
                             order = 3,
-                            name = "Watchlist and Blacklist rely on the Buffs and Debuffs modules to work.",
+                            name = "Watchlist and Blacklist rely on the Buffs (for buff spellIds) and Debuffs (for debuff spellIds) modules to work.",
                             fontSize = "medium",
                             type = "description",
                         },
@@ -761,12 +761,6 @@ local options = {
                         RaidFrameSettings:UpdateModule("Blacklist")
                     end,
                 },
-                newline1 = {
-                    order = 1.1,
-                    name = isRetail and "Auras will be blacklisted on the next application." or "",
-                    fontSize = "medium",
-                    type = "description",
-                },
                 auraList = {
                     order = 2,
                     name = "Blacklisted auras:",
@@ -809,12 +803,6 @@ local options = {
                         RaidFrameSettings:CreateWatchlistEntry(value)
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
-                },
-                newline1 = {
-                    order = 2.1,
-                    name = isRetail and "Auras will be tracked on next application." or "",
-                    fontSize = "medium",
-                    type = "description",
                 },
                 importOptions = {
                     order = 3,

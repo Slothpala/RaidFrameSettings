@@ -84,10 +84,7 @@ function Debuffs:OnEnable()
     -- Blacklist 
     local blacklist = nil
     if addon:IsModuleEnabled("Blacklist") then
-        blacklist = {}
-        for spellId, value in pairs(addon.db.profile.Blacklist) do
-            blacklist[tonumber(spellId)] = true
-        end
+        blacklist = addon:GetBlacklist()
     end
     -- Debuff size
     local width  = frameOpt.width

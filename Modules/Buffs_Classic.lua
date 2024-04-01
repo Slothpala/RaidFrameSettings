@@ -84,16 +84,12 @@ function Buffs:OnEnable()
     -- Blacklist 
     local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then
-        for spellId, value in pairs(addon.db.profile.Blacklist) do
-            blacklist[tonumber(spellId)] = true
-        end
+        blacklist = addon:GetBlacklist()
     end
     -- Watchlist
     local watchlist = {}
     if addon:IsModuleEnabled("Watchlist") then
-        for spellId, info in pairs(addon.db.profile.Watchlist) do
-            watchlist[tonumber(spellId)] = info
-        end
+        watchlist = addon:GetWatchlist()
     end
     -- Buff size
     local width  = frameOpt.width

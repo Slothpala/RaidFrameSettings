@@ -297,13 +297,25 @@ local options = {
                         },
                         newline1 = {
                             order = 1.1,
-                            name = "",
+                            name = " ",
                             fontSize = "medium",
                             type = "description",
                         },
                         performanceNote = {
                             order = 2,
                             name = "About |cffF4A460CPU Impact:|r The first value means small 5 man groups, the last value massive 40 man raids. As more frames are added, the addon must do more work. The addon runs very efficiently when the frames are set up, but you can get spikes when people spam leave and/or join the group, such as at the end of a battleground or in massive open world farm groups. The blizzard frames update very often in these scenarios and the addon needs to follow this.",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                        newline2 = {
+                            order = 2.1,
+                            name = " ",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                        auralistnote = {
+                            order = 3,
+                            name = "In Classic, both Watchlist and Blacklist rely on the Buffs and Debuffs modules to function. In retail, some debuffs can only be hidden with the Debuffs module enabled.",
                             fontSize = "medium",
                             type = "description",
                         },

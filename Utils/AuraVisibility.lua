@@ -18,6 +18,10 @@ function addon:RemoveAuraFromWatchlist(spellId) --number
     watchlist[spellId] = nil
 end
 
+function addon:GetWatchlist()
+    return watchlist
+end
+
 --[[Blacklist]]
 
 local blacklist = {}
@@ -28,6 +32,10 @@ end
 
 function addon:RemoveAuraFromBlacklist(spellId) --number
     blacklist[spellId] = nil
+end
+
+function addon:GetBlacklist()
+    return blacklist
 end
 
 --[[

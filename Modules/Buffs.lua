@@ -184,6 +184,9 @@ function Buffs:OnEnable()
 
     -- Setup the buff frame visuals
     local function OnFrameSetup(frame)
+        if not UnitIsPlayer(frame.unit) then
+            return
+        end
         -- Create or find assigned buff frames
         if not buffFrameRegister[frame] then
             buffFrameRegister[frame] = {}
@@ -239,7 +242,7 @@ function Buffs:OnEnable()
     end
 
     --CompactUnitFrame_UpdateAurasInternal calles CompactUnitFrame_HideAllBuffs when it determines that buffs have changed and an aura update is indeed needed
-    local function OnHideAllBuffs(frame)
+    local function OnUpdateAuras(frame)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
             return 
@@ -296,11 +299,11 @@ function Buffs:OnEnable()
             index = index + 1
         end
     end
-    self:HookFuncFiltered("CompactUnitFrame_HideAllBuffs", OnHideAllBuffs)
+    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
-        OnHideAllBuffs(frame)
+        OnUpdateAuras(frame)
     end)
 end
 

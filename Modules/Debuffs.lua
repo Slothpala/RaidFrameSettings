@@ -203,6 +203,9 @@ function Debuffs:OnEnable()
 
     -- Setup the debuff frame visuals
     local function OnFrameSetup(frame)
+        if not UnitIsPlayer(frame.unit) then
+            return
+        end
         -- Create or find assigned debuff frames
         if not debuffFrameRegister[frame] then
             debuffFrameRegister[frame] = {}
@@ -305,7 +308,7 @@ function Debuffs:OnEnable()
         end
     end
 
-    local function OnHideAllDebuffs(frame)
+    local function OnUpdateAuras(frame)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() or not frame.debuffFrames then
             return true
@@ -364,11 +367,11 @@ function Debuffs:OnEnable()
 
         OnUpdatePrivateAuras(frame)
     end
-    self:HookFuncFiltered("CompactUnitFrame_HideAllDebuffs", OnHideAllDebuffs)
+    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
-        OnHideAllDebuffs(frame)
+        OnUpdateAuras(frame)
     end)
 end
 

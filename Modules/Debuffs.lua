@@ -357,6 +357,14 @@ function Debuffs:OnEnable()
         end
     end
 
+    local function ShowDebuffFrame(debuffFrame, aura)
+        if debuffFrame.auraInstanceID == aura.auraInstanceID then
+            debuffFrame:Show()
+        else
+            CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+        end
+    end
+
     local function OnUpdateAuras(frame, unitAuraUpdateInfo)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() or not frame.debuffFrames then
@@ -384,10 +392,10 @@ function Debuffs:OnEnable()
                 if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
                     if in_watchlist then
                         if ShouldShowWatchlistAura(aura) then
-                            CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                            ShowDebuffFrame(debuffFrame, aura)
                         end
                     else
-                        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                        ShowDebuffFrame(debuffFrame, aura)
                     end
                 end
             elseif not ( frameNum > numDebuffFrames ) then
@@ -395,14 +403,14 @@ function Debuffs:OnEnable()
                     if ShouldShowWatchlistAura(aura) then
                         local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
                         if debuffFrame then
-                            CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                            ShowDebuffFrame(debuffFrame, aura)
                         end
                         frameNum = frameNum + 1
                     end
                 elseif ( AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) ) then
                     local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
                     if debuffFrame then
-                        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                        ShowDebuffFrame(debuffFrame, aura)
                     end
                     frameNum = frameNum + 1
                 end

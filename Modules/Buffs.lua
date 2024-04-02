@@ -288,6 +288,14 @@ function Buffs:OnEnable()
         end
     end
 
+    local function ShowBuffFrame(buffFrame, aura)
+        if buffFrame.auraInstanceID == aura.auraInstanceID then
+            buffFrame:Show()
+        else
+            CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+        end
+    end
+
     local function OnUpdateAuras(frame, unitAuraUpdateInfo)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
@@ -314,10 +322,10 @@ function Buffs:OnEnable()
                 if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
                     if in_watchlist then
                         if ShouldShowWatchlistAura(aura) then
-                            CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                            ShowBuffFrame(buffFrame, aura)
                         end
                     else
-                        CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                        ShowBuffFrame(buffFrame, aura)
                     end
                 end
             elseif not ( frameNum > numBuffFrames ) then
@@ -325,14 +333,14 @@ function Buffs:OnEnable()
                     if ShouldShowWatchlistAura(aura) then
                         local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
                         if buffFrame then
-                            CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                            ShowBuffFrame(buffFrame, aura)
                         end
                         frameNum = frameNum + 1
                     end
                 elseif ( AuraUtil_ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) ) then
                     local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
                     if buffFrame then
-                        CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                        ShowBuffFrame(buffFrame, aura)
                     end
                     frameNum = frameNum + 1
                 end

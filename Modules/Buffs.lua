@@ -250,7 +250,7 @@ function Buffs:OnEnable()
     end
 
     -- User the unitAuraUpdateInfo provided by UpdateAuras
-    local function GetAuraCache(frame, unitAuraUpdateInfo)
+    local function UpdateAuraCache(frame, unitAuraUpdateInfo)
         local auraCache = buffFrameRegister[frame].auraCache or {}
         if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
             auraCache = {}
@@ -261,7 +261,6 @@ function Buffs:OnEnable()
                 auraCache[aura.auraInstanceID] = aura
             end
             AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, HandleHelpAura, true)
-            return auraCache
 		else
             if unitAuraUpdateInfo.addedAuras then
                 for _, aura in pairs(unitAuraUpdateInfo.addedAuras) do
@@ -284,9 +283,10 @@ function Buffs:OnEnable()
                     end
                 end
             end
-            return auraCache
         end
+        return auraCache
     end
+
 
     local function ShowBuffFrame(buffFrame, aura)
         if buffFrame.auraInstanceID == aura.auraInstanceID then
@@ -297,6 +297,15 @@ function Buffs:OnEnable()
     end
 
     local function OnUpdateAuras(frame, unitAuraUpdateInfo)
+        -- Exclude unwanted frames
+        if not buffFrameRegister[frame] then
+            return 
+        end
+        buffFrameRegister[frame].auraCache = UpdateAuraCache(frame, unitAuraUpdateInfo)
+    end
+    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
+
+    local function OnHideAllBuffs(frame)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
             return 
@@ -311,8 +320,8 @@ function Buffs:OnEnable()
         if numBuffFrames == 0 and not hasPlacedAuras then
             return
         end
-        local frameNum = 1 
-        local auraCache = GetAuraCache(frame, unitAuraUpdateInfo)
+        local frameNum = 1
+        local auraCache =  buffFrameRegister[frame].auraCache or {}
         for auraInstanceID, aura in pairs(auraCache) do
             local place = hasPlacedAuras and userPlaced[aura.spellId]  
             local in_watchlist = watchlist[aura.spellId] 
@@ -346,13 +355,12 @@ function Buffs:OnEnable()
                 end
             end
         end
-        buffFrameRegister[frame].auraCache = auraCache
     end
-    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
+    self:HookFuncFiltered("CompactUnitFrame_HideAllBuffs", OnHideAllBuffs)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
-        OnUpdateAuras(frame)
+        OnHideAllBuffs(frame)
     end)
 end
 

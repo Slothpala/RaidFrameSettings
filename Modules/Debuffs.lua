@@ -319,7 +319,7 @@ function Debuffs:OnEnable()
     end
 
     -- User the unitAuraUpdateInfo provided by UpdateAuras
-    local function GetAuraCache(frame, unitAuraUpdateInfo)
+    local function UpdateAuraCache(frame, unitAuraUpdateInfo)
         local auraCache = debuffFrameRegister[frame].auraCache or {}
         if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
             auraCache = {}
@@ -330,7 +330,6 @@ function Debuffs:OnEnable()
                 auraCache[aura.auraInstanceID] = aura
             end
             AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleAura, true)
-            return auraCache
         else
             if unitAuraUpdateInfo.addedAuras then
                 for _, aura in pairs(unitAuraUpdateInfo.addedAuras) do
@@ -353,8 +352,8 @@ function Debuffs:OnEnable()
                     end
                 end
             end
-            return auraCache
         end
+        return auraCache
     end
 
     local function ShowDebuffFrame(debuffFrame, aura)
@@ -366,6 +365,15 @@ function Debuffs:OnEnable()
     end
 
     local function OnUpdateAuras(frame, unitAuraUpdateInfo)
+        -- Exclude unwanted frames
+        if not debuffFrameRegister[frame] then
+            return true
+        end
+        debuffFrameRegister[frame].auraCache = UpdateAuraCache(frame, unitAuraUpdateInfo)
+    end
+    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
+
+    local function OnHideAllDebuffs(frame)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() or not frame.debuffFrames then
             return true
@@ -381,7 +389,7 @@ function Debuffs:OnEnable()
             return
         end
         local frameNum = 1 
-        local auraCache = GetAuraCache(frame, unitAuraUpdateInfo)
+        local auraCache = debuffFrameRegister[frame].auraCache or {}
         -- Set the auras
         for auraInstanceID, aura in pairs(auraCache) do
             local place = hasPlacedAuras and userPlaced[aura.spellId]  
@@ -419,7 +427,7 @@ function Debuffs:OnEnable()
         debuffFrameRegister[frame].auraCache = auraCache
         OnUpdatePrivateAuras(frame)
     end
-    self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
+    self:HookFuncFiltered("CompactUnitFrame_HideAllDebuffs", OnHideAllDebuffs)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)

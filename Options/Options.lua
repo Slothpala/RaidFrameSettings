@@ -1944,8 +1944,21 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                     RaidFrameSettings:UpdateModule("Watchlist")
                 end,
             },
-            hideInCombat = {
+            onSelfOnly = {
                 order = 3,
+                type = "toggle",
+                name = "Only on me",
+                desc = "Only show " .. auraName ..  " on yourself.",
+                get = function()
+                    return dbObj[spellId].onSelfOnly 
+                end,
+                set = function(_, value)
+                    dbObj[spellId].onSelfOnly = value
+                    RaidFrameSettings:UpdateModule("Watchlist")
+                end,
+            },
+            hideInCombat = {
+                order = 4,
                 type = "toggle",
                 name = "Hide in combat",
                 desc = "Hide " .. auraName .. " during combat.",
@@ -1958,7 +1971,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 end,
             },
             remove = {
-                order = 4,
+                order = 5,
                 name = "remove",
                 desc = "Remove " .. auraName .. " from the watchlist.", 
                 type = "execute",

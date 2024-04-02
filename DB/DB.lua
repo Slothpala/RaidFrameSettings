@@ -63,6 +63,7 @@ local defaults = {
                 spellId = {
                     ownOnly = true/false,
                     hideInCombat = true/false,
+                    onSelfOnly = true/false,
                 }
             ]]
         },

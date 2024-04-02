@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.27.0] - 2024-04-02
+#### Changed
+* The SpellGetVisibilityInfo hook has been removed to fix an ongoing taint issue. To keep watchlist and blacklist working, I changed the aura frame processing for buffs and debuffs. As a side effect, the new method can now blacklist or whitelist any buff or debuff (the old method missed some, especially in pvp). Watchlist and Blacklist now rely on Buffs (for buff spellIds) and/or Debuffs (for debuff spellIds) to work.
+
 ### Version [2.26.1] - 2024-04-01
 #### Added
 * Option to color the aura duration timer by debuff color.

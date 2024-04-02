@@ -94,7 +94,7 @@ function Debuffs:OnEnable()
         increase[tonumber(spellId)] = true
     end
     -- Blacklist 
-    local blacklist = nil
+    local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then
         blacklist = addon:GetBlacklist()
     end

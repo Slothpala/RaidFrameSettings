@@ -21,6 +21,10 @@ local SetDrawSwipe = SetDrawSwipe
 local SetReverse = SetReverse
 local SetDrawEdge = SetDrawEdge
 local SetScale = SetScale
+local AuraUtil_ForEachAura = AuraUtil.ForEachAura
+local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+local AuraUtil_ShouldDisplayDebuff = AuraUtil.ShouldDisplayDebuff
+--local CompactUnitFrame_UtilSetDebuff = CompactUnitFrame_UtilSetDebuff -- don't do this
 -- Lua
 local next = next
 local pairs = pairs
@@ -54,6 +58,9 @@ local debuffFrameRegister = {
                 [2] = frame,
                 ...
             }
+            auraCache = {
+                [aura] = aura,
+            }
         }
     ]]
 }
@@ -85,15 +92,21 @@ function Debuffs:OnEnable()
         }
         numUserPlaced = numUserPlaced + 1
     end
+    local hasPlacedAuras = ( numUserPlaced > 0 ) and true or false
 	-- Increased Auras
     local increase = {}
     for spellId, value in pairs(addon.db.profile.Debuffs.Increase) do
         increase[tonumber(spellId)] = true
     end
     -- Blacklist 
-    local blacklist = nil
+    local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then
         blacklist = addon:GetBlacklist()
+    end
+    -- Watchlist
+    local watchlist = {}
+    if addon:IsModuleEnabled("Watchlist") then
+        watchlist = addon:GetWatchlist()
     end
     -- Debuff size
     local width  = frameOpt.width
@@ -198,11 +211,15 @@ function Debuffs:OnEnable()
 
     -- Setup the debuff frame visuals
     local function OnFrameSetup(frame)
+        if not UnitIsPlayer(frame.unit) then
+            return
+        end
         -- Create or find assigned debuff frames
         if not debuffFrameRegister[frame] then
             debuffFrameRegister[frame] = {}
             debuffFrameRegister[frame].userPlaced = {}
             debuffFrameRegister[frame].dynamicGroup = {}
+            debuffFrameRegister[frame].auraCache = {}
         end
         -- Create user placed debuff frames
         for spellId, info in pairs(userPlaced) do
@@ -244,13 +261,19 @@ function Debuffs:OnEnable()
 
     -- Start cooldown timers and resize the debuff frame
     local function OnSetDebuff(debuffFrame, aura)
-        local cooldown = debuffFrame.cooldown
-        CDT:StartCooldownText(cooldown)
-        cooldown:SetDrawEdge(frameOpt.edge)
-        if durationOpt.durationByDebuffColor then
-            local color = debuffColors[aura.dispelName] or durationOpt.fontColor
-            local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
-            cooldownText:SetTextColor(color.r, color.g, color.b)
+        if debuffFrame:IsForbidden() then
+            return
+        end
+        local enabled = aura.expirationTime and aura.expirationTime ~= 0
+        if enabled then
+            local cooldown = debuffFrame.cooldown
+            CDT:StartCooldownText(cooldown)
+            cooldown:SetDrawEdge(frameOpt.edge)
+            if durationOpt.durationByDebuffColor then
+                local color = debuffColors[aura.dispelName] or durationOpt.fontColor
+                local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
+                cooldownText:SetTextColor(color.r, color.g, color.b)
+            end
         end
         if aura and (aura.isBossAura or increase[aura.spellId]) then
             debuffFrame:SetSize(boss_width, boss_height)
@@ -285,58 +308,109 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdatePrivateAuras", OnUpdatePrivateAuras)
 
-    local function OnUpdateAuras(frame)
+    -- Aura update
+    -- FIXME Improve performance
+    local function ShouldShowWatchlistAura(aura)
+        local info = watchlist[aura.spellId] or {}
+        if info.hideInCombat then
+            -- TODO combat util
+            return not addonTable.inCombat 
+        elseif ( info.ownOnly and aura.sourceUnit ~= "player" ) then
+            return false
+        else
+            return true
+        end
+    end
+
+    -- User the unitAuraUpdateInfo provided by UpdateAuras
+    local function UpdateAuraCache(frame, unitAuraUpdateInfo)
+        local auraCache = debuffFrameRegister[frame].auraCache or {}
+        if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
+            auraCache = {}
+            local function HandleAura(aura)
+                if blacklist[aura.spellId] then
+                    return
+                end
+                auraCache[aura.auraInstanceID] = aura
+            end
+            AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, HandleAura, true)
+        else
+            if unitAuraUpdateInfo.addedAuras then
+                for _, aura in pairs(unitAuraUpdateInfo.addedAuras) do
+                    if aura.isHarmful then
+                        auraCache[aura.auraInstanceID] = aura
+                    end
+                end
+            end
+            if unitAuraUpdateInfo.updatedAuraInstanceIDs then
+                for _, auraInstanceID  in pairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+                    if auraCache[auraInstanceID] then
+                        auraCache[auraInstanceID] = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
+                    end
+                end
+            end
+            if unitAuraUpdateInfo.removedAuraInstanceIDs then
+                for _, auraInstanceID in pairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+                    if auraCache[auraInstanceID] then
+                        auraCache[auraInstanceID] = nil
+                    end
+                end
+            end
+        end
+        return auraCache
+    end
+
+    local function OnUpdateAuras(frame, unitAuraUpdateInfo)
         -- Exclude unwanted frames
-        if not debuffFrameRegister[frame] or not frame:IsVisible() then
+        if not debuffFrameRegister[frame] or not frame:IsVisible() or not frame.debuffFrames then
             return true
         end
         -- To not have to constantly reanchor the buff frames we don't use blizzards at all
-        if frame.debuffFrames then
-            for _, debuffFrame in next, frame.debuffFrames do
-                debuffFrame:Hide()
-            end
-        end       
+        for _, debuffFrame in next, frame.debuffFrames do
+            debuffFrame:Hide()
+        end
+        -- Check if we can exit early
         local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs  
-        local frameNum = 1
+        if numDebuffFrames == 0 and not hasPlacedAuras then
+            return
+        end
+        local frameNum = 1 
+        local auraCache = UpdateAuraCache(frame, unitAuraUpdateInfo)
         -- Set the auras
-        frame.debuffs:Iterate(function(auraInstanceID, aura)
-            --[[
-            -- I don't know what blocked auraInstanceIDs do but blizzard does this check so if issues arise uncomment this
-            if CompactUnitFrame_IsAuraInstanceIDBlocked(frame, auraInstanceID) then
-                return false
-            end
-            ]]
-            -- Check if blacklisted
-            if blacklist and blacklist[aura.spellId] then
-                return false
-            end
-            -- Place user placed auras since we always have debuff frames for them
-            local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
+        for _, aura in pairs(auraCache) do
+            local place = hasPlacedAuras and userPlaced[aura.spellId]  
+            local in_watchlist = watchlist[aura.spellId] 
+            -- Start with user placed auras as we always have space for them
             if place then
                 local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].debuffFrame
                 if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
-                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                    if in_watchlist then
+                        if ShouldShowWatchlistAura(aura) then
+                            CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                        end
+                    else
+                        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                    end
                 end
-                return false
-            end
-            local exceedingLimit = frameNum > numDebuffFrames
-            if exceedingLimit and numUserPlaced == 0 then
-                -- Only return true if we have no placed auras otherwise we have to iterate over all debuffs
-                return true
-            end
-            -- Make sure we don't set more debuffs than we have frames for
-            if not exceedingLimit then
-                -- Set the debuff 
-                local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
-                if debuffFrame then
-                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+            elseif not ( frameNum > numDebuffFrames ) then
+                if in_watchlist then
+                    if ShouldShowWatchlistAura(aura) then
+                        local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
+                        if debuffFrame then
+                            CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                        end
+                        frameNum = frameNum + 1
+                    end
+                elseif ( AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) ) then
+                    local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
+                    if debuffFrame then
+                        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                    end
+                    frameNum = frameNum + 1
                 end
-                -- Increase counter only for non placed
-                frameNum = frameNum + 1
             end
-            return false
-        end)
-
+        end
+        debuffFrameRegister[frame].auraCache = auraCache
         OnUpdatePrivateAuras(frame)
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)

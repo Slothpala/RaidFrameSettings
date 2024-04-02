@@ -12,9 +12,6 @@ function Blacklist:OnEnable()
     for spellId, value in pairs(addon.db.profile.Blacklist) do
         addon:AppendAuraBlacklist(tonumber(spellId))
     end
-    if addonTable.isRetail then
-        addon:Dump_cachedVisualizationInfo()
-    end
     self:ReloadAffectedModules()
 end
 
@@ -22,9 +19,6 @@ end
 function Blacklist:OnDisable()
     for spellId, value in pairs(addon.db.profile.Blacklist) do
         addon:RemoveAuraFromBlacklist(tonumber(spellId))
-    end
-    if addonTable.isRetail then
-        addon:Dump_cachedVisualizationInfo()
     end
     self:ReloadAffectedModules()
 end

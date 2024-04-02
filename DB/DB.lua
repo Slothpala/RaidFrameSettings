@@ -63,14 +63,15 @@ local defaults = {
                 spellId = {
                     ownOnly = true/false,
                     hideInCombat = true/false,
+                    onSelfOnly = true/false,
                 }
             ]]
         },
         oldBlacklistsImported = false,
         Debuffs = {
             DebuffFramesDisplay = {
-                width = 24,
-                height = 22,
+                width = 22,
+                height = 18,
                 cleanIcons = true,
                 increase = 1.2,
                 point = 3,
@@ -125,8 +126,8 @@ local defaults = {
         },
         Buffs = {
             BuffFramesDisplay = {
-                width = 22,
-                height = 18,
+                width = 18,
+                height = 16,
                 cleanIcons = true,
                 point = 7,
                 relativePoint = 7,

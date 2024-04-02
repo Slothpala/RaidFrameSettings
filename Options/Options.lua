@@ -298,7 +298,16 @@ local options = {
                                 RaidFrameSettings.db.global.MinimapButton.enabled = value
                                 RaidFrameSettings:UpdateModule("MinimapButton")
                             end,
-                        },  
+                        },
+                        Solo = {
+                            hidden = not isRetail,
+                            order = 13,
+                            type = "toggle",
+                            name = "Solo",
+                            desc = "Show the party frame even if you are not in a group.\n|cffF4A460CPU Impact: |r|cff90EE90NEGLIGIBLE|r",
+                            get = "GetModuleStatus",
+                            set = "SetModuleStatus",
+                        },
                     },
                 },
                 DescriptionBox = {

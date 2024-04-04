@@ -1,6 +1,7 @@
 local _, addonTable = ...
 
 addonTable.isRetail = true
+addonTable.isFirstLoad = true
 
 addonTable.texturePaths = {
     PortraitIcon = "Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon\\Icon.tga",

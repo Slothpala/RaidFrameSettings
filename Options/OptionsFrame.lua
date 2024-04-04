@@ -85,6 +85,7 @@ local function initSpellCache()
 end
 
 frame:SetScript("OnEvent", function(self, event)
+    --[===[@non-debug@
     if event == "PLAYER_REGEN_DISABLED" then
         frame:Hide()
         frame:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -93,6 +94,7 @@ frame:SetScript("OnEvent", function(self, event)
         frame:Show()
         frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
     end
+    --@end-non-debug@]===]
 end)
 frame:HookScript("OnShow", function()
     initSpellCache()

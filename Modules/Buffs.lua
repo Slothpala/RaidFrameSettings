@@ -22,6 +22,10 @@ local SetDrawSwipe = SetDrawSwipe
 local SetReverse = SetReverse
 local SetDrawEdge = SetDrawEdge
 local SetScale = SetScale
+local AuraUtil_ForEachAura = AuraUtil.ForEachAura
+local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+local AuraUtil_ShouldDisplayBuff = AuraUtil.ShouldDisplayBuff
+--local CompactUnitFrame_UtilSetBuff = CompactUnitFrame_UtilSetBuff -- don't do this
 -- Lua
 local next = next
 local pairs = pairs
@@ -45,6 +49,9 @@ local buffFrameRegister = {
                 [1] = frame,
                 [2] = frame,
                 ...
+            }
+            auraCache = {
+                [auraInstanceID] = aura,
             }
         }
     ]]
@@ -76,6 +83,17 @@ function Buffs:OnEnable()
             scale = auraInfo.scale or 1,
         }
         numUserPlaced = numUserPlaced + 1
+    end
+    local hasPlacedAuras = ( numUserPlaced > 0 ) and true or false
+    -- Blacklist 
+    local blacklist = {}
+    if addon:IsModuleEnabled("Blacklist") then
+        blacklist = addon:GetBlacklist()
+    end
+    -- Watchlist
+    local watchlist = {}
+    if addon:IsModuleEnabled("Watchlist") then
+        watchlist = addon:GetWatchlist()
     end
     -- Buff size
     local width  = frameOpt.width
@@ -173,11 +191,15 @@ function Buffs:OnEnable()
 
     -- Setup the buff frame visuals
     local function OnFrameSetup(frame)
+        if not UnitIsPlayer(frame.unit) then
+            return
+        end
         -- Create or find assigned buff frames
         if not buffFrameRegister[frame] then
             buffFrameRegister[frame] = {}
             buffFrameRegister[frame].userPlaced = {}
             buffFrameRegister[frame].dynamicGroup = {}
+            buffFrameRegister[frame].auraCache = {}
         end
         -- Create user placed buff frames
         for spellId, info in pairs(userPlaced) do
@@ -208,53 +230,117 @@ function Buffs:OnEnable()
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
     local OnSetBuff = function(buffFrame, aura)
-        local cooldown = buffFrame.cooldown
-        CDT:StartCooldownText(cooldown)
-        cooldown:SetDrawEdge(frameOpt.edge)
+        local enabled = aura.expirationTime and aura.expirationTime ~= 0
+        if enabled then
+            local cooldown = buffFrame.cooldown
+            CDT:StartCooldownText(cooldown)
+            cooldown:SetDrawEdge(frameOpt.edge)
+        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
-    local function OnUpdateAuras(frame)
-        -- Exclude unwanted frames
-        if not buffFrameRegister[frame] or not frame:IsVisible() then
+    -- Aura update
+    -- FIXME Improve performance
+    local function ShouldShowWatchlistAura(aura)
+        local info = watchlist[aura.spellId] or {}
+        if info.hideInCombat then
+            -- TODO combat util
+            return not addonTable.inCombat 
+        elseif ( info.ownOnly and aura.sourceUnit ~= "player" ) then
+            return false
+        else
             return true
         end
-        -- To not have to constantly reanchor the buff frames we don't use blizzards at all
-        if frame.buffFrames then
-            for _, buffFrame in next, frame.buffFrames do
-                buffFrame:Hide()
+    end
+
+    -- User the unitAuraUpdateInfo provided by UpdateAuras
+    local function UpdateAuraCache(frame, unitAuraUpdateInfo)
+        local auraCache = buffFrameRegister[frame].auraCache or {}
+        if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
+            auraCache = {}
+            local function HandleHelpAura(aura)
+                if blacklist[aura.spellId] then
+                    return
+                end
+                auraCache[aura.auraInstanceID] = aura
+            end
+            AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, HandleHelpAura, true)
+		else
+            if unitAuraUpdateInfo.addedAuras then
+                for _, aura in pairs(unitAuraUpdateInfo.addedAuras) do
+                    if aura.isHelpful then
+                        auraCache[aura.auraInstanceID] = aura
+                    end
+                end
+            end
+            if unitAuraUpdateInfo.updatedAuraInstanceIDs then
+                for _, auraInstanceID  in pairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+                    if auraCache[auraInstanceID] then
+                        auraCache[auraInstanceID] = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
+                    end
+                end
+            end
+            if unitAuraUpdateInfo.removedAuraInstanceIDs then
+                for _, auraInstanceID in pairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+                    if auraCache[auraInstanceID] then
+                        auraCache[auraInstanceID] = nil
+                    end
+                end
             end
         end
+        return auraCache
+    end
+
+    local function OnUpdateAuras(frame, unitAuraUpdateInfo)
+        -- Exclude unwanted frames
+        if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
+            return 
+        end
+        -- To not have to constantly reanchor the buff frames we don't use blizzards at all
+        for _, buffFrame in next, frame.buffFrames do
+            buffFrame:Hide()
+        end
+        -- Check if we can exit early
         local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
+        if numBuffFrames == 0 and not hasPlacedAuras then
+            return
+        end
         local frameNum = 1
-        -- Set the auras
-        frame.buffs:Iterate(function(auraInstanceID, aura)
-            -- Place user placed auras since we always have buff frames for them
-            local place = numUserPlaced > 0 and userPlaced[aura.spellId] 
+        local auraCache =  UpdateAuraCache(frame, unitAuraUpdateInfo)
+        for _, aura in pairs(auraCache) do
+            local place = hasPlacedAuras and userPlaced[aura.spellId]  
+            local in_watchlist = watchlist[aura.spellId] 
+            -- Start with user placed auras as we always have space for them
             if place then
                 local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
                 if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
-                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                    if in_watchlist then
+                        if ShouldShowWatchlistAura(aura) then
+                            CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                        end
+                    else
+                        CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                    end
                 end
-                return false
-            end
-            local exceedingLimit = frameNum > numBuffFrames
-            if exceedingLimit and numUserPlaced == 0 then
-                -- Only return true if we have no placed auras otherwise we have to iterate over all buffs
-                return true
-            end
-            -- Make sure we don't set more buffs than we have frames for
-            if not exceedingLimit then
-                -- Set the buff 
-                local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
-                if buffFrame then
-                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+            elseif not ( frameNum > numBuffFrames ) then
+                if in_watchlist then
+                    if ShouldShowWatchlistAura(aura) then
+                        local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
+                        if buffFrame then
+                            CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                        end
+                        frameNum = frameNum + 1
+                    end
+                elseif ( AuraUtil_ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) ) then
+                    local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
+                    if buffFrame then
+                        CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                    end
+                    frameNum = frameNum + 1
                 end
-                -- Increase counter only for non placed
-                frameNum = frameNum + 1
             end
-            return false
-        end)
+        end
+        buffFrameRegister[frame].auraCache = UpdateAuraCache(frame, unitAuraUpdateInfo)
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", OnUpdateAuras)
 

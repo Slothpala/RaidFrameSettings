@@ -1,3 +1,6 @@
+--[[
+   module copied rom https://github.com/excorp/RaidFrameSettings/blob/mod/Modules/Solo.lua
+]]
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
 

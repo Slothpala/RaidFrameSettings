@@ -1,4 +1,97 @@
 # **Changelog**
+### Version [2.27.0] - 2024-04-02
+#### Changed
+* The SpellGetVisibilityInfo hook has been removed to fix an ongoing taint issue. To keep watchlist and blacklist working, I changed the aura frame processing for buffs and debuffs. As a side effect, the new method can now blacklist or whitelist any buff or debuff (the old method missed some, especially in pvp). Watchlist and Blacklist now rely on Buffs (for buff spellIds) and/or Debuffs (for debuff spellIds) to work.
+
+### Version [2.26.1] - 2024-04-01
+#### Added
+* Option to color the aura duration timer by debuff color.
+
+### Version [2.26.0] - 2024-03-30
+#### Changed
+* Reworked Debuffs for classic to match feature parity with retail.
+* Changed the Default profile.
+#### Fixes
+* Changed how Blacklist and Watchlist are handeled on classic.
+
+### Version [2.25.1] - 2024-03-30
+#### Fixes
+* Buffs, Debuffs and Buffs_Classic modules now hide the addon created aura indicator frames on disable.
+#### Changed
+* Renamed Auras to Auraframe Settings and added a desc field.
+
+
+### Version [2.25.0] - 2024-03-29
+#### Changed
+* Reworked Buffs for classic to match feature parity with retail.
+
+#### Fixes
+* Fixed an issue with the roster cache building that affected the classic version if the user was not playing with KeepGroupsTogether, which also fixed an issue with the cache building when changing the edit mode layout between Separate Groups and Combine Groups.
+
+### Version [2.24.2] - 2024-03-29
+#### Added
+* Minimap icon
+
+#### Changed
+* Once again, the Options Window will re-appear after combat ends. I don't know why I removed it in the first place.
+
+### Version [2.24.1] - 2024-03-29
+#### Added
+* FrameColor Skin
+
+### Version [2.24.0] - 2024-03-28
+#### Fixes
+* Watchlist and Blacklist modules no longer update currently affected auras. This was done to avoid a taint issue.
+
+#### Added
+* Aura position feature for debuffs.
+
+#### Changed
+* Extra debuff frames arrived.
+    * The backend of the debuff module has been reworked. The user now has the option to adjust the number of debuff icons displayed on the raid frame (from 0 to 10). If you need more please let me know.
+* Debuffs module now checks for blacklisted auras on top of AuraVisibilty util as some auras were still be shown.
+
+### Version [2.23.0] - 2024-03-27
+#### Changed
+* Extra buff frames finally arrived! 
+    * The backend of the buffs module has been reworked. The user now has the option to adjust the number of buff icons displayed on the raid frame (from 0 to 10). If you need more please let me know.
+    * Auras set in Aura Position now have their own dedicated buff frame and will always be displayed when applied.
+    * Auras set in Aura Position can now be scaled per aura.
+
+#### Fixes
+* Fixed some spellIds in the personal defensive list.
+
+#### Author's Note
+* Expect the same to happen with "Debuffs" in an upcoming update. Once "Debuffs" is done i will start porting the changes to classic.
+
+### Version [2.22.7] - 2024-03-26
+* Moved Aura Position one row up and added ab option to scale user placed auras.
+
+### Version [2.22.6] - 2024-03-26
+* Small visual improvements to the watchlist and an option to import the most important def CDs for all classes have been added.
+
+### Version [2.22.5] - 2024-03-25
+#### Changed
+* AuraVisibility.lua now checks if a watchlist entry is flagged as debuff.
+* Options.lua updated Watchlist module desc. Added a second input field to separate buffs and debuffs for the watchlist. Watchlist entrys spellIds are now color coded to indicate if they are a buff or a debuff.
+
+### Version [2.22.4] - 2024-03-24
+#### Added
+* Utils -> AuraVisibilty.lua that can be used to blacklist or enable auras.
+* Modules -> Watchlist.lua this module allows tracking buffs that are not shown by default + alter wether a watched buff should be shown only from you, in combat
+* Modules -> Blacklist.lua this module replaces the old blacklist feature of the Buffs and Debuffs modules. The old blacklists will be imported.
+
+#### Changed
+* Modules -> Buffs.lua + Buffs_Classic.lua + Debuffs.lua + Debuffs_Classic.lua removed the module specific blacklist features.
+
+### Version [2.22.3] - 2024-03-23
+#### Changed
+* Interface version updated to 100206
+
+### Version [2.22.2] - 2024-02-24
+#### Changed 
+* Enabling an aura timer will now hide the OmniCC aura timer on that aura.
+
 ### Version [2.22.1] - 2024-02-15
 #### Added
 * Aura gap option for buff and debuff modules for retail and classic.

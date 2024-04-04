@@ -31,11 +31,13 @@ end
 
 function RaidFrameSettings:SlashCommand()
     local frame = RaidFrameSettings:GetOptionsFrame()
+    --[===[@non-debug@
     if InCombatLockdown() then
         self:Print("Options will open after combat ends.")
         frame:RegisterEvent("PLAYER_REGEN_ENABLED")
         return
     end
+    --@end-non-debug@]===]
     if not frame:IsShown() then
         frame:Show()
     else
@@ -49,6 +51,7 @@ function RaidFrameSettings:OnEnable()
             module:Enable()
         end
     end
+    addonTable.isFirstLoad = false
     self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckGroupType") --GroupType.lua
 end
 

@@ -23,7 +23,7 @@ local function ShowSeparateGroups()
     return showSeparateGroups
 end
 
-local function UpdateRoster()
+local function UpdateRosterCache()
     Roster = {}
     local showSeparateGroups = ShowSeparateGroups()
     local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or ( addonTable.isClassic and not showSeparateGroups ) --IsInRaid() returns true in arena even though we need party frame names
@@ -90,7 +90,7 @@ local last_showSeparateGroups = ShowSeparateGroups() -- An event or cvar would b
 local function CheckRosterCache()
     local current_showSeparateGroups = ShowSeparateGroups()
     if needsUpdate or ( last_showSeparateGroups ~= current_showSeparateGroups ) then
-        UpdateRoster()
+        UpdateRosterCache()
     end
     last_showSeparateGroups = current_showSeparateGroups
 end
@@ -98,7 +98,7 @@ end
 function addon:IterateRoster(callback)
     CheckRosterCache()
     for unit, frame in next, Roster do
-        if not frame:IsForbidden() and frame:IsShown() then
+        if not frame:IsForbidden() and frame:IsShown() and not addonTable.inCombat then
             callback(frame)
         end
     end

@@ -147,6 +147,24 @@ local function getFontOptions()
             step = 1,
             width = 0.8,
         },
+        newline3 = {
+            order = 14,
+            type = "description",
+            name = "",
+        },
+    }
+    return font_options
+end
+
+local function getDebuffDurationOptions()
+    local font_options = getFontOptions()
+    font_options.durationByDebuffColor = {
+        order = 15,
+        name = "Color timer by debuff color.",
+        type = "toggle",
+        get = "GetStatus",
+        set = "SetStatus",
+        width = 1.5,
     }
     return font_options
 end
@@ -297,13 +315,25 @@ local options = {
                         },
                         newline1 = {
                             order = 1.1,
-                            name = "",
+                            name = " ",
                             fontSize = "medium",
                             type = "description",
                         },
                         performanceNote = {
                             order = 2,
                             name = "About |cffF4A460CPU Impact:|r The first value means small 5 man groups, the last value massive 40 man raids. As more frames are added, the addon must do more work. The addon runs very efficiently when the frames are set up, but you can get spikes when people spam leave and/or join the group, such as at the end of a battleground or in massive open world farm groups. The blizzard frames update very often in these scenarios and the addon needs to follow this.",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                        newline2 = {
+                            order = 2.1,
+                            name = " ",
+                            fontSize = "medium",
+                            type = "description",
+                        },
+                        auralistnote = {
+                            order = 3,
+                            name = "Watchlist and Blacklist rely on the Buffs (for buff spellIds) and Debuffs (for debuff spellIds) modules to work.",
                             fontSize = "medium",
                             type = "description",
                         },
@@ -1243,7 +1273,6 @@ local options = {
                                             type = "description",
                                         },
                                         customCount = {
-                                            hidden = not isRetail,
                                             order = 16,
                                             type = "toggle",
                                             name = "Adjust the number of debuff icons", 
@@ -1253,7 +1282,6 @@ local options = {
                                             width = 1.5,
                                         },
                                         numFrames = {
-                                            hidden = not isRetail,
                                             order = 17,
                                             disabled = function()
                                                 return not RaidFrameSettings.db.profile.Debuffs.DebuffFramesDisplay.customCount
@@ -1273,7 +1301,7 @@ local options = {
                                     order = 2,
                                     name = "Duration",
                                     type = "group",
-                                    args = getFontOptions()
+                                    args = getDebuffDurationOptions()
                                 },
                                 StacksDisplay = {
                                     order = 3,
@@ -1316,7 +1344,6 @@ local options = {
                         },
                         AuraPosition = {
                             order = 3,
-                            hidden = not isRetail,
                             name = "Aura Position",
                             type = "group",
                             args = {
@@ -1918,7 +1945,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 end,
             },
             hideInCombat = {
-                order = 3,
+                order = 4,
                 type = "toggle",
                 name = "Hide in combat",
                 desc = "Hide " .. auraName .. " during combat.",
@@ -1931,7 +1958,7 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 end,
             },
             remove = {
-                order = 4,
+                order = 5,
                 name = "remove",
                 desc = "Remove " .. auraName .. " from the watchlist.", 
                 type = "execute",

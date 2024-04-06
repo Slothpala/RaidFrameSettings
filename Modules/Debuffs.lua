@@ -197,7 +197,6 @@ function Debuffs:OnEnable()
             debuffFrame:SetScale(auraInfo.scale)
         end
         -- Setup dynamic group
-        local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs 
         local anchorSet, prevFrame
         for i=1, numDebuffFrames do
             local debuffFrame = debuffFrameRegister[frame].dynamicGroup[i]
@@ -241,7 +240,6 @@ function Debuffs:OnEnable()
             SetUpDebuffDisplay(debuffFrame)
         end
         -- Create dynamic debuff frames
-        local numDebuffFrames = frameOpt.customCount and frameOpt.numFrames or frame.maxDebuffs 
         for i=1, numDebuffFrames do
             local debuffFrame = debuffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
             if not debuffFrame then
@@ -316,10 +314,7 @@ function Debuffs:OnEnable()
     -- FIXME Improve performance by i.e. building a cache during combat
     local function should_show_watchlist_aura(aura)
         local info = watchlist[aura.spellId] or {}
-        if info.hideInCombat then
-            -- TODO combat util
-            return not addonTable.inCombat 
-        elseif ( info.ownOnly and aura.sourceUnit ~= "player" ) then
+        if ( info.ownOnly and aura.sourceUnit ~= "player" ) then
             return false
         else
             return true
@@ -330,7 +325,10 @@ function Debuffs:OnEnable()
         if blacklist[aura.spellId] then
             return false
         end
-        return AuraUtil_ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) or ( watchlist[aura.spellId] and should_show_watchlist_aura(aura) ) 
+        if watchlist[aura.spellId] then
+            return should_show_watchlist_aura(aura)
+        end
+        return AuraUtil_ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) 
     end
 
     -- making use of the unitAuraUpdateInfo provided by UpdateAuras
@@ -434,6 +432,7 @@ function Debuffs:OnEnable()
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
+        on_hide_all_debuffs(frame)
         on_update_auras(frame)
     end)
 end

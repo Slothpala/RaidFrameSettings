@@ -177,7 +177,6 @@ function Buffs:OnEnable()
             buffFrame:SetScale(auraInfo.scale)
         end
         -- Setup dynamic group
-        local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs
         local anchorSet, prevFrame
         for i=1, numBuffFrames do
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i]
@@ -219,7 +218,6 @@ function Buffs:OnEnable()
             SetUpBuffDisplay(buffFrame)
         end
         -- Create dynamic buff frames
-        local numBuffFrames = frameOpt.extraBuffFrames and frameOpt.numBuffFrames or frame.maxBuffs 
         for i=1, numBuffFrames do
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
             if not buffFrame then
@@ -243,26 +241,25 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
-    -- Aura update
+   -- Aura update
     -- FIXME Improve performance by i.e. building a cache during combat
     local function should_show_watchlist_aura(aura)
         local info = watchlist[aura.spellId] or {}
-        if info.hideInCombat then
-            -- TODO combat util
-            return not addonTable.inCombat 
-        elseif ( info.ownOnly and aura.sourceUnit ~= "player" ) then
+        if ( info.ownOnly and aura.sourceUnit ~= "player" ) then
             return false
         else
             return true
         end
     end
 
-
     local function should_show_aura(aura)
         if blacklist[aura.spellId] then
             return false
         end
-        return AuraUtil_ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) or ( watchlist[aura.spellId] and should_show_watchlist_aura(aura) ) 
+        if watchlist[aura.spellId] then
+            return should_show_watchlist_aura(aura)
+        end
+        return AuraUtil_ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) 
     end
 
     -- making use of the unitAuraUpdateInfo provided by UpdateAuras
@@ -293,7 +290,7 @@ function Buffs:OnEnable()
                 for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
                     if auraCache[auraInstanceID] ~= nil then
                         local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
-                        auraCache[auraInstanceID] = newAura
+                        auraCache[auraInstanceID] = newAura 
                         buffsChanged = true
                     end
                 end
@@ -364,6 +361,7 @@ function Buffs:OnEnable()
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
+        on_hide_all_buffs(frame)
         on_update_auras(frame)
     end)
 end

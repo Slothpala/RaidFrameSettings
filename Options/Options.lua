@@ -1922,19 +1922,6 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                     RaidFrameSettings:UpdateModule("Watchlist")
                 end,
             },
-            hideInCombat = {
-                order = 4,
-                type = "toggle",
-                name = "Hide in combat",
-                desc = "Hide " .. auraName .. " during combat.",
-                get = function()
-                    return dbObj[spellId].hideInCombat 
-                end,
-                set = function(_, value)
-                    dbObj[spellId].hideInCombat = value
-                    RaidFrameSettings:UpdateModule("Watchlist")
-                end,
-            },
             remove = {
                 order = 5,
                 name = "remove",

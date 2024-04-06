@@ -1,5 +1,10 @@
 # **Changelog**
-### Version [2.27.0] - 2024-04-02
+### Version [2.27.1] - 2024-04-06
+#### Changed 
+* Performance improvements for Buffs and Debuffs aura processing.
+* Buffs and Debuffs now check for UnitInPartyIsAI in addition to UnitIsPlayer.
+
+### Version [2.27.0] - 2024-04-02 
 #### Changed
 * The SpellGetVisibilityInfo hook has been removed to fix an ongoing taint issue. To keep watchlist and blacklist working, I changed the aura frame processing for buffs and debuffs. As a side effect, the new method can now blacklist or whitelist any buff or debuff (the old method missed some, especially in pvp). Watchlist and Blacklist now rely on Buffs (for buff spellIds) and/or Debuffs (for debuff spellIds) to work.
 

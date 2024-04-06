@@ -31,16 +31,16 @@ function Hooks:HookScript(frame, handler, callback)
         callbacks[frame][handler] = {}
     end
     callbacks[frame][handler][self] = func
-    if not hooked[frame] or not hooked[frame][handler] then
+    if not hooked[frame] then
+        hooked[frame] = {}
+    end
+    if hooked[frame][handler] ~= frame:GetScript(handler) then
         frame:HookScript(handler, function(...)
             for key, callback in next, callbacks[frame][handler] do
                 callback(...)
             end
         end)
-        if not hooked[frame] then
-            hooked[frame] = {}
-        end
-        hooked[frame][handler] = true
+        hooked[frame][handler] = frame:GetScript(handler)
     end
     if not registry[self] then
         registry[self] = {}
@@ -176,6 +176,6 @@ function Hooks:RemoveHandler(frame, handler)
     if not hooked[frame] then
         return
     end
-    hooked[frame][handler] = nil
+    callbacks[frame][handler][self] = nil
 end
 

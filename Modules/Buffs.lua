@@ -289,7 +289,7 @@ function Buffs:OnEnable()
             if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
                 for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
                     if auraCache[auraInstanceID] ~= nil then
-                        local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
+                        local newAura = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
                         auraCache[auraInstanceID] = newAura 
                         buffsChanged = true
                     end

@@ -215,7 +215,7 @@ function Debuffs:OnEnable()
 
     -- Setup the debuff frame visuals
     local function OnFrameSetup(frame)
-        if not UnitIsPlayer(frame.unit) then
+        if not UnitIsPlayer(frame.unit) and not UnitInPartyIsAI(frame.unit) then
             return
         end
         -- Create or find assigned debuff frames

@@ -239,7 +239,7 @@ local options = {
                             order = 6,
                             type = "toggle",
                             name = "Debuffs",
-                            desc = "Adjust the position, orientation and size of debuffs.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r to |r|cffFFFF00MEDIUM|r",
+                            desc = "Adjust the position, orientation and size of debuffs.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r to |r|cffFF474DHIGH|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
@@ -1018,21 +1018,10 @@ local options = {
                                             name = "",
                                             type = "description",
                                         },
-                                        extraBuffFrames = {
-                                            order = 16,
-                                            type = "toggle",
-                                            name = "Adjust the number of buff icons", 
-                                            desc = "Adjust the number of buff icons in the dynamic buff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
-                                            get = "GetStatus",
-                                            set = "SetStatus",
-                                            width = 1.5,
-                                        },
                                         numBuffFrames = {
                                             order = 17,
-                                            disabled = function()
-                                                return not RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.extraBuffFrames
-                                            end,
                                             name = "number of icons",
+                                            desc = "Adjust the number of buff icons in the dynamic buff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
                                             type = "range",
                                             get = "GetStatus",
                                             set = "SetStatus",
@@ -1272,21 +1261,10 @@ local options = {
                                             name = "",
                                             type = "description",
                                         },
-                                        customCount = {
-                                            order = 16,
-                                            type = "toggle",
-                                            name = "Adjust the number of debuff icons", 
-                                            desc = "Adjust the number of debuff icons in the dynamic debuff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
-                                            get = "GetStatus",
-                                            set = "SetStatus",
-                                            width = 1.5,
-                                        },
                                         numFrames = {
                                             order = 17,
-                                            disabled = function()
-                                                return not RaidFrameSettings.db.profile.Debuffs.DebuffFramesDisplay.customCount
-                                            end,
                                             name = "number of icons",
+                                            desc = "Adjust the number of debuff icons in the dynamic debuff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
                                             type = "range",
                                             get = "GetStatus",
                                             set = "SetStatus",

@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [2.27.2] - 2024-04-06
+#### Fixes
+* Fixed an issue that in some cases limited the amount of buff and debuff frames to blizzards default .
+
+#### Changed 
+* removed "Hide in combat" option from Watchlist auras for performance reason.
+
 ### Version [2.27.1] - 2024-04-06
 #### Changed 
 * Performance improvements for Buffs and Debuffs aura processing.

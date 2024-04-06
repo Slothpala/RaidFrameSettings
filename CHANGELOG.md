@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.27.3] - 2024-04-06
+#### Updated 
+* classic interface version to 11502
+
 ### Version [2.27.2] - 2024-04-06
 #### Fixes
 * Fixed an issue that in some cases limited the amount of buff and debuff frames to blizzards default .

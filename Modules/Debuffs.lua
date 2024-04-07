@@ -106,12 +106,16 @@ function Debuffs:OnEnable()
     -- Blacklist 
     local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then
-        blacklist = addon:GetBlacklist()
+        for spellId, _ in pairs(addon.db.profile.Blacklist) do
+            blacklist[tonumber(spellId)] = true
+        end
     end
     -- Watchlist
     local watchlist = {}
     if addon:IsModuleEnabled("Watchlist") then
-        watchlist = addon:GetWatchlist()
+        for spellId, info in pairs(addon.db.profile.Watchlist) do
+            watchlist[tonumber(spellId)] = info
+        end
     end
     local glow_list = {}
     for spellId, info in pairs(watchlist) do
@@ -277,6 +281,11 @@ function Debuffs:OnEnable()
         if debuffFrame:IsForbidden() then
             return
         end
+        if aura and (aura.isBossAura or increase[aura.spellId]) then
+            debuffFrame:SetSize(boss_width, boss_height)
+        else
+            debuffFrame:SetSize(width, height)
+        end
         local enabled = aura.expirationTime and aura.expirationTime ~= 0
         if enabled then
             local cooldown = debuffFrame.cooldown
@@ -286,11 +295,6 @@ function Debuffs:OnEnable()
                 local color = debuffColors[aura.dispelName] or durationOpt.fontColor
                 local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
                 cooldownText:SetTextColor(color.r, color.g, color.b)
-            end
-            if aura and (aura.isBossAura or increase[aura.spellId]) then
-                debuffFrame:SetSize(boss_width, boss_height)
-            else
-                debuffFrame:SetSize(width, height)
             end
             if glow_list[aura.spellId] then
                 LCG.ProcGlow_Start(debuffFrame, glow_options)
@@ -516,6 +520,12 @@ function Debuffs:OnDisable()
         for _, debuffFrame in pairs(info.dynamicGroup) do
             CooldownFrame_Clear(debuffFrame.cooldown)
             debuffFrame:Hide()
+        end
+    end
+    -- Disable avtive glows
+    for debuffFrame, state in pairs(glow_frame_register) do
+        if state == true then
+            LCG.ProcGlow_Stop(debuffFrame)
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

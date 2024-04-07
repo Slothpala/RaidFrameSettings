@@ -7,7 +7,7 @@ local Debuffs = addon:NewModule("Debuffs")
 Mixin(Debuffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
-
+local LCG = LibStub("LibCustomGlow-1.0")
 -- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
@@ -60,6 +60,7 @@ local debuffFrameRegister = {
         }
     ]]
 }
+local glow_frame_register = {}
 
 function Debuffs:OnEnable()
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
@@ -96,7 +97,22 @@ function Debuffs:OnEnable()
     -- Blacklist 
     local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then
-        blacklist = addon:GetBlacklist()
+        for spellId, _ in pairs(addon.db.profile.Blacklist) do
+            blacklist[tonumber(spellId)] = true
+        end
+    end
+    -- Watchlist
+    local watchlist = {}
+    if addon:IsModuleEnabled("Watchlist") then
+        for spellId, info in pairs(addon.db.profile.Watchlist) do
+            watchlist[tonumber(spellId)] = info
+        end
+    end
+    local glow_list = {}
+    for spellId, info in pairs(watchlist) do
+        if info.glow then
+            glow_list[spellId] = true
+        end
     end
     -- Debuff size
     local width  = frameOpt.width
@@ -241,24 +257,43 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
+    local isVanilla = addonTable.isVanilla
     -- Start cooldown timers and resize the debuff frame
     local function OnSetDebuff(debuffFrame, unit, index, filter, isBossAura, isBossBuff)
         if debuffFrame:IsForbidden() then
             return
         end
+        local _, _, _, dispelType, duration, expirationTime, _, _, _, spellId = UnitDebuff(unit, index)
+        local enabled = expirationTime and expirationTime ~= 0
         local cooldown = debuffFrame.cooldown
-        CDT:StartCooldownText(cooldown)
-        cooldown:SetDrawEdge(frameOpt.edge)
-        local _, _, _, dispelType, _, _, _, _, _, spellId = UnitDebuff(unit, index)
-        if durationOpt.durationByDebuffColor then
-            local color = debuffColors[dispelType] or durationOpt.fontColor
-            local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
-            cooldownText:SetTextColor(color.r, color.g, color.b)
-        end
         if isBossAura or isBossBuff or ( increase[spellId] and not userPlaced[spellId] ) then
             debuffFrame:SetSize(boss_width, boss_height)
         else
             debuffFrame:SetSize(width, height)
+        end
+        if enabled then
+            CDT:StartCooldownText(cooldown)
+            cooldown:SetDrawEdge(frameOpt.edge)
+            if isVanilla then
+                local startTime = expirationTime - duration
+                CooldownFrame_Set(cooldown, startTime, duration, true)
+            end
+            if durationOpt.durationByDebuffColor then
+                local color = debuffColors[dispelType] or durationOpt.fontColor
+                local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
+                cooldownText:SetTextColor(color.r, color.g, color.b)
+            end
+        else
+            if isVanilla then
+                CooldownFrame_Clear(cooldown)
+            end
+        end
+        if glow_list[spellId] then
+            LCG.ButtonGlow_Start(cooldown, nil, nil, 0)
+            glow_frame_register[cooldown] = true
+        elseif glow_frame_register[cooldown] == true then
+            LCG.ButtonGlow_Stop(cooldown)
+            glow_frame_register[cooldown] = false
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", OnSetDebuff)
@@ -452,6 +487,12 @@ function Debuffs:OnDisable()
         for _, debuffFrame in pairs(info.dynamicGroup) do
             CooldownFrame_Clear(debuffFrame.cooldown)
             debuffFrame:Hide()
+        end
+    end
+    -- Hide all glows
+    for cooldown, state in pairs(glow_frame_register) do
+        if state == true then
+            LCG.ButtonGlow_Stop(cooldown)
         end
     end
     addon:IterateRoster(restoreDebuffFrames)

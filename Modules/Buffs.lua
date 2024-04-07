@@ -93,12 +93,16 @@ function Buffs:OnEnable()
     -- Blacklist 
     local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then
-        blacklist = addon:GetBlacklist()
+        for spellId, _ in pairs(addon.db.profile.Blacklist) do
+            blacklist[tonumber(spellId)] = true
+        end
     end
     -- Watchlist
     local watchlist = {}
     if addon:IsModuleEnabled("Watchlist") then
-        watchlist = addon:GetWatchlist()
+        for spellId, info in pairs(addon.db.profile.Watchlist) do
+            watchlist[tonumber(spellId)] = info
+        end
     end
     local glow_list = {}
     for spellId, info in pairs(watchlist) do
@@ -243,6 +247,9 @@ function Buffs:OnEnable()
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
     local OnSetBuff = function(buffFrame, aura)
+        if buffFrame:IsForbidden() then
+            return
+        end
         local enabled = aura.expirationTime and aura.expirationTime ~= 0
         if enabled then
             local cooldown = buffFrame.cooldown
@@ -254,8 +261,12 @@ function Buffs:OnEnable()
                 return
             end
         end
-        if glow_frame_register[buffFrame] then
+        if glow_frame_register[buffFrame] == true then
+            --[[ to future me: As of writing this the function CompactUnitFrame_UtilSetBuff also gets called when the frames are no longer visible 
+                i.e. when the unit left the group so it will "clean up" glows by itsleft.
+            ]]
             LCG.ProcGlow_Stop(buffFrame)
+            glow_frame_register[buffFrame] = false
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
@@ -440,6 +451,12 @@ function Buffs:OnDisable()
         for _, buffFrame in pairs(info.dynamicGroup) do
             CooldownFrame_Clear(buffFrame.cooldown)
             buffFrame:Hide()
+        end
+    end
+    -- Hide all glows
+    for buffFrame, state in pairs(glow_frame_register) do
+        if state == true then
+            LCG.ProcGlow_Stop(buffFrame)
         end
     end
     addon:IterateRoster(restoreBuffFrames)

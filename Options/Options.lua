@@ -239,7 +239,7 @@ local options = {
                             order = 6,
                             type = "toggle",
                             name = "Debuffs",
-                            desc = "Adjust the position, orientation and size of debuffs.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r to |r|cffFFFF00MEDIUM|r",
+                            desc = "Adjust the position, orientation and size of debuffs.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r to |r|cffFF474DHIGH|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },
@@ -786,9 +786,9 @@ local options = {
             name = "Watchlist",
             type = "group",
             args = {
-                addBuff = {
+                addAura = {
                     order = 1,
-                    name = "Enter a |cff00ff00buff|r spellId or spellName:",
+                    name = "Enter a spellId or spellName::",
                     type = "input",
                     -- pattern = "^%d+$",
                     -- usage = "please enter a number",
@@ -806,6 +806,7 @@ local options = {
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
+                --[[
                 addDebuff = {
                     order = 2,
                     name = "Enter a |cffFF474Ddebuff|r spellId or spellName:",
@@ -828,6 +829,7 @@ local options = {
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
+                ]]
                 importOptions = {
                     order = 3,
                     name = "Import presets:",
@@ -1042,21 +1044,10 @@ local options = {
                                             name = "",
                                             type = "description",
                                         },
-                                        extraBuffFrames = {
-                                            order = 16,
-                                            type = "toggle",
-                                            name = "Adjust the number of buff icons", 
-                                            desc = "Adjust the number of buff icons in the dynamic buff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
-                                            get = "GetStatus",
-                                            set = "SetStatus",
-                                            width = 1.5,
-                                        },
                                         numBuffFrames = {
                                             order = 17,
-                                            disabled = function()
-                                                return not RaidFrameSettings.db.profile.Buffs.BuffFramesDisplay.extraBuffFrames
-                                            end,
                                             name = "number of icons",
+                                            desc = "Adjust the number of buff icons in the dynamic buff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
                                             type = "range",
                                             get = "GetStatus",
                                             set = "SetStatus",
@@ -1304,21 +1295,10 @@ local options = {
                                             name = "",
                                             type = "description",
                                         },
-                                        customCount = {
-                                            order = 16,
-                                            type = "toggle",
-                                            name = "Adjust the number of debuff icons", 
-                                            desc = "Adjust the number of debuff icons in the dynamic debuff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
-                                            get = "GetStatus",
-                                            set = "SetStatus",
-                                            width = 1.5,
-                                        },
                                         numFrames = {
                                             order = 17,
-                                            disabled = function()
-                                                return not RaidFrameSettings.db.profile.Debuffs.DebuffFramesDisplay.customCount
-                                            end,
                                             name = "number of icons",
+                                            desc = "Adjust the number of debuff icons in the dynamic debuff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
                                             type = "range",
                                             get = "GetStatus",
                                             set = "SetStatus",
@@ -1992,16 +1972,16 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                     RaidFrameSettings:UpdateModule("Watchlist")
                 end,
             },
-            hideInCombat = {
-                order = 4,
+            glow = {
+                order = 3,
                 type = "toggle",
-                name = "Hide in combat",
-                desc = "Hide " .. auraName .. " during combat.",
+                name = "Glow",
+                desc = "Glow the icon while " .. auraName ..  " is applied.",
                 get = function()
-                    return dbObj[spellId].hideInCombat 
+                    return dbObj[spellId].glow 
                 end,
                 set = function(_, value)
-                    dbObj[spellId].hideInCombat = value
+                    dbObj[spellId].glow = value
                     RaidFrameSettings:UpdateModule("Watchlist")
                 end,
             },

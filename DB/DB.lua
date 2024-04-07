@@ -84,8 +84,7 @@ local defaults = {
                 edge = true,
                 inverse = false,
                 timerText = true,
-                customCount = true,
-                numFrames = 5,
+                numFrames = 3,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
@@ -139,8 +138,7 @@ local defaults = {
                 edge = true,
                 inverse = true,
                 timerText = true,
-                extraBuffFrames = true,
-                numBuffFrames = 6,
+                numBuffFrames = 5,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",

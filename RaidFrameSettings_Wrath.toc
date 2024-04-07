@@ -26,7 +26,6 @@ Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
 Utils\AuraVisibility.lua
-Utils\CombatStatus.lua
 Utils\SpellCache.lua
 
 #Modules

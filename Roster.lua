@@ -98,7 +98,7 @@ end
 function addon:IterateRoster(callback)
     CheckRosterCache()
     for unit, frame in next, Roster do
-        if not frame:IsForbidden() and frame:IsShown() and not addonTable.inCombat then
+        if not frame:IsForbidden() and frame:IsShown() then
             callback(frame)
         end
     end

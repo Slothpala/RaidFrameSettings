@@ -296,13 +296,11 @@ function Debuffs:OnEnable()
                 local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
                 cooldownText:SetTextColor(color.r, color.g, color.b)
             end
-            if glow_list[aura.spellId] then
-                LCG.ProcGlow_Start(debuffFrame, glow_options)
-                glow_frame_register[debuffFrame] = true
-                return
-            end
         end
-        if glow_frame_register[debuffFrame] then
+        if glow_list[aura.spellId] then
+            LCG.ProcGlow_Start(debuffFrame, glow_options)
+            glow_frame_register[debuffFrame] = true
+        elseif glow_frame_register[debuffFrame] then
             LCG.ProcGlow_Stop(debuffFrame)
         end
     end

@@ -255,13 +255,11 @@ function Buffs:OnEnable()
             local cooldown = buffFrame.cooldown
             CDT:StartCooldownText(cooldown)
             cooldown:SetDrawEdge(frameOpt.edge)
-            if glow_list[aura.spellId] then
-                LCG.ProcGlow_Start(buffFrame, glow_options)
-                glow_frame_register[buffFrame] = true
-                return
-            end
         end
-        if glow_frame_register[buffFrame] == true then
+        if glow_list[aura.spellId] then
+            LCG.ProcGlow_Start(buffFrame, glow_options)
+            glow_frame_register[buffFrame] = true
+        elseif glow_frame_register[buffFrame] == true then
             --[[ to future me: As of writing this the function CompactUnitFrame_UtilSetBuff also gets called when the frames are no longer visible 
                 i.e. when the unit left the group so it will "clean up" glows by itsleft.
             ]]

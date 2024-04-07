@@ -450,7 +450,7 @@ function Buffs:OnDisable()
             buffFrame:Hide()
         end
     end
-
+    -- Hide all glows
     for buffFrame, state in pairs(glow_frame_register) do
         if state == true then
             LCG.ProcGlow_Stop(buffFrame)

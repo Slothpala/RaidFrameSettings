@@ -5,7 +5,7 @@
 #### Fixes
 * fixed an issue that could cause taint when playing with the buffs module and the roster changed during combat.
 * fixed an issue with HealthBars when the user imported an retail profile to classic.
-* fixed an issue taht caused an error when importing a profile.
+* fixed an issue that caused an error when importing a profile.
 
 ### Version [2.27.3] - 2024-04-06
 #### Updated 

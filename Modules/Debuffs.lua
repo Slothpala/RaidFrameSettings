@@ -7,7 +7,7 @@ local Debuffs = addon:NewModule("Debuffs")
 Mixin(Debuffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
-
+local LCG = LibStub("LibCustomGlow-1.0")
 -- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
@@ -66,6 +66,7 @@ local debuffFrameRegister = {
         }
     ]]
 }
+local glow_frame_register = {}
 
 function Debuffs:OnEnable()
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
@@ -112,6 +113,16 @@ function Debuffs:OnEnable()
     if addon:IsModuleEnabled("Watchlist") then
         watchlist = addon:GetWatchlist()
     end
+    local glow_list = {}
+    for spellId, info in pairs(watchlist) do
+        if info.glow then
+            glow_list[spellId] = true
+        end
+    end
+    local glow_options = {
+        startAnim = false,
+        frameLevel = 1,
+    }
     -- Debuff size
     local width  = frameOpt.width
     local height = frameOpt.height
@@ -276,11 +287,19 @@ function Debuffs:OnEnable()
                 local cooldownText = CDT:CreateOrGetCooldownFontString(cooldown)
                 cooldownText:SetTextColor(color.r, color.g, color.b)
             end
+            if aura and (aura.isBossAura or increase[aura.spellId]) then
+                debuffFrame:SetSize(boss_width, boss_height)
+            else
+                debuffFrame:SetSize(width, height)
+            end
+            if glow_list[aura.spellId] then
+                LCG.ProcGlow_Start(debuffFrame, glow_options)
+                glow_frame_register[debuffFrame] = true
+                return
+            end
         end
-        if aura and (aura.isBossAura or increase[aura.spellId]) then
-            debuffFrame:SetSize(boss_width, boss_height)
-        else
-            debuffFrame:SetSize(width, height)
+        if glow_frame_register[debuffFrame] then
+            LCG.ProcGlow_Stop(debuffFrame)
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", OnSetDebuff)

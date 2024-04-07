@@ -778,9 +778,9 @@ local options = {
             name = "Watchlist",
             type = "group",
             args = {
-                addBuff = {
+                addAura = {
                     order = 1,
-                    name = "Enter a |cff00ff00buff|r spellId:",
+                    name = "Enter a spellId:",
                     type = "input",
                     pattern = "^%d+$",
                     usage = "please enter a number",
@@ -790,6 +790,7 @@ local options = {
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
+                --[[
                 addDebuff = {
                     order = 2,
                     name = "Enter a |cffFF474Ddebuff|r spellId:",
@@ -804,6 +805,7 @@ local options = {
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
+                ]]
                 importOptions = {
                     order = 3,
                     name = "Import presets:",
@@ -1919,6 +1921,19 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 end,
                 set = function(_, value)
                     dbObj[spellId].ownOnly = value
+                    RaidFrameSettings:UpdateModule("Watchlist")
+                end,
+            },
+            glow = {
+                order = 3,
+                type = "toggle",
+                name = "Glow",
+                desc = "Glow the icon while " .. auraName ..  " is applied.",
+                get = function()
+                    return dbObj[spellId].glow 
+                end,
+                set = function(_, value)
+                    dbObj[spellId].glow = value
                     RaidFrameSettings:UpdateModule("Watchlist")
                 end,
             },

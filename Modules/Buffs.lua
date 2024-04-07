@@ -8,7 +8,7 @@ local Buffs = addon:NewModule("Buffs")
 Mixin(Buffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
-
+local LCG = LibStub("LibCustomGlow-1.0")
 -- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
@@ -58,6 +58,7 @@ local buffFrameRegister = {
         }
     ]]
 }
+local glow_frame_register = {}
 
 function Buffs:OnEnable()
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
@@ -99,6 +100,16 @@ function Buffs:OnEnable()
     if addon:IsModuleEnabled("Watchlist") then
         watchlist = addon:GetWatchlist()
     end
+    local glow_list = {}
+    for spellId, info in pairs(watchlist) do
+        if info.glow then
+            glow_list[spellId] = true
+        end
+    end
+    local glow_options = {
+        startAnim = false,
+        frameLevel = 1,
+    }
     -- Buff size
     local width  = frameOpt.width
     local height = frameOpt.height
@@ -237,6 +248,14 @@ function Buffs:OnEnable()
             local cooldown = buffFrame.cooldown
             CDT:StartCooldownText(cooldown)
             cooldown:SetDrawEdge(frameOpt.edge)
+            if glow_list[aura.spellId] then
+                LCG.ProcGlow_Start(buffFrame, glow_options)
+                glow_frame_register[buffFrame] = true
+                return
+            end
+        end
+        if glow_frame_register[buffFrame] then
+            LCG.ProcGlow_Stop(buffFrame)
         end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)

@@ -126,7 +126,7 @@ function HealthBars:OnEnable()
             self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", updateHealthColor)
         end
     end
-    if RaidFrameSettings.db.profile.Module.AuraHighlight then
+    if RaidFrameSettings.db.profile.Module.AuraHighlight and addonTable.isRetail then
         RaidFrameSettings:UpdateModule("AuraHighlight")
     end
     RaidFrameSettings:IterateRoster(function(frame)

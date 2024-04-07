@@ -8,7 +8,7 @@ local Buffs = addon:NewModule("Buffs")
 Mixin(Buffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
-
+local LCG = LibStub("LibCustomGlow-1.0")
 -- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
@@ -53,6 +53,7 @@ local buffFrameRegister = {
         }
     ]]
 }
+local glow_frame_register = {}
 
 function Buffs:OnEnable()
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
@@ -93,6 +94,12 @@ function Buffs:OnEnable()
     if addon:IsModuleEnabled("Watchlist") then
         for spellId, info in pairs(addon.db.profile.Watchlist) do
             watchlist[tonumber(spellId)] = info
+        end
+    end
+    local glow_list = {}
+    for spellId, info in pairs(watchlist) do
+        if info.glow then
+            glow_list[spellId] = true
         end
     end
     -- Buff size
@@ -227,20 +234,28 @@ function Buffs:OnEnable()
 
     local isVanilla = addonTable.isVanilla
     local OnSetBuff = function(buffFrame, unit, index, filter)
-        --Blizzard does not show them on Vanilla, but the functionality is there.
-        if isVanilla and buffFrameRegister[buffFrame:GetParent()] then
-            local _, _, _, _, duration, expirationTime = UnitBuff(unit, index, filter)
-            local enabled = expirationTime and expirationTime ~= 0;
-            if enabled then
-                local startTime = expirationTime - duration;
-                CooldownFrame_Set(buffFrame.cooldown, startTime, duration, true)
-            else
-                CooldownFrame_Clear(buffFrame.cooldown)
+        local _, _, _, _, duration, expirationTime, _, _, _, spellId = UnitBuff(unit, index, filter)
+        local enabled = expirationTime and expirationTime ~= 0
+        local cooldown = buffFrame.cooldown
+        if enabled then
+            CDT:StartCooldownText(cooldown)
+            cooldown:SetDrawEdge(frameOpt.edge)
+            if isVanilla then
+                local startTime = expirationTime - duration
+                CooldownFrame_Set(cooldown, startTime, duration, true)
+            end
+        else
+            if isVanilla then
+                CooldownFrame_Clear(cooldown)
             end
         end
-        local cooldown = buffFrame.cooldown
-        CDT:StartCooldownText(cooldown)
-        cooldown:SetDrawEdge(frameOpt.edge)
+        if glow_list[spellId] then
+            LCG.ButtonGlow_Start(cooldown, nil, nil, 0)
+            glow_frame_register[cooldown] = true
+        elseif glow_frame_register[cooldown] == true then
+            LCG.ButtonGlow_Stop(cooldown)
+            glow_frame_register[cooldown] = false
+        end
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
@@ -371,6 +386,12 @@ function Buffs:OnDisable()
         for _, buffFrame in pairs(info.dynamicGroup) do
             CooldownFrame_Clear(buffFrame.cooldown)
             buffFrame:Hide()
+        end
+    end
+    -- Hide all glows
+    for cooldown, state in pairs(glow_frame_register) do
+        if state == true then
+            LCG.ButtonGlow_Stop(cooldown)
         end
     end
     addon:IterateRoster(restoreBuffFrames)

@@ -6,6 +6,8 @@ local CooldownText = addonTable.cooldownText
 local SetScript = SetScript
 local SetText = SetText
 local Round = Round
+local GetCooldownTimes = GetCooldownTimes
+local GetCooldownDuration = GetCooldownDuration
 --Lua
 local next = next
 local string_format = string.format

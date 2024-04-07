@@ -1,4 +1,4 @@
-## Interface: 11500
+## Interface: 11502
 ## Version: @project-version@
 ## Title: RaidFrameSettings
 ## Author: Slothpala
@@ -25,6 +25,7 @@ Utils\ProfileSwitcher.lua
 Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
+Utils\AuraVisibility.lua
 
 #Modules
 modules_vanilla.xml

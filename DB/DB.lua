@@ -10,16 +10,14 @@ local defaults = {
     profile = {
         Module = {
             ["*"]   = true,
-            Buffs   = false,
-            Debuffs = false,
             CustomScale = false,
             AuraHighlight = false,
         },
         HealthBars = { 
             Textures = { 
-                statusbar  = "Solid",
-                powerbar   = "Solid",
-                background = "Solid",
+                statusbar  = "Blizzard",
+                powerbar   = "Blizzard",
+                background = "Blizzard Raid Bar",
                 border     = "Solid",
             },
             Colors = { 
@@ -39,7 +37,7 @@ local defaults = {
             },
             Name = { 
                 fontsize      = 12,
-                useclasscolor = true,
+                useclasscolor = false,
                 position      = 3,
                 x_offset      = 0,
                 y_offset      = -5,
@@ -57,27 +55,41 @@ local defaults = {
                 y_offset = 0,
             },
         },
+        Blacklist = {  
+            ["206151"] = true, -- Challanger's Burden
+        },
+        Watchlist = {  
+            --[[
+                spellId = {
+                    ownOnly = true/false,
+                    hideInCombat = true/false,
+                    onSelfOnly = true/false,
+                }
+            ]]
+        },
+        oldBlacklistsImported = false,
         Debuffs = {
             DebuffFramesDisplay = {
-                width = 24,
-                height = 22,
+                width = 22,
+                height = 18,
                 cleanIcons = true,
                 increase = 1.2,
-                point = 1,
-                relativePoint = 1,
-                xOffset = 4,
-                yOffset = -4,
-                orientation = 2,
+                point = 3,
+                relativePoint = 3,
+                xOffset = -3,
+                yOffset = -3,
+                orientation = 1,
                 gap = 0,
                 swipe = true,
                 edge = true,
                 inverse = false,
                 timerText = true,
+                numFrames = 3,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
                 outlinemode = 2,
-                fontSize = 14,
+                fontSize = 12,
                 fontColor = {r=1,g=1,b=1,a=1},
                 shadowColor = {r=0,g=0,b=0,a=1},
                 xOffsetShadow = 0,
@@ -86,6 +98,7 @@ local defaults = {
                 relativePoint = 1,
                 xOffsetFont = -4,
                 yOffsetFont = 4,
+                durationByDebuffColor = true,
             },
             StacksDisplay = {
                 font = "Friz Quadrata TT",
@@ -100,6 +113,9 @@ local defaults = {
                 xOffsetFont = 0,
                 yOffsetFont = 0,
             },
+            AuraPosition = {
+
+            },
             Blacklist = {
                 --[[spellID = name                ]]--
             },
@@ -109,24 +125,25 @@ local defaults = {
         },
         Buffs = {
             BuffFramesDisplay = {
-                width = 28,
-                height = 24,
+                width = 18,
+                height = 16,
                 cleanIcons = true,
-                point = 9,
-                relativePoint = 9,
-                xOffset = -4,
-                yOffset = 4,
-                orientation = 1,
+                point = 7,
+                relativePoint = 7,
+                xOffset = 3,
+                yOffset = 3,
+                orientation = 2,
                 gap = 0,
                 swipe = true,
                 edge = true,
                 inverse = true,
                 timerText = true,
+                numBuffFrames = 5,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",
                 outlinemode = 2,
-                fontSize = 14,
+                fontSize = 12,
                 fontColor = {r=1,g=1,b=1,a=1},
                 shadowColor = {r=0,g=0,b=0,a=1},
                 xOffsetShadow = 0,
@@ -222,6 +239,9 @@ local defaults = {
             raid = "Default",
             arena = "Default",
             battleground = "Default",
+        },
+        MinimapButton = {
+            enabled = true,
         },
     },
 }

@@ -1827,8 +1827,13 @@ local options = {
                             multiline = 18,
                             width = "full",
                             confirm = function() return "Caution: Importing a profile will overwrite your current profile." end,
-                            get = function() return RaidFrameSettings:ShareProfile() end,
-                            set = function(self, input) RaidFrameSettings:ImportProfile(input); ReloadUI() end, 
+                            get = function() 
+                                return RaidFrameSettings:ShareProfile() 
+                            end,
+                            set = function(self, input) 
+                                RaidFrameSettings:ImportProfile(input); 
+                                ReloadUI() 
+                            end, 
                         },
                     },
                 },

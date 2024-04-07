@@ -247,6 +247,9 @@ function Buffs:OnEnable()
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
     local OnSetBuff = function(buffFrame, aura)
+        if buffFrame:IsForbidden() then
+            return
+        end
         local enabled = aura.expirationTime and aura.expirationTime ~= 0
         if enabled then
             local cooldown = buffFrame.cooldown

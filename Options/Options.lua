@@ -1876,7 +1876,6 @@ function RaidFrameSettings:CreateBlacklistEntry(spellId, pos)
                 func = function()
                     self.db.profile.Blacklist[spellId] = nil
                     optionsPos[spellId] = nil
-                    RaidFrameSettings:RemoveAuraFromBlacklist(tonumber(spellId))
                     RaidFrameSettings:UpdateModule("Blacklist")
                 end,
                 width = 0.5,
@@ -1945,7 +1944,6 @@ function RaidFrameSettings:CreateWatchlistEntry(spellId, pos)
                 func = function()
                     self.db.profile.Watchlist[spellId] = nil
                     optionsPos[spellId] = nil
-                    RaidFrameSettings:RemoveAuraFromWatchlist(tonumber(spellId))
                     RaidFrameSettings:UpdateModule("Watchlist")
                 end,
                 width = 0.5,

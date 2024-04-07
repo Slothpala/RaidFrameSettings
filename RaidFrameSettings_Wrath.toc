@@ -25,7 +25,6 @@ Utils\ProfileSwitcher.lua
 Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
-Utils\AuraVisibility.lua
 
 #Modules
 modules_wrath.xml

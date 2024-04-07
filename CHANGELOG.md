@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [2.28.0] - 2024-04-07
+#### Added
+* New feature to Watchlist that allows the highlighting of auras via a glow.
+#### Fixes
+* fixed an issue that could cause taint when playing with the buffs module and the roster changed during combat.
+
 ### Version [2.27.3] - 2024-04-06
 #### Updated 
 * classic interface version to 11502

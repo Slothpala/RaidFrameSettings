@@ -234,6 +234,9 @@ function Buffs:OnEnable()
 
     local isVanilla = addonTable.isVanilla
     local OnSetBuff = function(buffFrame, unit, index, filter)
+        if buffFrame:IsForbidden() then
+            return
+        end
         local _, _, _, _, duration, expirationTime, _, _, _, spellId = UnitBuff(unit, index, filter)
         local enabled = expirationTime and expirationTime ~= 0
         local cooldown = buffFrame.cooldown

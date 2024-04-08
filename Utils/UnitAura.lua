@@ -80,7 +80,8 @@ function UnitAura:UnregisterSpellIdCallback(spellId, key)
    spell_id_callbacks[spellId][key] = nil
 end
 
--- Cached auras buffs_changed and debuffs_changed indicate wether or not the auras changed in between two CompactUnitFrame_UpdateAuras calls which they often don't so this can be a huge performance boost.
+-- Cached auras 
+-- buffs_changed and debuffs_changed indicate wether or not the auras changed in between two CompactUnitFrame_UpdateAuras calls which they often don't so this can be a huge performance boost.
 local buff_cache = {}
 local buffs_changed = {}
 local debuff_cache = {}
@@ -209,17 +210,17 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
 end
 
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame, unitAuraUpdateInfo)
-   if not frame or frame:IsForbidden() then 
-      return 
-  end
-  local name = frame:GetName()
-  if not name then
+   if not frame or frame:IsForbidden() then
       return
-  end
-  if not string_sub(name, 1, 7) == "Compact" then
+   end
+   local name = frame:GetName()
+   if not name then
       return
-  end
-  update_unit_auras(frame, unitAuraUpdateInfo)
+   end
+   if not string_sub(name, 1, 7) == "Compact" then
+      return
+   end
+   update_unit_auras(frame, unitAuraUpdateInfo)
 end)
 
 -- Aura request functions

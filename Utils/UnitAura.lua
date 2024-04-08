@@ -25,7 +25,46 @@ function UnitAura:UpdateBlacklist()
    end
 end
 
--- [[ spellId and disple type functions here ]]
+-- Callbacks
+-- To register "clean up" function when auras have been removed
+local removed_aura_instance_id_callbacks = {}
+
+-- spellId callbacks
+local spell_id_callbacks = {}
+
+local function on_apply_aura_callbacks(aura, frame)
+   for _, key in next, spell_id_callbacks[aura.spellId] do
+      key.on_apply(aura, frame)
+      removed_aura_instance_id_callbacks[aura.auraInstanceID] = key.on_remove
+   end
+end
+
+---comment aura and frame parameters are passed to on_apply_callback; frame is passed to on_remove_callback
+---@param spellId number
+---@param key any has to be unique
+---@param on_apply_callback function(arua, frame)
+---@param on_remove_callback function(frame)
+function UnitAura:RegisterSpellIdCallback(spellId, key, on_apply_callback, on_remove_callback)
+   if not spell_id_callbacks[spellId] then
+      spell_id_callbacks[spellId] = {}
+   end
+   spell_id_callbacks[spellId][key] = {}
+   spell_id_callbacks[spellId][key].on_apply = on_apply_callback
+   spell_id_callbacks[spellId][key].on_remove = on_remove_callback
+end
+
+---comment Remove a registered callback by key
+---@param spellId number
+---@param key any as registered
+function UnitAura:UnregisterSpellIdCallback(spellId, key)
+   if not spell_id_callbacks[spellId] then
+      return
+   end
+   spell_id_callbacks[spellId][key] = nil
+end
+
+-- dispel type callbacks
+local dispel_type_callbacks = {}
 
 -- Cached auras
 local buff_cache = {}
@@ -44,6 +83,9 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
          if not blacklist[aura.spellId] then
             new_buff_cache[aura.auraInstanceID] = aura
          end
+         if spell_id_callbacks[aura.spellId] then
+            on_apply_aura_callbacks(aura, frame)
+         end
       end
       AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, handle_help_aura, true)
       -- Debuffs
@@ -51,6 +93,9 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
       local function handle_harm_aura(aura)
          if not blacklist[aura.spellId] then
             new_debuff_cache[aura.auraInstanceID] = aura
+         end
+         if spell_id_callbacks[aura.spellId] then
+            on_apply_aura_callbacks(aura, frame)
          end
       end
       AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, handle_harm_aura, true)
@@ -63,6 +108,9 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
                   new_buff_cache[aura.auraInstanceID] = aura
                elseif aura.isHarmful then
                   new_debuff_cache[aura.auraInstanceID] = aura
+               end
+               if spell_id_callbacks[aura.spellId] then
+                  on_apply_aura_callbacks(aura, frame)
                end
             end
          end
@@ -87,6 +135,10 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
             elseif new_debuff_cache[auraInstanceID] then
                new_debuff_cache[auraInstanceID] = nil
             end
+            if removed_aura_instance_id_callbacks[auraInstanceID] then
+               removed_aura_instance_id_callbacks[auraInstanceID](frame)
+               removed_aura_instance_id_callbacks[auraInstanceID] = nil
+            end
          end
       end
    end
@@ -95,7 +147,6 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
 end
 
 -- Functions to control cache building based on if cache consumers are registered
-
 local is_caching = false
 function UnitAura:StartCaching()
    is_caching = true
@@ -119,7 +170,7 @@ function UnitAura:RegisterConsumer(name)
    aura_cache_consumer[name] = true
 end
 
----@param name any
+---@param name any as registered
 function UnitAura:UnregisterConsumer(name)
    aura_cache_consumer[name] = nil
    if next(aura_cache_consumer) == nil then

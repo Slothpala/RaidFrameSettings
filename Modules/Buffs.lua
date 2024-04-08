@@ -9,6 +9,7 @@ Mixin(Buffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
 local LCG = LibStub("LibCustomGlow-1.0")
+local UnitAura = addonTable.UnitAura
 -- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
@@ -114,6 +115,25 @@ function Buffs:OnEnable()
         startAnim = false,
         frameLevel = 1,
     }
+    UnitAura:RegisterConsumer("Buffs")
+    local function OnRejuApply(aura, frame)
+        LCG.ProcGlow_Start(frame, glow_options)
+    end
+    local function OnRejuRemove(frame)
+        LCG.ProcGlow_Stop(frame)
+    end
+    UnitAura:RegisterSpellIdCallback(774, "rejusayshello", OnRejuApply, OnRejuRemove)
+    local function OnRLifeApply(aura, frame)
+        local life_options = {
+            color = {1,1,1,1},
+            key = "lifebloom",
+        }
+        LCG.ProcGlow_Start(frame, life_options)
+    end
+    local function OnLifeRemove(frame)
+        LCG.ProcGlow_Stop(frame, "lifebloom")
+    end
+    UnitAura:RegisterSpellIdCallback(188550, "life", OnRLifeApply, OnLifeRemove)
     -- Buff size
     local width  = frameOpt.width
     local height = frameOpt.height
@@ -343,13 +363,6 @@ function Buffs:OnEnable()
             return 
         end
         local buffsChanged, auraCache =  update_and_get_aura_cache(frame, unitAuraUpdateInfo)
-        local UnitAuraCache = addonTable.UnitAuraCache
-        local buffs = UnitAuraCache:RequestBuffs(frame.unit)
-        if buffs == last_tbl then
-            print(buffsChanged)
-            print("match")
-        end
-        last_tbl = buffs
         if not buffsChanged then
             return
         end

@@ -62,7 +62,6 @@ local buffFrameRegister = {
 local glow_frame_register = {}
 
 function Buffs:OnEnable()
-    UnitAura:RegisterConsumer("Buffs")
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
     -- Timer display options
     local durationOpt = CopyTable(addon.db.profile.Buffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -331,7 +330,6 @@ end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
-    UnitAura:UnregisterConsumer("Buffs")
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()

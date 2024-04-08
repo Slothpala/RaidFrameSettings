@@ -70,7 +70,6 @@ local debuffFrameRegister = {
 local glow_frame_register = {}
 
 function Debuffs:OnEnable()
-    UnitAura:RegisterConsumer("Debuffs")
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     -- Timer display options
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -395,7 +394,6 @@ end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
-    UnitAura:UnregisterConsumer("Debuffs")
     self:DisableHooks()
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()

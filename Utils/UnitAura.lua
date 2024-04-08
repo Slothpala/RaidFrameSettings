@@ -208,37 +208,19 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
    debuffs_changed[unit] = new_debuff
 end
 
--- Functions to control cache building based on if cache consumers are registered
-local is_caching = false
-function UnitAura:StartCaching()
-   is_caching = true
-   addon:IterateRoster(update_unit_auras)
-   -- CompactUnitFrame_UpdateAuras delivers us the unitAuraUpdateInfo for all CompactUnitFrames which for this addon is all we care a about.
-   self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", update_unit_auras)
-end
-
-function UnitAura:StopCaching()
-   is_caching = false
-   self:DisableHooks()
-end
-
-local aura_cache_consumer = {}
-
----@param name any
-function UnitAura:RegisterConsumer(name)
-   if not is_caching then
-      self:StartCaching()
-   end
-   aura_cache_consumer[name] = true
-end
-
----@param name any as registered
-function UnitAura:UnregisterConsumer(name)
-   aura_cache_consumer[name] = nil
-   if next(aura_cache_consumer) == nil then
-      self:StopCaching()
-   end
-end
+hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame, unitAuraUpdateInfo)
+   if not frame or frame:IsForbidden() then 
+      return 
+  end
+  local name = frame:GetName()
+  if not name then
+      return
+  end
+  if not string_sub(name, 1, 7) == "Compact" then
+      return
+  end
+  update_unit_auras(frame, unitAuraUpdateInfo)
+end)
 
 -- Aura request functions
 ---@param UnitId

@@ -8,6 +8,7 @@ Mixin(Debuffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
 local Media = LibStub("LibSharedMedia-3.0")
 local LCG = LibStub("LibCustomGlow-1.0")
+local UnitAura = addonTable.UnitAura
 -- WoW Api
 local SetSize = SetSize
 local SetTexCoord = SetTexCoord
@@ -69,6 +70,7 @@ local debuffFrameRegister = {
 local glow_frame_register = {}
 
 function Debuffs:OnEnable()
+    UnitAura:RegisterConsumer("Debuffs")
     local frameOpt = addon.db.profile.Debuffs.DebuffFramesDisplay
     -- Timer display options
     local durationOpt = CopyTable(addon.db.profile.Debuffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -331,79 +333,12 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdatePrivateAuras", OnUpdatePrivateAuras)
 
-   -- Aura update
-    -- FIXME Improve performance by i.e. building a cache during combat
-    local function should_show_watchlist_aura(aura)
-        local info = watchlist[aura.spellId] or {}
-        if ( info.ownOnly and aura.sourceUnit ~= "player" ) then
-            return false
-        else
-            return true
-        end
-    end
-
-    local function should_show_aura(aura)
-        if blacklist[aura.spellId] then
-            return false
-        end
-        if watchlist[aura.spellId] then
-            return should_show_watchlist_aura(aura)
-        end
-        return AuraUtil_ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) 
-    end
-
-    -- making use of the unitAuraUpdateInfo provided by UpdateAuras
-    local function update_and_get_aura_cache(frame, unitAuraUpdateInfo)
-        local auraCache = debuffFrameRegister[frame].auraCache or {}
-        local debuffsChanged = false
-        if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
-            auraCache = {}
-            local function handle_harm_aura(aura)
-                if should_show_aura(aura) then
-                    auraCache[aura.auraInstanceID] = aura
-                    debuffsChanged = true
-                end
-            end
-            local batchCount = nil
-            local usePackedAura = true
-            AuraUtil_ForEachAura(frame.unit, "HARMFUL", batchCount, handle_harm_aura, usePackedAura)
-		else
-            if unitAuraUpdateInfo.addedAuras ~= nil then
-                for _, aura in next, unitAuraUpdateInfo.addedAuras do
-                    if aura.isHarmful and should_show_aura(aura) then
-                        auraCache[aura.auraInstanceID] = aura
-                        debuffsChanged = true
-                    end
-                end
-            end
-            if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
-                for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
-                    if auraCache[auraInstanceID] ~= nil then
-                        local newAura = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
-                        auraCache[auraInstanceID] = newAura
-                        debuffsChanged = true
-                    end
-                end
-            end
-            if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
-                for _, auraInstanceID in next, unitAuraUpdateInfo.removedAuraInstanceIDs do
-                    if auraCache[auraInstanceID] then
-                        auraCache[auraInstanceID] = nil
-                        debuffsChanged = true
-                    end
-                end
-            end
-        end
-        debuffFrameRegister[frame].auraCache = auraCache
-        return debuffsChanged, auraCache
-    end
-
-    local function on_update_auras(frame, unitAuraUpdateInfo)
+    local function on_update_auras(frame)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() then
             return true
         end
-        local debuffsChanged, auraCache = update_and_get_aura_cache(frame, unitAuraUpdateInfo)
+        local auraCache, debuffsChanged = UnitAura:RequestDebuffs(frame.unit)
         if not debuffsChanged then
             return
         end
@@ -460,6 +395,7 @@ end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
+    UnitAura:UnregisterConsumer("Debuffs")
     self:DisableHooks()
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()

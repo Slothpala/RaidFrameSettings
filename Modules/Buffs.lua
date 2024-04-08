@@ -62,6 +62,7 @@ local buffFrameRegister = {
 local glow_frame_register = {}
 
 function Buffs:OnEnable()
+    UnitAura:RegisterConsumer("Buffs")
     local frameOpt = addon.db.profile.Buffs.BuffFramesDisplay
     -- Timer display options
     local durationOpt = CopyTable(addon.db.profile.Buffs.DurationDisplay) --copy is important so that we dont overwrite the db value when fetching the real values
@@ -115,25 +116,6 @@ function Buffs:OnEnable()
         startAnim = false,
         frameLevel = 1,
     }
-    UnitAura:RegisterConsumer("Buffs")
-    local function OnRejuApply(aura, frame)
-        LCG.ProcGlow_Start(frame, glow_options)
-    end
-    local function OnRejuRemove(frame)
-        LCG.ProcGlow_Stop(frame)
-    end
-    UnitAura:RegisterSpellIdCallback(774, "rejusayshello", OnRejuApply, OnRejuRemove)
-    local function OnRLifeApply(aura, frame)
-        local life_options = {
-            color = {1,1,1,1},
-            key = "lifebloom",
-        }
-        LCG.ProcGlow_Start(frame, life_options)
-    end
-    local function OnLifeRemove(frame)
-        LCG.ProcGlow_Stop(frame, "lifebloom")
-    end
-    UnitAura:RegisterSpellIdCallback(188550, "life", OnRLifeApply, OnLifeRemove)
     -- Buff size
     local width  = frameOpt.width
     local height = frameOpt.height
@@ -289,80 +271,12 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
-   -- Aura update
-    -- FIXME Improve performance by i.e. building a cache during combat
-    local function should_show_watchlist_aura(aura)
-        local info = watchlist[aura.spellId] or {}
-        if ( info.ownOnly and aura.sourceUnit ~= "player" ) then
-            return false
-        else
-            return true
-        end
-    end
-
-    local function should_show_aura(aura)
-        if blacklist[aura.spellId] then
-            return false
-        end
-        if watchlist[aura.spellId] then
-            return should_show_watchlist_aura(aura)
-        end
-        return AuraUtil_ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) 
-    end
-
-    -- making use of the unitAuraUpdateInfo provided by UpdateAuras
-    local function update_and_get_aura_cache(frame, unitAuraUpdateInfo)
-        local auraCache = buffFrameRegister[frame].auraCache or {}
-        local buffsChanged = false
-        if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
-            auraCache = {}
-            local function handle_help_aura(aura)
-                if should_show_aura(aura) then
-                    auraCache[aura.auraInstanceID] = aura
-                    buffsChanged = true
-                end
-            end
-            local batchCount = nil
-            local usePackedAura = true
-            AuraUtil_ForEachAura(frame.unit, "HELPFUL", batchCount, handle_help_aura, usePackedAura)
-		else
-            if unitAuraUpdateInfo.addedAuras ~= nil then
-                for _, aura in next, unitAuraUpdateInfo.addedAuras do
-                    if aura.isHelpful and should_show_aura(aura) then
-                        auraCache[aura.auraInstanceID] = aura
-                        buffsChanged = true
-                    end
-                end
-            end
-            if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
-                for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
-                    if auraCache[auraInstanceID] ~= nil then
-                        local newAura = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
-                        auraCache[auraInstanceID] = newAura 
-                        buffsChanged = true
-                    end
-                end
-            end
-            if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
-                for _, auraInstanceID in next, unitAuraUpdateInfo.removedAuraInstanceIDs do
-                    if auraCache[auraInstanceID] then
-                        auraCache[auraInstanceID] = nil
-                        buffsChanged = true
-                    end
-                end
-            end
-        end
-        buffFrameRegister[frame].auraCache = auraCache
-        return buffsChanged, auraCache
-    end
-
-    local last_tbl = {}
-    local function on_update_auras(frame, unitAuraUpdateInfo)
+    local function on_update_auras(frame)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() then
             return 
         end
-        local buffsChanged, auraCache =  update_and_get_aura_cache(frame, unitAuraUpdateInfo)
+        local auraCache, buffsChanged  =  UnitAura:RequestBuffs(frame.unit)
         if not buffsChanged then
             return
         end
@@ -417,6 +331,7 @@ end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
+    UnitAura:UnregisterConsumer("Buffs")
     self:DisableHooks()
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()

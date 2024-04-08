@@ -28,7 +28,7 @@ Utils\ProfileSwitcher.lua
 Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
-Utils\UnitAuraCache.lua
+Utils\UnitAura.lua
 
 #Modules
 modules.xml

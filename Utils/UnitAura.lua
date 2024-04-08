@@ -2,8 +2,9 @@
 
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
-addonTable.UnitAuraCache = {}
-local UnitAuraCache = addonTable.UnitAuraCache
+addonTable.UnitAura = {}
+local UnitAura = addonTable.UnitAura
+Mixin(UnitAura, addonTable.hooks)
 
 -- Speed references
 -- WoW Api
@@ -17,46 +18,18 @@ local string_sub = string.sub
 -- Blacklist 
 local blacklist = {}
 
-function addon:UnitAuraCache_UpdateBlacklist()
+function UnitAura:UpdateBlacklist()
    blacklist = {}
    for spellId, _ in pairs(addon.db.profile.Blacklist) do
       blacklist[tonumber(spellId)] = true
    end
 end
 
+-- [[ spellId and disple type functions here ]]
+
 -- Cached auras
 local buff_cache = {}
 local debuff_cache = {}
-
--- Dispel type callbacks 
-local dispel_type_callbacks = {}
-function UnitAuraCache:AddDispelTypeCallback(dispelType, key, callback)
-   if not dispel_type_callbacks[dispelType] then
-      dispel_type_callbacks[dispelType] = {}
-   end
-   dispel_type_callbacks[dispelType][key] = callback
-end
-
-function UnitAuraCache:RemoveDispelTypeCallback(dispelType, key)
-   if not dispel_type_callbacks[dispelType] or not dispel_type_callbacks[dispelType][key] then
-      return
-   end
-   dispel_type_callbacks[dispelType][key] = nil
-end
-
--- spellId callbakcs
-local spell_id_callbacks = {}
-
----@param spellId number
----@param callback function
-function UnitAuraCache:AddSpellIdCallback(spellId, callback)
-   spell_id_callbacks[spellId] = callback
-end
-
----@param spellId number
-function UnitAuraCache:RemoveSpellIdCallback(spellId)
-   spell_id_callbacks[spellId] = nil
-end
 
 local function update_unit_auras(frame, unitAuraUpdateInfo)
    local unit = frame.unit or ""
@@ -121,30 +94,48 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
    debuff_cache[unit] = new_debuff_cache
 end
 
-hooksecurefunc("CompactUnitFrame_UpdateAuras", function (frame, unitAuraUpdateInfo)
-   -- Should filter out the same frames as HookFuncFiltered from HookRegistry
-   if not frame or frame:IsForbidden() then
-      return
+-- Functions to control cache building based on if cache consumers are registered
+
+local is_caching = false
+function UnitAura:StartCaching()
+   is_caching = true
+   addon:IterateRoster(update_unit_auras)
+   -- CompactUnitFrame_UpdateAuras delivers us the unitAuraUpdateInfo for all CompactUnitFrames which for this addon is all we care a about.
+   self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", update_unit_auras)
+end
+
+function UnitAura:StopCaching()
+   is_caching = false
+   self:DisableHooks()
+end
+
+local aura_cache_consumer = {}
+
+---@param name any
+function UnitAura:RegisterConsumer(name)
+   if not is_caching then
+      self:StartCaching()
    end
-   local name = frame:GetName()
-   if not name then
-      return
+   aura_cache_consumer[name] = true
+end
+
+---@param name any
+function UnitAura:UnregisterConsumer(name)
+   aura_cache_consumer[name] = nil
+   if next(aura_cache_consumer) == nil then
+      self:StopCaching()
    end
-   if not string_sub(name, 1, 7) == "Compact" then
-      return
-   end
-   update_unit_auras(frame, unitAuraUpdateInfo)
-end)
+end
 
 -- Aura request functions
 ---@param UnitId
 ---@return table
-function UnitAuraCache:RequestBuffs(unit)
+function UnitAura:RequestBuffs(unit)
    return buff_cache[unit] or {}
 end
 
 ---@param UnitId
 ---@return table
-function UnitAuraCache:RequestDebuffs(unit)
+function UnitAura:RequestDebuffs(unit)
    return debuff_cache[unit] or {}
 end

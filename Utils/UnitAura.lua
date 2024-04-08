@@ -80,14 +80,14 @@ function UnitAura:UnregisterSpellIdCallback(spellId, key)
    spell_id_callbacks[spellId][key] = nil
 end
 
--- Cached auras
+-- Cached auras buffs_changed and debuffs_changed indicate wether or not the auras changed in between two CompactUnitFrame_UpdateAuras calls which they often don't so this can be a huge performance boost.
 local buff_cache = {}
 local buffs_changed = {}
 local debuff_cache = {}
 local debuffs_changed = {}
 
 -- Aura update
--- FIXME Improve performance by i.e. building a cache during combat
+-- FIXME minor Improve performance by i.e. building a cache during combat
 local function should_show_watchlist_aura(aura)
    local info = watchlist[aura.spellId] or {}
    if ( info.ownOnly and aura.sourceUnit ~= "player" ) then

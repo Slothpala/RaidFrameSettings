@@ -336,12 +336,20 @@ function Buffs:OnEnable()
         return buffsChanged, auraCache
     end
 
+    local last_tbl = {}
     local function on_update_auras(frame, unitAuraUpdateInfo)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() then
             return 
         end
         local buffsChanged, auraCache =  update_and_get_aura_cache(frame, unitAuraUpdateInfo)
+        local UnitAuraCache = addonTable.UnitAuraCache
+        local buffs = UnitAuraCache:RequestBuffs(frame.unit)
+        if buffs == last_tbl then
+            print(buffsChanged)
+            print("match")
+        end
+        last_tbl = buffs
         if not buffsChanged then
             return
         end

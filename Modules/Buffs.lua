@@ -92,13 +92,6 @@ function Buffs:OnEnable()
     local hasPlacedAuras = ( numUserPlaced > 0 ) and true or false
     -- 
     local numBuffFrames = frameOpt.numBuffFrames
-    -- Blacklist 
-    local blacklist = {}
-    if addon:IsModuleEnabled("Blacklist") then
-        for spellId, _ in pairs(addon.db.profile.Blacklist) do
-            blacklist[tonumber(spellId)] = true
-        end
-    end
     -- Watchlist
     local watchlist = {}
     if addon:IsModuleEnabled("Watchlist") then
@@ -281,7 +274,7 @@ function Buffs:OnEnable()
         if not buffFrameRegister[frame] or not frame:IsVisible() then
             return 
         end
-        local auraCache, buffsChanged  =  UnitAura:RequestBuffs(frame.unit)
+        local auraCache, buffsChanged = UnitAura:RequestBuffs(frame.unit)
         if not buffsChanged then
             return
         end

@@ -3,14 +3,17 @@
 ]]
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
+local UnitAura = addonTable.UnitAura
 
 local Watchlist = addon:NewModule("Watchlist")
 
 function Watchlist:OnEnable()
+    UnitAura:UpdateWatchlist(true)
     self:ReloadAffectedModules()
 end
 
 function Watchlist:OnDisable()
+    UnitAura:UpdateWatchlist(false)
     self:ReloadAffectedModules()
 end
 

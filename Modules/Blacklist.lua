@@ -5,15 +5,18 @@
 ]]
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
+local UnitAura = addonTable.UnitAura
 
 local Blacklist = addon:NewModule("Blacklist")
 
 function Blacklist:OnEnable()
+    UnitAura:UpdateBlacklist(true)
     self:ReloadAffectedModules()
 end
 
 
 function Blacklist:OnDisable()
+    UnitAura:UpdateBlacklist(false)
     self:ReloadAffectedModules()
 end
 

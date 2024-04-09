@@ -22,12 +22,12 @@ local blacklist = {}
 
 function UnitAura:UpdateBlacklist(is_enabled)
    blacklist = {}
-   if not is_enabled then
-      return
+   if is_enabled then
+      for spellId, _ in pairs(addon.db.profile.Blacklist) do
+         blacklist[tonumber(spellId)] = true
+      end
    end
-   for spellId, _ in pairs(addon.db.profile.Blacklist) do
-      blacklist[tonumber(spellId)] = true
-   end
+   self:UpdateAllAurasOnAllFrames()
 end
 
 -- Watchlist
@@ -35,12 +35,12 @@ local watchlist = {}
 
 function UnitAura:UpdateWatchlist(is_enabled)
    watchlist = {}
-   if not is_enabled then
-      return
+   if is_enabled then
+      for spellId, info in pairs(addon.db.profile.Watchlist) do
+         watchlist[tonumber(spellId)] = info
+      end
    end
-   for spellId, info in pairs(addon.db.profile.Watchlist) do
-      watchlist[tonumber(spellId)] = info
-   end
+   self:UpdateAllAurasOnAllFrames()
 end
 
 -- Callbacks
@@ -263,6 +263,11 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
    buffs_changed[unit] = new_buff
    debuff_cache[unit] = new_debuff_cache
    debuffs_changed[unit] = new_debuff
+end
+
+-- Update all auras on all frames should be only used for the menu
+function UnitAura:UpdateAllAurasOnAllFrames()
+   addon:IterateRoster(update_unit_auras)
 end
 
 -- Hooking it this way instead of with HookRegistry gurantees that this hook is first. I will rewrite HookRegistry at some point allowing for priority execution of callbacks

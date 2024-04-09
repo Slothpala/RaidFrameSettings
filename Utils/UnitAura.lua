@@ -33,6 +33,9 @@ local watchlist = {}
 
 function UnitAura:UpdateWatchlist(is_enabled)
    watchlist = {}
+   if not is_enabled then
+      return
+   end
    for spellId, info in pairs(addon.db.profile.Watchlist) do
       watchlist[tonumber(spellId)] = info
    end
@@ -209,6 +212,7 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
    debuffs_changed[unit] = new_debuff
 end
 
+-- Hooking it this way instead of with HookRegistry gurantees that this hook is first. I will rewrite HookRegistry at some point allowing for priority execution of callbacks
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame, unitAuraUpdateInfo)
    if not frame or frame:IsForbidden() then
       return

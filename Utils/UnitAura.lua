@@ -48,7 +48,7 @@ local removed_aura_instance_id_callbacks = {}
 -- spellId callbacks
 local spell_id_callbacks = {}
 
-local function on_apply_aura_callbacks(aura, frame)
+local function on_apply_aura(aura, frame)
    if not removed_aura_instance_id_callbacks[aura.auraInstanceID] then
       removed_aura_instance_id_callbacks[aura.auraInstanceID] = {}
    end
@@ -83,6 +83,51 @@ function UnitAura:UnregisterSpellIdCallback(spellId, key)
    spell_id_callbacks[spellId][key] = nil
 end
 
+-- Dispel type callbacks
+local dispel_type_callbacks = {
+   --[[
+   Curse   = {},
+   Disease = {},
+   Magic   = {},
+   Poison  = {},
+   Bleed   = {},
+   ]]--
+}
+
+local function on_apply_dispel(dispelType, aura, frame)
+   if not removed_aura_instance_id_callbacks[aura.auraInstanceID] then
+      removed_aura_instance_id_callbacks[aura.auraInstanceID] = {}
+   end
+   for _, key in next, dispel_type_callbacks[dispelType] do
+      key.on_apply(aura, frame)
+      removed_aura_instance_id_callbacks[aura.auraInstanceID][key] = key.on_remove
+   end
+end
+
+---comment
+---@param dispelType string Curse or Disease or Magic or Poison or Bleed
+---@param key any has to be unique
+---@param on_apply_callback function(aura, frame)
+---@param on_remove_callback function(auraInstanceID)
+function UnitAura:RegisterDispelTypeCallback(dispelType, key, on_apply_callback, on_remove_callback)
+   if not dispel_type_callbacks[dispelType] then
+      dispel_type_callbacks[dispelType] = {}
+   end
+   dispel_type_callbacks[dispelType][key] = {}
+   dispel_type_callbacks[dispelType][key].on_apply = on_apply_callback
+   dispel_type_callbacks[dispelType][key].on_remove = on_remove_callback
+end
+
+---comment
+---@param dispelType string Curse or Disease or Magic or Poison or Bleed
+---@param key any as registered
+function UnitAura:UnregisterDispelTypeCallback(dispelType, key)
+   if not dispel_type_callbacks[dispelType] then
+      return
+   end
+   dispel_type_callbacks[dispelType][key] = nil
+end
+
 -- Cached auras 
 -- buffs_changed and debuffs_changed indicate wether or not the auras changed in between two CompactUnitFrame_UpdateAuras calls which they often don't so this can be a huge performance boost.
 local buff_cache = {}
@@ -92,6 +137,7 @@ local debuffs_changed = {}
 
 -- Aura update
 -- FIXME minor Improve performance by i.e. building a cache during combat
+-- there will be more options at some point
 local function should_show_watchlist_aura(aura)
    local info = watchlist[aura.spellId] or {}
    if ( info.ownOnly and aura.sourceUnit ~= "player" ) then
@@ -137,7 +183,7 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
             new_buff_cache[aura.auraInstanceID] = aura
             new_buff = true
             if spell_id_callbacks[aura.spellId] then
-               on_apply_aura_callbacks(aura, frame)
+               on_apply_aura(aura, frame)
             end
          end
       end
@@ -149,7 +195,10 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
             new_debuff_cache[aura.auraInstanceID] = aura
             new_debuff = true
             if spell_id_callbacks[aura.spellId] then
-               on_apply_aura_callbacks(aura, frame)
+               on_apply_aura(aura, frame)
+            end
+            if aura.dispelName and dispel_type_callbacks[aura.dispelName] then
+               on_apply_dispel(aura.dispelName, aura, frame)
             end
          end
       end
@@ -162,13 +211,16 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
                new_buff_cache[aura.auraInstanceID] = aura
                new_buff = true
                if spell_id_callbacks[aura.spellId] then
-                  on_apply_aura_callbacks(aura, frame)
+                  on_apply_aura(aura, frame)
                end
             elseif aura.isHarmful and should_show_harm_aura(aura) then
                new_debuff_cache[aura.auraInstanceID] = aura
                new_debuff = true
                if spell_id_callbacks[aura.spellId] then
-                  on_apply_aura_callbacks(aura, frame)
+                  on_apply_aura(aura, frame)
+               end
+               if aura.dispelName and dispel_type_callbacks[aura.dispelName] then
+                  on_apply_dispel(aura.dispelName, aura, frame)
                end
             end
          end

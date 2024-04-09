@@ -61,11 +61,10 @@ local function on_apply_aura(aura, frame)
    end
 end
 
----comment aura and frame parameters are passed to on_apply_callback; auraInstanceID parameter is passed to on_remove_callback to enforece cleaning up inside of the modules
 ---@param spellId number
 ---@param key any has to be unique
 ---@param on_apply_callback function(arua, frame)
----@param on_remove_callback function(auraInstanceID)
+---@param on_remove_callback function(auraInstanceID, frame)
 function UnitAura:RegisterSpellIdCallback(spellId, key, on_apply_callback, on_remove_callback)
    if not spell_id_callbacks[spellId] then
       spell_id_callbacks[spellId] = {}
@@ -110,7 +109,7 @@ end
 ---@param dispelType string Curse or Disease or Magic or Poison or Bleed
 ---@param key any has to be unique
 ---@param on_apply_callback function(aura, frame)
----@param on_remove_callback function(auraInstanceID)
+---@param on_remove_callback function(auraInstanceID, frame)
 function UnitAura:RegisterDispelTypeCallback(dispelType, key, on_apply_callback, on_remove_callback)
    if not dispel_type_callbacks[dispelType] then
       dispel_type_callbacks[dispelType] = {}
@@ -253,7 +252,7 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
             end
             if removed_aura_instance_id_callbacks[auraInstanceID] then
                for _, callback in next, removed_aura_instance_id_callbacks[auraInstanceID] do 
-                  callback(auraInstanceID)
+                  callback(auraInstanceID, frame)
                end
                removed_aura_instance_id_callbacks[auraInstanceID] = nil
             end

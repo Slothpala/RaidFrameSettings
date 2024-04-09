@@ -8,10 +8,12 @@ Mixin(UnitAura, addonTable.hooks)
 
 -- Speed references
 -- WoW Api
+--[[ seems to make issues with continuationTokens
 local AuraUtil_ForEachAura = AuraUtil.ForEachAura
 local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
 local AuraUtil_ShouldDisplayBuff = AuraUtil.ShouldDisplayBuff
 local AuraUtil_ShouldDisplayDebuff = AuraUtil.ShouldDisplayDebuff
+]]
 -- Lua
 local string_sub = string.sub
 
@@ -154,7 +156,7 @@ local function should_show_help_aura(aura)
    if watchlist[aura.spellId] then
        return should_show_watchlist_aura(aura)
    end
-   return AuraUtil_ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) 
+   return AuraUtil.ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) 
 end
 
 local function should_show_harm_aura(aura)
@@ -164,7 +166,7 @@ local function should_show_harm_aura(aura)
    if watchlist[aura.spellId] then
        return should_show_watchlist_aura(aura)
    end
-   return AuraUtil_ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) 
+   return AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) 
 end
 
 local function update_unit_auras(frame, unitAuraUpdateInfo)
@@ -187,7 +189,7 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
             end
          end
       end
-      AuraUtil_ForEachAura(frame.unit, "HELPFUL", nil, handle_help_aura, true)
+      AuraUtil.ForEachAura(frame.unit, "HELPFUL", nil, handle_help_aura, true)
       -- Debuffs
       new_debuff_cache = {}
       local function handle_harm_aura(aura)
@@ -202,7 +204,7 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
             end
          end
       end
-      AuraUtil_ForEachAura(frame.unit, "HARMFUL", nil, handle_harm_aura, true)
+      AuraUtil.ForEachAura(frame.unit, "HARMFUL", nil, handle_harm_aura, true)
    else
       -- Added auras
       if unitAuraUpdateInfo.addedAuras ~= nil then
@@ -229,11 +231,11 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
       if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
          for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
             if new_buff_cache[auraInstanceID] then
-               local new_aura = C_UnitAuras_GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+               local new_aura = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
                new_buff_cache[auraInstanceID] = new_aura
                new_buff = true
             elseif new_debuff_cache[auraInstanceID] then
-               local new_aura = C_UnitAuras_GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+               local new_aura = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
                new_debuff_cache[auraInstanceID] = new_aura
                new_debuff = true
             end

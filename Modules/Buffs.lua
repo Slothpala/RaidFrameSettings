@@ -59,6 +59,7 @@ local buffFrameRegister = {
         }
     ]]
 }
+local addon_created_buff_frames = {}
 local glow_frame_register = {}
 
 function Buffs:OnEnable()
@@ -229,6 +230,7 @@ function Buffs:OnEnable()
             if not buffFrame then
                 buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
                 buffFrameRegister[frame].userPlaced[spellId].buffFrame = buffFrame
+                addon_created_buff_frames[buffFrame] = true
             end
             ResizeBuffFrame(buffFrame)
             SetUpBuffDisplay(buffFrame)
@@ -248,6 +250,9 @@ function Buffs:OnEnable()
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
     local OnSetBuff = function(buffFrame, aura)
+        if not addon_created_buff_frames[buffFrame] then
+            return
+        end
         if buffFrame:IsForbidden() then
             return
         end
@@ -375,15 +380,9 @@ function Buffs:OnDisable()
         end
     end
     -- Hide our frames
-    for frame, info in pairs(buffFrameRegister) do
-        for _, indicator in pairs(info.userPlaced) do
-            CooldownFrame_Clear(indicator.buffFrame.cooldown)
-            indicator.buffFrame:Hide()
-        end
-        for _, buffFrame in pairs(info.dynamicGroup) do
-            CooldownFrame_Clear(buffFrame.cooldown)
-            buffFrame:Hide()
-        end
+    for buffFrame, _ in pairs(addon_created_buff_frames) do
+        CooldownFrame_Clear(buffFrame.cooldown)
+        buffFrame:Hide()
     end
     -- Hide all glows
     for buffFrame, state in pairs(glow_frame_register) do

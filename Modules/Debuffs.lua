@@ -67,6 +67,7 @@ local debuffFrameRegister = {
         }
     ]]
 }
+local addon_created_debuff_frames = {}
 local glow_frame_register = {}
 
 function Debuffs:OnEnable()
@@ -251,6 +252,7 @@ function Debuffs:OnEnable()
                 debuffFrame.baseSize = 1
                 debuffFrame.maxHeight = 1
                 debuffFrameRegister[frame].userPlaced[spellId].debuffFrame = debuffFrame
+                addon_created_debuff_frames[debuffFrame] = true
             end
             ResizeDebuffFrame(debuffFrame)
             SetUpDebuffDisplay(debuffFrame)
@@ -279,6 +281,9 @@ function Debuffs:OnEnable()
 
     -- Start cooldown timers and resize the debuff frame
     local function OnSetDebuff(debuffFrame, aura)
+        if not addon_created_debuff_frames[debuffFrame] then
+            return
+        end
         if debuffFrame:IsForbidden() then
             return
         end
@@ -444,15 +449,9 @@ function Debuffs:OnDisable()
         end
     end
     -- Hide our frames
-    for frame, info in pairs(debuffFrameRegister) do
-        for _, indicator in pairs(info.userPlaced) do
-            CooldownFrame_Clear(indicator.debuffFrame.cooldown)
-            indicator.debuffFrame:Hide()
-        end
-        for _, debuffFrame in pairs(info.dynamicGroup) do
-            CooldownFrame_Clear(debuffFrame.cooldown)
-            debuffFrame:Hide()
-        end
+    for debuffFrame, _ in pairs(addon_created_debuff_frames) do
+        CooldownFrame_Clear(debuffFrame.cooldown)
+        debuffFrame:Hide()
     end
     -- Disable avtive glows
     for debuffFrame, state in pairs(glow_frame_register) do

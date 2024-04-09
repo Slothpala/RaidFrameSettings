@@ -240,6 +240,7 @@ function Buffs:OnEnable()
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
             if not buffFrame then
                 buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
+                addon_created_buff_frames[buffFrame] = true
             end
             buffFrameRegister[frame].dynamicGroup[i] = buffFrame
             ResizeBuffFrame(buffFrame)

@@ -266,6 +266,7 @@ function Debuffs:OnEnable()
                 debuffFrame.maxHeight = 1
             end
             debuffFrameRegister[frame].dynamicGroup[i] = debuffFrame
+            addon_created_debuff_frames[debuffFrame] = true
             ResizeDebuffFrame(debuffFrame)
             SetUpDebuffDisplay(debuffFrame)
         end

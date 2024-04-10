@@ -18,4 +18,5 @@
   <Script file="Libs\LibCanDispel-1.0\LibCanDispel-1.0.lua"/>
 @end-non-debug@-->
   <Script file="Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua"/>
+  <Script file="Libs\LibDispel\LibDispel.lua"/>
 </Ui>

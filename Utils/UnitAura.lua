@@ -6,6 +6,11 @@ addonTable.UnitAura = {}
 local UnitAura = addonTable.UnitAura
 Mixin(UnitAura, addonTable.hooks)
 
+-- many thanks to https://github.com/tukui-org/LibDispel for making it available. 
+local LD = LibStub("LibDispel-1.0")
+local BleedList = LD:GetBleedList()
+
+
 -- Speed references
 -- WoW Api
 --[[ seems to make issues with continuationTokens
@@ -201,6 +206,9 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
             if aura.dispelName and dispel_type_callbacks[aura.dispelName] then
                on_apply_dispel(aura.dispelName, aura, frame)
             end
+            if dispel_type_callbacks["Bleed"] and BleedList[aura.spellId] then
+               on_apply_dispel("Bleed", aura, frame)
+            end
          end
       end
       AuraUtil.ForEachAura(frame.unit, "HARMFUL", nil, handle_harm_aura, true)
@@ -222,6 +230,9 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
                end
                if aura.dispelName and dispel_type_callbacks[aura.dispelName] then
                   on_apply_dispel(aura.dispelName, aura, frame)
+               end
+               if dispel_type_callbacks["Bleed"] and BleedList[aura.spellId] then
+                  on_apply_dispel("Bleed", aura, frame)
                end
             end
          end

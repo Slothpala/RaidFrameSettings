@@ -105,7 +105,7 @@ local function on_apply_dispel(dispelType, aura, frame)
       removed_aura_instance_id_callbacks[aura.auraInstanceID] = {}
    end
    for _, key in next, dispel_type_callbacks[dispelType] do
-      key.on_apply(aura, frame)
+      key.on_apply(dispelType, aura, frame)
       removed_aura_instance_id_callbacks[aura.auraInstanceID][key] = key.on_remove
    end
 end
@@ -276,7 +276,8 @@ local function update_unit_auras(frame, unitAuraUpdateInfo)
    debuffs_changed[unit] = new_debuff
 end
 
--- Update all auras on all frames should be only used for the menu
+-- Update all auras on all frames 
+-- Use this rarely it will also execute all registered callbacks
 function UnitAura:UpdateAllAurasOnAllFrames()
    addon:IterateRoster(update_unit_auras)
 end
@@ -290,7 +291,7 @@ hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame, unitAuraUpdateInf
    if not name then
       return
    end
-   if not string_sub(name, 1, 7) == "Compact" then
+   if not string_sub(name, 1, 7) == "Compact" or string_sub(name, 8, 12) == "Arena" then
       return
    end
    update_unit_auras(frame, unitAuraUpdateInfo)

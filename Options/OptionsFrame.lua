@@ -72,16 +72,16 @@ local function initSpellCache()
     end
     if not IsAddOnLoaded("WeakAurasOptions") then
         local loaded, reason = LoadAddOn("WeakAurasOptions")
-        if loaded then
-            local weakauraCache = WeakAuras.spellCache.Get()
-            RaidFrameSettings.spellCache.Set(weakauraCache)
-            if next(weakauraCache) == nil then
-                RaidFrameSettings.spellCache.Build()
-            end
-        else
+        if not loaded then
             RaidFrameSettings.spellCache.Build()
+            return
         end
     end
+    local weakauraCache = WeakAuras.spellCache.Get()
+    RaidFrameSettings.spellCache.Set(weakauraCache)
+    if next(weakauraCache) == nil then
+        RaidFrameSettings.spellCache.Build()
+    end    
 end
 
 frame:SetScript("OnEvent", function(self, event)

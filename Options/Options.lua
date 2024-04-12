@@ -1028,7 +1028,7 @@ local options = {
                                             get = "GetStatus",
                                             set = "SetStatus",
                                             min = 0,
-                                            max = 10,
+                                            softMax = 10,
                                             step = 1,
                                             width = 1.4,
                                         },
@@ -1271,7 +1271,7 @@ local options = {
                                             get = "GetStatus",
                                             set = "SetStatus",
                                             min = 0,
-                                            max = 10,
+                                            softMax = 10,
                                             step = 1,
                                             width = 1.4,
                                         },
@@ -1558,6 +1558,21 @@ local options = {
             name = "Module Settings",
             type = "group",
             args = {
+                Test = {
+                    hidden = not isRetail,
+                    order = 0,
+                    name = "Aura Test",
+                    desc = "",
+                    type = "execute",
+                    func =
+                        function()
+                            local module
+                            module = RaidFrameSettings:GetModule("Buffs")
+                            module:test()
+                            module = RaidFrameSettings:GetModule("Debuffs")
+                            module:test()
+                        end,
+                },
                 RoleIcon = {
                     hidden = isVanilla or RoleIcon_disabled,
                     order = 1,

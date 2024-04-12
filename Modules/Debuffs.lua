@@ -6,6 +6,7 @@ local addon = addonTable.RaidFrameSettings
 local Debuffs = addon:NewModule("Debuffs")
 Mixin(Debuffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
+local Queue = addonTable.Queue
 local Media = LibStub("LibSharedMedia-3.0")
 local LCG = LibStub("LibCustomGlow-1.0")
 -- WoW Api
@@ -39,6 +40,8 @@ local debuffColors = {
     Poison  = {r=0.0,g=0.6,b=0.0},
     Bleed   = {r=0.8,g=0.0,b=0.0},
 }
+
+local on_update_auras
 
 local debuffFrameRegister = {
     --[[
@@ -239,6 +242,11 @@ function Debuffs:OnEnable()
             debuffFrameRegister[frame].dynamicGroup = {}
             debuffFrameRegister[frame].auraCache = {}
         end
+        -- If you clear the point in retail, it will be hidden, and you won't see it when you run Show().
+        for _, debuffFrame in pairs(frame.debuffFrames) do
+            debuffFrame:ClearAllPoints()
+            debuffFrame.cooldown:SetDrawSwipe(false)
+        end
         -- Create user placed debuff frames
         for spellId, info in pairs(userPlaced) do
             if not debuffFrameRegister[frame].userPlaced[spellId] then
@@ -246,7 +254,10 @@ function Debuffs:OnEnable()
             end
             local debuffFrame = debuffFrameRegister[frame].userPlaced[spellId].debuffFrame
             if not debuffFrame then
-                debuffFrame = CreateFrame("Button", nil, frame, "CompactDebuffTemplate")
+                -- Specifying a "frame" as parent will automatically add it to frame.debuffFrames, so set it to nil and set the parent later.
+                debuffFrame = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
+                debuffFrame:SetParent(frame)
+                debuffFrame:Hide()
                 debuffFrame.baseSize = 1
                 debuffFrame.maxHeight = 1
                 debuffFrameRegister[frame].userPlaced[spellId].debuffFrame = debuffFrame
@@ -258,7 +269,10 @@ function Debuffs:OnEnable()
         for i=1, numDebuffFrames do
             local debuffFrame = debuffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
             if not debuffFrame then
-                debuffFrame = CreateFrame("Button", nil, frame, "CompactDebuffTemplate")
+                -- Specifying a "frame" as parent will automatically add it to frame.debuffFrames, so set it to nil and set the parent later.
+                debuffFrame = CreateFrame("Button", nil, nil, "CompactDebuffTemplate")
+                debuffFrame:SetParent(frame)
+                debuffFrame:Hide()
                 debuffFrame.baseSize = 1
                 debuffFrame.maxHeight = 1
             end
@@ -277,16 +291,55 @@ function Debuffs:OnEnable()
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
     -- Start cooldown timers and resize the debuff frame
-    local function OnSetDebuff(debuffFrame, aura)
+    local function _OnSetDebuff(debuffFrame, aura)
         if debuffFrame:IsForbidden() then
             return
         end
+
+        -- copied from CompactUnitFrame_UtilSetDebuff() on CompactUnitFrame.lua
+        debuffFrame.filter = aura.isRaid and AuraUtil.AuraFilters.Raid or nil
+        debuffFrame.icon:SetTexture(aura.icon)
+        if (aura.applications > 1) then
+            local countText = aura.applications
+            if (aura.applications >= 100) then
+                countText = BUFF_STACKS_OVERFLOW
+            end
+            debuffFrame.count:Show()
+            debuffFrame.count:SetText(countText)
+        else
+            debuffFrame.count:Hide()
+        end
+        debuffFrame.auraInstanceID = aura.auraInstanceID
+        local enabled = aura.expirationTime and aura.expirationTime ~= 0
+        if enabled then
+            local startTime = aura.expirationTime - aura.duration
+            CooldownFrame_Set(debuffFrame.cooldown, startTime, aura.duration, true)
+        else
+            CooldownFrame_Clear(debuffFrame.cooldown)
+        end
+
+        -- local color = DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"]
+        local color = debuffColors[aura.dispelName] or debuffColors["Bleed"]
+        debuffFrame.border:SetVertexColor(color.r, color.g, color.b)
+
+        --[[
+        debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful
+        if (aura.isBossAura) then
+            local size = min(debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE, debuffFrame.maxHeight)
+            debuffFrame:SetSize(size, size)
+        else
+            debuffFrame:SetSize(debuffFrame.baseSize, debuffFrame.baseSize)
+        end
+        ]]
+
+        debuffFrame:Show()
+
         if aura and (aura.isBossAura or increase[aura.spellId]) then
             debuffFrame:SetSize(boss_width, boss_height)
         else
             debuffFrame:SetSize(width, height)
         end
-        local enabled = aura.expirationTime and aura.expirationTime ~= 0
+        -- local enabled = aura.expirationTime and aura.expirationTime ~= 0
         if enabled then
             local cooldown = debuffFrame.cooldown
             CDT:StartCooldownText(cooldown)
@@ -304,7 +357,20 @@ function Debuffs:OnEnable()
             LCG.ProcGlow_Stop(debuffFrame)
         end
     end
-    self:HookFunc("CompactUnitFrame_UtilSetDebuff", OnSetDebuff)
+
+    local OnSetDebuff = function(debuffFrame, aura)
+        -- _OnSetDebuff(debuffFrame, aura)
+        Queue:add(_OnSetDebuff, debuffFrame, aura)
+        Queue:run()
+    end
+
+    local OnUnsetDebuff = function(debuffFrame)
+        -- debuffFrame:Hide()
+        Queue:add(function(debuffFrame) debuffFrame:Hide() end, debuffFrame)
+        Queue:run()
+    end
+
+    -- self:HookFunc("CompactUnitFrame_UtilSetDebuff", OnSetDebuff) -- We don't use Blizzard's aura frames, so no hooking is required.
 
     -- Setup private aura anchor
     local function OnUpdatePrivateAuras(frame)
@@ -367,7 +433,9 @@ function Debuffs:OnEnable()
             local batchCount = nil
             local usePackedAura = true
             AuraUtil_ForEachAura(frame.unit, "HARMFUL", batchCount, handle_harm_aura, usePackedAura)
-		else
+        elseif unitAuraUpdateInfo.fake then
+            debuffsChanged = true
+        else
             if unitAuraUpdateInfo.addedAuras ~= nil then
                 for _, aura in next, unitAuraUpdateInfo.addedAuras do
                     if aura.isHarmful and should_show_aura(aura) then
@@ -398,7 +466,7 @@ function Debuffs:OnEnable()
         return debuffsChanged, auraCache
     end
 
-    local function on_update_auras(frame, unitAuraUpdateInfo)
+    function on_update_auras(frame, unitAuraUpdateInfo)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() then
             return true
@@ -415,12 +483,12 @@ function Debuffs:OnEnable()
             if place then
                 local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
                 if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
-                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                    OnSetDebuff(debuffFrame, aura)
                 end
             elseif not ( frameNum > numDebuffFrames ) then
                 local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
                 if debuffFrame then
-                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                    OnSetDebuff(debuffFrame, aura)
                 end
                 frameNum = frameNum + 1
             end
@@ -428,7 +496,7 @@ function Debuffs:OnEnable()
         for i=frameNum, numDebuffFrames do
             local debuffFrame = debuffFrameRegister[frame].dynamicGroup[i]
             if debuffFrame then
-                debuffFrame:Hide()
+                OnUnsetDebuff(debuffFrame)
             end
         end
         OnUpdatePrivateAuras(frame)
@@ -449,11 +517,11 @@ function Debuffs:OnEnable()
             debuffFrame:Hide()
         end
     end
-    self:HookFuncFiltered("CompactUnitFrame_HideAllDebuffs", on_hide_all_debuffs)
+    -- self:HookFuncFiltered("CompactUnitFrame_HideAllDebuffs", on_hide_all_debuffs)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
-        on_hide_all_debuffs(frame)
+        -- on_hide_all_debuffs(frame)
         on_update_auras(frame)
     end)
 end
@@ -461,6 +529,7 @@ end
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
     self:DisableHooks()
+    Queue:flush()
     local restoreDebuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -527,4 +596,106 @@ function Debuffs:OnDisable()
         end
     end
     addon:IterateRoster(restoreDebuffFrames)
+end
+
+local testmodeTicker
+function Debuffs:test()
+    local debuffs = {
+        8936,
+        774,
+        33763,
+        188550,
+        48438,
+        102351,
+        102352,
+        391891,
+        363502,
+        370889,
+        364343,
+        355941,
+        376788,
+        366155,
+        367364,
+        373862,
+        378001,
+        373267,
+        395296,
+        395152,
+        360827,
+        410089,
+        406732,
+        406789,
+        119611,
+        124682,
+        191840,
+        235209,
+        53563,
+        223306,
+        148039,
+        156910,
+        200025,
+        287280,
+        388013,
+        388007,
+        388010,
+        388011,
+        200654,
+        139,
+        41635,
+        17,
+        194384,
+        77489,
+        372847,
+        974,
+        383648,
+        61295,
+        382024,
+    }
+    local dispelType = { "Poison", "Disease", "Curse", "Magic", nil }
+
+    if testmodeTicker then
+        testmodeTicker:Cancel()
+        testmodeTicker = nil
+        for frame, registry in pairs(debuffFrameRegister) do
+            if registry.auraCache then
+                for _, spellId in pairs(debuffs) do
+                    local auraInstanceID = -spellId
+                    registry.auraCache[auraInstanceID] = nil
+                end
+                on_update_auras(frame, { fake = true })
+            end
+        end
+
+        return
+    end
+
+    local function fakeaura()
+        local now = GetTime()
+        addon:IterateRoster(function(frame)
+            local registry = debuffFrameRegister[frame]
+            for _, spellId in pairs(debuffs) do
+                local auraInstanceID = -spellId
+                if registry.auraCache[auraInstanceID] and registry.auraCache[auraInstanceID].expirationTime < now then
+                    registry.auraCache[auraInstanceID] = nil
+                end
+                if not registry.auraCache[auraInstanceID] then
+                    local duration = random(10, 30)
+                    local dispelName = dispelType[random(1, 5)]
+                    local aura = addon:MakeFakeAura(spellId, {
+                        applications   = random(1, 10),
+                        isHarmful      = true,
+                        isRaid         = true,
+                        dispelName     = dispelName,
+                        duration       = duration,
+                        expirationTime = duration > 0 and (now + duration) or 0,
+                    })
+                    registry.auraCache[aura.auraInstanceID] = aura
+                end
+            end
+            on_update_auras(frame, { fake = true })
+        end)
+    end
+
+    testmodeTicker = C_Timer.NewTicker(1, fakeaura)
+    fakeaura()
 end

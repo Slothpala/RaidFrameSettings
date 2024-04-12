@@ -7,6 +7,7 @@ local addon = addonTable.RaidFrameSettings
 local Buffs = addon:NewModule("Buffs")
 Mixin(Buffs, addonTable.hooks)
 local CDT = addonTable.cooldownText
+local Queue = addonTable.Queue
 local Media = LibStub("LibSharedMedia-3.0")
 local LCG = LibStub("LibCustomGlow-1.0")
 -- WoW Api
@@ -31,6 +32,8 @@ local AuraUtil_ShouldDisplayBuff = AuraUtil.ShouldDisplayBuff
 -- Lua
 local next = next
 local pairs = pairs
+
+local on_update_auras
 
 local buffFrameRegister = {
     --[[
@@ -219,6 +222,11 @@ function Buffs:OnEnable()
             buffFrameRegister[frame].dynamicGroup = {}
             buffFrameRegister[frame].auraCache = {}
         end
+        -- If you clear the point in retail, it will be hidden, and you won't see it when you run Show().
+        for _, buffFrame in pairs(frame.buffFrames) do
+            buffFrame:ClearAllPoints()
+            buffFrame.cooldown:SetDrawSwipe(false)
+        end
         -- Create user placed buff frames
         for spellId, info in pairs(userPlaced) do
             if not buffFrameRegister[frame].userPlaced[spellId] then
@@ -226,7 +234,10 @@ function Buffs:OnEnable()
             end
             local buffFrame = buffFrameRegister[frame].userPlaced[spellId].buffFrame
             if not buffFrame then
-                buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
+                -- Specifying a "frame" as parent will automatically add it to frame.buffFrames, so set it to nil and set the parent later.
+                buffFrame = CreateFrame("Button", nil, nil, "CompactBuffTemplate")
+                buffFrame:SetParent(frame)
+                buffFrame:Hide()
                 buffFrameRegister[frame].userPlaced[spellId].buffFrame = buffFrame
             end
             ResizeBuffFrame(buffFrame)
@@ -236,7 +247,10 @@ function Buffs:OnEnable()
         for i=1, numBuffFrames do
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
             if not buffFrame then
-                buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
+                -- Specifying a "frame" as parent will automatically add it to frame.buffFrames, so set it to nil and set the parent later.
+                buffFrame = CreateFrame("Button", nil, nil, "CompactBuffTemplate")
+                buffFrame:SetParent(frame)
+                buffFrame:Hide()
             end
             buffFrameRegister[frame].dynamicGroup[i] = buffFrame
             ResizeBuffFrame(buffFrame)
@@ -246,11 +260,34 @@ function Buffs:OnEnable()
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
-    local OnSetBuff = function(buffFrame, aura)
+    local _OnSetBuff = function(buffFrame, aura)
         if buffFrame:IsForbidden() then
             return
         end
+
+        -- copied from CompactUnitFrame_UtilSetBuff() on CompactUnitFrame.lua
+        buffFrame.icon:SetTexture(aura.icon)
+        if (aura.applications > 1) then
+            local countText = aura.applications
+            if (aura.applications >= 100) then
+                countText = BUFF_STACKS_OVERFLOW
+            end
+            buffFrame.count:Show()
+            buffFrame.count:SetText(countText)
+        else
+            buffFrame.count:Hide()
+        end
+        buffFrame.auraInstanceID = aura.auraInstanceID
         local enabled = aura.expirationTime and aura.expirationTime ~= 0
+        if enabled then
+            local startTime = aura.expirationTime - aura.duration
+            CooldownFrame_Set(buffFrame.cooldown, startTime, aura.duration, true)
+        else
+            CooldownFrame_Clear(buffFrame.cooldown)
+        end
+        buffFrame:Show()
+
+        -- local enabled = aura.expirationTime and aura.expirationTime ~= 0
         if enabled then
             local cooldown = buffFrame.cooldown
             CDT:StartCooldownText(cooldown)
@@ -267,7 +304,20 @@ function Buffs:OnEnable()
             glow_frame_register[buffFrame] = false
         end
     end
-    self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
+
+    local OnSetBuff = function(buffFrame, aura)
+        -- _OnSetBuff(buffFrame, aura)
+        Queue:add(_OnSetBuff, buffFrame, aura)
+        Queue:run()
+    end
+
+    local OnUnsetBuff = function(buffFrame)
+        -- buffFrame:Hide()
+        Queue:add(function(buffFrame) buffFrame:Hide() end, buffFrame)
+        Queue:run()
+    end
+
+    -- self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff) -- We don't use Blizzard's aura frames, so no hooking is required.
 
    -- Aura update
     -- FIXME Improve performance by i.e. building a cache during combat
@@ -305,6 +355,8 @@ function Buffs:OnEnable()
             local batchCount = nil
             local usePackedAura = true
             AuraUtil_ForEachAura(frame.unit, "HELPFUL", batchCount, handle_help_aura, usePackedAura)
+        elseif unitAuraUpdateInfo.fake then
+            buffsChanged = true
 		else
             if unitAuraUpdateInfo.addedAuras ~= nil then
                 for _, aura in next, unitAuraUpdateInfo.addedAuras do
@@ -336,7 +388,7 @@ function Buffs:OnEnable()
         return buffsChanged, auraCache
     end
 
-    local function on_update_auras(frame, unitAuraUpdateInfo)
+    function on_update_auras(frame, unitAuraUpdateInfo)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() then
             return 
@@ -352,12 +404,12 @@ function Buffs:OnEnable()
             if place then
                 local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
                 if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
-                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                    OnSetBuff(buffFrame, aura)
                 end
             elseif not ( frameNum > numBuffFrames ) then
                 local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
                 if buffFrame then
-                    CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                    OnSetBuff(buffFrame, aura)
                 end
                 frameNum = frameNum + 1
             end
@@ -365,7 +417,7 @@ function Buffs:OnEnable()
         for i=frameNum, numBuffFrames do
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i]
             if buffFrame then
-                buffFrame:Hide()
+                OnUnsetBuff(buffFrame)
             end
         end
     end
@@ -385,11 +437,11 @@ function Buffs:OnEnable()
             buffFrame:Hide()
         end
     end
-    self:HookFuncFiltered("CompactUnitFrame_HideAllBuffs", on_hide_all_buffs)
+    -- self:HookFuncFiltered("CompactUnitFrame_HideAllBuffs", on_hide_all_buffs)
 
     addon:IterateRoster(function(frame)
         OnFrameSetup(frame)
-        on_hide_all_buffs(frame)
+        -- on_hide_all_buffs(frame)
         on_update_auras(frame)
     end)
 end
@@ -397,6 +449,7 @@ end
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
     self:DisableHooks()
+    Queue:flush()
     local restoreBuffFrames = function(frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
@@ -458,4 +511,108 @@ function Buffs:OnDisable()
         end
     end
     addon:IterateRoster(restoreBuffFrames)
+end
+
+local testmodeTicker
+function Buffs:test()
+    print("TEST")
+    local buffs = {
+        8936,
+        774,
+        33763,
+        188550,
+        48438,
+        102351,
+        102352,
+        391891,
+        363502,
+        370889,
+        364343,
+        355941,
+        376788,
+        366155,
+        367364,
+        373862,
+        378001,
+        373267,
+        395296,
+        395152,
+        360827,
+        410089,
+        406732,
+        406789,
+        119611,
+        124682,
+        191840,
+        235209,
+        53563,
+        223306,
+        148039,
+        156910,
+        200025,
+        287280,
+        388013,
+        388007,
+        388010,
+        388011,
+        200654,
+        139,
+        41635,
+        17,
+        194384,
+        77489,
+        372847,
+        974,
+        383648,
+        61295,
+        382024,
+    }
+
+    if testmodeTicker then
+        testmodeTicker:Cancel()
+        testmodeTicker = nil
+        for frame, registry in pairs(buffFrameRegister) do
+            if registry.auraCache then
+                for _, spellId in pairs(buffs) do
+                    local auraInstanceID = -spellId
+                    registry.auraCache[auraInstanceID] = nil
+                end
+                on_update_auras(frame, { fake = true })
+            end
+        end
+
+        return
+    end
+
+    local function fakeaura()
+        local now = GetTime()
+        addon:IterateRoster(function(frame)
+            local registry = buffFrameRegister[frame]
+            for _, spellId in pairs(buffs) do
+                local auraInstanceID = -spellId
+                if registry.auraCache[auraInstanceID] and registry.auraCache[auraInstanceID].expirationTime < now then
+                    registry.auraCache[auraInstanceID] = nil
+                end
+                if not registry.auraCache[auraInstanceID] then
+                    local duration = random(10, 30)
+                    local aura = addon:MakeFakeAura(spellId, {
+                        applications            = random(1, 10),
+                        canApplyAura            = true,
+                        isHelpful               = true,
+                        isRaid                  = true,
+                        isFromPlayerOrPlayerPet = true,
+                        sourceUnit              = "player",
+                        duration                = duration,
+                        expirationTime          = duration > 0 and (now + duration) or 0,
+                    })
+                    registry.auraCache[aura.auraInstanceID] = aura
+                end
+            end
+            on_update_auras(frame, { fake = true })
+        end)
+    end
+
+    testmodeTicker = C_Timer.NewTicker(1, fakeaura)
+    fakeaura()
+
 end

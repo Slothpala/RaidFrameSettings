@@ -133,3 +133,37 @@ function addon:GetPersonalCooldowns()
     end
     return defensives
 end
+
+function addon:MakeFakeAura(spellId, opt)
+    local spellName, _, icon = GetSpellInfo(spellId)
+    local aura = {
+        applications            = 0,         --number	
+        applicationsp           = nil,       --string? force show applications evenif it is 1
+        auraInstanceID          = -spellId,  --number	
+        canApplyAura            = false,     -- boolean	Whether or not the player can apply this aura.
+        charges                 = 0,         --number	
+        dispelName              = nil,       --string?	
+        duration                = 0,         --number	
+        expirationTime          = 0,         --number	
+        icon                    = icon,      --number	
+        isBossAura              = false,     --boolean	Whether or not this aura was applied by a boss.
+        isFromPlayerOrPlayerPet = false,     --boolean	Whether or not this aura was applied by a player or their pet.
+        isHarmful               = false,     --boolean	Whether or not this aura is a debuff.
+        isHelpful               = false,     --boolean	Whether or not this aura is a buff.
+        isNameplateOnly         = false,     --boolean	Whether or not this aura should appear on nameplates.
+        isRaid                  = false,     --boolean	Whether or not this aura meets the conditions of the RAID aura filter.
+        isStealable             = false,     --boolean	
+        maxCharges              = 0,         --number	
+        name                    = spellName, --string	The name of the aura.
+        nameplateShowAll        = false,     --boolean	Whether or not this aura should always be shown irrespective of any usual filtering logic.
+        nameplateShowPersonal   = false,     --boolean	
+        points                  = {},        --array	Variable returns - Some auras return additional values that typically correspond to something shown in the tooltip, such as the remaining strength of an absorption effect.	
+        sourceUnit              = nil,       --string?	Token of the unit that applied the aura.
+        spellId                 = spellId,   --number	The spell ID of the aura.
+        timeMod                 = 1,         --number	
+    }
+    if opt and type(opt) == "table" then
+        MergeTable(aura, opt)
+    end
+    return aura
+end

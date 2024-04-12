@@ -27,15 +27,16 @@ local function UpdateRosterCache()
     Roster = {}
     local showSeparateGroups = ShowSeparateGroups()
     local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or ( addonTable.isClassic and not showSeparateGroups ) --IsInRaid() returns true in arena even though we need party frame names
-    if useRaid then 
-        if showSeparateGroups then
+    if true or useRaid then 
+        if true or showSeparateGroups then
             for i=1, 8 do
                 for j=1, 5 do
                     local frame = _G["CompactRaidGroup" ..i.. "Member" .. j .. "HealthBar"]
                     if frame then
                         frame = frame:GetParent()
                         if frame.unit then
-                            Roster[frame.unit] = frame
+                            -- Roster[frame.unit] = frame
+                            tinsert(Roster, frame)
                         end
                     end
                 end
@@ -45,7 +46,8 @@ local function UpdateRosterCache()
                 if frame then
                     frame = frame:GetParent()
                     if frame.unit then
-                        Roster[frame.unit] = frame
+                        -- Roster[frame.unit] = frame
+                        tinsert(Roster, frame)
                     end
                 end
             end
@@ -60,25 +62,29 @@ local function UpdateRosterCache()
                 end
             end
         end
-    else
+    end 
+    if true then
         for i=1, 5 do
             local frame = _G["CompactPartyFrameMember" ..i .. "HealthBar"]
             if frame then
                 frame = frame:GetParent()
                 local unit = frame.unit or ""
-                Roster[unit] = frame
+                -- Roster[unit] = frame
+                tinsert(Roster, frame)
             end
             local frame = _G["CompactPartyFramePet" ..i .. "HealthBar"]
             if frame then
                 frame = frame:GetParent()
                 if frame.unit then
-                    Roster[frame.unit] = frame
+                    -- Roster[frame.unit] = frame
+                    tinsert(Roster, frame)
                 end
             end
             local frame = _G["CompactArenaFrameMember" ..i .. "HealthBar"]
             if frame then
                 frame = frame:GetParent()
-                Roster[frame.unit] = frame
+                -- Roster[frame.unit] = frame
+                tinsert(Roster, frame)
             end
         end
     end

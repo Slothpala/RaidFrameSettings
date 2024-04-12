@@ -30,22 +30,53 @@ end
 --Cooldown Display
 local CooldownQueue = {}
 
-local CooldownOnUpdateFrame = CreateFrame("Frame")
-
-local function updateFontStrings(_, elapsed)
-    local currentTime = GetTime()
-    for Cooldown in next, CooldownQueue do
-        local time = ( Cooldown:GetCooldownTimes() + Cooldown:GetCooldownDuration() ) / 1000
-        local left = time - currentTime
-        if left <= 0  then
-            CooldownQueue[Cooldown] = nil
-        end 
-        Cooldown._rfs_cd_text:SetText(getTimerText(left))
+local coTicker
+local co = coroutine.create(function()
+    while true do
+        local currentTime = GetTime()
+        if next(CooldownQueue) == nil then
+            coroutine.yield(CooldownQueue)
+        end
+        for Cooldown in next, CooldownQueue do
+            local time = (Cooldown:GetCooldownTimes() + Cooldown:GetCooldownDuration()) / 1000
+            local left = time - currentTime
+            if left <= 0 then
+                CooldownQueue[Cooldown] = nil
+            end
+            Cooldown._rfs_cd_text:SetText(getTimerText(left))
+            coroutine.yield(CooldownQueue)
+        end
+        coroutine.yield(CooldownQueue)
     end
-    if next(CooldownQueue) == nil then
-        CooldownOnUpdateFrame:SetScript("OnUpdate", nil)
+end)
+
+function CooldownText:run()
+    if coTicker and not coTicker:IsCancelled() then
         return
     end
+    local function run()
+        local start = debugprofilestop()
+        -- limit to 1ms
+        while debugprofilestop() - start < 1 do
+            if coroutine.status(co) ~= "dead" then
+                local ok, queueLeft = coroutine.resume(co)
+                if not ok then
+                    geterrorhandler()(debugstack(co))
+                    coTicker:Cancel()
+                    break
+                end
+                if not queueLeft or next(queueLeft) == nil then
+                    coTicker:Cancel()
+                    break
+                end
+            else
+                coTicker:Cancel()
+                break
+            end
+        end
+    end
+
+    coTicker = C_Timer.NewTicker(0, run)
 end
 
 function CooldownText:StartCooldownText(Cooldown)
@@ -53,16 +84,11 @@ function CooldownText:StartCooldownText(Cooldown)
         return false
     end
     CooldownQueue[Cooldown] = true
-    if next(CooldownQueue) ~= nil then
-        CooldownOnUpdateFrame:SetScript("OnUpdate", updateFontStrings)
-    end
+    CooldownText:run()
 end
 
 function CooldownText:StopCooldownText(Cooldown)
     CooldownQueue[Cooldown] = nil
-    if next(CooldownQueue) == nil then
-        CooldownOnUpdateFrame:SetScript("OnUpdate", nil)
-    end
 end
 
 function CooldownText:DisableCooldownText(Cooldown)
@@ -81,4 +107,3 @@ function CooldownText:CreateOrGetCooldownFontString(Cooldown)
     Cooldown._rfs_cd_text:Show()
     return Cooldown._rfs_cd_text
 end
-

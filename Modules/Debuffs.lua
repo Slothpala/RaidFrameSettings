@@ -105,6 +105,8 @@ function Debuffs:OnEnable()
     end
     -- 
     local numDebuffFrames = frameOpt.numFrames
+    local isRaidOnly = frameOpt.isRaidOnly
+    print(isRaidOnly)
     -- Blacklist 
     local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then
@@ -358,11 +360,21 @@ function Debuffs:OnEnable()
                     CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                 end
             elseif not ( frameNum > numDebuffFrames ) then
-                local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
-                if debuffFrame then
-                    CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                if frameOpt.isRaidOnly then
+                    if aura.isRaid then
+                        local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
+                        if debuffFrame then
+                            CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                        end
+                        frameNum = frameNum + 1
+                    end
+                else
+                    local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
+                    if debuffFrame then
+                        CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
+                    end
+                    frameNum = frameNum + 1
                 end
-                frameNum = frameNum + 1
             end
         end
         for i=frameNum, numDebuffFrames do

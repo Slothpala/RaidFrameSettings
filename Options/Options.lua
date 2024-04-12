@@ -1022,7 +1022,7 @@ local options = {
                                         },
                                         numBuffFrames = {
                                             order = 17,
-                                            name = "number of icons",
+                                            name = "number of dynamic icons",
                                             desc = "Adjust the number of buff icons in the dynamic buff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
                                             type = "range",
                                             get = "GetStatus",
@@ -1265,7 +1265,7 @@ local options = {
                                         },
                                         numFrames = {
                                             order = 17,
-                                            name = "number of icons",
+                                            name = "number of dynamic icons",
                                             desc = "Adjust the number of debuff icons in the dynamic debuff icon frame. Auras set under \"Aura Position\" will exceed this limit and will always be displayed.",
                                             type = "range",
                                             get = "GetStatus",
@@ -1274,6 +1274,15 @@ local options = {
                                             max = 10,
                                             step = 1,
                                             width = 1.4,
+                                        },
+                                        isRaidOnly = {
+                                            order = 18,
+                                            type = "toggle",
+                                            name = "Only dispellable debuffs.", 
+                                            desc = "Display only dispellable debuffs on your party frames.",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 1.2,
                                         },
                                     },
                                 },

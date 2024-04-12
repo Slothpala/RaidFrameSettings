@@ -86,6 +86,7 @@ local defaults = {
                 inverse = false,
                 timerText = true,
                 numFrames = 3,
+                isRaidOnly = false,
             },
             DurationDisplay = {
                 font = "Friz Quadrata TT",

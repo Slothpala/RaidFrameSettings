@@ -21,6 +21,8 @@ local dispel_type_colors = LD:GetDebuffTypeColor()
 
 local block_color_update = {}
 local frame_auras = {}
+local aura_id_dispel_type = {}
+
 
 function module:OnEnable()
 
@@ -31,15 +33,17 @@ function module:OnEnable()
         frame.healthBar:SetStatusBarColor(r,g,b)
     end
 
-    local function to_dispel_type_color(frame, dispelName, auraInstanceID)
+    local function to_dispel_type_color(frame, dispelType, auraInstanceID)
         block_color_update[frame] = auraInstanceID
-        frame.healthBar:SetStatusBarColor(dispel_type_colors[dispelName].r, dispel_type_colors[dispelName].g, dispel_type_colors[dispelName].b)
+        frame.healthBar:SetStatusBarColor(dispel_type_colors[dispelType].r, dispel_type_colors[dispelType].g, dispel_type_colors[dispelType].b)
     end
 
+    -- TODO I have implemented it in a way that allows the auras to be processed in a priority by dispel type. 
+    -- I have the order "random" for now, but if it is ever requested this is the place to go.
     local function update_color(frame)
-        for auraInstanceID, dispelName in next, frame_auras[frame] do
-            if auraInstanceID then
-                to_dispel_type_color(frame, dispelName, auraInstanceID)
+        for dispelType, auraInstanceIDs in next, frame_auras[frame] do
+            for auraInstanceID, _ in pairs(auraInstanceIDs) do
+                to_dispel_type_color(frame, dispelType, auraInstanceID)
                 return
             end
         end
@@ -48,15 +52,18 @@ function module:OnEnable()
 
     local function on_dispel_apply(dispelType, aura, frame)
         if LD:IsDispellableByMe(dispelType) then
-            frame_auras[frame] = frame_auras[frame] or {}
-            frame_auras[frame][aura.auraInstanceID] = dispelType
+            frame_auras[frame] = frame_auras[frame] or {Curse = {}, Disease = {}, Magic = {}, Poison = {}, Bleed = {}}
+            frame_auras[frame][dispelType][aura.auraInstanceID] = true
+            aura_id_dispel_type[aura.auraInstanceID] = dispelType
             update_color(frame)
         end
     end
 
     local function on_dispel_removal(auraInstanceID, frame)
-        frame_auras[frame] = frame_auras[frame] or {}
-        frame_auras[frame][auraInstanceID] = nil
+        if not frame_auras[frame] or not aura_id_dispel_type[auraInstanceID] then
+            return
+        end
+        frame_auras[frame][aura_id_dispel_type[auraInstanceID]][auraInstanceID] = nil
         update_color(frame)
     end
 
@@ -76,8 +83,10 @@ function module:OnEnable()
             frame.healthBar:SetStatusBarColor(dispel_type_colors[aura.dispelName].r, dispel_type_colors[aura.dispelName].g, dispel_type_colors[aura.dispelName].b)
         else
             -- remove it if not
-            frame_auras[frame] = frame_auras[frame] or {}
-            frame_auras[frame][auraInstanceID] = nil
+            if not frame_auras[frame] or not aura_id_dispel_type[auraInstanceID] then
+                return
+            end
+            frame_auras[frame][aura_id_dispel_type[auraInstanceID]][auraInstanceID] = nil
         end
     end
 

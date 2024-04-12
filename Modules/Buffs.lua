@@ -279,6 +279,7 @@ function Buffs:OnEnable()
             return
         end
         local frameNum = 1
+        local is_placed = {}
         for _, aura in next, auraCache do
             local place = userPlaced[aura.spellId]  
             -- Start with user placed auras as we always have space for them
@@ -286,6 +287,7 @@ function Buffs:OnEnable()
                 local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
                 if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
                     CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                    is_placed[aura.spellId] = true
                 end
             elseif not ( frameNum > numBuffFrames ) then
                 local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
@@ -299,6 +301,11 @@ function Buffs:OnEnable()
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i]
             if buffFrame then
                 buffFrame:Hide()
+            end
+        end
+        for spellId, info in next, buffFrameRegister[frame].userPlaced do
+            if not is_placed[spellId] then
+                info.buffFrame:Hide()
             end
         end
     end

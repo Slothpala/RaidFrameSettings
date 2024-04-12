@@ -12,61 +12,48 @@ local debugstack = debugstack
 local geterrorhandler = geterrorhandler
 
 local coroutine = coroutine
-local pairs = pairs
-local next = next
 
 
 local queue = {}
-local pending = {}
 local ticker
 
 local co = coroutine.create(function()
     while true do
-        if #queue == 0 then
-            coroutine.yield(0, queue)
-        end
-        for k, v in pairs(queue) do
+        for k = 1, #queue do
+            local v = queue[k]
             v.func(SafeUnpack(v.args))
-            queue[k] = nil
-            coroutine.yield(k, queue)
+            coroutine.yield(#queue)
         end
+        local count = #queue
+        for i = 0, count do queue[i] = nil end
+        coroutine.yield(0)
     end
 end)
 
 function Queue:add(func, ...)
-    tinsert(pending, {
+    queue[#queue + 1] = {
         func = func,
         args = SafePack(...),
-    })
+    }
 end
 
 function Queue:run()
     if ticker and not ticker:IsCancelled() then
         return
     end
-    for k, v in pairs(pending) do
-        tinsert(queue, v)
-        pending[k] = nil
-    end
     local function run()
         local start = debugprofilestop()
-        while debugprofilestop() - start < 1 do
+        while debugprofilestop() - start < 2 do
             if coroutine.status(co) ~= "dead" then
-                local ok, idx, queueLeft = coroutine.resume(co)
+                local ok, queueLeft = coroutine.resume(co)
                 if not ok then
                     geterrorhandler()(debugstack(co))
                     ticker:Cancel()
                     break
                 end
-                if next(queueLeft) == nil then
-                    for k, v in pairs(pending) do
-                        tinsert(queue, v)
-                        pending[k] = nil
-                    end
-                    if #queue == 0 then
-                        ticker:Cancel()
-                        break
-                    end
+                if queueLeft == 0 then
+                    ticker:Cancel()
+                    break
                 end
             else
                 ticker:Cancel()
@@ -83,23 +70,16 @@ function Queue:flush()
     end
     while true do
         if coroutine.status(co) ~= "dead" then
-            local ok, idx, queueLeft = coroutine.resume(co)
+            local ok, queueLeft = coroutine.resume(co)
             if not ok then
                 geterrorhandler()(debugstack(co))
                 break
             end
-            if next(queueLeft) == nil then
-                for k, v in pairs(pending) do
-                    tinsert(queue, v)
-                    pending[k] = nil
-                end
-                if #queue == 0 then
-                    break
-                end
+            if queueLeft == 0 then
+                break
             end
         else
             break
         end
     end
 end
-

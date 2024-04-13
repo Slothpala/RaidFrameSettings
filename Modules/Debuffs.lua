@@ -338,13 +338,13 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdatePrivateAuras", OnUpdatePrivateAuras)
 
-    local function on_update_auras(frame_env, frame)
+    local function on_update_auras(frame_env, frame, force_update)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() then
             return true
         end
         local auraCache, debuffsChanged = UnitAura:RequestDebuffs(frame.unit)
-        if not debuffsChanged then
+        if not debuffsChanged and not force_update then
             return
         end
         local frameNum = 1 
@@ -404,7 +404,7 @@ function Debuffs:OnEnable()
     addon:IterateRoster(function(frame_env, frame)
         OnFrameSetup(frame_env, frame)
         on_hide_all_debuffs(frame_env, frame)
-        on_update_auras(frame_env, frame)
+        on_update_auras(frame_env, frame, true)
     end)
 end
 

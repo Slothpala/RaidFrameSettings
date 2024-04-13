@@ -269,13 +269,13 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
-    local function on_update_auras(frame_env, frame)
+    local function on_update_auras(frame_env, frame, force_update)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() then
             return 
         end
         local auraCache, buffsChanged = UnitAura:RequestBuffs(frame.unit)
-        if not buffsChanged then
+        if not buffsChanged and not force_update then
             return
         end
         local frameNum = 1
@@ -330,7 +330,7 @@ function Buffs:OnEnable()
     addon:IterateRoster(function(frame_env, frame)
         OnFrameSetup(frame_env, frame)
         on_hide_all_buffs(frame_env, frame)
-        on_update_auras(frame_env, frame)
+        on_update_auras(frame_env, frame, true)
     end)
 end
 

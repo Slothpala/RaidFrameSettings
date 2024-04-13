@@ -197,7 +197,7 @@ function Buffs:OnEnable()
     end
 
     -- Setup the buff frame visuals
-    local function OnFrameSetup(frame)
+    local function OnFrameSetup(frame_env, frame)
         -- Create or find assigned buff frames
         if not buffFrameRegister[frame] then
             buffFrameRegister[frame] = {}
@@ -274,7 +274,7 @@ function Buffs:OnEnable()
         end
     end
 
-    local function OnUpdateBuffs(frame)
+    local function OnUpdateBuffs(frame_env, frame)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
             return 
@@ -332,16 +332,16 @@ function Buffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdateBuffs", OnUpdateBuffs)
 
-    addon:IterateRoster(function(frame)
-        OnFrameSetup(frame)
-        OnUpdateBuffs(frame)
+    addon:IterateRoster(function(frame_env, frame)
+        OnFrameSetup(frame_env, frame)
+        OnUpdateBuffs(frame_env, frame)
     end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
     self:DisableHooks()
-    local restoreBuffFrames = function(frame)
+    local restoreBuffFrames = function(frame_env, frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)

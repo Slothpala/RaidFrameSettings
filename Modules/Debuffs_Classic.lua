@@ -218,7 +218,7 @@ function Debuffs:OnEnable()
     end
 
     -- Setup the debuff frame visuals
-    local function OnFrameSetup(frame)
+    local function OnFrameSetup(frame_env, frame)
         -- Create or find assigned debuff frames
         if not debuffFrameRegister[frame] then
             debuffFrameRegister[frame] = {}
@@ -298,7 +298,7 @@ function Debuffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", OnSetDebuff)
 
-    local function OnUpdateDebuffs(frame)
+    local function OnUpdateDebuffs(frame_env, frame)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() or not frame.debuffFrames then
             return true
@@ -421,16 +421,16 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdateDebuffs", OnUpdateDebuffs)
 
-    addon:IterateRoster(function(frame)
-        OnFrameSetup(frame)
-        OnUpdateDebuffs(frame)
+    addon:IterateRoster(function(frame_env, frame)
+        OnFrameSetup(frame_env, frame)
+        OnUpdateDebuffs(frame_env, frame)
     end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
     self:DisableHooks()
-    local restoreDebuffFrames = function(frame)
+    local restoreDebuffFrames = function(frame_env, frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)

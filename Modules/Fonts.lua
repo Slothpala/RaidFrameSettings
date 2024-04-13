@@ -58,7 +58,7 @@ function Fonts:OnEnable()
     Advanced.x_offset    = dbObj.Advanced.x_offset
     Advanced.y_offset    = dbObj.Advanced.y_offset
     --Callbacks 
-    local function UpdateFont(frame)
+    local function UpdateFont(frame_env, frame)
         --Name
         frame.name:ClearAllPoints()
         frame.name:SetFont(Name.Font, Name.FontSize, Name.Outlinemode)
@@ -81,7 +81,7 @@ function Fonts:OnEnable()
     --
     local UpdateNameCallback
     if Name.Classcolored then
-        UpdateNameCallback = function(frame) 
+        UpdateNameCallback = function(frame_env, frame) 
             local name = GetUnitName(frame.unit or "",true)
             if not name then return end
             local _, englishClass = UnitClass(frame.unit)
@@ -90,7 +90,7 @@ function Fonts:OnEnable()
             frame.name:SetText(name:match("[^-]+")) --hides the units server. 
         end
     else
-        UpdateNameCallback = function(frame) 
+        UpdateNameCallback = function(frame_env, frame) 
             local name = GetUnitName(frame.unit or "",true)
             if not name then return end
             frame.name:SetVertexColor(Name.FontColor.r,Name.FontColor.g,Name.FontColor.b)
@@ -98,15 +98,15 @@ function Fonts:OnEnable()
         end
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdateName", UpdateNameCallback)
-    RaidFrameSettings:IterateRoster(function(frame)
-        UpdateFont(frame)
-        UpdateNameCallback(frame)
+    RaidFrameSettings:IterateRoster(function(frame_env, frame)
+        UpdateFont(frame_env, frame)
+        UpdateNameCallback(frame_env, frame)
     end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Fonts:OnDisable()
-    local restoreFonts = function(frame)
+    local restoreFonts = function(frame_env, frame)
         --Name
         frame.name:SetFont("Fonts\\FRIZQT__.TTF", 10,"NONE")
         frame.name:SetPoint("TOPLEFT", frame.roleIcon, "TOPRIGHT", 0, -1);

@@ -13,7 +13,7 @@ local SetAlpha = SetAlpha
 function Range:OnEnable()
     local statusbarAlpha  = RaidFrameSettings.db.profile.MinorModules.RangeAlpha.statusbar
     local backgroundAlpha = RaidFrameSettings.db.profile.MinorModules.RangeAlpha.background
-    local function UpdateInRangeCallback(frame)
+    local function UpdateInRangeCallback(frame_env, frame)
         local inRange, checkedRange = UnitInRange(frame.displayedUnit or "")
         if ( checkedRange and not inRange ) then	
             frame:SetAlpha(statusbarAlpha)
@@ -28,7 +28,7 @@ end
 
 function Range:OnDisable()
     self:DisableHooks()
-    local restoreRangeAlpha = function(frame)
+    local restoreRangeAlpha = function(frame_env, frame)
         local inRange, checkedRange = UnitInRange(frame.displayedUnit or "")
         if ( checkedRange and not inRange ) then	
             frame:SetAlpha(0.55)

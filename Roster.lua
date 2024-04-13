@@ -1,6 +1,8 @@
 local _, addonTable = ...
 local addon = addonTable.RaidFrameSettings
 
+local FrameEnvironment = addonTable.FrameEnvironment
+
 local _G = _G
 local GetParent = GetParent
 local IsInRaid = IsInRaid
@@ -99,7 +101,9 @@ function addon:IterateRoster(callback)
     CheckRosterCache()
     for unit, frame in next, Roster do
         if not frame:IsForbidden() and frame:IsShown() then
-            callback(frame)
+            local guid  = UnitGUID(frame.unit)
+            local frame_env = FrameEnvironment:GetEnv(guid)
+            callback(frame_env, frame)
         end
     end
 end

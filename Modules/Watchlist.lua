@@ -8,12 +8,16 @@ local UnitAura = addonTable.UnitAura
 local Watchlist = addon:NewModule("Watchlist")
 
 function Watchlist:OnEnable()
-    UnitAura:UpdateWatchlist(true)
+    if addonTable.isRetail then
+        UnitAura:UpdateWatchlist(true)
+    end
     self:ReloadAffectedModules()
 end
 
 function Watchlist:OnDisable()
-    UnitAura:UpdateWatchlist(false)
+    if addonTable.isRetail then
+        UnitAura:UpdateWatchlist(false)
+    end
     self:ReloadAffectedModules()
 end
 

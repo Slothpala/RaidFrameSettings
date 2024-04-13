@@ -44,7 +44,7 @@ function HealthBars:OnEnable()
     local updateTextures
     --with powerbar
     if C_CVar.GetCVar("raidFramesDisplayPowerBars") == "1" then
-        updateTextures = function(frame)
+        updateTextures = function(frame_env, frame)
             frame.healthBar:SetStatusBarTexture(statusBarTexture)
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
             frame.background:SetTexture(backgroundTexture)
@@ -61,7 +61,7 @@ function HealthBars:OnEnable()
         end
     --without power bar 
     else
-        updateTextures = function(frame)
+        updateTextures = function(frame_env, frame)
             frame.healthBar:SetStatusBarTexture(statusBarTexture)
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
             frame.background:SetTexture(backgroundTexture)
@@ -102,7 +102,7 @@ function HealthBars:OnEnable()
         if C_CVar.GetCVar("raidFramesDisplayClassColor") == "0" then
             C_CVar.SetCVar("raidFramesDisplayClassColor","1")
         end
-        updateHealthColor = function(frame)
+        updateHealthColor = function(frame_env, frame)
             if not frame or not frame.unit then 
                 return 
             end
@@ -114,12 +114,12 @@ function HealthBars:OnEnable()
         if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
             C_CVar.SetCVar("raidFramesDisplayClassColor","0")
         end
-        updateHealthColor = function(frame)
+        updateHealthColor = function(frame_env, frame)
             frame.healthBar:SetStatusBarColor(0,1,0)
         end
     elseif useCustomColor then
         local color = RaidFrameSettings.db.profile.HealthBars.Colors.statusbar
-        updateHealthColor = function(frame)
+        updateHealthColor = function(frame_env, frame)
             frame.healthBar:SetStatusBarColor(color.r,color.g,color.b) 
         end
         if not RaidFrameSettings.db.profile.Module.AuraHighlight then
@@ -129,15 +129,15 @@ function HealthBars:OnEnable()
     if RaidFrameSettings.db.profile.Module.AuraHighlight and addonTable.isRetail then
         RaidFrameSettings:UpdateModule("AuraHighlight")
     end
-    RaidFrameSettings:IterateRoster(function(frame)
-        updateTextures(frame)
-        updateHealthColor(frame)
+    RaidFrameSettings:IterateRoster(function(frame_env, frame)
+        updateTextures(frame_env, frame)
+        updateHealthColor(frame_env, frame)
     end)
 end
 
 function HealthBars:OnDisable()
     self:DisableHooks()
-    local restoreStatusBars = function(frame)
+    local restoreStatusBars = function(frame_env, frame)
         frame.healthBar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill")
         frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
         frame.background:SetTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Bg")

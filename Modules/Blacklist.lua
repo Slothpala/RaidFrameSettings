@@ -10,13 +10,17 @@ local UnitAura = addonTable.UnitAura
 local Blacklist = addon:NewModule("Blacklist")
 
 function Blacklist:OnEnable()
-    UnitAura:UpdateBlacklist(true)
+    if addonTable.isRetail then
+        UnitAura:UpdateBlacklist(true)
+    end
     self:ReloadAffectedModules()
 end
 
 
 function Blacklist:OnDisable()
-    UnitAura:UpdateBlacklist(false)
+    if addonTable.isRetail then
+        UnitAura:UpdateBlacklist(false)
+    end
     self:ReloadAffectedModules()
 end
 

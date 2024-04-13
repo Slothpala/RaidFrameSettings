@@ -71,7 +71,7 @@ function module:OnEnable()
         UnitAura:RegisterDispelTypeCallback(type, "DispelHighlight", on_dispel_apply, on_dispel_removal)
     end
 
-    local on_update_health_color = function(frame) 
+    local on_update_health_color = function(frame_env, frame) 
         local auraInstanceID = block_color_update[frame]
         if not auraInstanceID then
             return

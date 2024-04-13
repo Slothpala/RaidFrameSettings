@@ -203,7 +203,7 @@ function Buffs:OnEnable()
     end
 
     -- Setup the buff frame visuals
-    local function OnFrameSetup(frame)
+    local function OnFrameSetup(frame_env, frame)
         if not UnitIsPlayer(frame.unit) and not UnitInPartyIsAI(frame.unit) then
             return
         end
@@ -269,7 +269,7 @@ function Buffs:OnEnable()
     end
     self:HookFunc("CompactUnitFrame_UtilSetBuff", OnSetBuff)
 
-    local function on_update_auras(frame)
+    local function on_update_auras(frame_env, frame)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() then
             return 
@@ -315,7 +315,7 @@ function Buffs:OnEnable()
         self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", on_update_auras)
     end
 
-    local function on_hide_all_buffs(frame)
+    local function on_hide_all_buffs(frame_env, frame)
         -- Exclude unwanted frames
         if not buffFrameRegister[frame] or not frame:IsVisible() or not frame.buffFrames then
             return 
@@ -327,17 +327,17 @@ function Buffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_HideAllBuffs", on_hide_all_buffs)
 
-    addon:IterateRoster(function(frame)
-        OnFrameSetup(frame)
-        on_hide_all_buffs(frame)
-        on_update_auras(frame)
+    addon:IterateRoster(function(frame_env, frame)
+        OnFrameSetup(frame_env, frame)
+        on_hide_all_buffs(frame_env, frame)
+        on_update_auras(frame_env, frame)
     end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Buffs:OnDisable()
     self:DisableHooks()
-    local restoreBuffFrames = function(frame)
+    local restoreBuffFrames = function(frame_env, frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)

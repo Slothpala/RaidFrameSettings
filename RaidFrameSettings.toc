@@ -16,19 +16,23 @@ embeds.xml
 #Config
 Core.lua
 
-Roster.lua
-ProfileSharing.lua
-DB\DB.lua
-Options\Options.lua
-Options\OptionsFrame.lua
-
 #Utils 
+Utils\FrameEnvironment.lua
 Utils\GroupType.lua
 Utils\ProfileSwitcher.lua
 Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
 Utils\UnitAura.lua
+
+Roster.lua
+ProfileSharing.lua
+DB\DB.lua
+Options\Options.lua
+Options\OptionsFrame.lua
+
+
+
 
 #Modules
 modules.xml

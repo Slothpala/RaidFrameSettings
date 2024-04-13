@@ -3,6 +3,8 @@ addonTable.hooks = {}
 local addon = addonTable.addon
 local Hooks = addonTable.hooks
 
+local FrameEnvironment = addonTable.FrameEnvironment
+
 local _G = _G
 local HookScript = HookScript
 local hooksecurefunc = hooksecurefunc
@@ -123,8 +125,10 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
             if not string_sub(name, 1, 7) == "Compact" or string_sub(name, 8, 12) == "Arena" then
                 return
             end
-            for key, callback in next, callbacks[obj][functionName] do
-                callback(frame, ...)
+            local guid  = UnitGUID(frame.unit or "player")
+            local frame_env = FrameEnvironment:GetEnv(guid)
+            for _, callback in next, callbacks[obj][functionName] do
+                callback(frame_env, frame, ...)
             end
         end)
         if not hooked[obj] then

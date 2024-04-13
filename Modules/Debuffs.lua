@@ -230,7 +230,7 @@ function Debuffs:OnEnable()
     end
 
     -- Setup the debuff frame visuals
-    local function OnFrameSetup(frame)
+    local function OnFrameSetup(frame_env, frame)
         if not UnitIsPlayer(frame.unit) and not UnitInPartyIsAI(frame.unit) then
             return
         end
@@ -314,7 +314,7 @@ function Debuffs:OnEnable()
     self:HookFunc("CompactUnitFrame_UtilSetDebuff", OnSetDebuff)
 
     -- Setup private aura anchor
-    local function OnUpdatePrivateAuras(frame)
+    local function OnUpdatePrivateAuras(frame_env, frame)
         if not frame.PrivateAuraAnchors or not debuffFrameRegister[frame] or not frame:IsVisible() then
             return
         end
@@ -338,7 +338,7 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdatePrivateAuras", OnUpdatePrivateAuras)
 
-    local function on_update_auras(frame)
+    local function on_update_auras(frame_env, frame)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() then
             return true
@@ -381,7 +381,7 @@ function Debuffs:OnEnable()
                 debuffFrame:Hide()
             end
         end
-        OnUpdatePrivateAuras(frame)
+        OnUpdatePrivateAuras(frame_env, frame)
     end
 
     -- Check if we actually want to see any auras
@@ -389,7 +389,7 @@ function Debuffs:OnEnable()
         self:HookFuncFiltered("CompactUnitFrame_UpdateAuras", on_update_auras)
     end
 
-    local function on_hide_all_debuffs(frame)
+    local function on_hide_all_debuffs(frame_env, frame)
         -- Exclude unwanted frames
         if not debuffFrameRegister[frame] or not frame:IsVisible() or not frame.debuffFrames then
             return 
@@ -401,17 +401,17 @@ function Debuffs:OnEnable()
     end
     self:HookFuncFiltered("CompactUnitFrame_HideAllDebuffs", on_hide_all_debuffs)
 
-    addon:IterateRoster(function(frame)
-        OnFrameSetup(frame)
-        on_hide_all_debuffs(frame)
-        on_update_auras(frame)
+    addon:IterateRoster(function(frame_env, frame)
+        OnFrameSetup(frame_env, frame)
+        on_hide_all_debuffs(frame_env, frame)
+        on_update_auras(frame_env, frame)
     end)
 end
 
 --parts of this code are from FrameXML/CompactUnitFrame.lua
 function Debuffs:OnDisable()
     self:DisableHooks()
-    local restoreDebuffFrames = function(frame)
+    local restoreDebuffFrames = function(frame_env, frame)
         local frameWidth = frame:GetWidth()
         local frameHeight = frame:GetHeight()
         local componentScale = min(frameWidth / NATIVE_UNIT_FRAME_HEIGHT, frameWidth / NATIVE_UNIT_FRAME_WIDTH)

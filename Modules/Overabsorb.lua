@@ -19,7 +19,7 @@ local Show = Show
 
 function Overabsorb:OnEnable()
     local glow_alpha = RaidFrameSettings.db.profile.MinorModules.Overabsorb.glowAlpha
-    local function OnFrameSetup(frame)
+    local function OnFrameSetup(frame_env, frame)
         local absorbOverlay = frame.totalAbsorbOverlay
         local healthBar = frame.healthBar
         absorbOverlay:SetParent(healthBar)
@@ -31,7 +31,7 @@ function Overabsorb:OnEnable()
         absorbGlow:SetAlpha(glow_alpha)
     end
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
-    local function UpdateHealPredictionCallback(frame)
+    local function UpdateHealPredictionCallback(frame_env, frame)
         local absorbBar = frame.totalAbsorb
         local absorbOverlay = frame.totalAbsorbOverlay
         local healthBar = frame.healthBar
@@ -57,15 +57,15 @@ function Overabsorb:OnEnable()
         end	
     end
     self:HookFuncFiltered("CompactUnitFrame_UpdateHealPrediction", UpdateHealPredictionCallback)
-    RaidFrameSettings:IterateRoster(function(frame)
-        OnFrameSetup(frame)
-        UpdateHealPredictionCallback(frame)
+    RaidFrameSettings:IterateRoster(function(frame_env, frame)
+        OnFrameSetup(frame_env, frame)
+        UpdateHealPredictionCallback(frame_env, frame)
     end)
 end
 
 function Overabsorb:OnDisable()
     self:DisableHooks()
-    local restoreOverabsorbs = function(frame)
+    local restoreOverabsorbs = function(frame_env, frame)
         frame.overAbsorbGlow:SetPoint("BOTTOMLEFT", frame.healthBar, "BOTTOMRIGHT", -7, 0)
         frame.overAbsorbGlow:SetPoint("TOPLEFT", frame.healthBar, "TOPRIGHT", -7, 0)
         frame.overAbsorbGlow:SetAlpha(1)

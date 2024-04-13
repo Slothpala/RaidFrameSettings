@@ -272,9 +272,9 @@ function module:OnEnable()
         If this happens while the frame has a debuff color, we will need to update it again.
     ]]--
     self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", onUpdateHealthColor)
-    RaidFrameSettings:IterateRoster(function(frame)
-        self:HookFrame(frame)
-        updateAurasFull(frame)
+    RaidFrameSettings:IterateRoster(function(frame_env, frame)
+        self:HookFrame(frame_env, frame)
+        updateAurasFull(frame_env, frame)
     end)
 end
 

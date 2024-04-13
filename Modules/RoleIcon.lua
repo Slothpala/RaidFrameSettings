@@ -33,7 +33,7 @@ function RoleIcon:OnEnable()
         y = 4
         relativePoint = "BOTTOMRIGHT"
     end
-    local updatePosition = function(frame)
+    local updatePosition = function(frame_env, frame)
         if not frame.roleIcon then
             return
         end
@@ -41,13 +41,13 @@ function RoleIcon:OnEnable()
         frame.roleIcon:SetPoint(relativePoint, frame, relativePoint, x + x_offset, y + y_offset)
         frame.roleIcon:SetScale(scaleFactor)
     end
-    self:HookFunc("CompactUnitFrame_UpdateRoleIcon", updatePosition)
+    self:HookFuncFiltered("CompactUnitFrame_UpdateRoleIcon", updatePosition)
     RaidFrameSettings:IterateRoster(updatePosition)
 end
 
 function RoleIcon:OnDisable()
     self:DisableHooks()
-    local restoreRoleIcon = function(frame)
+    local restoreRoleIcon = function(frame_env, frame)
         frame.roleIcon:ClearAllPoints()
         frame.roleIcon:SetPoint("TOPLEFT", 3, -2)
         frame.roleIcon:SetSize(12, 12)

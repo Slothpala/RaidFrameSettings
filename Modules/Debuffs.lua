@@ -359,7 +359,7 @@ function Debuffs:OnEnable()
                 end
             elseif not ( frameNum > numDebuffFrames ) then
                 if frameOpt.isRaidOnly then
-                    if aura.isRaid then
+                    if aura.isRaid or aura.isBossAura or AuraUtil.IsPriorityDebuff(aura.spellId) then
                         local debuffFrame = debuffFrameRegister[frame].dynamicGroup[frameNum]
                         if debuffFrame then
                             CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)

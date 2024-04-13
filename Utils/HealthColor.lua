@@ -123,8 +123,8 @@ HealthColor:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", function(fram
       else
          -- TODO once frame_env is implemented use cached data
          -- Try to color it by class
-         local _, englishClass = UnitClass(frame.unit)
-         local class_color = RAID_CLASS_COLORS[englishClass]
+         local _, english_class = UnitClass(frame.unit)
+         local class_color = RAID_CLASS_COLORS[english_class]
          local use_class_colors = CompactUnitFrame_GetOptionUseClassColors(frame, frame.optionTable)
          if ( (frame.optionTable.allowClassColorsForNPCs or UnitIsPlayer(frame.unit) or UnitTreatAsPlayerForDisplay(frame.unit)) and class_color and use_class_colors ) then
             -- Use class colors for players if class color option is turned on

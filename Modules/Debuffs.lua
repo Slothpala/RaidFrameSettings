@@ -353,7 +353,7 @@ function Debuffs:OnEnable()
             local place = userPlaced[aura.spellId]  
             -- Start with user placed auras as we always have space for them
             if place then
-                local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
+                local debuffFrame = debuffFrameRegister[frame].userPlaced[aura.spellId].debuffFrame
                 if debuffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
                     CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
                 end

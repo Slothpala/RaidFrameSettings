@@ -32,19 +32,27 @@ local CooldownQueue = {}
 
 local CooldownOnUpdateFrame = CreateFrame("Frame")
 
+local interval = 0.25
+local time_since_last_upate = 0
+
 local function updateFontStrings(_, elapsed)
-    local currentTime = GetTime()
-    for Cooldown in next, CooldownQueue do
-        local time = ( Cooldown:GetCooldownTimes() + Cooldown:GetCooldownDuration() ) / 1000
-        local left = time - currentTime
-        if left <= 0  then
-            CooldownQueue[Cooldown] = nil
-        end 
-        Cooldown._rfs_cd_text:SetText(getTimerText(left))
-    end
-    if next(CooldownQueue) == nil then
-        CooldownOnUpdateFrame:SetScript("OnUpdate", nil)
-        return
+    time_since_last_upate = time_since_last_upate + elapsed
+    if time_since_last_upate >= interval then
+        time_since_last_upate = 0
+        local currentTime = GetTime()
+        for Cooldown in next, CooldownQueue do
+            local time = ( Cooldown:GetCooldownTimes() + Cooldown:GetCooldownDuration() ) / 1000
+            local left = time - currentTime
+            if left <= 0  then
+                CooldownQueue[Cooldown] = nil
+            end 
+            Cooldown._rfs_cd_text:SetText(getTimerText(left))
+        end
+        if next(CooldownQueue) == nil then
+            CooldownOnUpdateFrame:SetScript("OnUpdate", nil)
+            time_since_last_upate = 0
+            return
+        end
     end
 end
 

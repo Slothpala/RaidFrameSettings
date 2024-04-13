@@ -105,8 +105,6 @@ function Debuffs:OnEnable()
     end
     -- 
     local numDebuffFrames = frameOpt.numFrames
-    local isRaidOnly = frameOpt.isRaidOnly
-    print(isRaidOnly)
     -- Blacklist 
     local blacklist = {}
     if addon:IsModuleEnabled("Blacklist") then

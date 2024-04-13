@@ -27,6 +27,10 @@ function RaidFrameSettings:OnInitialize()
     self:RegisterChatCommand("rfs", "SlashCommand")
     self:RegisterChatCommand("raidframesettings", "SlashCommand")
     self:RegisterEvent("PLAYER_LOGIN","LoadGroupBasedProfile")
+    if not self:IsModuleEnabled("HealthBars") then
+        local HealthColor = addonTable.HealthColor
+        HealthColor:SetRestoreFunction()
+    end
 end
 
 function RaidFrameSettings:SlashCommand()

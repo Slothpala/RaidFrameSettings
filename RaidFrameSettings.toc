@@ -24,6 +24,7 @@ Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
 Utils\UnitAura.lua
+Utils\HealthColor.lua
 
 Roster.lua
 ProfileSharing.lua

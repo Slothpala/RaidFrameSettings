@@ -21,6 +21,7 @@ Utils\ProfileSwitcher.lua
 Utils\CooldownText.lua
 Utils\Helper.lua
 Utils\HookRegistry.lua
+Utils\HealthColor.lua
 
 Roster.lua
 ProfileSharing.lua

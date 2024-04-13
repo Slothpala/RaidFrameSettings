@@ -8,6 +8,7 @@ local RaidFrameSettings = addonTable.RaidFrameSettings
 local HealthBars = RaidFrameSettings:NewModule("HealthBars")
 Mixin(HealthBars, addonTable.hooks)
 local Media = LibStub("LibSharedMedia-3.0")
+local HealthColor = addonTable.HealthColor
 
 --wow api speed reference
 local UnitIsConnected = UnitIsConnected
@@ -93,45 +94,11 @@ function HealthBars:OnEnable()
         updateTextures(frame)
     end)
     --colors
-    local selected = RaidFrameSettings.db.profile.HealthBars.Colors.statusbarmode
-    local useClassColors = selected == 1 and true or false
-    local useOverrideColor = selected == 2 and true or false
-    local useCustomColor = selected == 3 and true or false
-    local updateHealthColor
-    if useClassColors then
-        if C_CVar.GetCVar("raidFramesDisplayClassColor") == "0" then
-            C_CVar.SetCVar("raidFramesDisplayClassColor","1")
-        end
-        updateHealthColor = function(frame_env, frame)
-            if not frame or not frame.unit then 
-                return 
-            end
-            local _, englishClass = UnitClass(frame.unit)
-            local r,g,b = GetClassColor(englishClass)
-            frame.healthBar:SetStatusBarColor(r,g,b)
-        end
-    elseif useOverrideColor then
-        if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
-            C_CVar.SetCVar("raidFramesDisplayClassColor","0")
-        end
-        updateHealthColor = function(frame_env, frame)
-            frame.healthBar:SetStatusBarColor(0,1,0)
-        end
-    elseif useCustomColor then
-        local color = RaidFrameSettings.db.profile.HealthBars.Colors.statusbar
-        updateHealthColor = function(frame_env, frame)
-            frame.healthBar:SetStatusBarColor(color.r,color.g,color.b) 
-        end
-        if not RaidFrameSettings.db.profile.Module.AuraHighlight then
-            self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", updateHealthColor)
-        end
-    end
-    if RaidFrameSettings.db.profile.Module.AuraHighlight and addonTable.isRetail then
-        RaidFrameSettings:UpdateModule("AuraHighlight")
-    end
+    HealthColor:SetRestoreFunction()
+    local restore_color = HealthColor:GetRestoreFunction()
     RaidFrameSettings:IterateRoster(function(frame_env, frame)
         updateTextures(frame_env, frame)
-        updateHealthColor(frame_env, frame)
+        restore_color(frame_env, frame)
     end)
 end
 
@@ -156,6 +123,7 @@ function HealthBars:OnDisable()
             frame.healthBar:SetStatusBarColor(0,1,0)
         end
     end
+    HealthColor:SetRestoreFunction()
     RaidFrameSettings:IterateRoster(restoreStatusBars)
 end
 

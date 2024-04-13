@@ -333,7 +333,13 @@ function Debuffs:OnEnable()
                 elseif CompactUnitFrame_UtilIsPriorityDebuff(frame.displayedUnit, index, filter) then
                     prio_debuffs[spellId] = index
                 else
-                    debuffs[spellId] = index
+                    if frameOpt.isRaidOnly then
+                        if CompactUnitFrame_UtilShouldDisplayDebuff(frame.displayedUnit, index, "RAID") then
+                            debuffs[spellId] = index
+                        end
+                    else
+                        debuffs[spellId] = index
+                    end
                 end
             end
             index = index + 1

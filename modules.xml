@@ -13,7 +13,6 @@
   <Script file="Modules\Watchlist.lua"/>
   <Script file="Modules\FrameColorSkin.lua"/>
   <Script file="Modules\MinimapButton.lua"/>
-  <!--
   <Script file="Modules\DispelHighlight.lua"/>
-  -->
+
 </Ui>

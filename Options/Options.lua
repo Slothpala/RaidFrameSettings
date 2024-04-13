@@ -298,7 +298,15 @@ local options = {
                                 RaidFrameSettings.db.global.MinimapButton.enabled = value
                                 RaidFrameSettings:UpdateModule("MinimapButton")
                             end,
-                        },  
+                        },
+                        DispelHighlight = {
+                            order = 13,
+                            type = "toggle",
+                            name = "Dispel Highlight",
+                            desc = " ",
+                            get = "GetModuleStatus",
+                            set = "SetModuleStatus"
+                        }
                     },
                 },
                 DescriptionBox = {

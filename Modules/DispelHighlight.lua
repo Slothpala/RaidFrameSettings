@@ -8,6 +8,7 @@ local module = addon:NewModule("DispelHighlight")
 Mixin(module, addonTable.hooks)
 local UnitAura = addonTable.UnitAura
 local LD = LibStub("LibDispel-1.0")
+local HealthColor = addonTable.HealthColor
 
 local dispel_types = {
     [1] = "Curse",
@@ -19,22 +20,37 @@ local dispel_types = {
 
 local dispel_type_colors = LD:GetDebuffTypeColor()
 
-local block_color_update = {}
+local aura_blocking_color_update = {}
 local frame_auras = {}
 local aura_id_dispel_type = {}
 
 
 function module:OnEnable()
 
-    local function restore_health_color(frame)
-        block_color_update[frame] = nil
-        local _, englishClass = UnitClass(frame.unit)
-        local r,g,b = GetClassColor(englishClass)
-        frame.healthBar:SetStatusBarColor(r,g,b)
+    local on_update_health_color = function(frame_env, frame) 
+        local auraInstanceID = aura_blocking_color_update[frame]
+        if not auraInstanceID then
+            return
+        end
+        -- Check if the aura is still present to avoid frames being stuck in dispel color
+        local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, auraInstanceID)
+        if aura then
+            -- color to dispel type if present
+            frame.healthBar:SetStatusBarColor(dispel_type_colors[aura.dispelName].r, dispel_type_colors[aura.dispelName].g, dispel_type_colors[aura.dispelName].b)
+        else
+            -- remove it if not
+            if not frame_auras[frame] or not aura_id_dispel_type[auraInstanceID] then
+                return
+            end
+            frame_auras[frame][aura_id_dispel_type[auraInstanceID]][auraInstanceID] = nil
+            HealthColor:RemoveLockReason(frame, "dispel")
+            HealthColor:RestoreColor(frame)
+        end
     end
 
     local function to_dispel_type_color(frame, dispelType, auraInstanceID)
-        block_color_update[frame] = auraInstanceID
+        aura_blocking_color_update[frame] = auraInstanceID
+        HealthColor:LockColor(frame, on_update_health_color, "dispel")
         frame.healthBar:SetStatusBarColor(dispel_type_colors[dispelType].r, dispel_type_colors[dispelType].g, dispel_type_colors[dispelType].b)
     end
 
@@ -47,7 +63,8 @@ function module:OnEnable()
                 return
             end
         end
-        restore_health_color(frame)
+        HealthColor:RemoveLockReason(frame, "dispel")
+        HealthColor:RestoreColor(frame)
     end
 
     local function on_dispel_apply(dispelType, aura, frame)
@@ -71,32 +88,17 @@ function module:OnEnable()
         UnitAura:RegisterDispelTypeCallback(type, "DispelHighlight", on_dispel_apply, on_dispel_removal)
     end
 
-    local on_update_health_color = function(frame_env, frame) 
-        local auraInstanceID = block_color_update[frame]
-        if not auraInstanceID then
-            return
-        end
-        -- Check if the aura is still present to avoid frames being stuck in dispel color
-        local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, auraInstanceID)
-        if aura then
-            -- color to dispel type if present
-            frame.healthBar:SetStatusBarColor(dispel_type_colors[aura.dispelName].r, dispel_type_colors[aura.dispelName].g, dispel_type_colors[aura.dispelName].b)
-        else
-            -- remove it if not
-            if not frame_auras[frame] or not aura_id_dispel_type[auraInstanceID] then
-                return
-            end
-            frame_auras[frame][aura_id_dispel_type[auraInstanceID]][auraInstanceID] = nil
-        end
-    end
-
-    self:HookFuncFiltered("CompactUnitFrame_UpdateHealthColor", on_update_health_color)
+    UnitAura:UpdateAllAurasOnAllFrames()
 end
 
 function module:OnDisable()
     self:DisableHooks()
     for _, type in pairs(dispel_types) do
         UnitAura:UnregisterDispelTypeCallback(type, "DispelHighlight")
+    end
+    for frame, _ in pairs(aura_blocking_color_update) do 
+        HealthColor:RemoveLockReason(frame, "dispel")
+        HealthColor:RestoreColor(frame)
     end
 end
 

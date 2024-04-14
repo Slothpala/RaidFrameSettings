@@ -22,8 +22,9 @@ local debuffColors = {
     Poison  = {r=0.0,g=0.6,b=0.0},
     Bleed   = {r=0.8,g=0.0,b=0.0},
 }
-
-local Bleeds = addonTable.Bleeds
+-- many thanks to https://github.com/tukui-org/LibDispel for making it available. 
+local LD = LibStub("LibDispel-1.0")
+local Bleeds = LD:GetBleedList()
 local auraMap = {}
 
 local aura_missing_list = {}
@@ -97,7 +98,7 @@ local function updateAurasIncremental(frame, updateInfo)
     updateColor(frame)
 end
 
-function module:HookFrame(frame)
+function module:HookFrame(frame, isNewHandler)
     auraMap[frame] = {}
     auraMap[frame].debuffs = {}
     auraMap[frame].missing_list = {}
@@ -105,7 +106,9 @@ function module:HookFrame(frame)
         CompactUnitFrame_UnregisterEvents removes the event handler with frame:SetScript("OnEvent", nil) and thus the hook.
         Interface/FrameXML/CompactUnitFrame.lua
     ]]--
-    self:RemoveHandler(frame, "OnEvent") --remove the registry key for frame["OnEvent"] so that it actually gets hooked again and not just stores a callback for an non existing hook
+    if isNewHandler then
+        self:RemoveHandler(frame, "OnEvent") --remove the registry key for frame["OnEvent"] so that it actually gets hooked again and not just stores a callback for an non existing hook
+    end
     self:HookScript(frame, "OnEvent", function(frame,event,unit,updateInfo)
         if event ~= "UNIT_AURA" then
             return
@@ -257,7 +260,7 @@ function module:OnEnable()
         if not UnitIsPlayer(frame.unit) then --exclude pet/vehicle frame
             return
         end
-        self:HookFrame(frame)                          
+        self:HookFrame(frame, true)                          
     end)   
     local onUpdateHealthColor = function(frame) 
         if blockColorUpdate[frame] then

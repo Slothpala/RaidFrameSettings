@@ -120,7 +120,7 @@ function Hooks:HookFuncFiltered(arg1, arg2, arg3)
             if not name then
                 return
             end
-            if not string_sub(name, 1, 7) == "Compact" then
+            if not string_sub(name, 1, 7) == "Compact" or string_sub(name, 8, 12) == "Arena" then
                 return
             end
             for key, callback in next, callbacks[obj][functionName] do

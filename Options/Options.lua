@@ -231,7 +231,7 @@ local options = {
                             order = 5,
                             type = "toggle",
                             name = "Buffs",
-                            desc = "Adjust the position, orientation and size of buffs.\n|cffF4A460CPU Impact: |r|cff00ff00LOW|r to |r|cffFFFF00MEDIUM|r",
+                            desc = "Adjust the position, orientation and size of buffs.\n|cffF4A460CPU Impact: |r|cffFFFF00MEDIUM|r to |r|cffFF474DHIGH|r",
                             get = "GetModuleStatus",
                             set = "SetModuleStatus",
                         },

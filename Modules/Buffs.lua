@@ -31,6 +31,8 @@ local Hide = Hide
 local next = next
 local pairs = pairs
 
+local fontObj = CreateFont("RaidFrameSettingsFont")
+
 local buffFrameRegister = {
     --[[
         frame = {
@@ -439,17 +441,14 @@ function Buffs:OnDisable()
             if duration > 0 then
                 buffFrame:Show()
             end
-            --TODO
-            --[[
-                find global font for stacks and restore properly
-            ]]
             local stackText = buffFrame.count
             stackText:ClearAllPoints()
             stackText:SetPoint("BOTTOMRIGHT", buffFrame, "BOTTOMRIGHT", 0, 0)
-            stackText:SetFont("Fonts\\ARIALN.TTF", 12.000000953674, "OUTLINE")
-            stackText:SetTextColor(1,1,1,1)
-            stackText:SetShadowColor(0,0,0)
-            stackText:SetShadowOffset(0,0)
+            fontObj:SetFontObject("NumberFontNormalSmall")
+            stackText:SetFont(fontObj:GetFont())
+            stackText:SetTextColor(fontObj:GetTextColor())
+            stackText:SetShadowColor(fontObj:GetShadowColor())
+            stackText:SetShadowOffset(fontObj:GetShadowOffset())
         end
     end
     -- Hide our frames

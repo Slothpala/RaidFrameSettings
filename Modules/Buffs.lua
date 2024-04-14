@@ -24,9 +24,8 @@ local SetDrawEdge = SetDrawEdge
 local SetScale = SetScale
 local IsVisible = IsVisible
 local Hide = Hide
-local AuraUtil_ForEachAura = AuraUtil.ForEachAura
-local C_UnitAuras_GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
-local AuraUtil_ShouldDisplayBuff = AuraUtil.ShouldDisplayBuff
+
+
 --local CompactUnitFrame_UtilSetBuff = CompactUnitFrame_UtilSetBuff -- don't do this
 -- Lua
 local next = next
@@ -58,6 +57,7 @@ local buffFrameRegister = {
         }
     ]]
 }
+local addon_created_buff_frames = {}
 local glow_frame_register = {}
 
 function Buffs:OnEnable()
@@ -228,6 +228,7 @@ function Buffs:OnEnable()
             if not buffFrame then
                 buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
                 buffFrameRegister[frame].userPlaced[spellId].buffFrame = buffFrame
+                addon_created_buff_frames[buffFrame] = true
             end
             ResizeBuffFrame(buffFrame)
             SetUpBuffDisplay(buffFrame)
@@ -237,6 +238,7 @@ function Buffs:OnEnable()
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i] --currently there are always 10 buffFrames but i am not sure if it wise to use more than maxBuffs will test it but for now i prefer creating new ones
             if not buffFrame then
                 buffFrame = CreateFrame("Button", nil, frame, "CompactBuffTemplate")
+                addon_created_buff_frames[buffFrame] = true
             end
             buffFrameRegister[frame].dynamicGroup[i] = buffFrame
             ResizeBuffFrame(buffFrame)
@@ -247,6 +249,9 @@ function Buffs:OnEnable()
     self:HookFuncFiltered("DefaultCompactUnitFrameSetup", OnFrameSetup)
 
     local OnSetBuff = function(buffFrame, aura)
+        if not addon_created_buff_frames[buffFrame] then
+            return
+        end
         if buffFrame:IsForbidden() then
             return
         end
@@ -287,7 +292,7 @@ function Buffs:OnEnable()
         if watchlist[aura.spellId] then
             return should_show_watchlist_aura(aura)
         end
-        return AuraUtil_ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) 
+        return AuraUtil.ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) 
     end
 
     -- making use of the unitAuraUpdateInfo provided by UpdateAuras
@@ -304,7 +309,7 @@ function Buffs:OnEnable()
             end
             local batchCount = nil
             local usePackedAura = true
-            AuraUtil_ForEachAura(frame.unit, "HELPFUL", batchCount, handle_help_aura, usePackedAura)
+            AuraUtil.ForEachAura(frame.unit, "HELPFUL", batchCount, handle_help_aura, usePackedAura)
 		else
             if unitAuraUpdateInfo.addedAuras ~= nil then
                 for _, aura in next, unitAuraUpdateInfo.addedAuras do
@@ -317,7 +322,7 @@ function Buffs:OnEnable()
             if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
                 for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
                     if auraCache[auraInstanceID] ~= nil then
-                        local newAura = C_UnitAuras_GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
+                        local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
                         auraCache[auraInstanceID] = newAura 
                         buffsChanged = true
                     end
@@ -346,6 +351,7 @@ function Buffs:OnEnable()
             return
         end
         local frameNum = 1
+        local is_placed = {}
         for _, aura in next, auraCache do
             local place = userPlaced[aura.spellId]  
             -- Start with user placed auras as we always have space for them
@@ -353,6 +359,7 @@ function Buffs:OnEnable()
                 local buffFrame = buffFrameRegister[frame].userPlaced[aura.spellId].buffFrame
                 if buffFrame then -- When swapping from a profile with 0 auras this function can get called before the frames are created
                     CompactUnitFrame_UtilSetBuff(buffFrame, aura)
+                    is_placed[aura.spellId] = true
                 end
             elseif not ( frameNum > numBuffFrames ) then
                 local buffFrame = buffFrameRegister[frame].dynamicGroup[frameNum]
@@ -366,6 +373,11 @@ function Buffs:OnEnable()
             local buffFrame = buffFrameRegister[frame].dynamicGroup[i]
             if buffFrame then
                 buffFrame:Hide()
+            end
+        end
+        for spellId, info in next, buffFrameRegister[frame].userPlaced do
+            if not is_placed[spellId] then
+                info.buffFrame:Hide()
             end
         end
     end
@@ -441,15 +453,9 @@ function Buffs:OnDisable()
         end
     end
     -- Hide our frames
-    for frame, info in pairs(buffFrameRegister) do
-        for _, indicator in pairs(info.userPlaced) do
-            CooldownFrame_Clear(indicator.buffFrame.cooldown)
-            indicator.buffFrame:Hide()
-        end
-        for _, buffFrame in pairs(info.dynamicGroup) do
-            CooldownFrame_Clear(buffFrame.cooldown)
-            buffFrame:Hide()
-        end
+    for buffFrame, _ in pairs(addon_created_buff_frames) do
+        CooldownFrame_Clear(buffFrame.cooldown)
+        buffFrame:Hide()
     end
     -- Hide all glows
     for buffFrame, state in pairs(glow_frame_register) do

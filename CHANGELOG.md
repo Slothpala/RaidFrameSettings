@@ -1,4 +1,18 @@
 # **Changelog**
+### Version [2.29.0] - 2024-04-14
+#### Fixes
+* Updated LibDispel.
+* Debuffs placed under Aura Position will now appear.
+* Removed a bug that could cuase AuraHightlight to do duplicate hooks when realoading the module via the menu or profile change.
+* Exclude Arena frames to prevent an ongoing taint issue.
+* SetBuff and SetDebuff will now check if the aura frame is an addon created one.
+#### Changed 
+* AuraHightlight now uses LibDispels BleedList
+* Throttle added to CooldownText
+#### Added
+* Option to filter only dispellable Debuffs for Debuffs module.
+
+
 ### Version [2.28.0] - 2024-04-07
 #### Added
 * New feature to Watchlist that allows the highlighting of auras via a glow.

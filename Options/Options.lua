@@ -1275,6 +1275,15 @@ local options = {
                                             step = 1,
                                             width = 1.4,
                                         },
+                                        isRaidOnly = {
+                                            order = 18,
+                                            type = "toggle",
+                                            name = "Only dispellable debuffs.", 
+                                            desc = "Display only dispellable debuffs on your party frames.",
+                                            get = "GetStatus",
+                                            set = "SetStatus",
+                                            width = 1.2,
+                                        },
                                     },
                                 },
                                 DurationDisplay = {

@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.29.1] - 2024-04-15
+#### Fixes
+* Fixed an issue with Buffs and Debuffs that could cause the aura frames to flicker/hide when a blacklisted aura was present
+
 ### Version [2.29.0] - 2024-04-14
 #### Fixes
 * Updated LibDispel.

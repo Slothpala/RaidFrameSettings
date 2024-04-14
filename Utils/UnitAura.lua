@@ -102,11 +102,11 @@ local dispel_type_callbacks = {
 
 local function on_apply_dispel(dispelType, aura, frame)
    if not removed_aura_instance_id_callbacks[aura.auraInstanceID] then
-      removed_aura_instance_id_callbacks[aura.auraInstanceID] = {}
-   end
-   for _, key in next, dispel_type_callbacks[dispelType] do
-      key.on_apply(dispelType, aura, frame)
-      removed_aura_instance_id_callbacks[aura.auraInstanceID][key] = key.on_remove
+      removed_aura_instance_id_callbacks[aura.auraInstanceID] = {}   
+      for _, key in next, dispel_type_callbacks[dispelType] do
+         key.on_apply(dispelType, aura, frame)
+         removed_aura_instance_id_callbacks[aura.auraInstanceID][key] = key.on_remove
+      end
    end
 end
 

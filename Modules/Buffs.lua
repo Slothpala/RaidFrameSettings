@@ -286,9 +286,6 @@ function Buffs:OnEnable()
     end
 
     local function should_show_aura(aura)
-        if blacklist[aura.spellId] then
-            return false
-        end
         if watchlist[aura.spellId] then
             return should_show_watchlist_aura(aura)
         end
@@ -349,6 +346,12 @@ function Buffs:OnEnable()
         local buffsChanged, auraCache =  update_and_get_aura_cache(frame, unitAuraUpdateInfo)
         if not buffsChanged then
             return
+        end
+        -- In case this seems odd, we still have to track blacklisted auras to correctly determine buffsChanged 
+        for auraInstanceID, aura in next, auraCache do
+            if blacklist[aura.spellId] then
+                auraCache[auraInstanceID] = nil
+            end
         end
         local frameNum = 1
         local is_placed = {}

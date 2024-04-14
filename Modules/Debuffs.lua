@@ -347,9 +347,6 @@ function Debuffs:OnEnable()
     end
 
     local function should_show_aura(aura)
-        if blacklist[aura.spellId] then
-            return false
-        end
         if watchlist[aura.spellId] then
             return should_show_watchlist_aura(aura)
         end
@@ -373,7 +370,17 @@ function Debuffs:OnEnable()
             AuraUtil.ForEachAura(frame.unit, "HARMFUL", batchCount, handle_harm_aura, usePackedAura)
 		else
             if unitAuraUpdateInfo.addedAuras ~= nil then
+                local displayOnlyDispellableDebuffs = CompactUnitFrame_GetOptionDisplayOnlyDispellableDebuffs(frame, frame.optionTable)
+                local displayDebuffs = CompactUnitFrame_GetOptionDisplayDebuffs(frame, frame.optionTable)
+                local ignoreDebuffs = not frame.debuffFrames or not displayDebuffs or frame.maxDebuffs == 0
+                local ignoreDispelDebuffs = ignoreDebuffs or not frame.dispelDebuffFrames or not frame.optionTable.displayDispelDebuffs or frame.maxDispelDebuffs == 0
                 for _, aura in next, unitAuraUpdateInfo.addedAuras do
+                    local type = CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, true, ignoreDebuffs, ignoreDispelDebuffs)
+                    if type == AuraUtil.AuraUpdateChangedType.Debuff then
+						debuffsChanged = true;
+					elseif type == AuraUtil.AuraUpdateChangedType.Dispel then
+						debuffsChanged = true;
+					end
                     if aura.isHarmful and should_show_aura(aura) then
                         auraCache[aura.auraInstanceID] = aura
                         debuffsChanged = true
@@ -382,6 +389,9 @@ function Debuffs:OnEnable()
             end
             if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
                 for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
+                    if frame.debuffs[auraInstanceID] then
+                        debuffsChanged = true
+                    end
                     if auraCache[auraInstanceID] ~= nil then
                         local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
                         auraCache[auraInstanceID] = newAura
@@ -391,6 +401,9 @@ function Debuffs:OnEnable()
             end
             if unitAuraUpdateInfo.removedAuraInstanceIDs ~= nil then
                 for _, auraInstanceID in next, unitAuraUpdateInfo.removedAuraInstanceIDs do
+                    if frame.debuffs[auraInstanceID] then
+                        debuffsChanged = true
+                    end
                     if auraCache[auraInstanceID] then
                         auraCache[auraInstanceID] = nil
                         debuffsChanged = true
@@ -410,6 +423,12 @@ function Debuffs:OnEnable()
         local debuffsChanged, auraCache = update_and_get_aura_cache(frame, unitAuraUpdateInfo)
         if not debuffsChanged then
             return
+        end
+        -- In case this seems odd, we still have to track blacklisted auras to correctly determine buffsChanged 
+        for auraInstanceID, aura in next, auraCache do
+            if blacklist[aura.spellId] then
+                auraCache[auraInstanceID] = nil
+            end
         end
         local frameNum = 1 
         -- Set the auras

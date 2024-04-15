@@ -751,13 +751,21 @@ local options = {
             args = {
                 addAura = {
                     order = 1,
-                    name = "Enter spellId:",
+                    name = "Enter spellId or spellName:",
                     type = "input",
-                    pattern = "^%d+$",
-                    usage = "please enter a number",
+                    -- pattern = "^%d+$",
+                    -- usage = "please enter a number",
                     set = function(_, value)
-                        RaidFrameSettings.db.profile.Blacklist[value] = true
-                        RaidFrameSettings:CreateBlacklistEntry(value)
+                        local spellId = RaidFrameSettings:SafeToNumber(value)
+                        local spellIds = { spellId }
+                        if not spellId then
+                            spellIds = RaidFrameSettings:GetSpellIdsByName(value)
+                        end
+                        for _, spellId in pairs(spellIds) do
+                            value = tostring(spellId)
+                            RaidFrameSettings.db.profile.Blacklist[value] = true
+                            RaidFrameSettings:CreateBlacklistEntry(value)
+                        end
                         RaidFrameSettings:UpdateModule("Blacklist")
                     end,
                 },
@@ -780,28 +788,44 @@ local options = {
             args = {
                 addAura = {
                     order = 1,
-                    name = "Enter a spellId:",
+                    name = "Enter a spellId or spellName::",
                     type = "input",
-                    pattern = "^%d+$",
-                    usage = "please enter a number",
+                    -- pattern = "^%d+$",
+                    -- usage = "please enter a number",
                     set = function(_, value)
-                        RaidFrameSettings.db.profile.Watchlist[value] = {}
-                        RaidFrameSettings:CreateWatchlistEntry(value)
+                        local spellId = RaidFrameSettings:SafeToNumber(value)
+                        local spellIds = { spellId }
+                        if not spellId then
+                            spellIds = RaidFrameSettings:GetSpellIdsByName(value)
+                        end
+                        for _, spellId in pairs(spellIds) do
+                            value = tostring(spellId)
+                            RaidFrameSettings.db.profile.Watchlist[value] = {}
+                            RaidFrameSettings:CreateWatchlistEntry(value)
+                        end
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
                 --[[
                 addDebuff = {
                     order = 2,
-                    name = "Enter a |cffFF474Ddebuff|r spellId:",
+                    name = "Enter a |cffFF474Ddebuff|r spellId or spellName:",
                     type = "input",
-                    pattern = "^%d+$",
-                    usage = "please enter a number",
+                    -- pattern = "^%d+$",
+                    -- usage = "please enter a number",
                     set = function(_, value)
-                        RaidFrameSettings.db.profile.Watchlist[value] = {
-                            spellIsDebuff = true,
-                        }
-                        RaidFrameSettings:CreateWatchlistEntry(value)
+                        local spellId = RaidFrameSettings:SafeToNumber(value)
+                        local spellIds = { spellId }
+                        if not spellId then
+                            spellIds = RaidFrameSettings:GetSpellIdsByName(value)
+                        end
+                        for _, spellId in pairs(spellIds) do
+                            value = tostring(spellId)
+                            RaidFrameSettings.db.profile.Watchlist[value] = {
+                                spellIsDebuff = true,
+                            }
+                            RaidFrameSettings:CreateWatchlistEntry(value)
+                        end
                         RaidFrameSettings:UpdateModule("Watchlist")
                     end,
                 },
@@ -1055,20 +1079,28 @@ local options = {
                             args = {
                                 addAura = {
                                     order = 1,
-                                    name = "Enter spellId:",
+                                    name = "Enter spellId or spellName:",
                                     type = "input",
-                                    pattern = "^%d+$",
-                                    usage = "please enter a number",
+                                    -- pattern = "^%d+$",
+                                    -- usage = "please enter a number",
                                     set = function(_, value)
-                                        RaidFrameSettings.db.profile.Buffs.AuraPosition[value] = {
-                                            ["spellId"] = tonumber(value),
-                                            point = 1,
-                                            relativePoint = 1,
-                                            xOffset = 0,
-                                            yOffset = 0,
-                                            scale = 1,
-                                        }
-                                        RaidFrameSettings:CreateAuraPositionEntry(value, "Buffs")
+                                        local spellId = RaidFrameSettings:SafeToNumber(value)
+                                        local spellIds = { spellId }
+                                        if not spellId then
+                                            spellIds = RaidFrameSettings:GetSpellIdsByName(value)
+                                        end
+                                        for _, spellId in pairs(spellIds) do
+                                            value = tostring(spellId)
+                                            RaidFrameSettings.db.profile.Buffs.AuraPosition[value] = {
+                                                ["spellId"] = tonumber(value),
+                                                point = 1,
+                                                relativePoint = 1,
+                                                xOffset = 0,
+                                                yOffset = 0,
+                                                scale = 1,
+                                            }
+                                            RaidFrameSettings:CreateAuraPositionEntry(value, "Buffs")    
+                                        end
                                         RaidFrameSettings:UpdateModule("Buffs")
                                     end
                                 },
@@ -1308,15 +1340,23 @@ local options = {
                             args = {
                                 addAura = {
                                     order = 1,
-                                    name = "Enter spellId:",
+                                    name = "Enter spellId or spellName:",
                                     desc = "",
                                     type = "input",
                                     width = 1.5,
-                                    pattern = "^%d+$",
-                                    usage = "please enter a number",
+                                    -- pattern = "^%d+$",
+                                    -- usage = "please enter a number",
                                     set = function(_, value)
-                                        RaidFrameSettings.db.profile.Debuffs.Increase[value] = true
-                                        RaidFrameSettings:CreateIncreaseEntry(value, "Debuffs")
+                                        local spellId = RaidFrameSettings:SafeToNumber(value)
+                                        local spellIds = { spellId }
+                                        if not spellId then
+                                            spellIds = RaidFrameSettings:GetSpellIdsByName(value)
+                                        end
+                                        for _, spellId in pairs(spellIds) do
+                                            value = tostring(spellId)
+                                            RaidFrameSettings.db.profile.Debuffs.Increase[value] = true
+                                            RaidFrameSettings:CreateIncreaseEntry(value, "Debuffs")
+                                        end
                                         RaidFrameSettings:UpdateModule("Debuffs")
                                     end,
                                 },
@@ -1338,20 +1378,28 @@ local options = {
                             args = {
                                 addAura = {
                                     order = 1,
-                                    name = "Enter spellId:",
+                                    name = "Enter spellId or spellName:",
                                     type = "input",
-                                    pattern = "^%d+$",
-                                    usage = "please enter a number",
+                                    -- pattern = "^%d+$",
+                                    -- usage = "please enter a number",
                                     set = function(_, value)
-                                        RaidFrameSettings.db.profile.Debuffs.AuraPosition[value] = {
-                                            ["spellId"] = tonumber(value),
-                                            point = 1,
-                                            relativePoint = 1,
-                                            xOffset = 0,
-                                            yOffset = 0,
-                                            scale = 1,
-                                        }
-                                        RaidFrameSettings:CreateAuraPositionEntry(value, "Debuffs")
+                                        local spellId = RaidFrameSettings:SafeToNumber(value)
+                                        local spellIds = { spellId }
+                                        if not spellId then
+                                            spellIds = RaidFrameSettings:GetSpellIdsByName(value)
+                                        end
+                                        for _, spellId in pairs(spellIds) do
+                                            value = tostring(spellId)
+                                            RaidFrameSettings.db.profile.Debuffs.AuraPosition[value] = {
+                                                ["spellId"] = tonumber(value),
+                                                point = 1,
+                                                relativePoint = 1,
+                                                xOffset = 0,
+                                                yOffset = 0,
+                                                scale = 1,
+                                            }
+                                            RaidFrameSettings:CreateAuraPositionEntry(value, "Debuffs")
+                                        end
                                         RaidFrameSettings:UpdateModule("Debuffs")
                                     end
                                 },

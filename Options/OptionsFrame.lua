@@ -65,6 +65,25 @@ RaidFrameSettingsOptionsPortrait:SetTexture(addonTable.texturePaths.PortraitIcon
 addResizeButton()
 local container = createAceContainer()
 frame.container = container
+
+local function initSpellCache()
+    if RaidFrameSettings.spellCache.build then
+        return
+    end
+    if not IsAddOnLoaded("WeakAurasOptions") then
+        local loaded, reason = LoadAddOn("WeakAurasOptions")
+        if not loaded then
+            RaidFrameSettings.spellCache.Build()
+            return
+        end
+    end
+    local weakauraCache = WeakAuras.spellCache.Get()
+    RaidFrameSettings.spellCache.Set(weakauraCache)
+    if next(weakauraCache) == nil then
+        RaidFrameSettings.spellCache.Build()
+    end    
+end
+
 frame:SetScript("OnEvent", function(self, event)
     --[===[@non-debug@
     if event == "PLAYER_REGEN_DISABLED" then
@@ -77,9 +96,10 @@ frame:SetScript("OnEvent", function(self, event)
     end
     --@end-non-debug@]===]
 end)
-frame:HookScript("OnShow",function()
+frame:HookScript("OnShow", function()
+    initSpellCache()
     frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-    ACD:Open("RaidFrameSettings_options",container)
+    ACD:Open("RaidFrameSettings_options", container)
 end)
 frame:HookScript("OnHide",function()
     frame:UnregisterEvent("PLAYER_REGEN_DISABLED")

@@ -133,3 +133,24 @@ function addon:GetPersonalCooldowns()
     end
     return defensives
 end
+
+function addon:GetSpellIdsByName(name)
+    local spellIds = {}
+    local list = addon.spellCache.GetSpellsMatching(addon.spellCache.CorrectAuraName(name))
+    if list then
+        for spellId in pairs(list) do
+            tinsert(spellIds, spellId)
+        end
+    else
+        local spellId = select(7, GetSpellInfo(name))
+        if spellId then
+            tinsert(spellIds, spellId)
+        end
+    end
+    return spellIds
+end
+
+function addon:SafeToNumber(input)
+    local nr = tonumber(input)
+    return nr and (nr < 2147483648 and nr > -2147483649) and nr or nil
+end

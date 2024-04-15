@@ -277,19 +277,15 @@ function Buffs:OnEnable()
    -- Aura update
     -- FIXME Improve performance by i.e. building a cache during combat
     local function should_show_watchlist_aura(aura)
-        local info = watchlist[aura.spellId] or {}
+        local info = watchlist[aura.spellId] 
+        if not info then
+            return nil
+        end
         if ( info.ownOnly and aura.sourceUnit ~= "player" ) then
             return false
         else
             return true
         end
-    end
-
-    local function should_show_aura(aura)
-        if watchlist[aura.spellId] then
-            return should_show_watchlist_aura(aura)
-        end
-        return AuraUtil.ShouldDisplayBuff(aura.sourceUnit, aura.spellId, aura.canApplyAura) 
     end
 
     -- making use of the unitAuraUpdateInfo provided by UpdateAuras
@@ -299,29 +295,48 @@ function Buffs:OnEnable()
         if unitAuraUpdateInfo == nil or unitAuraUpdateInfo.isFullUpdate then
             auraCache = {}
             local function handle_help_aura(aura)
-                if should_show_aura(aura) then
-                    auraCache[aura.auraInstanceID] = aura
-                    buffsChanged = true
+                if not blacklist[aura.spellId] then
+                    local is_overriden = should_show_watchlist_aura(aura)
+                    if is_overriden ~= nil then
+                        auraCache[aura.auraInstanceID] = is_overriden and aura or nil
+                    else
+                        auraCache[aura.auraInstanceID] = frame.buffs[aura.auraInstanceID]
+                    end
                 end
             end
+            buffsChanged = true
             local batchCount = nil
             local usePackedAura = true
             AuraUtil.ForEachAura(frame.unit, "HELPFUL", batchCount, handle_help_aura, usePackedAura)
 		else
             if unitAuraUpdateInfo.addedAuras ~= nil then
                 for _, aura in next, unitAuraUpdateInfo.addedAuras do
-                    if aura.isHelpful and should_show_aura(aura) then
-                        auraCache[aura.auraInstanceID] = aura
-                        buffsChanged = true
+                    if aura.isHelpful then
+                        local is_set_by_default = frame.buffs[aura.auraInstanceID]
+                        if is_set_by_default ~= nil then
+                            buffsChanged = true
+                        end
+                        if not blacklist[aura.spellId] then
+                            local is_overriden = should_show_watchlist_aura(aura)
+                            if is_overriden ~= nil then
+                                buffsChanged = true
+                                auraCache[aura.auraInstanceID] = is_overriden and aura or nil
+                            else
+                                auraCache[aura.auraInstanceID] = is_set_by_default
+                            end
+                        end
                     end
                 end
             end
             if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
                 for _, auraInstanceID  in next, unitAuraUpdateInfo.updatedAuraInstanceIDs do
-                    if auraCache[auraInstanceID] ~= nil then
-                        local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID)
-                        auraCache[auraInstanceID] = newAura 
+                    local is_set_by_default = frame.buffs[auraInstanceID]
+                    if is_set_by_default ~= nil or auraCache[auraInstanceID] then
                         buffsChanged = true
+                        local newAura = is_set_by_default or C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID) -- is_set_by_default is actually an aura 
+                        if newAura and not blacklist[newAura.spellId] then
+                            auraCache[auraInstanceID] = newAura
+                        end
                     end
                 end
             end
@@ -329,9 +344,9 @@ function Buffs:OnEnable()
                 for _, auraInstanceID in next, unitAuraUpdateInfo.removedAuraInstanceIDs do
                     if auraCache[auraInstanceID] then
                         auraCache[auraInstanceID] = nil
-                        buffsChanged = true
                     end
                 end
+                buffsChanged = true -- they are already set to nil at this point so we have to always update on removed auras
             end
         end
         buffFrameRegister[frame].auraCache = auraCache
@@ -346,12 +361,6 @@ function Buffs:OnEnable()
         local buffsChanged, auraCache =  update_and_get_aura_cache(frame, unitAuraUpdateInfo)
         if not buffsChanged then
             return
-        end
-        -- In case this seems odd, we still have to track blacklisted auras to correctly determine buffsChanged 
-        for auraInstanceID, aura in next, auraCache do
-            if blacklist[aura.spellId] then
-                auraCache[auraInstanceID] = nil
-            end
         end
         local frameNum = 1
         local is_placed = {}

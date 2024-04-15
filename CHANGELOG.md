@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.29.2] - 2024-04-16
+#### Changed
+* The update_and_get_aura_cache functions for buffs and debuffs have been reworked. The changes should improve efficiency and also fix remaining blacklisting and whitelisting issues.
+
 ### Version [2.29.1] - 2024-04-15
 #### Fixes
 * Fixed an issue with Buffs and Debuffs that could cause the aura frames to flicker/hide when a blacklisted aura was present

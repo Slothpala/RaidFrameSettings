@@ -43,7 +43,10 @@ function HealthBars:OnEnable()
     --only apply the power bar texture if the power bar is shown
     local updateTextures
     --with powerbar
-    if DefaultCompactUnitFrameSetupOptions and DefaultCompactUnitFrameSetupOptions.displayPowerBar == true then
+    --[[
+        DefaultCompactUnitFrameSetupOptions and DefaultCompactUnitFrameSetupOptions.displayPowerBar == true cause taint
+    ]]
+    if C_CVar.GetCVar("raidFramesDisplayPowerBars") == "1" then
         updateTextures = function(frame)
             frame.healthBar:SetStatusBarTexture(statusBarTexture)
             frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")

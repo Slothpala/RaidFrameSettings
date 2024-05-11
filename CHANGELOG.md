@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [2.30.2] - 2024-05-11
+#### Fixes
+* HealthBars.lua -> Removed the raidFramesDisplayPowerBars cvar as it does not exist in classic and switched to checking the DefaultCompactUnitFrameSetupOptions.displayPowerBar directly. reverted this change as it causes taint related issues when players join during combat.
+
 ### Version [2.30.1] - 2024-05-08
 #### Updated 
 * retail interface version to 100207

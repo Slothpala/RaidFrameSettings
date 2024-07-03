@@ -1,4 +1,5 @@
-## Interface: @project-version@
+## Interface: 100207
+## Version: @project-version@
 ## Title: RaidFrameSettings
 ## Author: Slothpala
 ## SavedVariables: RaidFrameSettingsDB

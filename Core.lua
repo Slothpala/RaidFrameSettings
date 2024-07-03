@@ -12,7 +12,7 @@ function addon:OnInitialize()
   --Slash command
   self:RegisterChatCommand(addonName, "SlashCommand")
   self:RegisterChatCommand("rfs", "SlashCommand")
-  self:UpdateWhitelist()
+  self:CreateOrUpdateFrameEnv()
 end
 
 function addon:OnEnable()
@@ -58,7 +58,6 @@ end
 function addon:ReloadConfig()
   self:Disable()
   self:Enable()
-  self:CreateOrUpdateFrameEnv()
   self:OptionsFrame_UpdateTabs()
 end
 

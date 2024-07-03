@@ -71,7 +71,5 @@ end
 -- GROUP_ROSTER_UPDATE gets spammed in certain scenarios (large groups with many people joining or leaving).
 -- Buffering greatly reduces CPU usage spikes in these scenarios.
 addon:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, "CreateOrUpdateFrameEnv")
--- PLAYER_LOGIN is not sufficient, as the addon must perform a full update after reloading.
-addon:RegisterEvent("PLAYER_ENTERING_WORLD", "CreateOrUpdateFrameEnv")
 
 

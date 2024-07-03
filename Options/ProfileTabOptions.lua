@@ -196,7 +196,7 @@ function addon:GetProfileTabOptions()
   local profile_options = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
   profile_options.order = 1
   profile_options.inline = true
-  profile_options.args.choose.hidden = true -- This will hide the Existing Profiles dropdown to compel the user to use the Group/Spec Profile section and not be confused by unwanted behaviour.
+  --profile_options.args.choose.hidden = true -- This will hide the Existing Profiles dropdown to compel the user to use the Group/Spec Profile section and not be confused by unwanted behaviour.
   options.args.profiles = profile_options
   return options
 end

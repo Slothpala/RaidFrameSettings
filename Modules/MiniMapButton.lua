@@ -17,10 +17,11 @@ function module:OnEnable()
       label = addonName,
       icon = "Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon_Circle.tga",
       OnClick = function(_, button)
-        --[[ TODO: add combat check for release.
+
         if button == "LeftButton" then
           addon:SlashCommand()
         elseif button == "RightButton" then
+          --[[ TODO: add combat check for release.
           if InCombatLockdown() then
             addon:Print(L["mini_map_in_combat_warning"])
           else

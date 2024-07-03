@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+  <Script file="ModuleSelectionOptions.lua"/>
+  <Script file="AddOnColorOptions.lua"/>
+  <Script file="GeneralOptions.lua"/>
+  <Script file="FontOptions.lua"/>
+  <Script file="DefensiveOverlayOptions.lua"/>
+  <Script file="BuffFrameOptions.lua"/>
+  <Script file="DebuffFrameOptions.lua"/>
+  <Script file="ProfileTabOptions.lua"/>
+  <Script file="AuraGroupsOptions.lua"/>
+  <Script file="EditAuraGroupOptions.lua"/>
+  <Script file="BuffHighlightAurasOptions.lua"/>
+  <Script file="ImportProfileOptions.lua"/>
+  <Script file="ExportProfileOptions.lua"/>
+</Ui>

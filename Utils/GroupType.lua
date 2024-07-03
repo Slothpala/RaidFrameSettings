@@ -1,22 +1,21 @@
 local _, addonTable = ...
-local addon = addonTable.RaidFrameSettings
+local addon = addonTable.addon
 
 local IsInRaid = IsInRaid
 local IsInInstance = IsInInstance
 
 --always default to party profile
 function addon:GetGroupType()
-    local inInstance, instanceType = IsInInstance()
-    if inInstance then
-        if instanceType == "pvp" then
-            return "battleground"
-        end
-        if instanceType == "arena" then
-            return instanceType
-        end
+  local in_instance, instance_type = IsInInstance()
+  if in_instance then
+    if instance_type == "pvp" then
+      return "battleground"
     end
-    local inRaid = IsInRaid()
-    local groupType = inRaid and "raid" or "party"
-    return groupType
+    if instance_type == "arena" then
+      return instance_type
+    end
+  end
+  local in_raid = IsInRaid()
+  local group_type = in_raid and "raid" or "party"
+  return group_type
 end
-

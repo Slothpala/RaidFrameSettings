@@ -1,117 +1,32 @@
 local _, addonTable = ...
-local addon = addonTable.RaidFrameSettings
+local addon = addonTable.addon
 
-local _G = _G
-local GetParent = GetParent
-local IsInRaid = IsInRaid
-local IsActiveBattlefieldArena = IsActiveBattlefieldArena
-local IsForbidden = IsForbidden
-local IsShown = IsShown
-local next = next
-local select = select
+--------------------
+--- Libs & Utils ---
+--------------------
 
-local Roster = {}
-local needsUpdate = true
+local UnitCache = addonTable.UnitCache
 
-local function ShowSeparateGroups()
-    local showSeparateGroups 
-    if addonTable.isClassic then
-        showSeparateGroups = CompactRaidFrameManager_GetSetting("KeepGroupsTogether")
+------------------
+--- CUF Frames ---
+------------------
+
+function addon:IterateMiniRoster(callback, req_frame_env)
+  CompactRaidFrameContainer:ApplyToFrames("mini", function(cuf_frame)
+    if req_frame_env and not cuf_frame.RFS_FrameEnvironment then
+      -- skip
     else
-        showSeparateGroups = EditModeManagerFrame:ShouldRaidFrameShowSeparateGroups()
+      callback(cuf_frame)
     end
-    return showSeparateGroups
+   end)
 end
 
-local function UpdateRosterCache()
-    Roster = {}
-    local showSeparateGroups = ShowSeparateGroups()
-    local useRaid = ( IsInRaid() and not select(1,IsActiveBattlefieldArena()) ) or ( addonTable.isClassic and not showSeparateGroups ) --IsInRaid() returns true in arena even though we need party frame names
-    if useRaid then 
-        if showSeparateGroups then
-            for i=1, 8 do
-                for j=1, 5 do
-                    local frame = _G["CompactRaidGroup" ..i.. "Member" .. j .. "HealthBar"]
-                    if frame then
-                        frame = frame:GetParent()
-                        if frame.unit then
-                            Roster[frame.unit] = frame
-                        end
-                    end
-                end
-            end
-            for i=1, 40 do
-                local frame = _G["CompactRaidFrame" ..i .. "HealthBar"]
-                if frame then
-                    frame = frame:GetParent()
-                    if frame.unit then
-                        Roster[frame.unit] = frame
-                    end
-                end
-            end
-        else
-            for i=1, 80 do
-                local frame = _G["CompactRaidFrame" ..i .. "HealthBar"]
-                if frame then
-                    frame = frame:GetParent()
-                    if frame.unit then
-                        Roster[frame.unit] = frame
-                    end
-                end
-            end
-        end
+function addon:IterateRoster(callback, req_frame_env)
+  CompactRaidFrameContainer:ApplyToFrames("normal", function(cuf_frame)
+    if req_frame_env and not cuf_frame.RFS_FrameEnvironment then
+      -- skip
     else
-        for i=1, 5 do
-            local frame = _G["CompactPartyFrameMember" ..i .. "HealthBar"]
-            if frame then
-                frame = frame:GetParent()
-                local unit = frame.unit or ""
-                Roster[unit] = frame
-            end
-            local frame = _G["CompactPartyFramePet" ..i .. "HealthBar"]
-            if frame then
-                frame = frame:GetParent()
-                if frame.unit then
-                    Roster[frame.unit] = frame
-                end
-            end
-            local frame = _G["CompactArenaFrameMember" ..i .. "HealthBar"]
-            if frame then
-                frame = frame:GetParent()
-                Roster[frame.unit] = frame
-            end
-        end
+      callback(cuf_frame)
     end
-    needsUpdate = false
-    return true
+  end)
 end
-
-local last_showSeparateGroups = ShowSeparateGroups() -- An event or cvar would be nicer but couldn't find one in event trace
-local function CheckRosterCache()
-    local current_showSeparateGroups = ShowSeparateGroups()
-    if needsUpdate or ( last_showSeparateGroups ~= current_showSeparateGroups ) then
-        UpdateRosterCache()
-    end
-    last_showSeparateGroups = current_showSeparateGroups
-end
-
-function addon:IterateRoster(callback)
-    CheckRosterCache()
-    for unit, frame in next, Roster do
-        if not frame:IsForbidden() and frame:IsShown() then
-            callback(frame)
-        end
-    end
-end
-
-function addon:GetFrame(unit)
-    CheckRosterCache()
-    return Roster[unit]
-end
-
-local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-eventFrame:SetScript("OnEvent", function()
-    needsUpdate = true
-end)

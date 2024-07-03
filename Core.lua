@@ -1,87 +1,91 @@
---[[
-    Created by Slothpala 
-    Setup the AddOn. I.e load the db (saved variables), load modules and set up the GUI as well as profile management
---]]
 local addonName, addonTable = ...
-addonTable.RaidFrameSettings = LibStub("AceAddon-3.0"):NewAddon("RaidFrameSettings", "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0")
-local RaidFrameSettings = addonTable.RaidFrameSettings
-RaidFrameSettings:SetDefaultModuleLibraries("AceEvent-3.0")
-RaidFrameSettings:SetDefaultModuleState(false)
-
+addonTable.addon = LibStub("AceAddon-3.0"):NewAddon("RaidFrameSettings", "AceConsole-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceSerializer-3.0")
+local addon = addonTable.addon
+addon:SetDefaultModuleLibraries("AceEvent-3.0")
+addon:SetDefaultModuleState(false)
 local AC = LibStub("AceConfig-3.0")
-local LibDeflate = LibStub:GetLibrary("LibDeflate")
-local groupType
 
-function RaidFrameSettings:OnInitialize()
-    self:LoadDataBase()
-    self:GetProfiles()
-    groupType = self:GetGroupType()
-    --load options table
-    self:LoadUserInputEntrys()
-    local options = self:GetOptionsTable()
-    --create option table based on database structure and add them to options
-    options.args.PorfileManagement.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) 
-    options.args.PorfileManagement.args.profile.order = 1
-    --register options as option table to create a gui based on it
-    AC:RegisterOptionsTable("RaidFrameSettings_options", options) 
-    self:RegisterChatCommand("rfs", "SlashCommand")
-    self:RegisterChatCommand("raidframesettings", "SlashCommand")
-    self:RegisterEvent("PLAYER_LOGIN","LoadGroupBasedProfile")
+
+function addon:OnInitialize()
+  -- Create/Load the Data Base
+  self:LoadDataBase()
+  --Slash command
+  self:RegisterChatCommand(addonName, "SlashCommand")
+  self:RegisterChatCommand("rfs", "SlashCommand")
+  self:UpdateWhitelist()
 end
 
-function RaidFrameSettings:SlashCommand()
-    local frame = RaidFrameSettings:GetOptionsFrame()
-    --[===[@non-debug@
-    if InCombatLockdown() then
-        self:Print("Options will open after combat ends.")
-        frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-        return
+function addon:OnEnable()
+  -- Options
+  -- Leave this in OnEnable to update the UI on profile change.
+  AC:RegisterOptionsTable("RaidFrameSettings_Module_Selection_Tab", self:GetModuleSelectionOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_AddOn_Colors_Tab", self:GetAddOnColorOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_General_Options_Tab", self:GetGeneralOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Font_Options_Tab", self:GetFontOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Defensive_Overlay_Options_Tab", self:GetDefensiveOverlayOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Buff_Frame_Options_Tab", self:GetBuffFrameOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Debuff_Frame_Options_Tab", self:GetDebuffFrameOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Profiles_Options_Tab", self:GetProfileTabOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Aura_Group_Options_Tab", self:GetAuraGroupOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Edit_Aura_Group_Options_PopUp", self:GetEditAuraGroupOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Buff_Highlight_Auras_Options_PopUp", self:GetBuffHighlightAuraOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Export_Profile_Options_PopUp", self:GetExportProfileOptions())
+  AC:RegisterOptionsTable("RaidFrameSettings_Import_Profile_Options_PopUp", self:GetImportProfileOptions())
+  -- Set the addon colors
+  self:CreateOrUpdateClassColors()
+  self:CreateOrUpdatePowerColors()
+  self:CreateOrUpdateDispelTypeColors()
+  for _, module in self:IterateModules() do
+    if self:IsModuleEnabled(module:GetName()) then
+      module:Enable()
     end
-    --@end-non-debug@]===]
-    if not frame:IsShown() then
-        frame:Show()
-    else
-        frame:Hide()
-    end
+  end
 end
 
-function RaidFrameSettings:OnEnable()
-    for _, module in self:IterateModules() do
-        if self.db.profile.Module[module:GetName()] then 
-            module:Enable()
-        end
-    end
-    addonTable.isFirstLoad = false
-    self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckGroupType") --GroupType.lua
+function addon:OnDisable()
+
 end
 
-function RaidFrameSettings:OnDisable()
-    for name, module in self:IterateModules() do
-        module:Disable()
-    end
+function addon:SlashCommand()
+  local options_frame = addon:GetOptionsFrame()
+  if not options_frame:IsShown() then
+    options_frame:Show()
+  else
+    options_frame:Hide()
+  end
 end
 
-function RaidFrameSettings:IsModuleEnabled(name)
-    return self.db.profile.Module[name]
+function addon:ReloadConfig()
+  self:Disable()
+  self:Enable()
+  self:CreateOrUpdateFrameEnv()
+  self:OptionsFrame_UpdateTabs()
 end
 
+-- To not have a to convoluted Set/Get section.
+local module_assoiaton = {
+  ["NameFont"] = "Font",
+  ["StatusFont"] = "Font",
+  ["DefensiveOverlayDurationFont"] = "DefensiveOverlay",
+  ["DefensiveOverlayStackFont"] = "DefensiveOverlay",
+  ["BuffFrameDurationFont"] = "BuffFrame",
+  ["BuffFrameStackFont"] = "BuffFrame",
+  ["DebuffFrameDurationFont"] = "DebuffFrame",
+  ["DebuffFrameStackFont"] = "DebuffFrame",
+  ["AuraGroupsDurationFont"] = "AuraGroups",
+  ["AuraGroupsStackFont"] = "AuraGroups",
+}
 
-function RaidFrameSettings:UpdateModule(module_name)
-    self:DisableModule(module_name)
-    self:EnableModule(module_name)
+function addon:ReloadModule(name)
+  local module_name = module_assoiaton[name] or name
+  self:DisableModule(module_name)
+  self:EnableModule(module_name)
 end
 
-function RaidFrameSettings:ReloadConfig()
-    self:GetProfiles()
-    self:Disable()
-    self:Enable()
-    self:LoadUserInputEntrys()
+function addon:IsModuleEnabled(name)
+  return self.db.profile[name].enabled
 end
 
---Addon compartment 
-_G.RaidFrameSettings_AddOnCompartmentClick = function()
-    RaidFrameSettings:SlashCommand()
+function RaidFrameSettings_AddOnCompartmentEntry()
+  addon:SlashCommand()
 end
-
-
-

@@ -49,20 +49,13 @@ end
 
 --- Create the frame environment, aura scanners and aura indicators or update them.
 function addon:CreateOrUpdateFrameEnv()
-  local in_group = IsInGroup() or addon:IsModuleEnabled("SoloFrame")
-  if not in_group then
-    return
-  end
   CompactRaidFrameContainer:ApplyToFrames("normal", function(cuf_frame)
     -- Create the env if it doesnt exist.
     if not cuf_frame.RFS_FrameEnvironment then
       create_frame_env(cuf_frame)
     end
-    -- Check if the aura scanner should start listening.
-    local unit = cuf_frame.unit
-    local is_visible = cuf_frame:IsVisible()
     -- Check if the unit auras should be updated or the scanner stopped.
-    if ( unit and is_visible ) then
+    if cuf_frame.unit then
       addon:CreateOrUpdateAuraScanner(cuf_frame)
     else
       addon:StopAuraScanner(cuf_frame)
@@ -77,7 +70,7 @@ end
 -- https://www.wowace.com/projects/ace3/pages/api/ace-bucket-3-0
 -- GROUP_ROSTER_UPDATE gets spammed in certain scenarios (large groups with many people joining or leaving).
 -- Buffering greatly reduces CPU usage spikes in these scenarios.
-addon:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 0.5, "CreateOrUpdateFrameEnv")
+addon:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, "CreateOrUpdateFrameEnv")
 -- PLAYER_LOGIN is not sufficient, as the addon must perform a full update after reloading.
 addon:RegisterEvent("PLAYER_ENTERING_WORLD", "CreateOrUpdateFrameEnv")
 

@@ -323,7 +323,4 @@ function addon:StopAuraScanner(cuf_frame)
     return
   end
   aura_scanner:UnregisterAllEvents()
-  for _, aura_frame in next, cuf_frame.RFS_FrameEnvironment.aura_frames do
-    aura_frame:Clear()
-  end
 end

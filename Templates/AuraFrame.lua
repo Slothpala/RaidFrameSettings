@@ -127,7 +127,7 @@ function AuraFrame:Enable(options)
   -- SetAura callback
   self.on_set_aura_callback = options.on_set_aura_callback
   for i=1, self.num_indicators do
-    -- Fetch the indicator ot create one.
+    -- Acquire the indicator.
     local rfs_aura_indicator = rfs_aura_indicator_pool:Acquire()
     rfs_aura_indicator:SetParent(self.parent)
     -- Position & Orientation.

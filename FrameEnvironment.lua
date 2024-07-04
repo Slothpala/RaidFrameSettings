@@ -18,7 +18,7 @@ local TableUtil_Constants_AssociativePriorityTable = TableUtil.Constants.Associa
 --- Frame Environment ---
 -------------------------
 
-addonTable.on_create_frame_env_callbacks = {}
+addonTable.on_create_frame_env_callbacks = {} -- @TODO Change to event based system.
 
 local function create_private_aura_indicator()
   local priv_indicator = CreateFrame("Frame")
@@ -63,13 +63,8 @@ function addon:CreateOrUpdateFrameEnv()
   end)
 end
 
---------------
---- Events ---
---------------
 
--- https://www.wowace.com/projects/ace3/pages/api/ace-bucket-3-0
--- GROUP_ROSTER_UPDATE gets spammed in certain scenarios (large groups with many people joining or leaving).
--- Buffering greatly reduces CPU usage spikes in these scenarios.
-addon:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, "CreateOrUpdateFrameEnv")
+
+
 
 

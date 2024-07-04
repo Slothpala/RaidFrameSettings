@@ -34,12 +34,15 @@ function addon:OnEnable()
   self:CreateOrUpdateClassColors()
   self:CreateOrUpdatePowerColors()
   self:CreateOrUpdateDispelTypeColors()
+  self:CreateOrUpdateFrameEnv()
+  -- GROUP_ROSTER_UPDATE gets spammed in certain scenarios (large groups with many people joining or leaving).
+  -- Buffering greatly reduces CPU usage spikes in these scenarios.
+  self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, "CreateOrUpdateFrameEnv")
   for _, module in self:IterateModules() do
     if self:IsModuleEnabled(module:GetName()) then
       module:Enable()
     end
   end
-  self:CreateOrUpdateFrameEnv()
 end
 
 function addon:OnDisable()

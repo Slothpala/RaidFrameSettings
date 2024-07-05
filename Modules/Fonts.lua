@@ -6,6 +6,7 @@ local RaidFrameSettings = addonTable.RaidFrameSettings
 local Fonts = RaidFrameSettings:NewModule("Fonts")
 Mixin(Fonts, addonTable.hooks)
 local Media = LibStub("LibSharedMedia-3.0")
+local Cata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 
 local ClearAllPoints = ClearAllPoints
 local SetPoint = SetPoint
@@ -77,7 +78,11 @@ function Fonts:OnEnable()
         frame.statusText:SetShadowColor(Advanced.shadowColor.r,Advanced.shadowColor.g,Advanced.shadowColor.b,Advanced.shadowColor.a)
         frame.statusText:SetShadowOffset(Advanced.x_offset,Advanced.y_offset)
     end
-    self:HookFuncFiltered("DefaultCompactUnitFrameSetup", UpdateFont)
+    if (Cata) then
+        self:HookFuncFiltered("CompactUnitFrame_UpdateVisible", UpdateFont)
+    else
+        self:HookFuncFiltered("DefaultCompactUnitFrameSetup", UpdateFont)
+    end
     --
     local UpdateNameCallback
     if Name.Classcolored then

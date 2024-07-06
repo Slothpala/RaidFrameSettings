@@ -89,7 +89,7 @@ for i=1, GetNumSpecializationsForClassID(class_id) do
       local current_spec_id = GetSpecialization()
       local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
       if current_spec_name == spec_name then
-        return spec_name .. " - " .. L["active_spec_indicator"]
+        return spec_name .. " - " .. "|cff39FF14" .. L["active_spec_indicator"] .. "|r"
       else
         return spec_name
       end
@@ -118,7 +118,7 @@ for i=1, GetNumSpecializationsForClassID(class_id) do
           local current_spec_id = GetSpecialization()
           local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
           if current_group_type == "party" and ( current_spec_name == spec_name ) then
-            return L["party_profile_name"] .. " - " .. L["active_spec_indicator"]
+            return L["party_profile_name"] .. " - " .. "|cff39FF14" .. L["active_spec_indicator"] .. "|r"
           else
             return L["party_profile_name"]
           end
@@ -196,7 +196,7 @@ function addon:GetProfileTabOptions()
   local profile_options = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
   profile_options.order = 1
   profile_options.inline = true
-  --profile_options.args.choose.hidden = true -- This will hide the Existing Profiles dropdown to compel the user to use the Group/Spec Profile section and not be confused by unwanted behaviour.
+  profile_options.args.choose.hidden = true -- This will hide the Existing Profiles dropdown to compel the user to use the Group/Spec Profile section and not be confused by unwanted behaviour.
   options.args.profiles = profile_options
   return options
 end

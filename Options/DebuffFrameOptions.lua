@@ -242,6 +242,18 @@ local function update_options()
           set = "SetFramePoint",
           width = 0.6,
         },
+        increase_factor = {
+          order = 30.3,
+          name = L["increase_factor_name"],
+          desc = L["increase_factor_desc"],
+          type = "range",
+          get = "GetStatus",
+          set = "SetStatus",
+          min = 1,
+          max = 2,
+          step = 0.1,
+          width = 1,
+        },
         new_line_3 = {
           order = 40,
           name = "",

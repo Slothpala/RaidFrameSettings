@@ -190,6 +190,8 @@ L["debuff_frame_duration_font_by_dispel_color_name"] = "Dispel Duration"
 L["debuff_frame_duration_font_by_dispel_color_desc"] = "Color the duration text of the indicator according to the dispel type of the aura it represents. If the aura has no dispel type, the default color is used."
 L["priv_point_name"] = "Private Anchor"
 L["priv_point_desc"] = "The anchor point of the private aura indicator."
+L["increase_factor_name"] = "Enlarge factor"
+L["increase_factor_desc"] = "The factor of how much an enlarged aura is increased."
 
 -- Aura lists
 L["blacklist_name"] = "Blacklist"
@@ -280,6 +282,7 @@ L["buff_highlight_option_present"] = "Present"
 L["buff_highlight_option_missing"] = "Missing"
 L["buff_highlight_edit_auras_name"] = "Edit Auras"
 L["buff_highlight_edit_auras_desc"] = "Edit Auras"
+
 ------------
 --- Tabs ---
 ------------
@@ -359,6 +362,7 @@ L["remove_button_desc"] = "from the list"
 -----------------------
 --- Mini Map Button ---
 -----------------------
+
 L["module_mini_map_button_name"] = "Minimap Button"
 L["module_mini_map_button_desc"] = "Enable a minimap button to control the addon."
 L["mini_map_tooltip_left_button_text"] = "Left button: Toggle the settings."

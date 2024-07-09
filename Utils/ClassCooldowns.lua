@@ -372,7 +372,10 @@ local class_cooldowns = {
   },
 }
 
-function addon:GetClassCooldowns()
+function addon:ClassCooldowns_GetDB()
   return class_cooldowns
 end
 
+function addon:ClassCooldowns_GetDefensiveCooldowns()
+
+end

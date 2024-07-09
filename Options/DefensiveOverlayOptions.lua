@@ -260,7 +260,7 @@ local class_icon_coords = {
 }
 
 local function create_class_options()
-  local class_cooldowns = addon:GetClassCooldowns()
+  local class_cooldowns = addon:ClassCooldowns_GetDB()
   local i = 2
   for class, icon_coords in next, class_icon_coords do
     -- create the class entry

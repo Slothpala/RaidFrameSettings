@@ -64,7 +64,7 @@ function addon:UpdateWhitelist()
     end
   end
   if self:IsModuleEnabled("DefensiveOverlay") then
-    local class_cooldowns = self:GetClassCooldowns()
+    local class_cooldowns = self:ClassCooldowns_GetDB()
     for _, info in next, class_cooldowns do
       for spell, spell_tbl in next, info.defensive do
         if addon.db.profile.DefensiveOverlay[spell] then

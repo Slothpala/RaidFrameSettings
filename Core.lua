@@ -34,6 +34,7 @@ function addon:OnEnable()
   self:CreateOrUpdateClassColors()
   self:CreateOrUpdatePowerColors()
   self:CreateOrUpdateDispelTypeColors()
+  -- Create or update the frame env
   self:CreateOrUpdateFrameEnv()
   -- GROUP_ROSTER_UPDATE gets spammed in certain scenarios (large groups with many people joining or leaving).
   -- Buffering greatly reduces CPU usage spikes in these scenarios.

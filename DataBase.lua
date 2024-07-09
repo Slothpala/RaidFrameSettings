@@ -189,6 +189,7 @@ local defaults = {
       text_color = {0, 1, 1},
     },
     DefensiveOverlay = {
+      ["*"] = true, -- used for disabling spells
       -- Position
       point = "TOPLEFT",
       relative_point = "TOPLEFT",
@@ -215,74 +216,6 @@ local defaults = {
       show_edge = false,
       -- Tooltip
       show_tooltip = false,
-      DEATHKNIGHT = {
-        [48707] = true, -- Anti Magic Shell
-        [48792] = true, -- Icebound Fortitude
-        [410358] = true,
-      },
-      DEMONHUNTER = {
-        [212800] = true, -- Blur
-        [196555] = true, -- Netherwalk
-        [187827] = true, -- Metamorphosis
-      },
-      DRUID = {
-        [22812] = true, -- Barkskin
-        [200851] = true, -- Rage of the Sleeper
-        [61336] = true, -- Survival Instincts
-      },
-      EVOKER = {
-        [363916] = true, -- Obsidian Scales
-        [374348] = true, -- Renewing Blaze
-      },
-      HUNTER = {
-        [186265] = true, -- Aspect of the Turtle
-        [264735] = true, -- Survival of the Fittest
-      },
-      MAGE = {
-        [45438] = true, -- Ice Block
-        [342246] = true, -- Alter Time
-        [113862] = true, -- Greater Invisibility
-        [414658] = true, -- Ice Cold
-      },
-      MONK = {
-        [125174] = true, -- Touch of Karma
-        [122278] = true, -- Dampen Harm
-        [122783] = true, -- Diffuse Magic
-        [120954] = true, -- Fortifying Brew
-      },
-      PALADIN = {
-        [642] = true, -- Divine Shield
-        [31850] = true, -- Ardent Defender
-        [403876] = true, -- Divine Protection Retri
-        [498] = true, -- Divine Protection Holy
-        [86659] = true, -- Guardian of Ancient Kings
-        [212641] = true, -- Guardian of Ancient Kings + Glyph of Queens
-        [184662] = true, -- Shield of Vengance
-        [389539] = true, -- Sentinel
-      },
-      PRIEST = {
-        [19236] = true, -- Desperate Prayer
-        [47585] = true, -- Dispersion
-      },
-      ROGUE = {
-        [31224] = true, -- Cloak of Shadows
-        [5277] = true, -- Evasion
-        [1966] = true, -- Feint
-      },
-      SHAMAN = {
-        [108271] = true, -- Astral Shift
-      },
-      WARLOCK = {
-        [108416] = true, -- Dark Pact
-        [104773] = true, -- Unending Resolve
-      },
-      WARRIOR = {
-        [118038] = true, -- Die by the Sword
-        [184364] = true, -- Enraged Regeneration
-        [12975] = true, -- Last Stand
-        [871] = true, -- Shield Wall
-        [23920] = true, -- Spell Reflection
-      },
     },
     BuffFrameDurationFont = {
       point = "TOPLEFT",

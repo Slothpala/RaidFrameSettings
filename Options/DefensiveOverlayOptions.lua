@@ -260,6 +260,7 @@ local class_icon_coords = {
 }
 
 local function create_class_options()
+  local class_cooldowns = addon:GetClassCooldowns()
   local i = 2
   for class, icon_coords in next, class_icon_coords do
     -- create the class entry
@@ -274,7 +275,7 @@ local function create_class_options()
       },
     }
     -- get all spell infos
-    for spell_id, _ in next, addon.db.profile.DefensiveOverlay[class] do
+    for spell_id, _ in next, class_cooldowns[class].defensive do
       local spell_obj = Spell:CreateFromSpellID(spell_id)
       local spell_name = spell_obj:GetSpellName()
       local string_id = tostring(spell_id)
@@ -284,10 +285,10 @@ local function create_class_options()
         type = "toggle",
         desc = spell_obj:GetSpellDescription(),
         get = function()
-          return addon.db.profile.DefensiveOverlay[class][spell_id]
+          return addon.db.profile.DefensiveOverlay[spell_id]
         end,
         set = function(_, value)
-          addon.db.profile.DefensiveOverlay[class][spell_id] = value
+          addon.db.profile.DefensiveOverlay[spell_id] = value
           addon:ReloadModule("DefensiveOverlay")
         end,
         width = 0.15,

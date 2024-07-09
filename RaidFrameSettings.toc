@@ -20,6 +20,7 @@ DataBase.lua
 
 Utils\Animation.lua
 Utils\GroupType.lua
+Utils\ClassCooldowns.lua
 
 Templates\AuraIndicatorTemplate.xml
 Templates\AuraFrame.lua

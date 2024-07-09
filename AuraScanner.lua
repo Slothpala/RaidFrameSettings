@@ -64,10 +64,11 @@ function addon:UpdateWhitelist()
     end
   end
   if self:IsModuleEnabled("DefensiveOverlay") then
-    for _, v in next, self.db.profile.DefensiveOverlay do
-      if type(v) == "table" then
-        for spell_id, should_display in next, v do
-          if should_display then
+    local class_cooldowns = self:GetClassCooldowns()
+    for _, info in next, class_cooldowns do
+      for spell, spell_tbl in next, info.defensive do
+        if addon.db.profile.DefensiveOverlay[spell] then
+          for _, spell_id in next, spell_tbl.auras do
             whitelist[spell_id] = {}
           end
         end

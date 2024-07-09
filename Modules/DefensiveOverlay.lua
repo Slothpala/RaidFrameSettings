@@ -95,10 +95,11 @@ function module:OnEnable()
 
   -- Gather all wanted spellIds
   local defensive_spell_ids = {}
-  for _, v in next, db_obj do
-    if type(v) == "table" then
-      for spell_id, should_display in next, v do
-        if should_display then
+  local class_cooldowns = addon:GetClassCooldowns()
+  for _, info in next, class_cooldowns do
+    for spell, spell_tbl in next, info.defensive do
+      if db_obj[spell] ~= false then -- can also be nil which in this case is equal to true
+        for _, spell_id in next, spell_tbl.auras do
           defensive_spell_ids[spell_id] = true
         end
       end

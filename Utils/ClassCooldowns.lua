@@ -39,6 +39,11 @@ local class_cooldowns = {
           81256, -- Base
         },
       },
+      [51052] = { -- [[ Dancing Rune Weapon ]]
+        auras = {
+          145629, -- Base
+        },
+      },
     },
   },
   DEMONHUNTER = {
@@ -60,6 +65,11 @@ local class_cooldowns = {
           187827, -- Base
         },
       },
+      [196718] = { -- [[ Darkness ]]
+        auras = {
+          209426, -- Base
+        },
+      },
     },
   },
   DRUID = {
@@ -79,6 +89,11 @@ local class_cooldowns = {
       [61336] = { -- [[ Survival Instincts ]]
         auras = {
           61336, -- Base
+        },
+      },
+      [102342] = { -- [[ Ironbark ]]
+        auras = {
+          102342, -- Base
         },
       },
     },
@@ -170,6 +185,11 @@ local class_cooldowns = {
           120954, -- Base
         },
       },
+      [116849] = { -- [[ Life Cocoon ]]
+        auras = {
+          116849, -- Base
+        },
+      },
     },
   },
   PALADIN = {
@@ -208,6 +228,16 @@ local class_cooldowns = {
           389539, -- Base
         },
       },
+      [1022] = { -- [[ Blessing of Protection ]]
+        auras = {
+          1022, -- Base
+        },
+      },
+      [6940] = { -- [[ Blessing of Sacrifice ]]
+        auras = {
+          6940, -- Base
+        },
+      },
     },
   },
   PRIEST = {
@@ -222,6 +252,21 @@ local class_cooldowns = {
       [47585] = { -- [[ Dispersion ]]
         auras = {
           47585, -- Base
+        },
+      },
+      [62618] = { -- [[ Power Word: Barrrier ]]
+        auras = {
+          81782, -- Base
+        },
+      },
+      [33206] = { -- [[ Pain Suppression ]]
+        auras = {
+          33206, -- Base
+        },
+      },
+      [47788] = { -- [[ Guardian Spirit ]]
+        auras = {
+          47788, -- Base
         },
       },
     },
@@ -254,6 +299,16 @@ local class_cooldowns = {
       [108271] = { -- [[ Astral Shift ]]
         auras = {
           108271, -- Base
+        },
+      },
+      [98008] = { -- [[ Spirit Link Totem ]]
+        auras = {
+          325174, -- Base
+        },
+      },
+      [198103] = { -- [[ Earth Elemental ]]
+        auras = {
+          381755, -- Base
         },
       },
     },

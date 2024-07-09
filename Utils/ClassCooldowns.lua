@@ -6,7 +6,7 @@ local class_cooldowns = {
   CLASS = {
     category = {
       spell = {
-        relatives' spell_ids/auras,
+        relatives' spell_ids/auras, Basically, all spell_ids that belong to that spell are grouped together.
         ...,
         ...,
       }
@@ -28,7 +28,17 @@ local class_cooldowns = {
         auras = {
           48792, -- Base
         },
-    },
+      },
+      [55233] = { -- [[ Vampiric Blood ]]
+        auras = {
+          55233, -- Base
+        },
+      },
+      [49028] = { -- [[ Dancing Rune Weapon ]]
+        auras = {
+          81256, -- Base
+        },
+      },
     },
   },
   DEMONHUNTER = {

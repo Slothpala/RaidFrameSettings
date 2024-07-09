@@ -129,6 +129,11 @@ local class_cooldowns = {
           414658, -- Base
         },
       },
+      [55342] = { -- [[ Mirror Image ]]
+        auras = {
+          55342, -- Base
+        },
+      },
     },
   },
   MONK = {

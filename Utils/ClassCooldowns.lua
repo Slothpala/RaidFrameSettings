@@ -112,6 +112,16 @@ local class_cooldowns = {
           374348, -- Base
         },
       },
+      [378464] = { -- [[ Nullifying Shroud ]] --@PVP
+        auras = {
+          378464, -- Base
+        },
+      },
+      [357170] = { -- [[ Time Dilation ]] --@PVP
+        auras = {
+          357170, -- Base
+        },
+      },
     },
   },
   HUNTER = {

@@ -175,7 +175,16 @@ function addon:GetOptionsFrame()
     ACD:Open("RaidFrameSettings_Profiles_Options_Tab", options_frame.container)
   end)
 
-  options_frame:SetScript("OnEvent", options_frame.Hide)
+  options_frame:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+      options_frame:Hide()
+      options_frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+      self:Print(L["option_open_after_combat_msg"])
+    elseif event == "PLAYER_REGEN_ENABLED" then
+      options_frame:Show()
+      options_frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+    end
+  end)
   options_frame:HookScript("OnShow", function()
     options_frame.tab_system:SetTab(1)
     ACD:Open("RaidFrameSettings_General_Options_Tab", options_frame.container)
@@ -184,7 +193,7 @@ function addon:GetOptionsFrame()
 
   options_frame:HookScript("OnHide",function()
     clear_frame(options_frame)
-    options_frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+    options_frame:UnregisterEvent("PLAYER_REGEN_DISABLED")
   end)
 
   self:OptionsFrame_UpdateTabs()

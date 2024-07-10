@@ -373,5 +373,5 @@ L["mini_map_tooltip_right_button_text"] = "Right button: Reload the addon."
 --- Messages ---
 ----------------
 
-L["option_open_after_combat_msg"] = "The options will open after combat."
+L["option_open_after_combat_msg"] = "The options will open/reopen after combat."
 L["mini_map_in_combat_warning"] = "Reloading during combat is not allowed as it may break your UI."

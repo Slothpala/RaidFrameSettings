@@ -1,7 +1,4 @@
---[[
-  This will be used as a mixin for the addons modules.
-]]
-
+--[[Created by Slothpala]]--
 local _, addonTable = ...
 addonTable.HookRegistryMixin = {}
 local HookRegistryMixin = addonTable.HookRegistryMixin

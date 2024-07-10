@@ -1,3 +1,4 @@
+--[[Created by Slothpala]]--
 local _, addonTable = ...
 local addon = addonTable.addon
 
@@ -147,6 +148,7 @@ local class_cooldowns = {
       [45438] = { -- [[ Ice Block ]]
         auras = {
           45438, -- Base
+          414658, -- Ice Cold
         },
       },
       [342245] = { -- [[ Alter Time ]]
@@ -157,11 +159,6 @@ local class_cooldowns = {
       [110959] = { -- [[ Greater Invisibilit ]]
         auras = {
           113862, -- Base
-        },
-      },
-      [414658] = { -- [[ Ice Cold ]]
-        auras = {
-          414658, -- Base
         },
       },
       [55342] = { -- [[ Mirror Image ]]

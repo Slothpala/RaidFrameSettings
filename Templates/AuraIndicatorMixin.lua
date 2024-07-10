@@ -1,4 +1,4 @@
--- Global to us it as a mixin in AuraIndicatorTemplate.xml
+--[[Created by Slothpala]]--
 RaidFrameSettings_AuraIndicatorMixin = {}
 
 local _, addonTable = ...

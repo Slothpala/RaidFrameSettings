@@ -1,3 +1,4 @@
+--[[Created by Slothpala]]--
 local addonName, addonTable = ...
 local addon = addonTable.addon
 
@@ -174,7 +175,7 @@ function addon:GetOptionsFrame()
     ACD:Open("RaidFrameSettings_Profiles_Options_Tab", options_frame.container)
   end)
 
-  --options_frame:SetScript("OnEvent", options_frame.Hide) --@TODO activate after alpha
+  options_frame:SetScript("OnEvent", options_frame.Hide)
   options_frame:HookScript("OnShow", function()
     options_frame.tab_system:SetTab(1)
     ACD:Open("RaidFrameSettings_General_Options_Tab", options_frame.container)

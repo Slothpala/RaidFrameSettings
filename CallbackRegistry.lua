@@ -1,3 +1,4 @@
+--[[Created by Slothpala]]--
 local _, addonTable = ...
 addonTable.CallbackRegistry = {}
 local CR = addonTable.CallbackRegistry

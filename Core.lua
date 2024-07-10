@@ -1,10 +1,11 @@
+--[[Created by Slothpala]]--
 local addonName, addonTable = ...
 addonTable.addon = LibStub("AceAddon-3.0"):NewAddon("RaidFrameSettings", "AceConsole-3.0", "AceTimer-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceSerializer-3.0")
 local addon = addonTable.addon
 addon:SetDefaultModuleLibraries("AceEvent-3.0")
 addon:SetDefaultModuleState(false)
 local AC = LibStub("AceConfig-3.0")
-
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 function addon:OnInitialize()
   -- Create/Load the Data Base
@@ -52,6 +53,11 @@ end
 
 function addon:SlashCommand()
   local options_frame = addon:GetOptionsFrame()
+  if InCombatLockdown() then
+    self:Print(L["option_open_after_combat_msg"])
+    options_frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    return
+  end
   if not options_frame:IsShown() then
     options_frame:Show()
   else

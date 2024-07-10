@@ -1,3 +1,4 @@
+--[[Created by Slothpala]]--
 local addonName, addonTable = ...
 local addon = addonTable.addon
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)

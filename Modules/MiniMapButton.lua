@@ -1,3 +1,4 @@
+--[[Created by Slothpala]]--
 local addonName, addonTable = ...
 local addon = addonTable.addon
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
@@ -17,18 +18,14 @@ function module:OnEnable()
       label = addonName,
       icon = "Interface\\AddOns\\RaidFrameSettings\\Textures\\Icon_Circle.tga",
       OnClick = function(_, button)
-
         if button == "LeftButton" then
           addon:SlashCommand()
         elseif button == "RightButton" then
-          --[[ TODO: add combat check for release.
           if InCombatLockdown() then
             addon:Print(L["mini_map_in_combat_warning"])
           else
-            
+            addon:ReloadConfig()
           end
-          ]]
-          addon:ReloadConfig()
         end
       end,
       OnTooltipShow = function(tooltip)

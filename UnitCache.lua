@@ -1,3 +1,4 @@
+--[[Created by Slothpala]]--
 local _, addonTable = ...
 local addon = addonTable.addon
 addonTable.UnitCache = {}

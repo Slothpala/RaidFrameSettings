@@ -1,4 +1,4 @@
-
+--[[Created by Slothpala]]--
 local _, addonTable = ...
 addonTable.HealthColor = {}
 local HealthColor = addonTable.HealthColor

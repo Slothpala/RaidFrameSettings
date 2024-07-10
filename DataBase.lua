@@ -1,3 +1,4 @@
+--[[Created by Slothpala]]--
 local addonName, addonTable = ...
 local addon = addonTable.addon
 

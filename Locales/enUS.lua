@@ -367,6 +367,10 @@ L["module_mini_map_button_name"] = "Minimap Button"
 L["module_mini_map_button_desc"] = "Enable a minimap button to control the addon."
 L["mini_map_tooltip_left_button_text"] = "Left button: Toggle the settings."
 L["mini_map_tooltip_right_button_text"] = "Right button: Reload the addon."
+
+----------------
+--- Messages ---
+----------------
+
+L["option_open_after_combat_msg"] = "The options will open after combat."
 L["mini_map_in_combat_warning"] = "Reloading during combat is not allowed as it may break your UI."
-
-

@@ -329,7 +329,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
           },
           reverse_swipe = {
             disabled = function()
-              return not addon.db.profile.BuffFrame.show_swipe
+              return not addon.db.profile.AuraGroups.aura_groups[gorup_name].show_swipe
             end,
             order = 30.2,
             name = L["reverse_swipe_name"],

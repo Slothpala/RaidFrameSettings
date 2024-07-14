@@ -4,10 +4,12 @@ local addon = addonTable.addon
 
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
-local default_duration_font = "Goli-Regular"
+local default_duration_font = "LTSaeada-Medium"
 local default_duration_font_size = 10
-local default_stack_font = "Goli-Regular"
-local default_stack_font_size = 10
+local default_duration_font_color = {1, 1, 1, 1}
+local default_stack_font = "LTSaeada-Medium"
+local default_stack_font_size = 11
+local default_stack_font_color = {1, 0.4118, 0.7059, 1}
 
 local defaults = {
   profile = {
@@ -38,7 +40,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {1, 1, 1},
+      text_color = default_duration_font_color,
     },
     AuraGroupsStackFont = {
       point = "BOTTOMRIGHT",
@@ -53,7 +55,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {0, 1, 1},
+      text_color = default_stack_font_color,
     },
     AuraGroups = {
       aura_groups = {
@@ -172,7 +174,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {1, 1, 1},
+      text_color = default_duration_font_color,
     },
     DefensiveOverlayStackFont = {
       point = "BOTTOMRIGHT",
@@ -187,7 +189,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {0, 1, 1},
+      text_color = default_stack_font_color,
     },
     DefensiveOverlay = {
       ["*"] = true, -- used for disabling spells
@@ -231,7 +233,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {1, 1, 1},
+      text_color = default_duration_font_color,
     },
     BuffFrameStackFont = {
       point = "BOTTOMRIGHT",
@@ -246,7 +248,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {0, 1, 1},
+      text_color = default_stack_font_color,
     },
     BuffFrame = {
       hide_indicator_settings = false,
@@ -292,7 +294,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {1, 1, 1},
+      text_color = default_duration_font_color,
     },
     DebuffFrameStackFont = {
       point = "BOTTOMRIGHT",
@@ -307,7 +309,7 @@ local defaults = {
       shadow_color = {0, 0, 0, 1},
       shadow_offset_x = 1,
       shadow_offset_y = -1,
-      text_color = {0, 1, 1},
+      text_color = default_stack_font_color,
     },
     DebuffFrame = {
       hide_indicator_settings = false,
@@ -391,7 +393,7 @@ local defaults = {
       relative_point = "TOP",
       offset_x = 0,
       offset_y = -5,
-      font = "LTSuperiorMono-Regular",
+      font = "Poppins-Regular",
       font_size = 12,
       font_outlinemode = "OUTLINE",
       horizontal_justification = "LEFT", -- can be: LEFT, CENTER, RIGHT

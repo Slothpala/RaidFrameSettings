@@ -18,3 +18,5 @@ LSM:Register("font", "LTSuperiorMono-Regular",	[[Interface\Addons\RaidFrameSetti
 LSM:Register("font", "SNPro-Regular",	[[Interface\Addons\RaidFrameSettings\SharedMedia\fonts\SNPro\SNPro-Regular.otf]])
 LSM:Register("font", "SNPro-Semibold",	[[Interface\Addons\RaidFrameSettings\SharedMedia\fonts\SNPro\SNPro-Semibold.otf]])
 LSM:Register("font", "LTSaeada-Medium",	[[Interface\Addons\RaidFrameSettings\SharedMedia\fonts\LT_saeada\LTSaeada-Medium.otf]])
+LSM:Register("font", "Poppins-Regular",	[[Interface\Addons\RaidFrameSettings\SharedMedia\fonts\Poppins\Poppins-Regular.ttf]])
+LSM:Register("font", "SourceCodePro-Regular",	[[Interface\Addons\RaidFrameSettings\SharedMedia\fonts\SourceCodePro\SourceCodePro-Regular.ttf]])

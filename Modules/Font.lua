@@ -63,7 +63,7 @@ function module:OnEnable()
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", on_frame_setup)
 
   local function on_update_name(cuf_frame)
-    local is_player = UnitIsPlayer(cuf_frame.unit)
+    local is_player = UnitIsPlayer(cuf_frame.unit) or UnitInPartyIsAI(cuf_frame.unit)
     if not is_player then
       return
     end

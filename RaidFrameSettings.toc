@@ -19,6 +19,7 @@ DataBase.lua
 Utils\Animation.lua
 Utils\GroupType.lua
 Utils\ClassCooldowns.lua
+Utils\HookRegistryMixin.lua
 
 Templates\AuraIndicatorTemplate.xml
 Templates\AuraFrame.lua
@@ -26,7 +27,6 @@ Templates\AuraFrame.lua
 UnitCache.lua
 CallbackRegistry.lua
 AddonColors.lua
-HookRegistryMixin.lua
 AuraScanner.lua
 FrameEnvironment.lua
 Roster.lua

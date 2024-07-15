@@ -440,7 +440,7 @@ local defaults = {
       power_bar_foreground_use_gradient_colors = false,
       power_bar_foreground_static_min_color = {1, 1, 1, 1},
       power_bar_foreground_static_max_color = {0, 0, 1, 1},
-      power_bar_foreground_static_normal_color = {0, 0, 0, 1},
+      power_bar_foreground_static_normal_color = {1, 1, 1, 1},
       -- Power background
       power_bar_background_use_gradient_colors = false,
       power_bar_background_static_min_color = {0, 0, 0, 1},

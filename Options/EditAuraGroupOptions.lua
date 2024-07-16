@@ -440,18 +440,18 @@ function addon:SetEditAuraGroupOptions(gorup_name)
         inline = true,
         args = {
           space = {
-            order = 0,
+            order = 1,
             name = "",
             type = "description",
             width = 0.05,
           },
           prio = {
-            order = 1,
-            name = "prio",
-            desc = "the prio",
+            order = 2,
+            name = L["aura_prio_name"],
+            desc = L["aura_prio_desc"],
             type = "select",
-            values = {"1", "2", "3", "4"},
-            sorting = {1, 2, 3, 4},
+            values = {"1", "2", "3", "4", "5", "6", "7", "8"},
+            sorting = {1, 2, 3, 4, 5, 6, 7, 8},
             get = function()
               return addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].prio
             end,
@@ -463,13 +463,13 @@ function addon:SetEditAuraGroupOptions(gorup_name)
             width = 0.3,
           },
           space_2 = {
-            order = 1.1,
+            order = 2,
             name = "",
             type = "description",
             width = 0.05,
           },
           icon = {
-            order = 2,
+            order = 3,
             name = spell_name .. " ( "  .. string_id .. " )",
             image = spell_obj and spell_obj:GetSpellTexture() or "Interface\\ICONS\\INV_Misc_QuestionMark.blp",
             imageWidth = 24,
@@ -482,7 +482,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
             disabled = function()
               return not is_spell
             end,
-            order = 3,
+            order = 4,
             name = L["aura_groups_track_if_present_name"],
             desc = L["aura_groups_track_if_present_desc"],
             type = "toggle",
@@ -499,7 +499,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
             disabled = function()
               return not is_spell or not addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].track_if_present
             end,
-            order = 4,
+            order = 5,
             name = L["aura_groups_own_only_name"],
             desc = L["aura_groups_own_only_desc"],
             type = "toggle",
@@ -516,7 +516,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
             disabled = function()
               return not is_spell or not addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].track_if_present
             end,
-            order = 5,
+            order = 6,
             name = L["aura_groups_show_glow_name"],
             desc = L["aura_groups_show_glow_desc"],
             type = "toggle",
@@ -531,7 +531,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
           },
           track_if_missing = {
             disabled = not is_spell,
-            order = 6,
+            order = 7,
             name = L["aura_groups_track_if_missing_name"],
             desc = L["aura_groups_track_if_missing_desc"],
             type = "toggle",
@@ -545,7 +545,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
             width = 0.6,
           },
           remove_btn = {
-            order = 7,
+            order = 8,
             image = "Interface\\AddOns\\RaidFrameSettings\\Textures\\Remove.tga",
             imageWidth = 22,
             imageHeight = 22,

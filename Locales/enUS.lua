@@ -35,7 +35,6 @@ L["font_vertical_justification_desc"] = "Text justification refers to how the ed
 L["font_justification_top"] = "Top"
 L["font_justification_middle"] = "Middle"
 L["font_justification_bottom"] = "Bottom"
-
 -- Font Flags
 L["font_flag_monochrome"] = "Monochrome"
 L["font_flag_monochrome_outline"] = "Monochrome Outline"
@@ -203,11 +202,6 @@ L["increased_auras_name"] = "Enlarge"
 L["module_defensive_overlay_name"] = "Defensive Overlay"
 L["module_defensive_overlay_desc"] = "The Defensive Overlay is an easy-to-setup aura group that displays active defensive cooldowns in a separate, customizable area of the raid frame. The Defensive Overlay tab allows you to select which auras to display and where to place them."
 
-
--- AuraGroups
-L["module_aura_groups_name"] = "Aura Groups"
-L["module_aura_groups_desc"] = "Aura Groups are aura frames (like Buff & Debuff Frames), but contain only auras of your choice and can be a mix of both buffs and debuffs. They can be placed anywhere on the raid frame."
-
 -- RaidFrameColor
 L["module_raid_frame_color_name"] = "Health Color Settings"
 L["module_raid_frame_color_desc"] = "Health Color Settings"
@@ -256,6 +250,8 @@ L["font_name_show_server_desc"] = "Display the name of the realm next to the nam
 L["font_status_header"] = "Status Text"
 
 -- Aura Groups
+L["module_aura_groups_name"] = "Aura Groups"
+L["module_aura_groups_desc"] = "Aura Groups are aura frames (like Buff & Debuff Frames), but contain only auras of your choice and can be a mix of both buffs and debuffs. They can be placed anywhere on the raid frame."
 L["aura_groups_menu_band_name"] = "Create Groups"
 L["create_aura_group_name"] = "Create Group:"
 L["create_aura_group_desc"] = "Create a new aura group. The aura group will do nothing of its own. You must add auras to the group. You can do this by clicking on: "
@@ -274,6 +270,8 @@ L["aura_groups_track_if_missing_name"] = "Missing"
 L["aura_groups_track_if_missing_desc"] = "Display a desaturated aura indicator for this aura if the aura is missing."
 L["aura_groups_track_if_present_name"] = "Track"
 L["aura_groups_track_if_present_desc"] = "Display the aura indicator when the aura is present on the unit."
+L["aura_prio_name"] = "Prio:"
+L["aura_prio_desc"] = "Auras will be sorted by priority level, with 1 being the highest priority."
 
 -- Buff Highlight
 L["module_buff_highlight_name"] = "Buff Highlight"

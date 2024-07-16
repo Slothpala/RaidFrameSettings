@@ -102,9 +102,12 @@ local registered_groups_changed = false
 ---Register an event for a list of auras.
 ---@param event string The name of the event to fire when the auras of the group change.
 ---@param auras table A list of spellId numbers.
-function addon:RegisterAuraGroup(event, auras)
+---@param aura_comparator function
+function addon:RegisterAuraGroup(event, auras, aura_comparator)
   group_events[event] = true
-  registered_groups[event] = true
+  registered_groups[event] = {
+    aura_comparator = aura_comparator or AuraUtil_DefaultAuraCompare
+  }
   for spell_id, _ in next, auras do
     grouped_aura_list[spell_id] = event
   end
@@ -127,10 +130,9 @@ local function create_or_get_grouped_aura_tables(cuf_frame)
   local grouped_auras = cuf_frame.RFS_FrameEnvironment.grouped_auras
   if registered_groups_changed then
     for event, _ in next, registered_groups do
-      if grouped_auras[event] == nil then
-        grouped_auras[event] = TableUtil_CreatePriorityTable(AuraUtil_DefaultAuraCompare, TableUtil_Constants_AssociativePriorityTable)
-      end
+      grouped_auras[event] = TableUtil_CreatePriorityTable(registered_groups[event].aura_comparator, TableUtil_Constants_AssociativePriorityTable)
     end
+    registered_groups_changed = false
   end
   return grouped_auras
 end

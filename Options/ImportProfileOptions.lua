@@ -23,7 +23,7 @@ local options = {
       end,
       set = function(self, input)
         addon:ImportProfile(input)
-        --ReloadUI() --@TODO uncomment after alpha
+        ReloadUI()
       end,
     }
   },

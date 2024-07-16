@@ -15,6 +15,7 @@ local CR = addonTable.CallbackRegistry
 ------------------------
 
 -- WoW Api
+local AuraUtil_DefaultAuraCompare = AuraUtil.DefaultAuraCompare
 
 
 local callback_ids = {}
@@ -93,6 +94,7 @@ function module:OnEnable()
       -- Check if the aura frame tracks missing auras.
       local missing_list = {}
       local present_list = {}
+      local prio_list = {}
       for spell_id, aura_info in next, aura_group.auras do
         if aura_info.track_if_missing then
           missing_list[spell_id] = true
@@ -100,6 +102,7 @@ function module:OnEnable()
         if aura_info.track_if_present then
           present_list[spell_id] = true
         end
+        prio_list[spell_id] = aura_info.prio or 1 -- @TODO: Remove at a alter date only added for transition
       end
 
       -- Create a callback to create an aura frame when a new frame env is created.
@@ -161,8 +164,12 @@ function module:OnEnable()
         cuf_frame.RFS_FrameEnvironment.aura_frames[aura_group.name]:Update(cuf_frame.RFS_FrameEnvironment.grouped_auras[aura_group.name])
       end
 
+      -- Comparator function to handle aura priority sorting
+      local function aura_comparator(aura_a, aura_b)
+        return prio_list[aura_a.spellId] < prio_list[aura_b.spellId]
+      end
       -- Register the spell ids for the aura group. The cuf_frames frame env will use this name as the update notifier event.
-      addon:RegisterAuraGroup(aura_group.name, aura_group.auras)
+      addon:RegisterAuraGroup(aura_group.name, aura_group.auras, aura_comparator)
       -- Register the DefensiveOverlay callback
       local id = CR:RegisterCallback(aura_group.name, on_auras_changed)
       callback_ids[aura_group.name] = id

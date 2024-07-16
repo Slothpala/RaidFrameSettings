@@ -380,6 +380,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
                 end
               end
               addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id] = {
+                prio = 1,
                 track_if_present = true,
                 own_only = true,
                 show_glow = false,
@@ -417,6 +418,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
               else
                 addon.db.profile.AuraGroups.aura_groups[gorup_name].hide_indicator_settings = true
               end
+              update_options()
             end
           },
         },
@@ -432,13 +434,36 @@ function addon:SetEditAuraGroupOptions(gorup_name)
       local is_spell = not ( spell_name == "|cffff0000aura not found|r" )
 
       options.args[string_id] = {
-        order = math.max(spell_id, 3),
+        order = 3 + addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].prio,
         name = "",
         type = "group",
         inline = true,
         args = {
           space = {
+            order = 0,
+            name = "",
+            type = "description",
+            width = 0.05,
+          },
+          prio = {
             order = 1,
+            name = "prio",
+            desc = "the prio",
+            type = "select",
+            values = {"1", "2", "3", "4"},
+            sorting = {1, 2, 3, 4},
+            get = function()
+              return addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].prio
+            end,
+            set = function(_, value)
+              addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].prio = value
+              addon:ReloadModule("AuraGroups")
+              update_options()
+            end,
+            width = 0.3,
+          },
+          space_2 = {
+            order = 1.1,
             name = "",
             type = "description",
             width = 0.05,
@@ -451,7 +476,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
             imageHeight = 24,
             imageCoords = {0.1,0.9,0.1,0.9},
             type = "description",
-            width = 1.5,
+            width = 2,
           },
           track_if_present = {
             disabled = function()
@@ -468,7 +493,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
               addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].track_if_present = value
               addon:ReloadModule("AuraGroups")
             end,
-            width = 0.7,
+            width = 0.6,
           },
           own_only = {
             disabled = function()
@@ -485,7 +510,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
               addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].own_only = value
               addon:ReloadModule("AuraGroups")
             end,
-            width = 0.7,
+            width = 0.6,
           },
           show_glow = {
             disabled = function()
@@ -502,7 +527,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
               addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].show_glow = value
               addon:ReloadModule("AuraGroups")
             end,
-            width = 0.7,
+            width = 0.6,
           },
           track_if_missing = {
             disabled = not is_spell,
@@ -517,12 +542,15 @@ function addon:SetEditAuraGroupOptions(gorup_name)
               addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].track_if_missing = value
               addon:ReloadModule("AuraGroups")
             end,
-            width = 0.8,
+            width = 0.6,
           },
           remove_btn = {
             order = 7,
-            name = L["remove_button_name"],
-            desc = L["remove_button_name"] .. " " .. spell_name .. " " .. L["remove_button_desc"],
+            image = "Interface\\AddOns\\RaidFrameSettings\\Textures\\Remove.tga",
+            imageWidth = 22,
+            imageHeight = 22,
+            name = "",
+            desc = "",
             type = "execute",
             func = function()
               addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id] = nil
@@ -533,7 +561,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
               ACD:Open("RaidFrameSettings_Aura_Group_Options_Tab", options_frame.container)
               addon:ReloadModule("AuraGroups")
             end,
-            width = 0.5,
+            width = 0.1,
           }
         },
       }

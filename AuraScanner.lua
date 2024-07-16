@@ -97,12 +97,11 @@ local group_events = {
   ["BuffFrame"] = true,
   ["DebuffFrame"] = true,
 }
-local registered_groups_changed = false
 
 ---Register an event for a list of auras.
 ---@param event string The name of the event to fire when the auras of the group change.
 ---@param auras table A list of spellId numbers.
----@param aura_comparator function
+---@param aura_comparator function comparator(aura_A, aura_B) returns whether aura_A has higher priority than aura_B. See AddOns/Blizzard_SharedXMLBase/TableUtil.lua.
 function addon:RegisterAuraGroup(event, auras, aura_comparator)
   group_events[event] = true
   registered_groups[event] = {
@@ -111,7 +110,10 @@ function addon:RegisterAuraGroup(event, auras, aura_comparator)
   for spell_id, _ in next, auras do
     grouped_aura_list[spell_id] = event
   end
-  registered_groups_changed = true
+  -- Update the table/comparator
+  self:IterateRoster(function(cuf_frame)
+    cuf_frame.RFS_FrameEnvironment.grouped_auras[event] = TableUtil_CreatePriorityTable(registered_groups[event].aura_comparator, TableUtil_Constants_AssociativePriorityTable)
+  end, true)
 end
 
 ---@param event string
@@ -123,17 +125,15 @@ function addon:UnregisterAuraGroup(event)
       grouped_aura_list[spell_id] = nil
     end
   end
-  registered_groups_changed = true
 end
 
 local function create_or_get_grouped_aura_tables(cuf_frame)
   local grouped_auras = cuf_frame.RFS_FrameEnvironment.grouped_auras
-  if registered_groups_changed then
     for event, _ in next, registered_groups do
-      grouped_auras[event] = TableUtil_CreatePriorityTable(registered_groups[event].aura_comparator, TableUtil_Constants_AssociativePriorityTable)
+      if grouped_auras[event] == nil then
+        grouped_auras[event] = TableUtil_CreatePriorityTable(registered_groups[event].aura_comparator, TableUtil_Constants_AssociativePriorityTable)
+      end
     end
-    registered_groups_changed = false
-  end
   return grouped_auras
 end
 

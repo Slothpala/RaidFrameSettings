@@ -248,6 +248,7 @@ L["font_name_class_colored_desc"] = "Color the text in the units class color."
 L["font_name_show_server_name"] = "Show Realm"
 L["font_name_show_server_desc"] = "Display the name of the realm next to the name of the player"
 L["font_status_header"] = "Status Text"
+L["font_nicknames_header"] = "Nicknames"
 
 -- Aura Groups
 L["module_aura_groups_name"] = "Aura Groups"
@@ -340,6 +341,19 @@ L["raid_profile_name"] = "Raid"
 L["arena_profile_name"] = "Arena"
 L["battleground_profile_name"] = "Battleground"
 L["active_spec_indicator"] = "Active"
+L["profile_creation_title"] = "Profiles - Current Profile: "
+L["new_profile_desc_name"] = "Create a new profile. Profiles are loaded based on a combination of specialization and group type. Be sure to select the appropriate profile in the Group Profiles section."
+L["reset_profile_btn_name"] = "Reset Profile"
+L["reset_profile_btn_desc"] = "Reset the current profile back to its default values, in case your configuration is broken, or you simply want to start over."
+L["new_profile_name"] = "New"
+L["new_profile_desc"] = "Create a new profile."
+L["copy_profile_name"] = "Copy From"
+L["copy_profile_desc"] = "Copy a profile into your current profile."
+L["copy_profile_desc_name"] = "Copy the settings from an existing profile into your current profile."
+L["delete_profile_desc_name"] = "Delete an existing profile."
+L["delete_profile_name"] = "Delete a Profile"
+L["delete_profile_desc"] = "Deletes a profile from the database"
+L["delete_profile_confirm"] = "Are you sure you want to delete the selected profile?"
 
 ----------------------
 --- Aura Menu Band ---

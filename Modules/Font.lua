@@ -23,6 +23,7 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitGUID = UnitGUID
 
 function module:OnEnable()
+  addon:UpdateNicknames()
   -- Get the database object
   local db_obj_name = CopyTable(addon.db.profile.NameFont)
   local db_obj_status = CopyTable(addon.db.profile.StatusFont)

@@ -411,6 +411,14 @@ local options = {
             },
           },
         },
+        Nicknames = {
+          hidden = true, --@TODO implement
+          order = 3,
+          name = L["font_nicknames_header"],
+          desc = "",
+          type = "group",
+          args = {}
+        },
       },
     },
     DefensiveOverlay = {
@@ -1747,6 +1755,7 @@ local options = {
     },
   },
 }
+
 
 function addon:GetFontOptions()
   return options

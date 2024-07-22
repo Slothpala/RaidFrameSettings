@@ -33,12 +33,12 @@ local fallback_cache_entry = {
 
 local nicknames = {}
 
---- Update the nicknames table
----@param new_nicknames table
-function addon:UpdateNicknames(new_nicknames)
-  nicknames = nicknames
-  if addon:IsModuleEnabled("Font") then
-    addon:ReloadModule("Font")
+function addon:UpdateNicknames()
+  nicknames = CopyTable(self.db.profile.Nicknames)
+  for _, cached_unit in next, unit_cache do
+    if nicknames[cached_unit.name_and_realm_name] then
+      cached_unit.nickname = nicknames[cached_unit.name_and_realm_name]
+    end
   end
 end
 

@@ -27,6 +27,8 @@ local defaults = {
     SoloFrame = {
       enabled = false,
     },
+    Nicknames = {
+    },
     AuraGroupsDurationFont = {
       point = "TOPLEFT",
       relative_point = "TOPLEFT",
@@ -613,8 +615,6 @@ end
 function addon:LoadDataBase()
   self.db = LibStub("AceDB-3.0"):New("RaidFrameSettingsDB", defaults, true)
   --db callbacks
-  self.db.RegisterCallback(self, "OnNewProfile", "ReloadConfig")
-  self.db.RegisterCallback(self, "OnProfileDeleted", "ReloadConfig")
   self.db.RegisterCallback(self, "OnProfileChanged", "ReloadConfig")
   self.db.RegisterCallback(self, "OnProfileCopied", "ReloadConfig")
   self.db.RegisterCallback(self, "OnProfileReset", "ReloadConfig")

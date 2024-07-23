@@ -9,7 +9,7 @@ local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 local cache_needs_rebuilding = true
 local known_talent_cache = {}
 
-local function build_know_talent_cache()
+local function build_known_talent_cache()
   table.wipe(known_talent_cache)
 
   local config_id = C_ClassTalents.GetActiveConfigID()
@@ -46,7 +46,7 @@ end
 --- IsPlayerSpell fails for some passive talents like Spring Blossoms.
 local function is_player_spell(spell_id)
   if cache_needs_rebuilding then
-    build_know_talent_cache()
+    build_known_talent_cache()
   end
   local spell = Spell:CreateFromSpellID(spell_id)
   if not spell then

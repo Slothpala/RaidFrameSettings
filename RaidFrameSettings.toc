@@ -20,6 +20,7 @@ Utils\Animation.lua
 Utils\GroupType.lua
 Utils\ClassCooldowns.lua
 Utils\HookRegistryMixin.lua
+Utils\AuraSpellKnown.lua
 
 Templates\AuraIndicatorTemplate.xml
 Templates\AuraFrame.lua

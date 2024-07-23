@@ -97,7 +97,13 @@ function module:OnEnable()
       local prio_list = {}
       for spell_id, aura_info in next, aura_group.auras do
         if aura_info.track_if_missing then
-          missing_list[spell_id] = true
+          if aura_info.own_only then
+            if addon:IsPlayerAura(spell_id) then
+              missing_list[spell_id] = true
+            end
+          else
+            missing_list[spell_id] = true
+          end
         end
         if aura_info.track_if_present then
           present_list[spell_id] = true

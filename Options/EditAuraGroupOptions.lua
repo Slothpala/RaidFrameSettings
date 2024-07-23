@@ -497,7 +497,7 @@ function addon:SetEditAuraGroupOptions(gorup_name)
           },
           own_only = {
             disabled = function()
-              return not is_spell or not addon.db.profile.AuraGroups.aura_groups[gorup_name].auras[spell_id].track_if_present
+              return not is_spell
             end,
             order = 6,
             name = L["aura_groups_own_only_name"],

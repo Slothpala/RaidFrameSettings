@@ -1,4 +1,12 @@
 # **Changelog**
+### Version [3.0.3] - 2024-07-23
+#### Added
+* AuraSpellKnown.lua -> Util to check if aura spellIds belong to the player specialization.
+
+#### Changed
+* AuraGroups: Own only is now also an option for missing auras, allowing the usage of the same profile for several classes / sepcs while tracking missing auras.
+
+
 ### Version [3.0.2] - 2024-07-22
 #### Updated
 * Reworked the Profiles tab to make it clearer how profile loading is handled by the addon.

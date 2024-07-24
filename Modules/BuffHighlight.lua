@@ -16,7 +16,7 @@ local CR = addonTable.CallbackRegistry
 ------------------------
 
 -- WoW Api
-local TableUtil_ContainsAllKeys = TableUtil.ContainsAllKeys
+--local TableUtil_ContainsAllKeys = TableUtil.ContainsAllKeys currently bugged ? I lack time to further test it but since tww pre patch this was returning false data.
 
 
 local callback_id
@@ -36,6 +36,16 @@ function module:OnEnable()
     end
   end
 
+  local function contains_all_keys(lhs_table, rhs_table)
+    for key, _ in next, rhs_table do
+      if not lhs_table[key] then
+        return false
+      end
+    end
+
+    return true
+  end
+
   local function has_all_auras(cuf_frame)
     local compare_table = {}
     cuf_frame.RFS_FrameEnvironment.buffs:Iterate(function(_, aura)
@@ -43,7 +53,7 @@ function module:OnEnable()
         compare_table[aura.spellId] = true
       end
     end)
-    return TableUtil_ContainsAllKeys(db_obj.auras, compare_table)
+    return contains_all_keys(compare_table, db_obj.auras)
   end
 
   local function should_use_highlight_color(cuf_frame)

@@ -29,7 +29,9 @@ local function update_options()
           usage = L["spell_id_wrong_input_notification"],
           set = function(_, value)
             local spell_id = tonumber(value)
-            addon.db.profile.BuffHighlight.auras[spell_id] = true
+            addon.db.profile.BuffHighlight.auras[spell_id] = {
+              own_only = true
+            }
             update_options() -- this will only update the options table.
             addon:ReloadModule("BuffHighlight")
           end,
@@ -68,8 +70,22 @@ local function update_options()
             type = "description",
             width = 1.5,
           },
-          remove_btn = {
+          own_only = {
             order = 3,
+            name = L["aura_groups_own_only_name"],
+            desc = L["aura_groups_own_only_desc"],
+            type = "toggle",
+            get = function()
+              return addon.db.profile.BuffHighlight.auras[spell_id].own_only
+            end,
+            set = function(_, value)
+              addon.db.profile.BuffHighlight.auras[spell_id].own_only = value
+              addon:ReloadModule("BuffHighlight")
+            end,
+            width = 0.6,
+          },
+          remove_btn = {
+            order = 4,
             name = L["remove_button_name"],
             desc = L["remove_button_name"] .. " " .. spell_name .. " " .. L["remove_button_desc"],
             type = "execute",

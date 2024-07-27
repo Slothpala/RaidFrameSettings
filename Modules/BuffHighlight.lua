@@ -28,6 +28,17 @@ function module:OnEnable()
     return
   end
 
+  local tracked_auras = {}
+  for spell_id, info in next, db_obj.auras do
+    if info.own_only then
+      if addon:IsPlayerAura(spell_id) then
+        tracked_auras[spell_id] = true
+      end
+    else
+      tracked_auras[spell_id] = true
+    end
+  end
+
   local highlight_color = db_obj.highlight_color
 
   local function set_statusbar_to_highlight_color(cuf_frame)
@@ -53,7 +64,7 @@ function module:OnEnable()
         compare_table[aura.spellId] = true
       end
     end)
-    return contains_all_keys(compare_table, db_obj.auras)
+    return contains_all_keys(compare_table, tracked_auras)
   end
 
   local function should_use_highlight_color(cuf_frame)

@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [3.0.5] - 2024-07-27
+#### Added
+* DB_Transition.lua -> Util to make changes to the DB without the user losing settings.
+#### Changed
+* BuffHighlight: Own only is now also an option for highlighted auras, allowing the usage of the same profile for several classes / sepcs while tracking highlighted auras.
+
 ### Version [3.0.4] - 2024-07-24
 #### Changed
 * Interface version updated to 110000.

@@ -21,6 +21,7 @@ Utils\GroupType.lua
 Utils\ClassCooldowns.lua
 Utils\HookRegistryMixin.lua
 Utils\AuraSpellKnown.lua
+Utils\DB_Transition.lua
 
 Templates\AuraIndicatorTemplate.xml
 Templates\AuraFrame.lua

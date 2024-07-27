@@ -10,6 +10,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 function addon:OnInitialize()
   -- Create/Load the Data Base
   self:LoadDataBase()
+  self:CheckDatabase()
   --Slash command
   self:RegisterChatCommand(addonName, "SlashCommand")
   self:RegisterChatCommand("rfs", "SlashCommand")

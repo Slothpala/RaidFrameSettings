@@ -260,7 +260,7 @@ local class_icon_coords = {
   ["WARRIOR"] = {0.06396484375, 0.12646484375, 0.6357421875, 0.7607421875},
 }
 
-local function create_class_options()
+local function  update_class_options()
   local class_cooldowns = addon:ClassCooldowns_GetDB()
   local i = 2
   for class, icon_coords in next, class_icon_coords do
@@ -276,42 +276,66 @@ local function create_class_options()
       },
     }
     -- get all spell infos
-    for spell_id, _ in next, class_cooldowns[class].defensive do
+    for spell_id, spell_info in next, class_cooldowns[class].defensive do
       local spell_obj = Spell:CreateFromSpellID(spell_id)
-      local spell_name = spell_obj:GetSpellName()
-      local string_id = tostring(spell_id)
-      class_group.args[string_id .. "_toggle"] = {
-        order = i,
-        name = spell_name,
-        type = "toggle",
-        desc = spell_obj:GetSpellDescription(),
-        get = function()
-          return addon.db.profile.DefensiveOverlay[spell_id]
-        end,
-        set = function(_, value)
-          addon.db.profile.DefensiveOverlay[spell_id] = value
-          addon:ReloadModule("DefensiveOverlay")
-        end,
-        width = 0.15,
-      }
-      i = i + 1
-      class_group.args[string_id .. "_icon"] = {
-        order = i,
-        name = spell_name,
-        image = spell_obj:GetSpellTexture(),
-        imageWidth = 32,
-        imageHeight = 32,
-        imageCoords = {0.1,0.9,0.1,0.9},
-        type = "description",
-        width = 1.5,
-      }
-      i = i + 1
-      class_group.args[string_id .. "_new_line"] = {
-        order = i,
+      local spell_name = spell_obj:GetSpellName() or ""
+      local db_spell_info = addon.db.profile.DefensiveOverlay.auras[spell_id]
+      class_group.args[spell_name] = {
+        order = db_spell_info.prio or spell_info.prio or 1,
         name = "",
-        type = "description",
+        type = "group",
+        inline = true,
+        args = {
+          prio = {
+            order = 1,
+            name = L["aura_prio_name"],
+            desc = L["aura_prio_desc"],
+            type = "select",
+            values = {"1", "2", "3", "4", "5", "6", "7", "8"},
+            sorting = {1, 2, 3, 4, 5, 6, 7, 8},
+            get = function()
+              return db_spell_info.prio or spell_info.prio or 1
+            end,
+            set = function(_, value)
+              addon.db.profile.DefensiveOverlay.auras[spell_id].prio = value
+              addon:ReloadModule("DefensiveOverlay")
+              update_class_options()
+            end,
+            width = 0.3,
+          },
+          space = {
+            order = 2,
+            name = "",
+            type = "description",
+            width = 0.05,
+          },
+          icon = {
+            order = 3,
+            name = spell_name,
+            image = spell_obj and spell_obj:GetSpellTexture() or "Interface\\ICONS\\INV_Misc_QuestionMark.blp",
+            imageWidth = 24,
+            imageHeight = 24,
+            imageCoords = {0.1,0.9,0.1,0.9},
+            type = "description",
+            width = 1.5,
+          },
+          track = {
+            order = 4,
+            name = L["aura_groups_track_if_present_name"],
+            desc = L["aura_groups_track_if_present_desc"] .. "\n\n" .. ( spell_obj:GetSpellDescription() or "" ),
+            type = "toggle",
+            get = function()
+              return addon.db.profile.DefensiveOverlay.auras[spell_id].track
+            end,
+            set = function(_, value)
+              addon.db.profile.DefensiveOverlay.auras[spell_id].track = value
+              addon:ReloadModule("DefensiveOverlay")
+              update_class_options()
+            end,
+            width = 0.6,
+          },
+        }
       }
-      i = i + 1
     end
     -- store it in the options table
     options.args[class] = class_group
@@ -319,6 +343,6 @@ local function create_class_options()
 end
 
 function addon:GetDefensiveOverlayOptions()
-  create_class_options()
+  update_class_options()
   return options
 end

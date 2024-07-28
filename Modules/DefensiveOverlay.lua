@@ -95,22 +95,34 @@ function module:OnEnable()
   end
 
   -- Gather all wanted spellIds
-  local defensive_spell_ids = {}
+  local tracked_auras = {}
+  local prio_list = {}
   local class_cooldowns = addon:ClassCooldowns_GetDB()
-  for _, info in next, class_cooldowns do
-    for spell, spell_tbl in next, info.defensive do
-      if db_obj[spell] ~= false then -- can also be nil which in this case is equal to true
-        for _, spell_id in next, spell_tbl.auras do
-          defensive_spell_ids[spell_id] = true
+  for class, info in next, class_cooldowns do
+    for spell, spell_info in next, info.defensive do
+      local db_spell_info = db_obj.auras[spell]
+      if db_spell_info.track then
+        for _, spell_id in next, spell_info.auras do
+          tracked_auras[spell_id] = true
+          prio_list[spell_id] = db_spell_info.prio or spell_info.prio or 1
         end
+      else
+        print("else")
       end
     end
   end
 
   -- Update the whitelist.
   addon:UpdateWhitelist()
+
+  -- Comparator function to handle aura priority sorting
+  local function aura_comparator(aura_a, aura_b)
+    return prio_list[aura_a.spellId] < prio_list[aura_b.spellId]
+  end
+
   -- Register the defensive spell ids for DefensiveOverlay. The cuf_frames frame env will use this name as the update notifier event.
-  addon:RegisterAuraGroup("DefensiveOverlay", defensive_spell_ids)
+  addon:RegisterAuraGroup("DefensiveOverlay", tracked_auras, aura_comparator)
+
   -- Register the DefensiveOverlay callback
   callback_id = CR:RegisterCallback("DefensiveOverlay", on_auras_changed)
 

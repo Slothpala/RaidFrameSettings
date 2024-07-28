@@ -194,14 +194,13 @@ local defaults = {
       text_color = default_stack_font_color,
     },
     DefensiveOverlay = {
-      ["*"] = true, -- used for disabling spells
       -- Position
-      point = "TOPLEFT",
-      relative_point = "TOPLEFT",
-      offset_x = 3,
-      offset_y = -3,
+      point = "CENTER",
+      relative_point = "CENTER",
+      offset_x = 0,
+      offset_y = 0,
       -- Num indicators row*column
-      num_indicators_per_row = 3,
+      num_indicators_per_row = 1,
       num_indicators_per_column = 1,
       -- Orientation
       direction_of_growth_vertical = "DOWN",
@@ -209,8 +208,8 @@ local defaults = {
       direction_of_growth_horizontal = "RIGHT",
       horizontal_padding = 1,
       -- Indicator size
-      indicator_width = 22,
-      indicator_height = 22,
+      indicator_width = 24,
+      indicator_height = 24,
       -- Indicator border
       indicator_border_thickness = 1,
       indicator_border_color = {0, 1, 0, 1},
@@ -221,6 +220,11 @@ local defaults = {
       show_edge = false,
       -- Tooltip
       show_tooltip = false,
+      auras = {
+        ["*"] = {
+          track = true,
+        }
+      }
     },
     BuffFrameDurationFont = {
       point = "TOPLEFT",

@@ -68,7 +68,7 @@ function addon:UpdateWhitelist()
     local class_cooldowns = self:ClassCooldowns_GetDB()
     for _, info in next, class_cooldowns do
       for spell, spell_tbl in next, info.defensive do
-        if addon.db.profile.DefensiveOverlay[spell] then
+        if addon.db.profile.DefensiveOverlay.auras[spell].track then
           for _, spell_id in next, spell_tbl.auras do
             whitelist[spell_id] = {}
           end

@@ -400,6 +400,12 @@ local class_cooldowns = {
     offensive = {
     },
     defensive = {
+      [97462] = { -- [[ Rallying Cry ]]
+        prio = 2,
+        auras = {
+          97463, -- Base
+        },
+      },
       [118038] = { -- [[ Die by the Sword ]]
         prio = 4,
         auras = {

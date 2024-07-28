@@ -437,7 +437,61 @@ local class_cooldowns = {
         },
       },
     },
-  }
+  },
+  TRINKET = {
+    offensive = {
+    },
+    defensive = {
+      [345231] = { -- [[ Gladiator's Emblem ]] @PVP
+        prio = 3,
+        auras = {
+          345231, -- Base
+        },
+      },
+      [443381] = { -- [[ Cinderbrew Stein ]] @TWW
+        prio = 3,
+        auras = {
+          443381, -- Base
+        },
+      },
+      [435482] = { -- [[ Silken Chain Weaver ]] @TWW
+        prio = 3,
+        auras = {
+          435482, -- Base
+        },
+      },
+      [450551] = { -- [[ Mereldar's Toll ]] @TWW
+        prio = 8, -- small versa buff
+        auras = {
+          450551, -- Base
+        },
+      },
+      [451367] = { -- [[ Candle Comfort ]] @TWW
+        prio = 8, -- small versa buff
+        auras = {
+          451367, -- Base
+        },
+      },
+      [451924] = { -- [[ Wax Ward ]] @TWW
+        prio = 3,
+        auras = {
+          451924, -- Base
+        },
+      },
+      [451568] = { -- [[ Refracting Resistance ]] @TWW
+        prio = 3,
+        auras = {
+          451568, -- Base
+        },
+      },
+      [455486] = { -- [[ Golden Glow ]] @TWW
+        prio = 3,
+        auras = {
+          455486, -- Base
+        },
+      },
+    },
+  },
 }
 
 function addon:ClassCooldowns_GetDB()

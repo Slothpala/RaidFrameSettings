@@ -258,7 +258,11 @@ local class_icon_coords = {
   ["SHAMAN"] = {0.06396484375, 0.12646484375, 0.3818359375, 0.5068359375},
   ["WARLOCK"] = {0.06396484375, 0.12646484375, 0.5087890625, 0.6337890625},
   ["WARRIOR"] = {0.06396484375, 0.12646484375, 0.6357421875, 0.7607421875},
+  ["TRINKET"] = {0, 1, 0, 1},
 }
+
+local localized_class_names = LOCALIZED_CLASS_NAMES_MALE
+localized_class_names["TRINKET"] = L["TRINKET"]
 
 local function  update_class_options()
   local class_cooldowns = addon:ClassCooldowns_GetDB()
@@ -266,14 +270,12 @@ local function  update_class_options()
   for class, icon_coords in next, class_icon_coords do
     -- create the class entry
     local class_group = {
-      order = i,
-      name = LOCALIZED_CLASS_NAMES_MALE[class],
+      order = class == "TRINKET" and 1 or i,
+      name = localized_class_names[class],
       type = "group",
-      icon = "Interface\\AddOns\\RaidFrameSettings\\Textures\\CharacterCreateIcons.BLP",
+      icon = class == "TRINKET" and "132778" or "Interface\\AddOns\\RaidFrameSettings\\Textures\\CharacterCreateIcons.BLP", -- 132778 = Unstable Arcanocrystal
       iconCoords = icon_coords,
-      args = {
-
-      },
+      args = {},
     }
     -- get all spell infos
     for spell_id, spell_info in next, class_cooldowns[class].defensive do
@@ -336,6 +338,7 @@ local function  update_class_options()
           },
         }
       }
+      i = i + 1
     end
     -- store it in the options table
     options.args[class] = class_group

@@ -201,6 +201,7 @@ L["increased_auras_name"] = "Enlarge"
 -- DefensiveOverlay
 L["module_defensive_overlay_name"] = "Defensive Overlay"
 L["module_defensive_overlay_desc"] = "The Defensive Overlay is an easy-to-setup aura group that displays active defensive cooldowns in a separate, customizable area of the raid frame. The Defensive Overlay tab allows you to select which auras to display and where to place them."
+L["TRINKET"] = "Trinkets"
 
 -- RaidFrameColor
 L["module_raid_frame_color_name"] = "Health Color Settings"

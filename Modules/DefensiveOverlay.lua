@@ -105,9 +105,8 @@ function module:OnEnable()
         for _, spell_id in next, spell_info.auras do
           tracked_auras[spell_id] = true
           prio_list[spell_id] = db_spell_info.prio or spell_info.prio or 1
+          --print(tostring(spell_id) .. " has prio of: " .. tostring(prio_list[spell_id]))
         end
-      else
-        print("else")
       end
     end
   end
@@ -117,6 +116,8 @@ function module:OnEnable()
 
   -- Comparator function to handle aura priority sorting
   local function aura_comparator(aura_a, aura_b)
+    --print("aura_a has the spell_id: " .. tostring(aura_a.spellId) .. " || aura_b has the spell_id: " .. tostring(aura_b.spellId))
+    --print("aura_a has the prio: " .. tostring(prio_list[aura_a.spellId]) .. " || aura_b has the prio: " .. tostring(prio_list[aura_b.spellId]))
     return prio_list[aura_a.spellId] < prio_list[aura_b.spellId]
   end
 

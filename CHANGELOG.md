@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [3.0.7] - 2024-07-28
+#### Changed
+* DefensiveOverlay:
+  * Trinket section added.
+  * PVP and TWW Trinkets added.
+
 ### Version [3.0.6] - 2024-07-28
 #### Changed
 * DefensiveOverlay:

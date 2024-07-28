@@ -379,7 +379,7 @@ L["remove_button_desc"] = "from the list"
 L["module_mini_map_button_name"] = "Minimap Button"
 L["module_mini_map_button_desc"] = "Enable a minimap button to control the addon."
 L["mini_map_tooltip_left_button_text"] = "Left button: Toggle the settings."
-L["mini_map_tooltip_right_button_text"] = "Right button: Reload the addon."
+L["mini_map_tooltip_right_button_text"] = "Right button: Repair the addon."
 
 ----------------
 --- Messages ---

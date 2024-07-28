@@ -1,4 +1,14 @@
 # **Changelog**
+### Version [3.0.6] - 2024-07-28
+#### Changed
+* DefensiveOverlay:
+  * Changed the appearance of the spell list to a cleaner look.
+  * The priority sorting method of Aura Groups has been added, allowing the use of fewer defensive indicators while always keeping the most important one visible.
+  * The default display position has been changed to "CENTER", "CENTER" and reduced to one indicator.
+* ClassCooldown:
+  * Added a prio key to all spells that will be used as the default prio level for priority sorting.
+  * Added "Bear Form", "Rallying Cry" and "Blessing of Spellwarding".
+
 ### Version [3.0.5] - 2024-07-27
 #### Added
 * DB_Transition.lua -> Util to make changes to the DB without the user losing settings.

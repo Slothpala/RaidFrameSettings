@@ -163,6 +163,12 @@ local class_cooldowns = {
           264735, -- Base
         },
       },
+      [202746] = { -- [[ Survival Tactics ]] --@PVP
+        prio = 5,
+        auras = {
+          202748, -- Base
+        },
+      },
     },
   },
   MAGE = {
@@ -371,9 +377,15 @@ local class_cooldowns = {
         },
       },
       [198103] = { -- [[ Earth Elemental ]]
-        prio = 5,
+        prio = 6,
         auras = {
           381755, -- Base
+        },
+      },
+      [260878] = { -- [[ Spirit Wolf ]]
+        prio = 6,
+        auras = {
+          260881, -- Base
         },
       },
     },

@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [3.0.8] - 2024-07-29
+#### Added
+* ClassCooldown:
+  * Added Survival Tactics.
+  * Added Spirit Wolf.
+
 ### Version [3.0.7] - 2024-07-28
 #### Changed
 * DefensiveOverlay:

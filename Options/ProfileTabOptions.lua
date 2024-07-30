@@ -46,6 +46,7 @@ local options = {
           name = L["reset_profile_btn_name"],
           desc = L["reset_profile_btn_desc"],
           type = "execute",
+          confirm = true,
           func = function()
             addon.db:ResetProfile()
           end

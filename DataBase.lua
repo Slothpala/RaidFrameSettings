@@ -90,70 +90,8 @@ local defaults = {
           show_tooltip = false,
           auras = {},
         },
-        [L["frame_point_top_left"]] = {
-          name = L["frame_point_top_left"],
-          point = "TOPLEFT",
-          relative_point = "TOPLEFT",
-          offset_x = 2,
-          offset_y = -2,
-          direction_of_growth_horizontal = "RIGHT"
-        },
-        [L["frame_point_top"]] = {
-          name = L["frame_point_top"],
-          point = "TOP",
-          relative_point = "TOP",
-          offset_y = -2,
-          num_indicators_per_row = 1,
-          num_indicators_per_column = 2,
-        },
-        [L["frame_point_top_right"]] = {
-          name = L["frame_point_top_right"],
-          point = "TOPRIGHT",
-          relative_point = "TOPRIGHT",
-          offset_x = -2,
-          offset_y = -2,
-        },
-        [L["frame_point_right"]] = {
-          name = L["frame_point_right"],
-          point = "RIGHT",
-          relative_point = "RIGHT",
-          offset_x = -2,
-        },
-        [L["frame_point_bottom_right"]] = {
-          name = L["frame_point_bottom_right"],
-          point = "BOTTOMRIGHT",
-          relative_point = "BOTTOMRIGHT",
-          offset_x = -2,
-          offset_y = 2,
-          direction_of_growth_vertical = "UP"
-        },
-        [L["frame_point_bottom"]] = {
-          name = L["frame_point_bottom"],
-          point = "BOTTOM",
-          relative_point = "BOTTOM",
-          offset_x = 0,
-          offset_y = 2,
-          direction_of_growth_vertical = "UP",
-          num_indicators_per_row = 1,
-          num_indicators_per_column = 2,
-        },
-        [L["frame_point_bottom_left"]] = {
-          name = L["frame_point_bottom_left"],
-          point = "BOTTOMLEFT",
-          relative_point = "BOTTOMLEFT",
-          offset_x = 2,
-          offset_y = 2,
-          direction_of_growth_vertical = "UP",
-          direction_of_growth_horizontal = "RIGHT",
-        },
-        [L["frame_point_left"]] = {
-          name = L["frame_point_left"],
-          point = "LEFT",
-          relative_point = "LEFT",
-          offset_x = 2,
-          direction_of_growth_horizontal = "RIGHT",
-        },
       },
+
     },
     DebuffHighlight = {
       operation_mode = 1, -- 1: Smart Mode, 2: Manual Mode
@@ -261,8 +199,8 @@ local defaults = {
       -- Position
       point = "BOTTOMRIGHT",
       relative_point = "BOTTOMRIGHT",
-      offset_x = -3,
-      offset_y = 3,
+      offset_x = -2,
+      offset_y = 2,
       -- Num indicators row*column
       num_indicators_per_row = 2,
       num_indicators_per_column = 2,
@@ -325,8 +263,8 @@ local defaults = {
       relative_point = "BOTTOMLEFT",
       priv_point = "CENTER",
       priv_relative_point = "CENTER",
-      offset_x = 3,
-      offset_y = 3,
+      offset_x = 2,
+      offset_y = 2,
       -- Num indicators row*column
       num_indicators_per_row = 3,
       num_indicators_per_column = 1,

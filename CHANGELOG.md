@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [3.0.9] - 2024-07-29
+* AuraGroups:
+  * Improved the UI to make it easier to create Aura Groups.
+  * Added Util to create Aura Groups & Spec Presets.
+  * Two presets added for Restoration Druid & Discipline Priest.
+
 ### Version [3.0.8] - 2024-07-29
 #### Added
 * ClassCooldown:

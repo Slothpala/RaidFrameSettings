@@ -1,5 +1,5 @@
 # **Changelog**
-### Version [3.0.9] - 2024-07-29
+### Version [3.0.9] - 2024-07-30
 * AuraGroups:
   * Improved the UI to make it easier to create Aura Groups.
   * Added Util to create Aura Groups & Spec Presets.

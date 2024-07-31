@@ -1,5 +1,11 @@
 # **Changelog**
+### Version [3.0.10] - 2024-07-31
+#### Changed
+* AuraGroups:
+  * Loosened the restrictions on the offset sliders and changed the limits to soft values, allowing the limits to be exceeded by typing in the value.
+
 ### Version [3.0.9] - 2024-07-30
+#### Added
 * AuraGroups:
   * Improved the UI to make it easier to create Aura Groups.
   * Added Util to create Aura Groups & Spec Presets.

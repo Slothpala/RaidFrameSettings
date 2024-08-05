@@ -281,8 +281,10 @@ function RaidFrameSettings_AuraIndicatorMixin:SetAura(aura)
   if ( aura.duration > 0 ) then
     local start_time = aura.expirationTime - aura.duration
     self.cooldown:SetCooldown(start_time, aura.duration)
-    self:StartDurationUpdate()
-    self.text.duration:Show()
+    if self.show_cooldown_numbers then
+      self:StartDurationUpdate()
+      self.text.duration:Show()
+    end
   else
     self.cooldown:Clear()
     self.text.duration:Hide()
@@ -332,6 +334,8 @@ end
 function RaidFrameSettings_AuraIndicatorMixin:Clear()
   self:StopDurationUpdate()
   self.cooldown:Clear()
+  self.text.duration:Hide()
+  self.text.count:Hide()
   self:StopGlow()
   self:Hide()
 end

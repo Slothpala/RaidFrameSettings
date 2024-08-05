@@ -295,8 +295,16 @@ local function update_options()
           get = "GetStatus",
           set = "SetStatus",
         },
-        show_only_raid_auras = {
+        show_cooldown_numbers = {
           order = 40.5,
+          name = L["show_cooldown_numbers_name"],
+          desc = L["show_cooldown_numbers_desc"],
+          type = "toggle",
+          get = "GetStatus",
+          set = "SetStatus",
+        },
+        show_only_raid_auras = {
+          order = 40.6,
           name = L["debuff_frame_show_only_raid_auras_name"],
           desc = L["debuff_frame_show_only_raid_auras_desc"],
           type = "toggle",
@@ -304,7 +312,7 @@ local function update_options()
           set = "SetStatus",
         },
         indicator_border_by_dispel_color = {
-          order = 40.6,
+          order = 40.7,
           name = L["debuff_frame_indicator_border_by_dispel_color_name"],
           desc = L["debuff_frame_indicator_border_by_dispel_color_desc"],
           type = "toggle",
@@ -312,7 +320,7 @@ local function update_options()
           set = "SetStatus",
         },
         duration_font_by_dispel_color = {
-          order = 40.7,
+          order = 40.8,
           name = L["debuff_frame_duration_font_by_dispel_color_name"],
           desc = L["debuff_frame_duration_font_by_dispel_color_desc"],
           type = "toggle",

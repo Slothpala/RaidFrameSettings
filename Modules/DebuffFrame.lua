@@ -134,6 +134,7 @@ function module:OnEnable()
     reverse_swipe = db_obj.reverse_swipe,
     show_edge = db_obj.show_edge,
     on_set_aura_callback = on_set_debuff,
+    show_cooldown_numbers = db_obj.show_cooldown_numbers,
     -- Tooltip
     show_tooltip = db_obj.show_tooltip
   }

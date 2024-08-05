@@ -354,6 +354,14 @@ function addon:SetEditAuraGroupOptions(gorup_name)
             get = get_status,
             set = set_status,
           },
+          show_cooldown_numbers = {
+            order = 30.5,
+            name = L["show_cooldown_numbers_name"],
+            desc = L["show_cooldown_numbers_desc"],
+            type = "toggle",
+            get = get_status,
+            set = set_status,
+          },
         }
       },
       menu_band = {

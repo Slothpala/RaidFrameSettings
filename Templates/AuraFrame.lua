@@ -145,6 +145,7 @@ function AuraFrame:Enable(options)
     rfs_aura_indicator:SetDurationShadowOffset(options.duration_font_shadow_offset_x, options.duration_font_shadow_offset_y)
     rfs_aura_indicator:SetDurationJustification(options.duration_font_horizontal_justification, options.duration_font_vertical_justification)
     rfs_aura_indicator:SetDurationPosition(options.duration_font_point, options.duration_font_relative_point, options.duration_font_offset_x, options.duration_font_offset_y)
+    rfs_aura_indicator.show_cooldown_numbers = options.show_cooldown_numbers
     -- Font: Stack.
     rfs_aura_indicator:SetStackFont(options.path_to_stack_font, options.stack_font_size, options.stack_font_outlinemode)
     rfs_aura_indicator:SetStackColor(unpack(options.stack_font_color))

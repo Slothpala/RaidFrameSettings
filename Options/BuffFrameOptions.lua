@@ -257,6 +257,14 @@ local function update_options()
           get = "GetStatus",
           set = "SetStatus",
         },
+        show_cooldown_numbers = {
+          order = 30.5,
+          name = L["show_cooldown_numbers_name"],
+          desc = L["show_cooldown_numbers_desc"],
+          type = "toggle",
+          get = "GetStatus",
+          set = "SetStatus",
+        },
       },
     },
     MenuBand = {

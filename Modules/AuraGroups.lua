@@ -87,6 +87,7 @@ function module:OnEnable()
         show_swipe = aura_group.show_swipe,
         reverse_swipe = aura_group.reverse_swipe,
         show_edge = aura_group.show_edge,
+        show_cooldown_numbers = aura_group.show_cooldown_numbers,
         -- Tooltip
         show_tooltip = aura_group.show_tooltip,
       }

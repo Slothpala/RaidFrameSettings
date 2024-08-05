@@ -38,6 +38,7 @@ function AuraGroupPresetUtil:CreateAuraGroup(name, overwrite_existing)
     -- swipe_color = {1, 1, 1, 1}, --@TODO: find out why Cooldown:SetSwipeColor(colorR, colorG, colorB [, a]) just ignores the color setting.
     reverse_swipe = false,
     show_edge = false,
+    show_cooldown_numbers = true,
     -- Tooltip
     show_tooltip = false,
     auras = {}

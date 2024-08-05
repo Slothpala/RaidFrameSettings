@@ -107,6 +107,8 @@ L["show_edge_name"] = "Show Edge"
 L["show_edge_desc"] = "Show Edge"
 L["show_tooltip_name"] = "Show tooltip"
 L["show_tooltip_desc"] = "Show a tooltip for the indicators of this aura frame."
+L["show_cooldown_numbers_name"] = "Cooldown Numbers"
+L["show_cooldown_numbers_desc"] = "Show a countdown for cooldowns."
 
 ---------------
 --- Modules ---

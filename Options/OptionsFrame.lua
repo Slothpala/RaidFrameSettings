@@ -56,6 +56,25 @@ local function create_minimize_btn(parent_frame)
   return button
 end
 
+local function create_resize_handle(parent_frame)
+  local resize_handle = CreateFrame("Button", addonName .. "OptionsResizeButton", parent_frame)
+  resize_handle:SetPoint("BOTTOMRIGHT",-1,1)
+  resize_handle:SetSize(26, 26)
+  resize_handle:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+  resize_handle:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+  resize_handle:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+  resize_handle:SetScript("OnMouseDown", function(_, button)
+    if button == "LeftButton" then
+      parent_frame:StartSizing("BOTTOMRIGHT")
+    end
+  end)
+  resize_handle:SetScript("OnMouseUp", function(_, button)
+    if button == "LeftButton" then
+      parent_frame:StopMovingOrSizing("BOTTOMRIGHT")
+    end
+  end)
+end
+
 local function create_tabs(parent_frame, ...)
   local tab_system = CreateFrame("Frame", nil, parent_frame, "TabSystemTemplate")
   local tabs = {}
@@ -98,9 +117,12 @@ function addon:GetOptionsFrame()
   options_frame:SetUserPlaced(true)
   options_frame:SetClampedToScreen(true)
   options_frame:SetClampRectInsets(400, -400, 0, 180)
+  options_frame:SetResizable(true)
+  options_frame:SetResizeBounds(950,550, 950)
   options_frame:RegisterForDrag("LeftButton")
   options_frame.scale_slider = create_scale_slider(options_frame)
   options_frame.minimize_button = create_minimize_btn(options_frame)
+  options_frame.resize_handle = create_resize_handle(options_frame)
   options_frame.TitleContainer:SetScript("OnMouseDown", function()
     options_frame:StartMoving()
   end)

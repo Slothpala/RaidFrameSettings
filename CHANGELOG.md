@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [3.0.11] - 2024-08-06
+#### Added
+  * BuffFrame & DebuffFrame & AuraGroups & DefensiveOverlay:
+    * Duration timers can now be hidden for all AuraFrames.
+  * Options Frame:
+    * Added a handle to resize the options frame vertically.
+
 ### Version [3.0.10] - 2024-07-31
 #### Changed
 * AuraGroups:

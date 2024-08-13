@@ -1,4 +1,13 @@
 # **Changelog**
+### Version [3.0.12] - 2024-08-13
+#### Added
+* ClassCooldown:
+  * Fade
+  * Lichborne
+
+* DefensiveOverlay:
+  * Added method to check if a player has learned a defensive enhancing talent for an otherwise non-defensive spell and enabled that check for Fade and Lichborne.
+
 ### Version [3.0.11] - 2024-08-06
 #### Added
   * BuffFrame & DebuffFrame & AuraGroups & DefensiveOverlay:

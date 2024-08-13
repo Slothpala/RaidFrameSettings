@@ -10,7 +10,32 @@ local module = addon:NewModule("DefensiveOverlay")
 
 local Media = LibStub("LibSharedMedia-3.0")
 local CR = addonTable.CallbackRegistry
+local LGIST = LibStub:GetLibrary("LibGroupInSpecT-1.1")
 
+local special_auras = {
+  -- Lichborne
+  [49039] = function(unit)
+    local guid = UnitGUID(unit)
+    local unit_info = guid and LGIST:GetCachedInfo(guid)
+    return unit_info and unit_info.talents and unit_info.talents[96187] or false -- Unholy Endurance
+  end,
+  -- Fade
+  [586] = function(unit)
+    local guid = UnitGUID(unit)
+    local unit_info = guid and LGIST:GetCachedInfo(guid)
+    return unit_info and unit_info.talents and unit_info.talents[103835] or false -- Translucent Image
+  end
+  --[[
+    find talent id fast
+    for k,v in pairs(unit_info.talents) do
+      for i, x in pairs(v) do
+        if x == "Talent Name" then
+          print(k)
+        end
+      end
+    end
+  ]]
+}
 
 local callback_id
 function module:OnEnable()
@@ -77,7 +102,7 @@ function module:OnEnable()
     show_edge = db_obj.show_edge,
     show_cooldown_numbers = db_obj.show_cooldown_numbers,
     -- Tooltip
-    show_tooltip = db_obj.show_tooltip
+    show_tooltip = db_obj.show_tooltip,
   }
 
   -- Create a callback to create an aura frame when a new frame env is created.
@@ -86,6 +111,34 @@ function module:OnEnable()
       cuf_frame.RFS_FrameEnvironment.aura_frames["DefensiveOverlay"] = addon:NewAuraFrame(cuf_frame)
     end
     cuf_frame.RFS_FrameEnvironment.aura_frames["DefensiveOverlay"]:Enable(aura_frame_options)
+    cuf_frame.RFS_FrameEnvironment.aura_frames["DefensiveOverlay"].Update = function(self, aura_table)
+      local indicator_pos = 1
+      aura_table:Iterate(function(auraInstanceID, aura)
+        if indicator_pos > self.num_indicators then
+          return true
+        end
+
+        -- Some auras are only a defensive if a talent that improves it is learned.
+        local is_special_aura = special_auras[aura.spellId] and special_auras[aura.spellId](cuf_frame.unit)
+        if is_special_aura == false then
+          return false
+        end
+        -- else continue
+
+        self.indicators[indicator_pos]:SetAura(aura)
+
+        if self.on_set_aura_callback then
+          self.on_set_aura_callback(self.indicators[indicator_pos], aura)
+        end
+        indicator_pos = indicator_pos + 1
+
+        return false
+      end)
+
+      for i=indicator_pos, self.num_indicators do
+        self.indicators[i]:Clear()
+      end
+    end
   end
   -- Place the callback in the callback table.
   addonTable.on_create_frame_env_callbacks["DefensiveOverlay"] = create_or_update_defensive_overlay

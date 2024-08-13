@@ -5,7 +5,7 @@
 ## SavedVariables: RaidFrameSettingsDB
 ## AddonCompartmentFunc: RaidFrameSettings_AddOnCompartmentEntry
 ## IconTexture: Interface\AddOns\RaidFrameSettings\Textures\Icon.tga
-## OptionalDeps: Ace3, LibDeflate, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDDI-1.0, AceGUI-3.0_SFX-Widgets, LibCanDispel-1.0, LibDBIcon-1.0, LibCustomGLow-1.0
+## OptionalDeps: Ace3, LibDeflate, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDDI-1.0, AceGUI-3.0_SFX-Widgets, LibCanDispel-1.0, LibDBIcon-1.0, LibCustomGLow-1.0, LibGroupInSpecT-1.1
 ## X-Curse-Project-ID: 688930
 
 embeds.xml

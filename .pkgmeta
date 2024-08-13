@@ -1,4 +1,4 @@
- 
+
 package-as: RaidFrameSettings
 
 externals:
@@ -24,6 +24,7 @@ externals:
     Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
     Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
     Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+    Libs/LibGroupInSpecT-1.1: svn://svn.wowace.com/wow/libgroupinspect/mainline/trunk
 
 manual-changelog:
     filename: CHANGELOG.md

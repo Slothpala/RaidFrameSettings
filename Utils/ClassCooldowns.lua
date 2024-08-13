@@ -49,6 +49,12 @@ local class_cooldowns = {
           145629, -- Base
         },
       },
+      [49039] = { -- [[ Lichborne ]]
+        prio = 5,
+        auras = {
+          49039, -- Base
+        },
+      },
     },
   },
   DEMONHUNTER = {
@@ -260,7 +266,7 @@ local class_cooldowns = {
           31850, -- Base
         },
       },
-      [403876] = { -- [[ Divine Protection Retri ]]
+      [403876] = { -- [[ Divine Protection ]]
         prio = 5,
         auras = {
           403876, -- Retri
@@ -332,6 +338,12 @@ local class_cooldowns = {
         prio = 1,
         auras = {
           47788, -- Base
+        },
+      },
+      [586] = { -- [[ Fade ]]
+        prio = 5,
+        auras = {
+          586, -- Base
         },
       },
     },

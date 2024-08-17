@@ -1,5 +1,8 @@
 # **Changelog**
-### Version [3.0.12] - 2024-08-13
+### Version [3.0.13] - 2024-08-13
+#### Fixed
+* DebuffFrame: Fixed an issue that prevented watchlist auras from being dispelled when playing with the Raid Only setting.
+
 #### Added
 * ClassCooldown:
   * Fade

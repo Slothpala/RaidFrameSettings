@@ -197,7 +197,7 @@ function module:OnEnable()
     on_debuffs_changed = function(cuf_frame)
       local debuff_table = TableUtil_CreatePriorityTable(AuraUtil_UnitFrameDebuffComparator, TableUtil_Constants_AssociativePriorityTable)
       cuf_frame.RFS_FrameEnvironment.grouped_auras["DebuffFrame"]:Iterate(function(auraInstanceID, aura)
-        if aura.isRaid or aura.isBossAura or AuraUtil_IsPriorityDebuff(aura.spellId) then
+        if db_obj.watchlist[aura.spellId] or aura.isRaid or aura.isBossAura or AuraUtil_IsPriorityDebuff(aura.spellId) then
           debuff_table[auraInstanceID] = aura
         end
       end)

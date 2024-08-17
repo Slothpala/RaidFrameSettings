@@ -2,6 +2,7 @@
 ### Version [3.0.13] - 2024-08-13
 #### Fixed
 * DebuffFrame: Fixed an issue that prevented watchlist auras from being dispelled when playing with the Raid Only setting.
+* DebuffFrame: duration_font_color now points to the correct fallback value.
 
 #### Added
 * ClassCooldown:

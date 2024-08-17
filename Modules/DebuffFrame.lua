@@ -70,7 +70,7 @@ function module:OnEnable()
     end
   elseif db_obj.duration_font_by_dispel_color then
     on_set_debuff = function(rfs_aura_indicator, aura)
-      local duration_font_color = aura.dispelName and addonTable.colors.dispel_type_colors[aura.dispelName].normal_color or db_obj.duration_font_color
+      local duration_font_color = aura.dispelName and addonTable.colors.dispel_type_colors[aura.dispelName].normal_color or db_obj_font_duration.text_color
       rfs_aura_indicator:SetDurationColor(duration_font_color[1], duration_font_color[2], duration_font_color[3])
       if aura.isBossAura or increased_auras[aura.spellId] then
         rfs_aura_indicator:SetScale(db_obj.increase_factor)

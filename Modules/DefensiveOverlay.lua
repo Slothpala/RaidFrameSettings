@@ -123,7 +123,7 @@ function module:OnEnable()
         if is_special_aura == false then
           return false
         end
-        -- else continue
+        -- else(nil or true) continue
 
         self.indicators[indicator_pos]:SetAura(aura)
 

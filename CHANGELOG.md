@@ -1,4 +1,12 @@
 # **Changelog**
+### Version [3.0.14] - 2024-08-18
+#### Updated
+* Interface version to 110002.
+
+#### Fixed
+* Textures: Temporarily disabled the detach power bar setting as an underlying Blizzard function appears to be broken.
+
+
 ### Version [3.0.13] - 2024-08-13
 #### Fixed
 * DebuffFrame: Fixed an issue that prevented watchlist auras from being dispelled when playing with the Raid Only setting.

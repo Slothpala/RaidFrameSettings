@@ -26,6 +26,7 @@ local GetCvar =  C_CVar.GetCVar
 function module:OnEnable()
   -- Get the database object
   local db_obj = CopyTable(addon.db.profile.Texture)
+  db_obj.detach_power_bar = false -- @TODO find out why the healthbar gets resized since 110002
   -- Fetch the actual data
   local path_to_health_bar_foreground_texture = Media:Fetch("statusbar", db_obj.health_bar_foreground_texture)
   local path_to_health_bar_background_texture = Media:Fetch("statusbar", db_obj.health_bar_background_texture)

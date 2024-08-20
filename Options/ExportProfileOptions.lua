@@ -13,8 +13,7 @@ local options = {
       name = L["export_profile_input_title"],
       desc = "",
       type = "input",
-      multiline = 24
-      ,
+      multiline = 24,
       width = "full",
       get = function ()
         return addon:ShareProfile()

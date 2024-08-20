@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [3.0.15] - 2024-08-20
+#### Updated
+* Textures: Re-enabled detached power bars with a new mthod.
+
+
 ### Version [3.0.14] - 2024-08-18
 #### Updated
 * Interface version to 110002.

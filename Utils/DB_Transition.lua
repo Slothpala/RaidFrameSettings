@@ -16,11 +16,6 @@ local function convert_buff_highlight_auras()
   end
 end
 
-local function overwrite_detach_power_bar_setting()
-  addon.db.profile.Texture.detach_power_bar = false
-end
-
 function addon:CheckDatabase()
   convert_buff_highlight_auras()
-  overwrite_detach_power_bar_setting()
 end

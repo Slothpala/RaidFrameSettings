@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.0.16] - 2024-08-21
+#### Fixed
+* DebuffFrame: Attempted to fix an issue that made unit frames unclickable when a private aura was present.
+
 ### Version [3.0.15] - 2024-08-20
 #### Updated
 * Textures: Re-enabled detached power bars with a new method.

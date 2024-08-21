@@ -24,6 +24,7 @@ addonTable.on_create_frame_env_callbacks = {} -- @TODO Change to event based sys
 local function create_private_aura_indicator()
   local priv_indicator = CreateFrame("Frame")
   priv_indicator.border = priv_indicator:CreateTexture(nil, "BACKGROUND");
+  priv_indicator:SetMouseClickEnabled(false)
   return priv_indicator
 end
 

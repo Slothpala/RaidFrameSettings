@@ -21,10 +21,9 @@ local TableUtil_Constants_AssociativePriorityTable = TableUtil.Constants.Associa
 
 addonTable.on_create_frame_env_callbacks = {} -- @TODO Change to event based system.
 
-local function create_private_aura_indicator()
-  local priv_indicator = CreateFrame("Frame")
+local function create_private_aura_indicator(cuf_frame)
+  local priv_indicator = CreateFrame("Frame", nil, cuf_frame)
   priv_indicator.border = priv_indicator:CreateTexture(nil, "BACKGROUND");
-  priv_indicator:SetMouseClickEnabled(false)
   return priv_indicator
 end
 
@@ -39,8 +38,8 @@ local function create_frame_env(cuf_frame)
     },
     aura_frames = {},
     private_aura_indicators = { -- managed by the DebuffFrame module.
-      [1] = create_private_aura_indicator(),
-      [2] = create_private_aura_indicator(),
+      [1] = create_private_aura_indicator(cuf_frame),
+      --[2] = create_private_aura_indicator(cuf_frame),
     },
   }
   cuf_frame.RFS_FrameEnvironment = frame_env

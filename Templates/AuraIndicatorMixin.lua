@@ -310,9 +310,9 @@ function RaidFrameSettings_AuraIndicatorMixin:SetAura(aura)
 end
 
 function RaidFrameSettings_AuraIndicatorMixin:SetMissingAura(spell_id)
-  local _, _, icon = GetSpellInfo(spell_id)
+  local spellInfo  = C_Spell.GetSpellInfo(spell_id)
   -- Icon texture
-  self.icon:SetTexture(icon)
+  self.icon:SetTexture(spellInfo.iconID)
   if not self.desaturated then
     self.icon:SetDesaturated(true)
     self.desaturated = true

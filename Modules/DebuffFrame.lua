@@ -153,7 +153,7 @@ function module:OnEnable()
       local anchor_options = {
         unitToken = cuf_frame.unit or "player", -- The function also applies to not cuf_frame:IsVisible() frames that do not have a unit. They get player as a placeholder.
         auraIndex = i,
-        parent = cuf_frame,
+        parent = priv_indicator,
         showCountdownFrame = db_obj.show_swipe,
         showCountdownNumbers = false,
         iconInfo = {

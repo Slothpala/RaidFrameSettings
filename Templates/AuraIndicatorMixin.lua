@@ -22,7 +22,7 @@ local string_format = string.format
 -- WoW Api
 local BreakUpLargeNumbers = BreakUpLargeNumbers
 local GetTime = GetTime
-local GetSpellInfo = GetSpellInfo
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 
 ---------------
 --- Display ---
@@ -310,7 +310,7 @@ function RaidFrameSettings_AuraIndicatorMixin:SetAura(aura)
 end
 
 function RaidFrameSettings_AuraIndicatorMixin:SetMissingAura(spell_id)
-  local spellInfo  = C_Spell.GetSpellInfo(spell_id)
+  local spellInfo  = C_Spell_GetSpellInfo(spell_id)
   -- Icon texture
   self.icon:SetTexture(spellInfo.iconID)
   if not self.desaturated then

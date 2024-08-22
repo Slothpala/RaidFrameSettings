@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.0.17] - 2024-08-22
+#### Fixed
+* AuraIndicatorMixin.lua -> Moved from now removed GetSpellInfo to C_Spell.GetSpellInfo
+
 ### Version [3.0.16] - 2024-08-21
 #### Fixed
 * DebuffFrame: Attempted to fix an issue that made unit frames unclickable when a private aura was present.

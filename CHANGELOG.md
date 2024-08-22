@@ -1,7 +1,9 @@
 # **Changelog**
 ### Version [3.0.17] - 2024-08-22
 #### Fixed
-* AuraIndicatorMixin.lua -> Moved from now removed GetSpellInfo to C_Spell.GetSpellInfo
+* AuraIndicatorMixin.lua -> Moved from now removed GetSpellInfo to C_Spell.GetSpellInfo.
+* FrameEnvironment.lua -> Set cuf_frame at the parent of priv_indicator to respect the scale.
+* DebuffFrame.lua -> Fixed a configuration issue that incorrectly set the cuf_frame as the parent for the private aura anchor, causing the entire frame to become unclickable.
 
 ### Version [3.0.16] - 2024-08-21
 #### Fixed

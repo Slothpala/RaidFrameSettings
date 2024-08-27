@@ -400,6 +400,13 @@ local class_cooldowns = {
           260881, -- Base
         },
       },
+      [114893] = { -- [[ Stone Bulwark Totem ]]
+        prio = 8,
+        auras = {
+          114893, -- Big Absorb
+          462844, -- Small Absorb
+        },
+    },
     },
   },
   WARLOCK = {

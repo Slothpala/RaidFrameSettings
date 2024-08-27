@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [3.0.18] - 2024-08-22
+#### Added
+* ClassCooldown:
+  * Stone Bulwark Totem
+
 ### Version [3.0.17] - 2024-08-22
 #### Fixed
 * AuraIndicatorMixin.lua -> Moved from now removed GetSpellInfo to C_Spell.GetSpellInfo.

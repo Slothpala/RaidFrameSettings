@@ -6,6 +6,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 ------------------
 
 LSM:Register("statusbar", "RFS_HealthBar", [[Interface\Addons\RaidFrameSettings\SharedMedia\statusbar\RFS_HealthBar.tga]])
+LSM:Register("statusbar", "RFS_HealthBar_Striped", [[Interface\Addons\RaidFrameSettings\SharedMedia\statusbar\RFS_HealthBar_Striped.tga]])
 LSM:Register("statusbar", "RFS_PowerBar", [[Interface\Addons\RaidFrameSettings\SharedMedia\statusbar\RFS_PowerBar.tga]])
 
 ------------------

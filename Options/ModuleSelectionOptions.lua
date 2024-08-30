@@ -3,6 +3,7 @@ local addonName, addonTable = ...
 local addon = addonTable.addon
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local ACD = LibStub("AceConfigDialog-3.0")
+local statusbars =  LibStub("LibSharedMedia-3.0"):List("statusbar")
 
 local locale_frame_points = {
   [1] = L["frame_point_top_left"],
@@ -420,6 +421,30 @@ local options = {
           get = "GetStatus",
           set = "SetStatus",
           width = 0.9,
+        },
+        mew_line = {
+          order = 20,
+          name = "",
+          type = "description",
+        },
+        highlight_texture = {
+          order = 20.1,
+          type = "select",
+          name = L["debuff_highlight_highlight_texture_name"],
+          values = statusbars,
+          get = function()
+            for i, v in next, statusbars do
+              if v == addon.db.profile.DebuffHighlight.highlight_texture then
+                return i
+              end
+            end
+          end,
+          set = function(_, value)
+            addon.db.profile.DebuffHighlight.highlight_texture = statusbars[value]
+            addon:ReloadModule("DebuffHighlight")
+          end,
+          itemControl = "DDI-Statusbar",
+          width = 1,
         },
       },
     },

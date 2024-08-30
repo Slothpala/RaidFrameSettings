@@ -270,6 +270,9 @@ local options = {
           set = function(_, value)
             addon.db.profile.Texture.health_bar_foreground_texture = statusbars[value]
             addon:ReloadModule("Texture")
+            if addon:IsModuleEnabled("DebuffHighlight") then
+              addon:ReloadModule("DebuffHighlight")
+            end
           end,
           itemControl = "DDI-Statusbar",
           width = 1,

@@ -100,6 +100,7 @@ local defaults = {
       Disease = true,
       Magic = true,
       Poison = true,
+      highlight_texture = "RFS_HealthBar_Striped",
     },
     -- DefensiveOverlay Font Settings
     DefensiveOverlayDurationFont = {
@@ -573,6 +574,9 @@ function addon:SetModuleStatus(info, value)
     self:DisableModule(module_name)
   else
     self:EnableModule(module_name)
+  end
+  if module_name == "Texture" and self:IsModuleEnabled("DebuffHighlight") then
+    self:ReloadModule("DebuffHighlight")
   end
   self:OptionsFrame_UpdateTabs()
 end

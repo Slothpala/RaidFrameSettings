@@ -149,6 +149,7 @@ L["debuff_highlight_show_magic_name"] = "Show Magic"
 L["debuff_highlight_show_magic_desc"] = "Highlight debuffs of the dispel type Magic."
 L["debuff_highlight_show_poisons_name"] = "Show Poisons"
 L["debuff_highlight_show_poisons_desc"] = "Highlight debuffs of the dispel type Poison."
+L["debuff_highlight_highlight_texture_name"] = "Highlight Texture"
 
 -- Resizer
 L["module_resizer_name"] = "Resizer"

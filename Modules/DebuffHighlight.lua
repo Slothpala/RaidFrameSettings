@@ -11,6 +11,7 @@ local module = addon:NewModule("DebuffHighlight")
 local HealthColor = addonTable.HealthColor
 local CR = addonTable.CallbackRegistry
 local LCD = LibStub("LibCanDispel-1.0")
+local Media = LibStub("LibSharedMedia-3.0")
 
 ------------------------
 --- Speed references ---
@@ -26,6 +27,9 @@ local callback_id
 function module:OnEnable()
   -- Get the database object
   local db_obj = CopyTable(addon.db.profile.DebuffHighlight)
+  local path_to_hightlight_texture = Media:Fetch("statusbar", db_obj.highlight_texture)
+  local default_texture = addon:IsModuleEnabled("Texture") and addon.db.profile.Texture.health_bar_foreground_texture or "Blizzard Raid Bar"
+  local path_to_default_teture = Media:Fetch("statusbar", default_texture)
   -- Specify the aura colors to be displayed.
   local should_color_in_dispel_color = db_obj.operation_mode == 1 and LCD.CanDispel or function(dispelName)
     if db_obj[dispelName] then
@@ -37,6 +41,8 @@ function module:OnEnable()
   local function set_statusbar_to_dispel_color(statusbar, dispel_type)
     local color = addonTable.colors.dispel_type_colors[dispel_type].normal_color
     statusbar:SetStatusBarColor(color[1], color[2], color[3])
+    statusbar:SetStatusBarTexture(path_to_hightlight_texture)
+    statusbar:GetStatusBarTexture():SetDrawLayer("BORDER", 0)
   end
 
   local function on_dispel_type_changed(cuf_frame)
@@ -73,6 +79,8 @@ function module:OnEnable()
     end
     -- If no dispel type is found, update the health color. UpdateColor is the same function that is securehooked to CompactUnitFrame_UpdateHealthColor.
     HealthColor:UpdateColor(cuf_frame)
+    cuf_frame.healthBar:SetStatusBarTexture(path_to_default_teture)
+    cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER", 0)
   end
 
   addon:IterateRoster(on_dispel_type_changed, true)

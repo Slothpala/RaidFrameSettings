@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [3.0.20] - 2024-08-30
+#### Fixed
+* DebuffFrame.lua -> Removed debug code.
+
+#### Added
+* DebuffHighlight -> Added an option to set a highlight texture.
+
 ### Version [3.0.19] - 2024-08-30
 #### Added
 * FrameEnvironment.lua -> CreateOrUpdateFrameEnv now fires a FRAME_ENV_UPDATED event with the cuf_frame as an argument.

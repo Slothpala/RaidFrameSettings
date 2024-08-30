@@ -15,11 +15,17 @@ local AuraUtil_DefaultAuraCompare = AuraUtil.DefaultAuraCompare
 local AuraUtil_UnitFrameDebuffComparator = AuraUtil.UnitFrameDebuffComparator
 local TableUtil_Constants_AssociativePriorityTable = TableUtil.Constants.AssociativePriorityTable
 
+--------------------
+--- Libs & Utils ---
+--------------------)
+local CR = addonTable.CallbackRegistry
+
 -------------------------
 --- Frame Environment ---
 -------------------------
 
 addonTable.on_create_frame_env_callbacks = {} -- @TODO Change to event based system.
+addonTable.on_update_frame_env_callbacks = {}
 
 local function create_private_aura_indicator(cuf_frame)
   local priv_indicator = CreateFrame("Frame", nil, cuf_frame)
@@ -55,6 +61,8 @@ function addon:CreateOrUpdateFrameEnv()
     if not cuf_frame.RFS_FrameEnvironment then
       create_frame_env(cuf_frame)
     end
+    -- Fire an event that notifies other modules that the frame environment has been updated.
+    CR:Fire("FRAME_ENV_UPDATED", cuf_frame)
     -- Check if the unit auras should be updated or the scanner stopped.
     if cuf_frame.unit then
       addon:CreateOrUpdateAuraScanner(cuf_frame)

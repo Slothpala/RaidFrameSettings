@@ -67,7 +67,7 @@ function module:OnEnable()
       cuf_frame.powerBar.background:SetDrawLayer("BORDER", 2)
     end
     cuf_frame.healthBar:SetStatusBarTexture(path_to_health_bar_foreground_texture)
-    cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER" ,0)
+    cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER", 0)
     cuf_frame.background:SetTexture(path_to_health_bar_background_texture)
   end
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_status_bar_textures)

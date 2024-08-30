@@ -28,6 +28,7 @@ local C_UnitAuras_AddPrivateAuraAnchor = C_UnitAuras.AddPrivateAuraAnchor
 
 local hidden_frame = CreateFrame("Frame")
 local callback_id
+local update_frame_env_callback_id
 function module:OnEnable()
   -- Get the database object
   local db_obj = CopyTable(addon.db.profile.DebuffFrame)
@@ -139,56 +140,63 @@ function module:OnEnable()
     show_tooltip = db_obj.show_tooltip
   }
 
+  -- Private Aura Anchors
+  local function create_or_update_priv_indicators(cuf_frame)
+    for i, priv_indicator in next, cuf_frame.RFS_FrameEnvironment.private_aura_indicators do
+      if priv_indicator.anchor_id then
+        C_UnitAuras_RemovePrivateAuraAnchor(priv_indicator.anchor_id)
+      end
+      if cuf_frame.unit then
+        print("updating frame_env for: ",cuf_frame.unit)
+        local anchor_options = {
+          unitToken = cuf_frame.unit,
+          auraIndex = i,
+          parent = priv_indicator,
+          showCountdownFrame = db_obj.show_swipe,
+          showCountdownNumbers = false,
+          iconInfo = {
+            iconWidth = db_obj.indicator_width - (2 * db_obj.indicator_border_thickness),
+            iconHeight = db_obj.indicator_height - (2 * db_obj.indicator_border_thickness),
+            iconAnchor = {
+              point = "CENTER",
+              relativeTo = priv_indicator,
+              relativePoint = "CENTER",
+              offsetX = 0,
+              offsetY = 0,
+            },
+          },
+          durationAnchor = {
+            point = db_obj_font_duration.point,
+            relativeTo = priv_indicator,
+            relativePoint = db_obj_font_duration.relative_point,
+            offsetX = db_obj_font_duration.offset_x,
+            offsetY = db_obj_font_duration.offset_y,
+          },
+        }
+        if i == 1 then
+          priv_indicator:SetPoint(db_obj.priv_point, cuf_frame, db_obj.priv_relative_point)
+        else
+          priv_indicator:SetPoint("LEFT", cuf_frame.RFS_FrameEnvironment.private_aura_indicators[i-1], "RIGHT")
+        end
+        priv_indicator:SetSize(db_obj.indicator_width, db_obj.indicator_height)
+        priv_indicator.border:SetAllPoints(priv_indicator)
+        priv_indicator.border:SetVertexColor(db_obj.indicator_border_color[1], db_obj.indicator_border_color[2], db_obj.indicator_border_color[3])
+        priv_indicator.anchor_id = C_UnitAuras_AddPrivateAuraAnchor(anchor_options)
+      end
+    end
+  end
+
   -- Create a callback to create an aura frame when a new frame env is created.
   local function create_or_update_debuff_frame(cuf_frame)
     if not cuf_frame.RFS_FrameEnvironment.aura_frames["DebuffFrame"] then
       cuf_frame.RFS_FrameEnvironment.aura_frames["DebuffFrame"] = addon:NewAuraFrame(cuf_frame)
     end
     cuf_frame.RFS_FrameEnvironment.aura_frames["DebuffFrame"]:Enable(aura_frame_options)
-    -- Private Aura Anchors
-    for i, priv_indicator in next, cuf_frame.RFS_FrameEnvironment.private_aura_indicators do
-      if priv_indicator.anchor_id then
-        C_UnitAuras_RemovePrivateAuraAnchor(priv_indicator.anchor_id)
-      end
-      local anchor_options = {
-        unitToken = cuf_frame.unit or "player", -- The function also applies to not cuf_frame:IsVisible() frames that do not have a unit. They get player as a placeholder.
-        auraIndex = i,
-        parent = priv_indicator,
-        showCountdownFrame = db_obj.show_swipe,
-        showCountdownNumbers = false,
-        iconInfo = {
-          iconWidth = db_obj.indicator_width - (2 * db_obj.indicator_border_thickness),
-          iconHeight = db_obj.indicator_height - (2 * db_obj.indicator_border_thickness),
-          iconAnchor = {
-            point = "CENTER",
-            relativeTo = priv_indicator,
-            relativePoint = "CENTER",
-            offsetX = 0,
-            offsetY = 0,
-          },
-        },
-        durationAnchor = {
-          point = db_obj_font_duration.point,
-          relativeTo = priv_indicator,
-          relativePoint = db_obj_font_duration.relative_point,
-          offsetX = db_obj_font_duration.offset_x,
-          offsetY = db_obj_font_duration.offset_y,
-        },
-      }
-      if i == 1 then
-        priv_indicator:SetPoint(db_obj.priv_point, cuf_frame, db_obj.priv_relative_point)
-      else
-        priv_indicator:SetPoint("LEFT", cuf_frame.RFS_FrameEnvironment.private_aura_indicators[i-1], "RIGHT")
-      end
-      priv_indicator:SetSize(db_obj.indicator_width, db_obj.indicator_height)
-      priv_indicator.border:SetAllPoints(priv_indicator)
-      priv_indicator.border:SetVertexColor(db_obj.indicator_border_color[1], db_obj.indicator_border_color[2], db_obj.indicator_border_color[3])
-      priv_indicator.anchor_id = C_UnitAuras_AddPrivateAuraAnchor(anchor_options)
-    end
-
+    create_or_update_priv_indicators(cuf_frame) -- Creates it.
   end
   -- Place the callback in the callback table.
   addonTable.on_create_frame_env_callbacks["DebuffFrame"] = create_or_update_debuff_frame
+  update_frame_env_callback_id = CR:RegisterCallback("FRAME_ENV_UPDATED", create_or_update_priv_indicators) -- Updates it.
 
   -- Handle debuff changes
   -- The debuff table contains all buffs that are not placed in an aura group.
@@ -254,6 +262,7 @@ function module:OnDisable()
   addonTable.on_create_frame_env_callbacks["DebuffFrame"] = nil
   -- Unregister the callback
   CR:UnregisterCallback("DebuffFrame", callback_id)
+  CR:UnregisterCallback("FRAME_ENV_UPDATED", update_frame_env_callback_id)
   -- Hide the addons buff frames and show blizzards default buff frame.
   local function show_default_debuff_frame(cuf_frame)
     local is_power_bar_showing = cuf_frame.powerBar and cuf_frame.powerBar:IsShown()

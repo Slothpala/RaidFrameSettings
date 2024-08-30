@@ -147,7 +147,6 @@ function module:OnEnable()
         C_UnitAuras_RemovePrivateAuraAnchor(priv_indicator.anchor_id)
       end
       if cuf_frame.unit then
-        print("updating frame_env for: ",cuf_frame.unit)
         local anchor_options = {
           unitToken = cuf_frame.unit,
           auraIndex = i,

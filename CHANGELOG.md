@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [3.0.19] - 2024-08-30
+#### Added
+* FrameEnvironment.lua -> CreateOrUpdateFrameEnv now fires a FRAME_ENV_UPDATED event with the cuf_frame as an argument.
+
+#### Fixed
+* DebuffFrame.lua -> Private Aura anchors will now update their unit on FRAME_ENV_UPDATED, fixing an issue where the private aura anchor would get stuck on the unit it was originally created for.
+
 ### Version [3.0.18] - 2024-08-22
 #### Added
 * ClassCooldown:

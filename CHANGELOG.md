@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.0.21] - 2024-09-09
+#### Updated
+* AuraIndicatorMixin.lua -> Changed how the get_timer_text function calculates the remaining time to match Blizzard's default style. Numbers less than 1 hour are rounded using math.floor, while numbers greater than 1 hour are rounded using math.ceil.
+
 ### Version [3.0.20] - 2024-08-30
 #### Fixed
 * DebuffFrame.lua -> Removed debug code.

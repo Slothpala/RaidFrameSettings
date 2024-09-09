@@ -19,6 +19,8 @@ local LCG_ProcGlow_Stop = LCG.ProcGlow_Stop
 -- Lua
 local next = next
 local string_format = string.format
+local math_floor = math.floor
+local math_ceil = math.ceil
 -- WoW Api
 local BreakUpLargeNumbers = BreakUpLargeNumbers
 local GetTime = GetTime
@@ -151,13 +153,13 @@ local hour = 3600
 local min = 60
 -- TODO add format options
 local function get_timer_text(number)
--- BreakUpLargeNumbers or Round
+  -- BreakUpLargeNumbers or Round
   if number < min then
-    return Round(number)
+    return math_floor(number)  -- round up for seconds
   elseif number < hour then
-    return string_format("%dm", BreakUpLargeNumbers( number / min ) )
+    return string_format("%dm", (math_ceil(number / min)))  -- round up for minutes
   else
-    return string_format("%dh", BreakUpLargeNumbers( number / hour ) )
+    return string_format("%dh", (math_ceil(number / hour))) -- round up for hours
   end
 end
 

@@ -104,6 +104,8 @@ function addon:GetOptionsFrame()
     return options_frame
   end
   options_frame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
+  local r,g,b = PANEL_BACKGROUND_COLOR:GetRGB()
+  options_frame.Bg:SetColorTexture(r,g,b,0.9)
   options_frame:SetScale(addon.db.global.options_frame.scale)
   options_frame:Hide()
   table.insert(UISpecialFrames, options_frame:GetName())

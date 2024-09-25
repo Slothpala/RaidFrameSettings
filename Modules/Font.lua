@@ -17,7 +17,7 @@ local UnitCache = addonTable.UnitCache
 ------------------------
 
 -- Lua
-
+local math_abs = math.abs
 -- WoW Api
 local UnitIsPlayer = UnitIsPlayer
 local UnitGUID = UnitGUID
@@ -32,6 +32,7 @@ function module:OnEnable()
   local path_to_status_font = Media:Fetch("font", db_obj_status.font)
 
   local function on_frame_setup(cuf_frame)
+    local cuf_frame_width = cuf_frame:GetWidth() or 0
     -- Name
     local name_text = cuf_frame.name
     name_text:ClearAllPoints()
@@ -41,6 +42,7 @@ function module:OnEnable()
     name_text:SetJustifyV(db_obj_name.vertical_justification)
     name_text:SetShadowColor(db_obj_name.shadow_color[1], db_obj_name.shadow_color[2], db_obj_name.shadow_color[3], db_obj_name.shadow_color[4])
     name_text:SetShadowOffset(db_obj_name.shadow_offset_x, db_obj_name.shadow_offset_y)
+    name_text:SetWidth(cuf_frame_width + math_abs(db_obj_name.offset_x))
     -- Status
     local status_text = cuf_frame.statusText
     status_text:ClearAllPoints()
@@ -50,6 +52,7 @@ function module:OnEnable()
     status_text:SetJustifyV(db_obj_status.vertical_justification)
     status_text:SetShadowColor(db_obj_status.shadow_color[1], db_obj_status.shadow_color[2], db_obj_status.shadow_color[3], db_obj_status.shadow_color[4])
     status_text:SetShadowOffset(db_obj_status.shadow_offset_x, db_obj_status.shadow_offset_y)
+    status_text:SetWidth(cuf_frame_width + math_abs(db_obj_status.offset_x))
     local staus_text_color
     if db_obj_status.class_colored then
       local guid = UnitGUID(cuf_frame.unit)

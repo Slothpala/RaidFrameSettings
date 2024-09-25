@@ -1,4 +1,16 @@
 # **Changelog**
+### Version [3.0.22] - 2024-09-25
+#### Updated/Fixed
+* Changes have been made to the font options of all modules. The JusitfyV option has been removed from all modules as it serves no purpose when the anchor can be set freely.
+* All font strings now have a set width, so they cannot grow out of the frame unless specifically set by offset. The width of the FontString is equal to the width of the frame on which it is placed + the absolute value of the horizontal offset.
+* Because the font strings now have a fixed width, the JustifyH option now works as expected.
+
+#### Removed
+* The Detach option for the power bar was removed from the texture module as it was broken in its current state.
+
+#### Updated
+* The background color of the options frame got changed.
+
 ### Version [3.0.21] - 2024-09-09
 #### Updated
 * AuraIndicatorMixin.lua -> Changed how the get_timer_text function calculates the remaining time to match Blizzard's default style. Numbers less than 1 hour are rounded using math.floor, while numbers greater than 1 hour are rounded using math.ceil.

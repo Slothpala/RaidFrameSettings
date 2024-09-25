@@ -133,7 +133,7 @@ local options = {
               get = "GetStatus",
               set = "SetStatus",
               min = 1,
-              max = 30,
+              max = 40,
               step = 1,
               width = 1.5,
             },
@@ -158,6 +158,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -341,6 +342,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -533,6 +535,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -694,6 +697,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -866,6 +870,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -1027,6 +1032,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -1199,6 +1205,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -1360,6 +1367,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -1532,6 +1540,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],
@@ -1693,6 +1702,7 @@ local options = {
               width = 0.8,
             },
             vertical_justification = {
+              hidden = true,
               order = 9,
               name = L["font_vertical_justification_name"],
               desc = L["font_vertical_justification_desc"],

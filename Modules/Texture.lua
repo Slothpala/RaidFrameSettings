@@ -73,31 +73,6 @@ function module:OnEnable()
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_status_bar_textures)
   addon:IterateRoster(set_status_bar_textures)
 
-  -- Since 110002 the function CompactUnitFrame_UpdateWidgetSet reorders the layout of the cuf_frame
-  if db_obj.detach_power_bar then
-    local function update_layout(cuf_frame)
-      if is_power_bar_shown(cuf_frame) then
-        -- Setup the powerbar
-        cuf_frame.powerBar:ClearAllPoints()
-        cuf_frame.powerBar:SetPoint(db_obj.point, cuf_frame.healthBar, db_obj.relative_point, db_obj.offset_x , db_obj.offset_y)
-        local width = cuf_frame:GetWidth() * db_obj.power_bar_width
-        local height = cuf_frame:GetHeight() * db_obj.power_bar_height
-        cuf_frame.powerBar:SetSize(width, height)
-        if height > width then
-          cuf_frame.powerBar:SetOrientation("VERTICAL")
-        end
-        -- Setup the healthbar
-        cuf_frame.healthBar:SetPoint("TOPLEFT", cuf_frame, "TOPLEFT", 1, -1)
-        cuf_frame.healthBar:SetPoint("BOTTOMRIGHT", cuf_frame, "BOTTOMRIGHT", -1, 1)
-        cuf_frame.totalAbsorb:SetDrawLayer("BORDER", 1)
-        cuf_frame.myHealPrediction:SetDrawLayer("BORDER", 1)
-      end
-    end
-    self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateWidgetSet", update_layout)
-    addon:IterateRoster(update_layout)
-  end
-
-
   -- Mini frames are the pet and tank target etc. frames
   local function set_mini_frame_textures(cuf_frame)
     -- Setup the border

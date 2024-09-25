@@ -134,7 +134,7 @@ function AuraFrame:Enable(options)
     -- Position & Orientation.
     rfs_aura_indicator:SetPoint(get_indicator_position(self.parent, self, i, options))
     -- Indicator size.
-    rfs_aura_indicator:Resize(options.indicator_width, options.indicator_height)
+    rfs_aura_indicator:Resize(options.indicator_width, options.indicator_height, options.duration_font_offset_x, options.stack_font_offset_x)
     -- Indicator border.
     rfs_aura_indicator:SetBorderThickness(options.indicator_border_thickness)
     rfs_aura_indicator:SetBorderColor(unpack(options.indicator_border_color))

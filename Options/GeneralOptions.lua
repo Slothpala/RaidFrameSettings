@@ -340,6 +340,7 @@ local options = {
           width = 1,
         },
         detach_power_bar = {
+          hidden = true, -- I will try to bring this back fixed at a later point.
           order = 20.3,
           name = L["texture_detach_power_bar_name"],
           desc = L["texture_detach_power_bar_desc"],

@@ -21,6 +21,7 @@ local next = next
 local string_format = string.format
 local math_floor = math.floor
 local math_ceil = math.ceil
+local math_abs = math.abs
 -- WoW Api
 local BreakUpLargeNumbers = BreakUpLargeNumbers
 local GetTime = GetTime
@@ -122,7 +123,7 @@ end
 --- The icon aspect ratio will be preserved
 ---@param width number
 ---@param height number
-function RaidFrameSettings_AuraIndicatorMixin:Resize(width, height)
+function RaidFrameSettings_AuraIndicatorMixin:Resize(width, height, duration_font_offset_x, stack_font_offset_x)
   local left, right, top, bottom = 0.1, 0.9, 0.1, 0.9
   if ( height ~= width ) then
     if ( height < width ) then
@@ -142,6 +143,8 @@ function RaidFrameSettings_AuraIndicatorMixin:Resize(width, height)
   self.border:SetTexCoord(left, right, top, bottom)
   self.cooldown:ClearAllPoints()
   self.cooldown:SetAllPoints(self.icon)
+  self.text.duration:SetWidth(width + math_abs(duration_font_offset_x))
+  self.text.count:SetWidth(width + math_abs(stack_font_offset_x))
 end
 
 ----------------

@@ -15,7 +15,7 @@ local UnitGUID = UnitGUID
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetRealmName = GetRealmName
 local UnitClass = UnitClass
-local UnitName = UnitName
+local UnitNameUnmodified = UnitNameUnmodified
 
 -------------
 --- Cache ---
@@ -88,7 +88,7 @@ local function new_unit_cache(guid)
       return fallback_cache_entry
     else
       english_class = select(2, UnitClass(unit_token))
-      name, realm_name = UnitName(unit_token)
+      name, realm_name = UnitNameUnmodified(unit_token)
     end
   end
   -- realm_name is an empty string if the player is from the same realm.
@@ -120,3 +120,32 @@ end
 function UnitCache:Dump()
   unit_cache = {}
 end
+
+------------------------
+--- Update Functions ---
+------------------------
+
+local update_frame = CreateFrame("Frame")
+update_frame:SetScript("OnEvent", function(self, event, ...)
+  if event == "UNIT_NAME_UPDATE" then
+    local unit_token = ...
+    local guid = UnitGUID(unit_token)
+    if unit_cache[guid] then
+      local new_name, new_realm_name = UnitNameUnmodified(unit_token)
+      if not new_realm_name then
+        new_realm_name = GetRealmName() or ""
+      end
+      local new_name_and_realm_name = new_name .. "-" .. new_realm_name
+      unit_cache[guid].name = new_name or ""
+      unit_cache[guid].nickname = nicknames[new_name_and_realm_name] or new_name or ""
+      unit_cache[guid].realm_name = new_realm_name or ""
+      unit_cache[guid].realm = new_realm_name or ""
+      --@debug@
+      print("The name of unit: ", unit_token, guid, " got changed to ", new_name, new_realm_name)
+      --@end-debug@
+    end
+  end
+end)
+
+-- Check for name updates
+update_frame:RegisterEvent("UNIT_NAME_UPDATE")

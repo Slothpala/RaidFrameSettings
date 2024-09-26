@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.0.23] - 2024-09-26
+#### Fixed
+* UnitCache.lua -> Changes have been made to reduce the likelihood of names being displayed as Unknown when playing with AI companions such as Brann or Follower dungeons.
+
 ### Version [3.0.22] - 2024-09-25
 #### Updated/Fixed
 * Changes have been made to the font options of all modules. The JusitfyV option has been removed from all modules as it serves no purpose when the anchor can be set freely.

@@ -206,6 +206,32 @@ local class_cooldowns = {
           55342, -- Base
         },
       },
+      [414660] = { -- [[ Mass Barrier ]]
+        prio = 7,
+        auras = {
+          414663, -- Arcane / Prismatic Barrier
+          414662, -- Fire / Blazing Barrier
+          414661, -- Frost / Ice Barrier
+        },
+      },
+      [235450] = { -- [[ Prismatic Barrier ]]
+        prio = 7,
+        auras = {
+          235450, -- Base
+        },
+      },
+      [235313] = { -- [[ Blazing Barrier ]]
+        prio = 7,
+        auras = {
+          235313, -- Base
+        },
+      },
+      [11426] = { -- [[ Ice Barrier ]]
+        prio = 7,
+        auras = {
+          11426, -- Base
+        },
+      },
     },
   },
   MONK = {

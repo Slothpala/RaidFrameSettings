@@ -135,10 +135,10 @@ local defaults = {
     },
     DefensiveOverlay = {
       -- Position
-      point = "CENTER",
-      relative_point = "CENTER",
+      point = "TOP",
+      relative_point = "TOP",
       offset_x = 0,
-      offset_y = 0,
+      offset_y = -2,
       -- Num indicators row*column
       num_indicators_per_row = 1,
       num_indicators_per_column = 1,
@@ -148,8 +148,8 @@ local defaults = {
       direction_of_growth_horizontal = "RIGHT",
       horizontal_padding = 1,
       -- Indicator size
-      indicator_width = 24,
-      indicator_height = 24,
+      indicator_width = 20,
+      indicator_height = 20,
       -- Indicator border
       indicator_border_thickness = 1,
       indicator_border_color = {0, 1, 0, 1},

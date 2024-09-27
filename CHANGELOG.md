@@ -1,4 +1,17 @@
 # **Changelog**
+### Version [3.0.24] - 2024-09-26
+#### Added
+* ClassCooldown:
+  * Mage:
+    * Mass Barrier
+    * Prismatic Barrier
+    * Blazing Barrier
+    * Ice Barrier
+
+#### Updated
+* The default position of the Defensive Overlay got changed to not overlap with the default private aura anchor position.
+
+
 ### Version [3.0.23] - 2024-09-26
 #### Fixed
 * UnitCache.lua -> Changes have been made to reduce the likelihood of names being displayed as Unknown when playing with AI companions such as Brann or in Follower dungeons. The cached names are now also updated, so if a name is still shown as Unknown, it will automatically be fixed the next time the frame is updated.

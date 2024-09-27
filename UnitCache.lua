@@ -133,7 +133,7 @@ update_frame:SetScript("OnEvent", function(self, event, ...)
     if unit_cache[guid] then
       local new_name, new_realm_name = UnitNameUnmodified(unit_token)
       if not new_realm_name then
-        new_realm_name = GetRealmName() or ""
+        new_realm_name = GetRealmName()
       end
       local new_name_and_realm_name = new_name .. "-" .. new_realm_name
       unit_cache[guid].name = new_name or ""

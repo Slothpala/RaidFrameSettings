@@ -5,7 +5,7 @@ local addon = addonTable.addon
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 local default_duration_font = "LTSaeada-Medium"
-local default_duration_font_size = 10
+local default_duration_font_size = 8
 local default_duration_font_color = {1, 1, 1, 1}
 local default_stack_font = "LTSaeada-Medium"
 local default_stack_font_size = 11
@@ -28,6 +28,13 @@ local defaults = {
       enabled = false,
     },
     Nicknames = {
+    },
+    RaidMark = {
+      point = "TOPLEFT",
+      relative_point = "TOPLEFT",
+      offset_x = 2,
+      offset_y = -2,
+      scale_factor = 1,
     },
     AuraGroupsDurationFont = {
       point = "TOPLEFT",

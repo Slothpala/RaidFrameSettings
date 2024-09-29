@@ -293,6 +293,10 @@ L["buff_highlight_option_missing"] = "Missing"
 L["buff_highlight_edit_auras_name"] = "Edit Auras"
 L["buff_highlight_edit_auras_desc"] = "Edit Auras"
 
+-- Raid Mark
+L["module_raid_mark_name"] = "Raid Mark"
+L["module_raid_mark_desc"] = "Display a unit's target marker icon on the raid frame."
+
 ------------
 --- Tabs ---
 ------------

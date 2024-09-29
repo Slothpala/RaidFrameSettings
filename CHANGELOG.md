@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [3.1.0] - 2024-09-29
+#### Added
+* New Module: Raid Mark - Display a unit's target marker icon on the raid frame.
+
+#### Updated
+* The default duration timer font size got reduced.
+
 ### Version [3.0.24] - 2024-09-26
 #### Added
 * ClassCooldown:

@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [3.1.1] - 2024-09-29
+#### Added
+* ClassCooldown:
+  * Warrior:
+    * Defensive Stance
+
 ### Version [3.1.0] - 2024-09-29
 #### Added
 * New Module: Raid Mark - Display a unit's target marker icon on the raid frame.

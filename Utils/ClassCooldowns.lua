@@ -493,6 +493,12 @@ local class_cooldowns = {
           23920, -- Base
         },
       },
+      [386208] = { -- [[ Defensive Stance ]]
+        prio = 6,
+        auras = {
+          386208, -- Base
+        },
+      },
     },
   },
   TRINKET = {

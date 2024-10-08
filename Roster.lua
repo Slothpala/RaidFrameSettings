@@ -31,3 +31,16 @@ function addon:IterateRoster(callback, req_frame_env)
     end
   end)
 end
+
+function addon:IterateArenaFrames(callback, req_frame_env)
+  for i=1, 3 do
+    local cuf_frame = _G["CompactArenaFrameMember" .. i]
+    if cuf_frame then
+      if req_frame_env and not cuf_frame.RFS_FrameEnvironment then
+        -- skip
+      else
+        callback(cuf_frame)
+      end
+    end
+  end
+end

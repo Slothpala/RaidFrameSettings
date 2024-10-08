@@ -24,6 +24,12 @@ local special_auras = {
     local guid = UnitGUID(unit)
     local unit_info = guid and LGIST:GetCachedInfo(guid)
     return unit_info and unit_info.talents and unit_info.talents[103835] or false -- Translucent Image
+  end,
+  -- Defensive Stance
+  -- I think this is only of interest if the unit is a DAMAGER.
+  [386208] = function(unit)
+    local role = UnitGroupRolesAssigned(unit) or ""
+    return role == "DAMAGER"
   end
   --[[
     find talent id fast

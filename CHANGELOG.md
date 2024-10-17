@@ -14,8 +14,6 @@
 * Texture.lua -> CompactArenaFrame support added, powerbar and healthbar no longer have a set draw layer.
 * RaidFrameColor.lua -> CompactArenaFrame support added.
 
-
-
 ### Version [3.1.0] - 2024-09-29
 #### Added
 * New Module: Raid Mark - Display a unit's target marker icon on the raid frame.

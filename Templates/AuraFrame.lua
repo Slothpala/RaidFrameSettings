@@ -59,7 +59,7 @@ end
 local function get_indicator_position(cuf_frame, aura_frame, indicator_pos, options)
   local point, relative_region, relative_point, offset_x, offset_y
   if indicator_pos == 1 then
-    point, relative_region, relative_point, offset_x, offset_y = options.anchor_point, cuf_frame, options.relative_point, options.offset_x, options.offset_y -- anchor to cuf_frame.healthBar will result in visual artifacts.
+    point, relative_region, relative_point, offset_x, offset_y = options.anchor_point, cuf_frame.healthBar, options.relative_point, options.offset_x, options.offset_y -- anchor to cuf_frame.healthBar will result in visual artifacts.
   else
     if ( ( ( indicator_pos - 1 ) % options.num_indicators_per_row ) == 0 ) then
       relative_region = aura_frame.indicators[indicator_pos - options.num_indicators_per_row]

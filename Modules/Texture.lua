@@ -62,12 +62,11 @@ function module:OnEnable()
     -- Check if a powerbar should be shown
     if is_power_bar_shown(cuf_frame) then
       cuf_frame.powerBar:SetStatusBarTexture(path_to_power_bar_foreground_texture)
-      cuf_frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER", 3)
+      cuf_frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER")
       cuf_frame.powerBar.background:SetTexture(path_to_power_bar_background_texture)
-      cuf_frame.powerBar.background:SetDrawLayer("BORDER", 2)
     end
     cuf_frame.healthBar:SetStatusBarTexture(path_to_health_bar_foreground_texture)
-    cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER", 0)
+    cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
     cuf_frame.background:SetTexture(path_to_health_bar_background_texture)
   end
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_status_bar_textures)
@@ -109,6 +108,35 @@ function module:OnEnable()
       addon:ReloadModule("Texture")
     end
   end)
+
+  -- Arena frames
+  local function set_stealth_unit_textures(foreground_texture, background_texture, pre_match_texture)
+    foreground_texture:SetTexture(path_to_health_bar_foreground_texture)
+    background_texture:SetTexture(path_to_health_bar_background_texture)
+    pre_match_texture:SetTexture(path_to_health_bar_foreground_texture)
+  end
+
+  local function set_stealth_unit_border(unit_frame)
+    -- Setup the border
+    if not unit_frame.backdropInfo then
+      Mixin(unit_frame, BackdropTemplateMixin)
+      unit_frame:SetBackdrop(backdrop_info)
+      unit_frame:ApplyBackdrop()
+      unit_frame:SetBackdropBorderColor(0, 0, 0)
+    end
+  end
+
+  for i=1, 3 do
+    local stealthed_unit_frame = CompactArenaFrame["StealthedUnitFrame" .. i]
+    local pre_match_frame = CompactArenaFrame.PreMatchFramesContainer["PreMatchFrame" .. i]
+    local foreground_texture = stealthed_unit_frame.BarTexture
+    local background_texture = stealthed_unit_frame.BackgroundTexture
+    local pre_match_texture = pre_match_frame.BarTexture
+    set_stealth_unit_textures(foreground_texture, background_texture, pre_match_texture)
+    set_stealth_unit_border(stealthed_unit_frame)
+    set_stealth_unit_border(pre_match_frame)
+  end
+
 end
 
 --- The values are from CompactUnitFrame.lua > DefaultCompactUnitFrameSetup()

@@ -214,6 +214,68 @@ function module:OnEnable()
   if addon:IsModuleEnabled("Range") then
     addon:ReloadModule("Range")
   end
+
+  -- Compact Arena Frames
+    --[[
+    color_mode:
+    1 = class/reaction colored
+    2 = static colored
+  --]]
+  local set_arena_opponent_foreground_color
+  if db_obj.health_bar_foreground_color_mode == 1 then
+    if db_obj.health_bar_foreground_use_gradient_colors then
+      set_arena_opponent_foreground_color = function(texture, class)
+        local min_color = addonTable.colors.class_colors[class].min_color
+        local max_color = addonTable.colors.class_colors[class].max_color
+        texture:SetGradient("HORIZONTAL", min_color, max_color)
+      end
+    else
+      set_arena_opponent_foreground_color = function(texture, class)
+        local class_color = addonTable.colors.class_colors[class].normal_color
+        texture:SetVertexColor(class_color[1], class_color[2], class_color[3], class_color[4])
+      end
+    end
+  else
+    if db_obj.health_bar_foreground_use_gradient_colors then
+      local min_color = CreateColor(unpack(db_obj.health_bar_foreground_static_min_color))
+      local max_color = CreateColor(unpack(db_obj.health_bar_foreground_static_max_color))
+      set_arena_opponent_foreground_color = function(texture)
+        texture:SetGradient("HORIZONTAL", min_color, max_color)
+      end
+    else
+      local color = db_obj.health_bar_foreground_static_normal_color
+      set_arena_opponent_foreground_color = function(texture)
+        texture:SetVertexColor(color[1], color[2], color[3], color[4])
+      end
+    end
+  end
+
+  for i=1, 3 do
+    -- Stealth Unit
+    local stealthed_unit_frame = CompactArenaFrame["StealthedUnitFrame" .. i]
+    local foreground_texture = stealthed_unit_frame.BarTexture
+    local function set_stealth_unit_color()
+      local unit_class_info = stealthed_unit_frame:GetUnitClassInfo()
+      local class = unit_class_info.class or "PRIEST"
+      set_arena_opponent_foreground_color(foreground_texture, class)
+    end
+    self:HookFunc(stealthed_unit_frame, "SetUnitFrame", set_stealth_unit_color)
+    set_stealth_unit_color()
+    -- Pre Match Frame
+    local pre_match_frame = CompactArenaFrame.PreMatchFramesContainer["PreMatchFrame" .. i]
+    local pre_match_texture = pre_match_frame.BarTexture
+    local function set_pre_match_frame_color(_, index)
+      local spec_id = GetArenaOpponentSpec(index)
+      if spec_id and spec_id > 0 then
+        local class = select(6, GetSpecializationInfoByID(spec_id)) or "PRIEST"
+        set_arena_opponent_foreground_color(pre_match_texture, class)
+      end
+    end
+    self:HookFunc(pre_match_frame, "Update", set_pre_match_frame_color)
+    set_pre_match_frame_color(_, i)
+  end
+
+
 end
 
 function module:OnDisable()

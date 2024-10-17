@@ -38,7 +38,7 @@ function addon:OnEnable()
   self:CreateOrUpdateDispelTypeColors()
   -- Create or update the frame env
   self:CreateOrUpdateFrameEnv()
-  -- GROUP_ROSTER_UPDATE gets spammed in certain scenarios (large groups with many people joining or leaving).
+  -- GROUP_ROSTER_UPDATE gets spammed in certain scenarios (large groups with many people joining or leaving). -- Also this event seems to be bugged, it fires at times without any actual changes.
   -- Buffering greatly reduces CPU usage spikes in these scenarios.
   self:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 1, "CreateOrUpdateFrameEnv")
   for _, module in self:IterateModules() do

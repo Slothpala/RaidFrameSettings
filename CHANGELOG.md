@@ -1,9 +1,20 @@
 # **Changelog**
-### Version [3.1.1] - 2024-09-29
+### Version [3.2.0] - 2024-10-17
 #### Added
 * ClassCooldown:
   * Warrior:
-    * Defensive Stance
+    * Defensive Stance: DD Only
+* The CompactArenaFrames now respect the texture and color settings of the addon.
+
+#### Updated
+* ClassCooldown:
+  * Druid:
+    * Bear Form is now only shown for DAMAGER group role.
+* AuraFrame.lua -> Aura indicators are now anchored to the health bar rather than the entire frame to not overlap power bars.
+* Texture.lua -> CompactArenaFrame support added, powerbar and healthbar no longer have a set draw layer.
+* RaidFrameColor.lua -> CompactArenaFrame support added.
+
+
 
 ### Version [3.1.0] - 2024-09-29
 #### Added

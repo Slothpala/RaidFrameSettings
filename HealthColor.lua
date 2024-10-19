@@ -100,9 +100,15 @@ end
 -- Apply functions
 
 function HealthColor:UpdateColor(cuf_frame)
+  if not cuf_frame.unit then
+    return
+  end
   update_healt_color(cuf_frame)
 end
 
 function HealthColor:SetBackgroundColor(cuf_frame)
+  if not cuf_frame.unit then
+    return
+  end
   set_background_color(cuf_frame)
 end

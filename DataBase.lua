@@ -387,6 +387,8 @@ local defaults = {
       health_bar_foreground_static_max_color = {0, 0, 0, 1},
       health_bar_foreground_static_normal_color = {0.1, 0.1, 0.1, 1},
       -- Health background
+      health_bar_background_color_mode = 1, -- 1: Class/Reaction color. 2: Static Color.
+      health_bar_background_class_color_darkening_factor = 0.3,
       health_bar_background_use_gradient_colors = false,
       health_bar_background_static_min_color = {0.6, 0, 0, 1},
       health_bar_background_static_max_color = {0, 0, 0, 1},

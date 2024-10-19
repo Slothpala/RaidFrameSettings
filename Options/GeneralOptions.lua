@@ -94,8 +94,17 @@ local options = {
           type = "header",
           dialogControl = "SFX-Header",
         },
-        health_bar_background_use_gradient_colors = {
+        health_bar_background_color_mode = {
           order = 20.1,
+          name = L["operation_mode"],
+          desc = L["raid_frame_color_health_operation_mode_desc"],
+          type = "select",
+          values = {L["raid_frame_color_operation_mode_class"], L["raid_frame_color_operation_mode_static"]},
+          get = "GetStatus",
+          set = "SetStatus",
+        },
+        health_bar_background_use_gradient_colors = {
+          order = 20.2,
           name = L["raid_frame_color_background_use_gradient_name"],
           desc = L["raid_frame_color_background_use_gradient_desc"],
           type = "toggle",
@@ -104,9 +113,9 @@ local options = {
         },
         health_bar_background_static_normal_color = {
           hidden = function()
-            return addon.db.profile.RaidFrameColor.health_bar_background_use_gradient_colors
+            return addon.db.profile.RaidFrameColor.health_bar_background_color_mode == 1 or addon.db.profile.RaidFrameColor.health_bar_background_use_gradient_colors
           end,
-          order = 20.2,
+          order = 20.3,
           name = L["raid_frame_color_static_normal_color_name"],
           desc = L["raid_frame_color_static_normal_color_desc"],
           type = "color",
@@ -115,9 +124,9 @@ local options = {
         },
         health_bar_background_static_min_color = {
           hidden = function()
-            return not addon.db.profile.RaidFrameColor.health_bar_background_use_gradient_colors
+            return addon.db.profile.RaidFrameColor.health_bar_background_color_mode == 1 or not addon.db.profile.RaidFrameColor.health_bar_background_use_gradient_colors
           end,
-          order = 20.2,
+          order = 20.3,
           name = L["raid_frame_color_static_min_color_name"],
           desc = L["raid_frame_color_static_min_color_desc"],
           type = "color",
@@ -127,14 +136,29 @@ local options = {
         },
         health_bar_background_static_max_color = {
           hidden = function()
-            return not addon.db.profile.RaidFrameColor.health_bar_background_use_gradient_colors
+            return addon.db.profile.RaidFrameColor.health_bar_background_color_mode == 1 or not addon.db.profile.RaidFrameColor.health_bar_background_use_gradient_colors
           end,
-          order = 20.3,
+          order = 20.4,
           name = L["raid_frame_color_static_max_color_name"],
           desc = L["raid_frame_color_static_max_color_desc"],
           type = "color",
           get = "GetColor",
           set = "SetColor",
+        },
+        health_bar_background_class_color_darkening_factor = {
+          hidden = function()
+            return addon.db.profile.RaidFrameColor.health_bar_background_color_mode == 2
+          end,
+          order = 20.5,
+          name = L["health_bar_background_class_color_darkening_factor_name"],
+          desc = L["health_bar_background_class_color_darkening_factor_desc"],
+          type = "range",
+          get = "GetStatus",
+          set = "SetStatus",
+          min = 0,
+          max = 1,
+          step = 0.1,
+          width = 1.5,
         },
         -- Powerbar Foreground
         header_3 = {

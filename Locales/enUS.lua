@@ -228,7 +228,8 @@ L["raid_frame_health_bar_color_foreground"] = "Health Bar Foreground"
 L["raid_frame_health_bar_color_background"] = "Health Bar Background"
 L["raid_frame_power_bar_color_foreground"] = "Power Bar Foreground"
 L["raid_frame_power_bar_color_background"] = "Power Bar Background"
-
+L["health_bar_background_class_color_darkening_factor_name"] = "Darkening"
+L["health_bar_background_class_color_darkening_factor_desc"] = "The factor by which the background color is darker than the foreground color."
 -- Texture
 L["module_texture_header_name"] = "Texture Settings"
 L["module_texture_header_desc"] = "Texture Settings"

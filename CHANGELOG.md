@@ -1,7 +1,7 @@
 # **Changelog**
 ### Version [3.3.0] - 2024-10-17
 #### Added
-* RaidFrameColor.lua -> HealthBarBackground.lua: The unit class color can now be used as the background color and is the new default.
+* RaidFrameColor.lua -> The unit class color can now be used as the background color and is the new default.
 
 ### Version [3.2.0] - 2024-10-17
 #### Added

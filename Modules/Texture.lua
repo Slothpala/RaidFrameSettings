@@ -22,6 +22,10 @@ local HealthColor = addonTable.HealthColor
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local Mixin = Mixin
 local GetCvar =  C_CVar.GetCVar
+local highlight_tex_coords = {
+	["Raid-AggroFrame"] = {  0.00781250, 0.55468750, 0.00781250, 0.27343750 },
+	["Raid-TargetFrame"] = { 0.00781250, 0.55468750, 0.28906250, 0.55468750 },
+}
 
 function module:OnEnable()
   -- Get the database object
@@ -68,6 +72,13 @@ function module:OnEnable()
     cuf_frame.healthBar:SetStatusBarTexture(path_to_health_bar_foreground_texture)
     cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
     cuf_frame.background:SetTexture(path_to_health_bar_background_texture)
+    -- Highlight textures
+    cuf_frame.selectionHighlight:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Textures\\Raid-FrameHighlights-Flat.tga");
+    cuf_frame.selectionHighlight:SetTexCoord(unpack(highlight_tex_coords["Raid-TargetFrame"]));
+    cuf_frame.selectionHighlight:SetAllPoints(cuf_frame);
+    cuf_frame.aggroHighlight:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Textures\\Raid-FrameHighlights-Flat.tga");
+    cuf_frame.aggroHighlight:SetTexCoord(unpack(highlight_tex_coords["Raid-AggroFrame"]));
+    cuf_frame.aggroHighlight:SetAllPoints(cuf_frame);
   end
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_status_bar_textures)
   addon:IterateRoster(set_status_bar_textures)
@@ -173,6 +184,14 @@ function module:OnDisable()
     if cuf_frame.backdropInfo then
       cuf_frame:ClearBackdrop()
     end
+    -- restore highlight
+    cuf_frame.selectionHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
+    cuf_frame.selectionHighlight:SetTexCoord(unpack(highlight_tex_coords["Raid-TargetFrame"]));
+    cuf_frame.selectionHighlight:SetAllPoints(cuf_frame);
+
+    cuf_frame.aggroHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights");
+    cuf_frame.aggroHighlight:SetTexCoord(unpack(highlight_tex_coords["Raid-AggroFrame"]));
+    cuf_frame.aggroHighlight:SetAllPoints(cuf_frame);
   end
   addon:IterateRoster(restore_health_bars_to_default)
 end

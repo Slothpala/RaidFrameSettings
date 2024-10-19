@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.3.1] - 2024-10-19
+#### Added
+* Texture.lua -> I created new flat textures for the aggro highlight and selection highlight, which are used when playing with the texture module.
+
 ### Version [3.3.0] - 2024-10-17
 #### Added
 * RaidFrameColor.lua -> The unit class color can now be used as the background color and is the new default.

@@ -46,7 +46,6 @@
 		</Frames>
 		<Scripts>
       <OnLoad>
-        self:SetMouseClickEnabled(false)
         if OmniCC and OmniCC.Cooldown and OmniCC.Cooldown.SetNoCooldownCount then
           if not self.cooldown.OmniCC then
             self.cooldown.OmniCC = {

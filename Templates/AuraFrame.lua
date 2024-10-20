@@ -170,8 +170,10 @@ function AuraFrame:Enable(options)
       rfs_aura_indicator:SetScript("OnLeave", function()
         GameTooltip:Hide()
       end)
-      -- Even though this is already set in xml when calling SetScript it has to be done again.
+      rfs_aura_indicator:SetPropagateMouseMotion(true) -- This is important for help harm condition macros to work.
       rfs_aura_indicator:SetMouseClickEnabled(false)
+    else
+      rfs_aura_indicator:EnableMouse(false)
     end
     --@TODO: Implement tooltip support.
     self.indicators[i] = rfs_aura_indicator

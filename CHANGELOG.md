@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.3.2] - 2024-10-20
+#### Fixed
+* AuraFrame.lua -> Aura indicators with enabled tooltip now have SetPropagateMouseMotion set to true for click cast and condition macros to work. Aura indicators without tooltips now have EnableMouse set to false.
+
 ### Version [3.3.1] - 2024-10-19
 #### Added
 * Texture.lua -> I created new flat textures for the aggro highlight and selection highlight, which are used when playing with the texture module.

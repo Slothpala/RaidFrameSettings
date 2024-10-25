@@ -150,12 +150,12 @@ local options = {
             return addon.db.profile.RaidFrameColor.health_bar_background_color_mode == 2
           end,
           order = 20.5,
-          name = L["health_bar_background_class_color_darkening_factor_name"],
-          desc = L["health_bar_background_class_color_darkening_factor_desc"],
+          name = L["color_darkening_factor_name"],
+          desc = L["color_darkening_factor_desc"],
           type = "range",
           get = "GetStatus",
           set = "SetStatus",
-          min = 0,
+          min = 0.1,
           max = 1,
           step = 0.1,
           width = 1.5,
@@ -225,8 +225,17 @@ local options = {
           type = "header",
           dialogControl = "SFX-Header",
         },
-        power_bar_background_use_gradient_colors = {
+        power_bar_background_color_mode = {
           order = 40.1,
+          name = L["operation_mode"],
+          desc = L["raid_frame_color_power_operation_mode_desc"],
+          type = "select",
+          values = {L["raid_frame_color_operation_mode_power"], L["raid_frame_color_operation_mode_static"]},
+          get = "GetStatus",
+          set = "SetStatus",
+        },
+        power_bar_background_use_gradient_colors = {
+          order = 40.2,
           name = L["raid_frame_color_background_use_gradient_name"],
           desc = L["raid_frame_color_background_use_gradient_desc"],
           type = "toggle",
@@ -235,9 +244,9 @@ local options = {
         },
         power_bar_background_static_normal_color = {
           hidden = function()
-            return addon.db.profile.RaidFrameColor.power_bar_background_use_gradient_colors
+            return addon.db.profile.RaidFrameColor.power_bar_background_color_mode == 1 or addon.db.profile.RaidFrameColor.power_bar_background_use_gradient_colors
           end,
-          order = 40.2,
+          order = 40.3,
           name = L["raid_frame_color_static_normal_color_name"],
           desc = L["raid_frame_color_static_normal_color_desc"],
           type = "color",
@@ -246,9 +255,9 @@ local options = {
         },
         power_bar_background_static_min_color = {
           hidden = function()
-            return not addon.db.profile.RaidFrameColor.power_bar_background_use_gradient_colors
+            return addon.db.profile.RaidFrameColor.power_bar_background_color_mode == 1 or not addon.db.profile.RaidFrameColor.power_bar_background_use_gradient_colors
           end,
-          order = 40.2,
+          order = 40.4,
           name = L["raid_frame_color_static_min_color_name"],
           desc = L["raid_frame_color_static_min_color_desc"],
           type = "color",
@@ -258,14 +267,29 @@ local options = {
         },
         power_bar_background_static_max_color = {
           hidden = function()
-            return not addon.db.profile.RaidFrameColor.power_bar_background_use_gradient_colors
+            return addon.db.profile.RaidFrameColor.power_bar_background_color_mode == 1 or not addon.db.profile.RaidFrameColor.power_bar_background_use_gradient_colors
           end,
-          order = 40.3,
+          order = 40.5,
           name = L["raid_frame_color_static_max_color_name"],
           desc = L["raid_frame_color_static_max_color_desc"],
           type = "color",
           get = "GetColor",
           set = "SetColor",
+        },
+        power_bar_background_power_color_darkening_factor = {
+          hidden = function()
+            return addon.db.profile.RaidFrameColor.power_bar_background_color_mode == 2
+          end,
+          order = 40.6,
+          name = L["color_darkening_factor_name"],
+          desc = L["color_darkening_factor_desc"],
+          type = "range",
+          get = "GetStatus",
+          set = "SetStatus",
+          min = 0.1,
+          max = 1,
+          step = 0.1,
+          width = 1.5,
         },
       },
     },

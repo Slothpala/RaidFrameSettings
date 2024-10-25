@@ -207,8 +207,8 @@ L["module_defensive_overlay_desc"] = "The Defensive Overlay is an easy-to-setup 
 L["TRINKET"] = "Trinkets"
 
 -- RaidFrameColor
-L["module_raid_frame_color_name"] = "Health Color Settings"
-L["module_raid_frame_color_desc"] = "Health Color Settings"
+L["module_raid_frame_color_name"] = "Color Settings"
+L["module_raid_frame_color_desc"] = "Color Settings"
 L["raid_frame_color_health_operation_mode_desc"] = "\nClass\\Reaction: Color health bars based on unit class or NPC reaction. The colors used can be changed in the AddOn Colors tab.\n\nStatic: Choose a single static color to use for all health bars, regardless of class or reaction."
 L["raid_frame_color_operation_mode_class"] = "Class\\Reaction - Color"
 L["raid_frame_color_operation_mode_static"] = "Static"
@@ -228,8 +228,8 @@ L["raid_frame_health_bar_color_foreground"] = "Health Bar Foreground"
 L["raid_frame_health_bar_color_background"] = "Health Bar Background"
 L["raid_frame_power_bar_color_foreground"] = "Power Bar Foreground"
 L["raid_frame_power_bar_color_background"] = "Power Bar Background"
-L["health_bar_background_class_color_darkening_factor_name"] = "Darkening"
-L["health_bar_background_class_color_darkening_factor_desc"] = "The factor by which the background color is darker than the foreground color."
+L["color_darkening_factor_name"] = "Darkening"
+L["color_darkening_factor_desc"] = "The factor by which the background color is darker than the foreground color."
 -- Texture
 L["module_texture_header_name"] = "Texture Settings"
 L["module_texture_header_desc"] = "Texture Settings"

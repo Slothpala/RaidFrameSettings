@@ -125,11 +125,17 @@ function addon:GetOptionsFrame()
   options_frame.scale_slider = create_scale_slider(options_frame)
   options_frame.minimize_button = create_minimize_btn(options_frame)
   options_frame.resize_handle = create_resize_handle(options_frame)
-  options_frame.TitleContainer:SetScript("OnMouseDown", function()
-    options_frame:StartMoving()
+  options_frame.TitleContainer:SetScript("OnMouseDown", function(_, button)
+    if button == "LeftButton" then
+      options_frame:StartMoving()
+      options_frame:SetAlpha(0.5)
+    end
   end)
-  options_frame.TitleContainer:SetScript("OnMouseUp", function()
-    options_frame:StopMovingOrSizing()
+  options_frame.TitleContainer:SetScript("OnMouseUp", function(_, button)
+    if button == "LeftButton" then
+      options_frame:StopMovingOrSizing()
+      options_frame:SetAlpha(1)
+    end
   end)
   options_frame.container = create_ace_container(options_frame)
 

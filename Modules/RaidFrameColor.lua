@@ -119,23 +119,23 @@ function module:OnEnable()
     1 = class/reaction colored
     2 = static colored
   --]]
-  local darkening_factor = db_obj.health_bar_background_class_color_darkening_factor
+  local health_darkening_factor = db_obj.health_bar_background_class_color_darkening_factor
   local set_background_health_color
   if db_obj.health_bar_background_color_mode == 1 then
     local darkened_class_colors  = {}
     local db_obj_class_colors = CopyTable(addon.db.profile.AddOnColors.class_colors)
     for class, color_info in next, db_obj_class_colors do
       darkened_class_colors[class] = {
-        min_color = CreateColor(color_info.min_color[1] * darkening_factor, color_info.min_color[2] * darkening_factor, color_info.min_color[3] * darkening_factor, color_info.min_color[4]),
-        max_color = CreateColor(color_info.max_color[1] * darkening_factor, color_info.max_color[2] * darkening_factor, color_info.max_color[3] * darkening_factor, color_info.max_color[4]),
-        normal_color = {color_info.normal_color[1] * darkening_factor, color_info.normal_color[2] * darkening_factor, color_info.normal_color[3] * darkening_factor, color_info.normal_color[4]},
+        min_color = CreateColor(color_info.min_color[1] * health_darkening_factor, color_info.min_color[2] * health_darkening_factor, color_info.min_color[3] * health_darkening_factor, color_info.min_color[4]),
+        max_color = CreateColor(color_info.max_color[1] * health_darkening_factor, color_info.max_color[2] * health_darkening_factor, color_info.max_color[3] * health_darkening_factor, color_info.max_color[4]),
+        normal_color = {color_info.normal_color[1] * health_darkening_factor, color_info.normal_color[2] * health_darkening_factor, color_info.normal_color[3] * health_darkening_factor, color_info.normal_color[4]},
       }
     end
     if db_obj.health_bar_background_use_gradient_colors then
-      local enemy_min_color = CreateColor(1 * darkening_factor, 0 * darkening_factor, 0 * darkening_factor)
-      local enemy_max_color = CreateColor(1 * darkening_factor, 0 * darkening_factor, 0 * darkening_factor)
-      local friend_min_color = CreateColor(0 * darkening_factor, 1 * darkening_factor, 0 * darkening_factor)
-      local friend_max_color = CreateColor(0 * darkening_factor, 1 * darkening_factor, 0 * darkening_factor)
+      local enemy_min_color = CreateColor(1 * health_darkening_factor, 0 * health_darkening_factor, 0 * health_darkening_factor)
+      local enemy_max_color = CreateColor(1 * health_darkening_factor, 0 * health_darkening_factor, 0 * health_darkening_factor)
+      local friend_min_color = CreateColor(0 * health_darkening_factor, 1 * health_darkening_factor, 0 * health_darkening_factor)
+      local friend_max_color = CreateColor(0 * health_darkening_factor, 1 * health_darkening_factor, 0 * health_darkening_factor)
       set_background_health_color = function(cuf_frame)
         local min_color, max_color
         if UnitIsPlayer(cuf_frame.unit) or UnitInPartyIsAI(cuf_frame.unit) then
@@ -155,8 +155,8 @@ function module:OnEnable()
         cuf_frame.background:SetGradient("HORIZONTAL", min_color, max_color)
       end
     else
-      local enemy_normal_color = {1 * darkening_factor, 0 * darkening_factor, 0 * darkening_factor, 1}
-      local friend_normal_color = {0 * darkening_factor, 1 * darkening_factor, 0 * darkening_factor, 1}
+      local enemy_normal_color = {1 * health_darkening_factor, 0 * health_darkening_factor, 0 * health_darkening_factor, 1}
+      local friend_normal_color = {0 * health_darkening_factor, 1 * health_darkening_factor, 0 * health_darkening_factor, 1}
       set_background_health_color = function(cuf_frame)
         local color
         if UnitIsPlayer(cuf_frame.unit) or UnitInPartyIsAI(cuf_frame.unit) then
@@ -238,23 +238,58 @@ function module:OnEnable()
   end
   PowerColor:SetPowerColorFunction(set_power_color)
   -- Powerbar background
+  --[[
+    color_mode:
+    1 = power type colored
+    2 = static colored
+  --]]
+  local power_darkening_factor = db_obj.power_bar_background_power_color_darkening_factor
   local set_background_power_color
-  if db_obj.power_bar_background_use_gradient_colors then
-    local min_color = CreateColor(unpack(db_obj.power_bar_background_static_min_color))
-    local max_color = CreateColor(unpack(db_obj.power_bar_background_static_max_color))
-    set_background_power_color = function(cuf_frame)
-      cuf_frame.powerBar.background:SetGradient("HORIZONTAL", min_color, max_color)
+  if db_obj.power_bar_background_color_mode == 1 then
+    local darkened_power_colors  = {}
+    local db_obj_power_colors = CopyTable(addon.db.profile.AddOnColors.power_colors)
+    for power_type, color_info in next, db_obj_power_colors do
+      darkened_power_colors[power_type] = {
+        min_color = CreateColor(color_info.min_color[1] * power_darkening_factor, color_info.min_color[2] * power_darkening_factor, color_info.min_color[3] * power_darkening_factor, color_info.min_color[4]),
+        max_color = CreateColor(color_info.max_color[1] * power_darkening_factor, color_info.max_color[2] * power_darkening_factor, color_info.max_color[3] * power_darkening_factor, color_info.max_color[4]),
+        normal_color = {color_info.normal_color[1] * power_darkening_factor, color_info.normal_color[2] * power_darkening_factor, color_info.normal_color[3] * power_darkening_factor, color_info.normal_color[4]},
+      }
     end
+    if db_obj.power_bar_background_use_gradient_colors then
+      set_background_power_color = function(cuf_frame)
+        local _, power_token = UnitPowerType(cuf_frame.unit)
+        local power_color_info = darkened_power_colors[power_token] or darkened_power_colors["MANA"]
+        cuf_frame.powerBar.background:SetGradient("HORIZONTAL", power_color_info.min_color, power_color_info.max_color)
+      end
+    else
+      set_background_power_color = function(cuf_frame)
+        local _, power_token = UnitPowerType(cuf_frame.unit)
+        local power_color_info = darkened_power_colors[power_token] or darkened_power_colors["MANA"]
+        cuf_frame.powerBar.background:SetVertexColor(power_color_info.normal_color[1], power_color_info.normal_color[2], power_color_info.normal_color[3], power_color_info.normal_color[4])
+      end
+    end
+    PowerColor:SetPowerBackgroundColorFunction(set_background_power_color)
   else
-    local normal_color = db_obj.power_bar_background_static_normal_color
-    set_background_power_color = function(cuf_frame)
-      cuf_frame.powerBar.background:SetVertexColor(normal_color[1], normal_color[2], normal_color[3], normal_color[4])
+    if db_obj.power_bar_background_use_gradient_colors then
+      local min_color = CreateColor(unpack(db_obj.power_bar_background_static_min_color))
+      local max_color = CreateColor(unpack(db_obj.power_bar_background_static_max_color))
+      set_background_power_color = function(cuf_frame)
+        cuf_frame.powerBar.background:SetGradient("HORIZONTAL", min_color, max_color)
+      end
+    else
+      local normal_color = db_obj.power_bar_background_static_normal_color
+      set_background_power_color = function(cuf_frame)
+        cuf_frame.powerBar.background:SetVertexColor(normal_color[1], normal_color[2], normal_color[3], normal_color[4])
+      end
     end
+    PowerColor:SetPowerBackgroundColorFunction(nil) -- The color update on CompactUnitFrame_UpdatePowerColor is only needed when playing with power color as background color.
   end
 
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", function(cuf_frame)
     set_background_health_color(cuf_frame)
-    set_background_power_color(cuf_frame)
+    if db_obj.power_bar_background_color_mode == 2 then -- If the background color is static it only has be set once and therefore PowerColor will not update it.
+      set_background_power_color(cuf_frame)
+    end
   end)
 
   addon:IterateRoster(function(cuf_frame)
@@ -262,7 +297,9 @@ function module:OnEnable()
       HealthColor:UpdateColor(cuf_frame)
       HealthColor:SetBackgroundColor(cuf_frame)
       PowerColor:UpdateColor(cuf_frame)
-      set_background_power_color(cuf_frame)
+      if db_obj.power_bar_background_color_mode == 2 then -- See above
+        set_background_power_color(cuf_frame)
+      end
     end
   end)
   addon:IterateMiniRoster(function(cuf_frame)

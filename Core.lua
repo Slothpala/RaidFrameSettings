@@ -8,6 +8,7 @@ local AC = LibStub("AceConfig-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 function addon:OnInitialize()
+  Mixin(self, addonTable.HookRegistryMixin)
   -- Create/Load the Data Base
   self:LoadDataBase()
   self:CheckDatabase()
@@ -46,10 +47,33 @@ function addon:OnEnable()
       module:Enable()
     end
   end
+  self:OptimizeUnitAuraEventRegistration()
 end
 
 function addon:OnDisable()
+  self:DisableHooks()
+end
 
+function addon:OptimizeUnitAuraEventRegistration()
+  -- If those 3 modules are enabled the aura processing of the default frame is no longer necessary.
+  if self:IsModuleEnabled("BuffFrame") and self:IsModuleEnabled("DebuffFrame") and self:IsModuleEnabled("DebuffHighlight") then
+    self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateUnitEvents", function(cuf_frame)
+      cuf_frame:UnregisterEvent("UNIT_AURA")
+    end)
+    self:IterateRoster(function(cuf_frame)
+      cuf_frame:UnregisterEvent("UNIT_AURA")
+    end, true)
+  else
+    self:Unhook("CompactUnitFrame_UpdateUnitEvents")
+    self:IterateRoster(function(cuf_frame)
+      local unit = cuf_frame.unit
+      local displayedUnit
+      if ( unit ~= cuf_frame.displayedUnit ) then
+        displayedUnit = cuf_frame.displayedUnit
+      end
+      cuf_frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
+    end, true)
+  end
 end
 
 function addon:SlashCommand()

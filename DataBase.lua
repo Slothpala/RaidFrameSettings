@@ -394,12 +394,14 @@ local defaults = {
       health_bar_background_static_max_color = {0, 0, 0, 1},
       health_bar_background_static_normal_color = {0.22, 0.22, 0.22, 1},
       -- Power foreground
-      power_bar_foreground_color_mode = 1,
+      power_bar_foreground_color_mode = 1, -- 1: power type color. 2: Static Color.
       power_bar_foreground_use_gradient_colors = false,
       power_bar_foreground_static_min_color = {1, 1, 1, 1},
       power_bar_foreground_static_max_color = {0, 0, 1, 1},
       power_bar_foreground_static_normal_color = {1, 1, 1, 1},
       -- Power background
+      power_bar_background_color_mode = 1, -- 1: power type color. 2: Static Color.
+      power_bar_background_power_color_darkening_factor = 0.3,
       power_bar_background_use_gradient_colors = false,
       power_bar_background_static_min_color = {0, 0, 0, 1},
       power_bar_background_static_max_color = {0.33, 0.33, 0.33, 1},
@@ -586,6 +588,9 @@ function addon:SetModuleStatus(info, value)
   end
   if module_name == "Texture" and self:IsModuleEnabled("DebuffHighlight") then
     self:ReloadModule("DebuffHighlight")
+  end
+  if module_name == "BuffFrame" or module_name == "DebuffFrame" or module_name == "DebuffHighlight" then
+    self:OptimizeUnitAuraEventRegistration()
   end
   self:OptionsFrame_UpdateTabs()
 end

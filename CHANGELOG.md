@@ -1,4 +1,17 @@
 # **Changelog**
+### Version [3.4.0] - 2024-10-25
+#### Added
+* RaidFrameColor.lua -> The units power color can now be used as the background color of the power bar and is the new default.
+* Performance improvements for users that use BuffFrame, DebuffFrame & DebuffHighlight together. When these 3 modules are enabled, the UNIT_AURA event is now unregistered from the default frames, preventing unnecessary aura processing.
+
+#### Updated
+* enUS.lua
+  * the value of "module_raid_frame_color_name" got changed from "Health Color Settings" to "Color Settings".
+  * the key "health_bar_background_class_color_darkening_factor_name" got changed to "color_darkening_factor_name".
+  * the key "health_bar_background_class_color_darkening_factor_desc" got changed to "color_darkening_factor_desc".
+* The interface version got updated to 110005.
+* OptionsFrame.lua -> The options frame now fades to alpha 0.5 when clicking the titele bar and now only registers LeftButton clicks.
+
 ### Version [3.3.2] - 2024-10-20
 #### Fixed
 * AuraFrame.lua -> Aura indicators with enabled tooltip now have SetPropagateMouseMotion set to true for click cast and condition macros to work. Aura indicators without tooltips now have EnableMouse set to false.

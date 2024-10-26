@@ -254,6 +254,8 @@ L["font_name_show_server_name"] = "Show Realm"
 L["font_name_show_server_desc"] = "Display the name of the realm next to the name of the player"
 L["font_status_header"] = "Status Text"
 L["font_nicknames_header"] = "Nicknames"
+L["max_length_name"] = "Length"
+L["max_length_desc"] = "The length of the font string relative to the width of the frame."
 
 -- Aura Groups
 L["module_aura_groups_name"] = "Aura Groups"

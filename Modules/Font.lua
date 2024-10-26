@@ -18,6 +18,7 @@ local UnitCache = addonTable.UnitCache
 
 -- Lua
 local math_abs = math.abs
+local math_min = math.min
 -- WoW Api
 local UnitIsPlayer = UnitIsPlayer
 local UnitGUID = UnitGUID
@@ -42,7 +43,7 @@ function module:OnEnable()
     name_text:SetJustifyV(db_obj_name.vertical_justification)
     name_text:SetShadowColor(db_obj_name.shadow_color[1], db_obj_name.shadow_color[2], db_obj_name.shadow_color[3], db_obj_name.shadow_color[4])
     name_text:SetShadowOffset(db_obj_name.shadow_offset_x, db_obj_name.shadow_offset_y)
-    name_text:SetWidth(cuf_frame_width + math_abs(db_obj_name.offset_x))
+    name_text:SetWidth(math_min( cuf_frame_width + math_abs(db_obj_name.offset_x ), ( cuf_frame_width * db_obj_name.max_length ) ))
     -- Status
     local status_text = cuf_frame.statusText
     status_text:ClearAllPoints()

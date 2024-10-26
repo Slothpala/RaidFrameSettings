@@ -360,6 +360,7 @@ local defaults = {
       text_color = {1, 1, 1},
       class_colored = false,
       show_server = false,
+      max_length = 0.8, -- this is a factor. Actual length is frame:GetWdith() * max_length
     },
     StatusFont = {
       point = "CENTER",

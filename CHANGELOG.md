@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.4.1] - 2024-10-26
+#### Added
+* An option got added to set a max length for the name font string.
+
 ### Version [3.4.0] - 2024-10-25
 #### Added
 * RaidFrameColor.lua -> The units power color can now be used as the background color of the power bar and is the new default.

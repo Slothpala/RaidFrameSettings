@@ -50,11 +50,18 @@ function AuraGroupPresetUtil:ImportRestorationDruid()
   addon.db.profile.AuraGroups.aura_groups[grp_name].offset_x = -2
   addon.db.profile.AuraGroups.aura_groups[grp_name].offset_y = -2
   addon.db.profile.AuraGroups.aura_groups[grp_name].auras = {
-    [33763] = {
+    [33763] = { -- Lifebloom
       prio = 1,
       track_if_present = true,
       own_only = true,
-      show_glow = false,
+      show_glow = true,
+      track_if_missing = false,
+    },
+    [188550] = { -- Lifebloom
+      prio = 1,
+      track_if_present = true,
+      own_only = true,
+      show_glow = true,
       track_if_missing = false,
     }
   }

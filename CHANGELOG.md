@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [3.4.2] - 2024-10-27
+#### Updated
+* Changed the default name font to an open source font that supports Cyrillic characters. (If you have problems with your language/alphabet, please contact me, I don't want to exclude anyone).
+* RestorationDruid.lua -> added a missing spellId for Lifebloom.
+
 ### Version [3.4.1] - 2024-10-26
 #### Added
 * An option got added to set a max length for the name font string.

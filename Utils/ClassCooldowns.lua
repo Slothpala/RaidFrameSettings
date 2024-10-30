@@ -372,6 +372,12 @@ local class_cooldowns = {
           586, -- Base
         },
       },
+      [193065] = { -- [[[ Protective Light]]]
+        prio = 3,
+        auras = {
+          193065, -- Base
+        },
+      }
     },
   },
   ROGUE = {

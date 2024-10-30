@@ -505,6 +505,18 @@ local class_cooldowns = {
           386208, -- Base
         },
       },
+      [132404] = { -- [[ Shield Block ]]
+        prio = 6,
+        auras = {
+          132404, -- Base
+        },
+      },
+      [190456] = { -- [[ Ignore Pain ]]
+        prio = 6,
+        auras = {
+          190456, -- Base
+        },
+      },
     },
   },
   TRINKET = {

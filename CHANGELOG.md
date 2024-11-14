@@ -67,7 +67,6 @@
 #### Updated
 * The default position of the Defensive Overlay got changed to not overlap with the default private aura anchor position.
 
-
 ### Version [3.0.23] - 2024-09-26
 #### Fixed
 * UnitCache.lua -> Changes have been made to reduce the likelihood of names being displayed as Unknown when playing with AI companions such as Brann or in Follower dungeons. The cached names are now also updated, so if a name is still shown as Unknown, it will automatically be fixed the next time the frame is updated.
@@ -121,14 +120,12 @@
 #### Updated
 * Textures: Re-enabled detached power bars with a new method.
 
-
 ### Version [3.0.14] - 2024-08-18
 #### Updated
 * Interface version to 110002.
 
 #### Fixed
 * Textures: Temporarily disabled the detach power bar setting as an underlying Blizzard function appears to be broken.
-
 
 ### Version [3.0.13] - 2024-08-13
 #### Fixed

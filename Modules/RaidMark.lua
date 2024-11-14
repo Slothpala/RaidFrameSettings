@@ -14,6 +14,7 @@ local CR = addonTable.CallbackRegistry
 ------------------------
 
 -- WoW Api
+local GetRaidTargetIndex = GetRaidTargetIndex
 
 local update_frame_env_callback_id
 function module:OnEnable()

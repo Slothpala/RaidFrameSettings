@@ -372,6 +372,12 @@ local class_cooldowns = {
           586, -- Base
         },
       },
+      [193065] = { -- [[[ Protective Light]]]
+        prio = 3,
+        auras = {
+          193065, -- Base
+        },
+      }
     },
   },
   ROGUE = {
@@ -497,6 +503,18 @@ local class_cooldowns = {
         prio = 6,
         auras = {
           386208, -- Base
+        },
+      },
+      [132404] = { -- [[ Shield Block ]]
+        prio = 6,
+        auras = {
+          132404, -- Base
+        },
+      },
+      [190456] = { -- [[ Ignore Pain ]]
+        prio = 6,
+        auras = {
+          190456, -- Base
         },
       },
     },

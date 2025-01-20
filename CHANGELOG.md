@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.4.3] - 2024-01-20
+#### Updated
+* Interface version to: 110007
+
 ### Version [3.4.2] - 2024-10-27
 #### Updated
 * Changed the default name font to an open source font that supports Cyrillic characters. (If you have problems with your language/alphabet, please contact me, I don't want to exclude anyone).

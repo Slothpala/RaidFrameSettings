@@ -367,13 +367,13 @@ local class_cooldowns = {
         },
       },
       [586] = { -- [[ Fade ]]
-        prio = 5,
+        prio = 6,
         auras = {
           586, -- Base
         },
       },
       [193065] = { -- [[[ Protective Light]]]
-        prio = 3,
+        prio = 6,
         auras = {
           193065, -- Base
         },

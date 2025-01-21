@@ -1,5 +1,7 @@
 # **Changelog**
 ### Version [3.4.3] - 2024-01-20
+#### Fixed
+* Fixed a problem where two specs of different classes with the same spec name would overwrite each other's group profile setting.
 #### Updated
 * Interface version to: 110007
 

@@ -31,12 +31,24 @@ local special_auras = {
     local role = UnitGroupRolesAssigned(unit) or ""
     return role == "DAMAGER"
   end,
+  -- Shield Block
+  -- Same as defensive stance this is only a useful information on non tanks.
+  [132404] = function(unit)
+    local role = UnitGroupRolesAssigned(unit) or ""
+    return role == "DAMAGER"
+  end,
+  -- Ignore Pain
+  -- Same as defensive stance this is only a useful information on non tanks.
+  [190456] = function(unit)
+    local role = UnitGroupRolesAssigned(unit) or ""
+    return role == "DAMAGER"
+  end,
   -- Bear Form
   -- Same as defensive stance this is only a useful information on non tanks.
   [5487] = function(unit)
     local role = UnitGroupRolesAssigned(unit) or ""
     return role == "DAMAGER"
-  end
+  end,
   --[[
     find talent id fast
     for k,v in pairs(unit_info.talents) do

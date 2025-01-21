@@ -69,10 +69,11 @@ local options = {
             -- Create the new profile
             addon.db:SetProfile(input)
             -- Set the current group type profile to the newly created profile
-            local current_spec_id = GetSpecialization()
-            local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
+            local current_spec = GetSpecialization()
+            local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec))
+            local current_spec_id = current_spec_name .. class_id
             local group_type = addon:GetGroupType()
-            addon.db.global[current_spec_name][group_type .. "_profile"] = input
+            addon.db.global[current_spec_id][group_type .. "_profile"] = input
           end,
         },
         copy_profile_desc = {
@@ -170,11 +171,12 @@ local options = {
 
 for i=1, GetNumSpecializationsForClassID(class_id) do
   local _, spec_name, _, spec_icon = GetSpecializationInfoForClassID(class_id, i)
+  local spec_id = spec_name .. class_id
 
   local function get_spec_group_profile(info)
     addon.db:GetProfiles(profiles)
     for k, v in next, profiles do
-      if addon.db.global[spec_name][info[#info]] == v then
+      if addon.db.global[spec_id][info[#info]] == v then
         return k
       end
     end
@@ -182,22 +184,23 @@ for i=1, GetNumSpecializationsForClassID(class_id) do
 
   local function set_spec_group_profile(info, value)
     addon.db:GetProfiles(profiles)
-    addon.db.global[spec_name][info[#info]] = profiles[value]
+    addon.db.global[spec_id][info[#info]] = profiles[value]
     -- if it matches the current group type and spec load the profile
     if string.find(info[#info], addon:GetGroupType()) then
-      local current_spec_id = GetSpecialization()
-      local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
-      if current_spec_name == info[#info-1] then
+      local current_spec = GetSpecialization()
+      local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec))
+      local current_spec_id = current_spec_name .. class_id
+      if current_spec_id == info[#info-1] then
         addon.db:SetProfile(profiles[value])
       end
     end
   end
 
-  options.args.group_type_profiles.args[spec_name] = {
+  options.args.group_type_profiles.args[spec_id] = {
     order = i,
     name = function()
-      local current_spec_id = GetSpecialization()
-      local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
+      local current_spec = GetSpecialization()
+      local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec))
       if current_spec_name == spec_name then
         return spec_name .. " - " .. "|cff39FF14" .. L["active_spec_indicator"] .. "|r"
       else
@@ -225,8 +228,8 @@ for i=1, GetNumSpecializationsForClassID(class_id) do
       party_profile = {
         name = function()
           local current_group_type = addon:GetGroupType()
-          local current_spec_id = GetSpecialization()
-          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
+          local current_spec = GetSpecialization()
+          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec))
           if current_group_type == "party" and ( current_spec_name == spec_name ) then
             return L["party_profile_name"] .. " - " .. "|cff39FF14" .. L["active_spec_indicator"] .. "|r"
           else
@@ -244,8 +247,8 @@ for i=1, GetNumSpecializationsForClassID(class_id) do
       raid_profile = {
         name = function()
           local current_group_type = addon:GetGroupType()
-          local current_spec_id = GetSpecialization()
-          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
+          local current_spec = GetSpecialization()
+          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec))
           if current_group_type == "raid" and ( current_spec_name == spec_name ) then
             return L["raid_profile_name"] .. " - " .. L["active_spec_indicator"]
           else
@@ -263,8 +266,8 @@ for i=1, GetNumSpecializationsForClassID(class_id) do
       arena_profile = {
         name = function()
           local current_group_type = addon:GetGroupType()
-          local current_spec_id = GetSpecialization()
-          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
+          local current_spec = GetSpecialization()
+          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec))
           if current_group_type == "arena" and ( current_spec_name == spec_name ) then
             return L["arena_profile_name"] .. " - " .. L["active_spec_indicator"]
           else
@@ -282,8 +285,8 @@ for i=1, GetNumSpecializationsForClassID(class_id) do
       battleground_profile = {
         name = function()
           local current_group_type = addon:GetGroupType()
-          local current_spec_id = GetSpecialization()
-          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec_id))
+          local current_spec = GetSpecialization()
+          local current_spec_name = select(2, GetSpecializationInfoForClassID(class_id, current_spec))
           if current_group_type == "battleground" and ( current_spec_name == spec_name ) then
             return L["battleground_profile_name"] .. " - " .. L["active_spec_indicator"]
           else

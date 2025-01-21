@@ -5,7 +5,14 @@
 #### Fixed
 * Fixed a problem where two specs of different classes with the same spec name would overwrite each other's group profile setting.
 #### Updated
-* Interface version to: 110007
+* Interface version to: 11000.
+#### Added
+* ClassCooldown:
+  * Warrior:
+    * Shield Block: DD Only
+    * Ignore Pain: DD Only
+  * Priest:
+    * Protective Light
 
 ### Version [3.4.2] - 2024-10-27
 #### Updated

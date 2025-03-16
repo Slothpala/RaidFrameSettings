@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.4.5] - 2025-03-16
+#### Removed
+* Removed the FrameColor.lua skin module in preparation for an upcoming change with FrameColor.
+
 ### Version [3.4.4] - 2025-02-25
 #### Updated
 * Interface version to: 110100.

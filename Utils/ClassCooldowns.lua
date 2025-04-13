@@ -553,7 +553,7 @@ local class_cooldowns = {
           451367, -- Base
         },
       },
-      [451924] = { -- [[ Wax Ward ]] @TWW
+      [443529] = { -- [[ Burin of the Candle King ]] @TWW
         prio = 3,
         auras = {
           451924, -- Base
@@ -569,6 +569,36 @@ local class_cooldowns = {
         prio = 3,
         auras = {
           455486, -- Base
+        },
+      },
+      [466810] = { -- [[ Chromebustible Bomb Suit ]] @TWW_Season_2
+        prio = 3,
+        auras = {
+          466810, -- Base
+        },
+      },
+      [1220488] = { -- [[ Darkfuse Medichopper ]] @TWW_Season_2
+        prio = 3,
+        auras = {
+          1219104, -- Base
+        },
+      },
+      [1216921] = { -- [[ Ominous Oil Residue ]] @TWW_Season_2
+        prio = 3,
+        auras = {
+          1216921, -- Base
+        },
+      },
+      [1219102] = { -- [[ Ringing Ritual Mud ]] @TWW_Season_2
+        prio = 3,
+        auras = {
+          1219102, -- Base
+        },
+      },
+      [466673] = { -- [[ Scrapfield 9001 ]] @TWW_Season_2
+        prio = 3,
+        auras = {
+          466673, -- Base
         },
       },
     },

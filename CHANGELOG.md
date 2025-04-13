@@ -1,4 +1,14 @@
 # **Changelog**
+### Version [3.4.6] - 2025-04-13
+#### Added
+* Defensive Overlay:
+  * Trinket:
+    * Chromebustible Bomb Suit
+    * Darkfuse Medichopper
+    * Ominous Oil Residue
+    * Ringing Ritual Mud
+    * Scrapfield 9001
+
 ### Version [3.4.5] - 2025-03-16
 #### Removed
 * Removed the FrameColor.lua skin module in preparation for an upcoming change with FrameColor.

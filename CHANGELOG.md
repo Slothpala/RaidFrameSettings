@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.4.7] - 2025-04-30
+#### Updated
+* Interface version to: 110105.
+
 ### Version [3.4.6] - 2025-04-13
 #### Added
 * Defensive Overlay:

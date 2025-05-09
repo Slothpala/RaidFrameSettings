@@ -72,6 +72,7 @@ local function validate_cache(cache)
   return is_valid_name and is_valid_nickname and is_valid_realm and is_valid_class
 end
 
+local my_realm_name = GetRealmName():gsub("[%s%-]", "")
 
 ---@param guid string the GUID of the unit.
 ---@return table unit_cache the new unit cache entry or fallback.
@@ -92,7 +93,7 @@ local function new_unit_cache(guid)
     end
   end
   -- realm_name is an empty string if the player is from the same realm.
-  local realm_name = ( realm_name and #realm_name > 0 ) and realm_name or GetRealmName()
+  local realm_name = ( realm_name and #realm_name > 0 ) and realm_name or my_realm_name
   local name_and_realm_name = name .. "-" .. realm_name
   local cached_unit = {
     name = name,
@@ -133,7 +134,7 @@ update_frame:SetScript("OnEvent", function(self, event, ...)
     if unit_cache[guid] then
       local new_name, new_realm_name = UnitNameUnmodified(unit_token)
       if not new_realm_name then
-        new_realm_name = GetRealmName()
+        new_realm_name = my_realm_name
       end
       local new_name_and_realm_name = new_name .. "-" .. new_realm_name
       unit_cache[guid].name = new_name or ""

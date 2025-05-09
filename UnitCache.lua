@@ -36,8 +36,8 @@ local nicknames = {}
 function addon:UpdateNicknames()
   nicknames = CopyTable(self.db.profile.Nicknames)
   for _, cached_unit in next, unit_cache do
-    if nicknames[cached_unit.name_and_realm_name] then
-      cached_unit.nickname = nicknames[cached_unit.name_and_realm_name]
+    if nicknames[cached_unit.name_and_realm_name] or nicknames[cached_unit.name] then
+      cached_unit.nickname = nicknames[cached_unit.name_and_realm_name] or nicknames[cached_unit.name]
     end
   end
 end
@@ -97,7 +97,7 @@ local function new_unit_cache(guid)
   local name_and_realm_name = name .. "-" .. realm_name
   local cached_unit = {
     name = name,
-    nickname = nicknames[name_and_realm_name] or name,
+    nickname = nicknames[name_and_realm_name] or nicknames[name] or name,
     name_and_realm_name = name_and_realm_name,
     realm = realm_name,
     class = english_class,
@@ -138,7 +138,7 @@ update_frame:SetScript("OnEvent", function(self, event, ...)
       end
       local new_name_and_realm_name = new_name .. "-" .. new_realm_name
       unit_cache[guid].name = new_name or ""
-      unit_cache[guid].nickname = nicknames[new_name_and_realm_name] or new_name or ""
+      unit_cache[guid].nickname = nicknames[new_name_and_realm_name] or nicknames[new_name] or new_name or ""
       unit_cache[guid].realm_name = new_realm_name or ""
       unit_cache[guid].realm = new_realm_name or ""
       --@debug@

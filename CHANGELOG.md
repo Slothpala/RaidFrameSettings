@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.4.8] - 2025-06-23
+#### Updated
+* Interface version to: 110107.
+
 ### Version [3.4.7] - 2025-04-30
 #### Updated
 * Interface version to: 110105.

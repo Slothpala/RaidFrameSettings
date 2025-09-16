@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [3.4.10] - 2025-09-16
+#### Added
+* Texture - Module:
+  * The Texture Module now let's the user change to color of the health bar border.
+
 ### Version [3.4.9] - 2025-08-07
 #### Updated
 * Interface version to: 110200.

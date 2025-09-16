@@ -331,6 +331,7 @@ local defaults = {
       out_of_range_background_color = {0, 0, 0},
     },
     Texture = {
+      health_bar_border_color = {0, 0, 0, 1},
       health_bar_foreground_texture = "RFS_HealthBar",
       health_bar_background_texture = "Solid",
       power_bar_foreground_texture = "RFS_PowerBar",

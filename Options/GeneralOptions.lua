@@ -303,6 +303,19 @@ local options = {
       type = "group",
       inline = true,
       args = {
+        health_bar_border_color = {
+          order = 0,
+          name = L["health_bar_border_color"],
+          type = "color",
+          get = "GetColor",
+          set = "SetColor",
+          hasAlpha = true,
+        },
+        new_line_0 = {
+          order = 0.1,
+          name = "",
+          type = "description",
+        },
         health_bar_foreground_texture = {
           order = 1,
           type = "select",

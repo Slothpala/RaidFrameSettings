@@ -61,8 +61,8 @@ function module:OnEnable()
       Mixin(cuf_frame, BackdropTemplateMixin)
       cuf_frame:SetBackdrop(backdrop_info)
       cuf_frame:ApplyBackdrop()
-      cuf_frame:SetBackdropBorderColor(0, 0, 0)
     end
+    cuf_frame:SetBackdropBorderColor(unpack(db_obj.health_bar_border_color))
     -- Check if a powerbar should be shown
     if is_power_bar_shown(cuf_frame) then
       cuf_frame.powerBar:SetStatusBarTexture(path_to_power_bar_foreground_texture)
@@ -90,8 +90,8 @@ function module:OnEnable()
       Mixin(cuf_frame, BackdropTemplateMixin)
       cuf_frame:SetBackdrop(backdrop_info)
       cuf_frame:ApplyBackdrop()
-      cuf_frame:SetBackdropBorderColor(0, 0, 0)
     end
+    cuf_frame:SetBackdropBorderColor(unpack(db_obj.health_bar_border_color))
     cuf_frame.healthBar:SetStatusBarTexture(path_to_health_bar_foreground_texture)
     cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
     cuf_frame.background:SetTexture(path_to_health_bar_background_texture)
@@ -133,8 +133,8 @@ function module:OnEnable()
       Mixin(unit_frame, BackdropTemplateMixin)
       unit_frame:SetBackdrop(backdrop_info)
       unit_frame:ApplyBackdrop()
-      unit_frame:SetBackdropBorderColor(0, 0, 0)
     end
+    unit_frame:SetBackdropBorderColor(unpack(db_obj.health_bar_border_color))
   end
 
   for i=1, 3 do

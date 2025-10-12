@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [3.4.11] - 2025-10-12
+#### Updated
+* Interface version to: 110205.
+
 ### Version [3.4.10] - 2025-09-16
 #### Added
 * Texture - Module:

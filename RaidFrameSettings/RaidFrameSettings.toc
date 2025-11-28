@@ -1,0 +1,11 @@
+## Interface: 120000
+## Version: @project-version@
+## Title: RaidFrameSettings
+## Author: Slothpala
+## SavedVariables: RaidFrameSettingsDB
+## X-Curse-Project-ID: 688930
+
+Init.lua
+
+DB.lua
+RaidFrameSettings.lua

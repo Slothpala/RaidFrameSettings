@@ -1,6 +1,0 @@
-<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
-  <Script file="AuraGroupPresetUtil.lua"/>
-  <Script file="CreateGroupAtFramePoint.lua"/>
-  <Script file="RestorationDruid.lua"/>
-  <Script file="DisciplinePriest.lua"/>
-</Ui>

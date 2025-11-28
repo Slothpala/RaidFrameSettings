@@ -1,0 +1,30 @@
+## Interface: 120000
+## Version: @project-version@
+## Title: RaidFrameSettingsOptions
+## LoadOnDemand: 1
+## Dependencies: RaidFrameSettings
+## OptionalDeps: Ace3
+## Author: Slothpala
+## X-Curse-Project-ID: 688930
+
+
+Locales\locales.xml
+
+Templates\RaidFrameSettings_HeaderTemplate.xml
+Templates\RaidFrameSettings_ColorPickerTemplate.xml
+Templates\RaidFrameSettings_ColorModeTemplate.xml
+Templates\RaidFrameSettings_DropdownSelectionTemplate.xml
+Templates\RaidFrameSettings_DropdownSelectionTemplate_Texture.xml
+Templates\RaidFrameSettings_ToggleTemplate.xml
+Templates\RaidFrameSettings_AnchorTemplate.xml
+Templates\RaidFrameSettings_FontSelectionTemplate.xml
+Templates\RaidFrameSettings_SingleChoiceColorPicker.xml
+
+UITestingRange.lua
+
+OptionsFrame.lua
+
+
+GeneralOptions\GeneralOptionsDataProvider.lua
+OptionsFactory.lua
+

@@ -2,16 +2,23 @@
 ## Version: @project-version@
 ## Title: RaidFrameSettings
 ## Author: Slothpala
+## AddonCompartmentFunc: RaidFrameSettings_OpenSettings
+## IconTexture: Interface\AddOns\RaidFrameSettings\Data\Textures\Icon.tga
 ## SavedVariables: RaidFrameSettingsDB
 ## X-Curse-Project-ID: 688930
 
+embeds.xml
 Init.lua
 Framework\framework.xml
 InitAddon.lua
 
+UnitCache.lua
+
 DB.lua
 
 modules.xml
+
+
 
 Utils\RosterIterator.lua
 

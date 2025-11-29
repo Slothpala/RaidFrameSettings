@@ -15,6 +15,7 @@ local addon = _G[addon_name]
 local module = addon:CreateModule("HealthBarForeground_Color")
 
 -- Libs & Utils.
+local UnitCache = private.UnitCache
 
 -- We just do the same checks blizzard does and only overwrite it if needed.
 local function should_skip_update(cuf_frame)
@@ -39,9 +40,25 @@ function module:OnEnable()
 
   if color_mode == 1 then -- Class
     -- For static class colors, simply set the default settings and let the game handle the rest.
+    if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
+      C_CVar.SetCVar("raidFramesDisplayClassColor", "0")
+    end
     C_CVar.SetCVar("raidFramesDisplayClassColor", "1")
   elseif color_mode == 2 then -- Class Gradient
-    -- coming soon.
+    local orientation = "HORIZONTAL" -- @TODO Add orientation based on orientation and fill style.
+    local function update_color(cuf_frame)
+      if should_skip_update(cuf_frame) then
+        return
+      end
+      print(UnitIsPlayer(cuf_frame.unit))
+      local guid = UnitGUID(cuf_frame.unit)
+      local unit_cache = UnitCache:Get(guid)
+      local color = addon:GetColor(unit_cache.class)
+      local texture = cuf_frame.healthBar:GetStatusBarTexture()
+      texture:SetGradient(orientation, color.gradient_start, color.gradient_end)
+    end
+      self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)
+      private.IterateRoster(update_color)
   elseif color_mode == 3 then -- Static
     -- For static colors, we can also rely on the Blizzard setting. Since Midnight, you can now set the color via a new CVar.
     -- Disable class color first, otherwise raidFramesHealthBarColor will be ignored.

@@ -23,6 +23,16 @@ function module:OnEnable()
 
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_statusbar_texture)
   private.IterateRoster(set_statusbar_texture)
+
+  if C_CVar.GetCVar("raidOptionDisplayPets") == "1" or C_CVar.GetCVar("raidOptionDisplayMainTankAndAssist") == "1" then
+    -- Mini frames are the pet and tank target etc. frames
+    local function set_mini_frame_textures(cuf_frame)
+      cuf_frame.healthBar:SetStatusBarTexture(texture_path)
+      cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
+    end
+    self:HookFunc("DefaultCompactMiniFrameSetup", set_mini_frame_textures)
+    private.IterateMiniRoster(set_mini_frame_textures)
+  end
 end
 
 function module:OnDisable()

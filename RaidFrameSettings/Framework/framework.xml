@@ -2,4 +2,5 @@
   <Script file="AddonMixin.lua"/>
   <Script file="ModuleMixin.lua"/>
   <Script file="HookRegistryMixin.lua"/>
+  <Script file="ColorMixin.lua"/>
 </Ui>

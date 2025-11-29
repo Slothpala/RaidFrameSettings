@@ -2,6 +2,10 @@
 package-as: RaidFrameSettings
 
 externals:
+    RaidFrameSettings/Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
+    RaidFrameSettings/Libs/CallbackHandler-1.0: https://repos.curseforge.com/wow/ace3/trunk/CallbackHandler-1.0
+    RaidFrameSettings/Libs/AceLocale-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
+    RaidFrameSettings/Libs/AceDB-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
 
 manual-changelog:
     filename: CHANGELOG.md
@@ -9,3 +13,7 @@ manual-changelog:
 
 ignore:
     - CHANGELOG.md
+
+move-folders:
+    RaidFrameSettings/RaidFrameSettings: RaidFrameSettings
+    RaidFrameSettings/RaidFrameSettingsOptions: RaidFrameSettingsOptions

@@ -20,9 +20,12 @@ function module:OnEnable()
     cuf_frame.aggroHighlight:SetTexCoord(unpack(highlight_tex_coords["Raid-AggroFrame"]))
     cuf_frame.aggroHighlight:SetAllPoints(cuf_frame)
   end
-
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_highlight_texture)
   private.IterateRoster(set_highlight_texture)
+  if C_CVar.GetCVar("raidOptionDisplayPets") == "1" or C_CVar.GetCVar("raidOptionDisplayMainTankAndAssist") == "1" then
+    self:HookFunc("DefaultCompactMiniFrameSetup", set_highlight_texture)
+    private.IterateMiniRoster(set_highlight_texture)
+  end
 end
 
 function module:OnDisable()
@@ -35,4 +38,5 @@ function module:OnDisable()
     cuf_frame.aggroHighlight:SetAllPoints(cuf_frame)
   end
   private.IterateRoster(restore_defaults)
+  private.IterateMiniRoster(restore_defaults)
 end

@@ -3,6 +3,9 @@ local _, private = ...
 -- Main Frame
 local frame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
 
+-- Icon
+RaidFrameSettingsOptionsPortrait:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Data\\Textures\\Icon.tga")
+
 -- Set the title text.
 frame.title = _G["RaidFrameSettingsOptionsTitleText"]
 frame.title:SetText("RaidFrameSettings")

@@ -1,11 +1,10 @@
 ## Interface: 120000
 ## Version: @project-version@
-## Title: RaidFrameSettingsOptions
+## Title: RaidFrameSettings Options
 ## LoadOnDemand: 1
 ## Dependencies: RaidFrameSettings
 ## OptionalDeps: Ace3
 ## Author: Slothpala
-## X-Curse-Project-ID: 688930
 
 
 Locales\locales.xml

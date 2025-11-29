@@ -1,4 +1,3 @@
---[[Created by Slothpala]]--
 local _, private = ...
 private.Mixins.AddonMixin = {}
 local addon_mixin = private.Mixins.AddonMixin

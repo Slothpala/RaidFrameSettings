@@ -1,6 +1,6 @@
 --[[Created by Slothpala]]--
-local _, private = ...
-local addon = private.addon
+local addon_name, private = ...
+local addon = _G[addon_name]
 private.UnitCache = {}
 local UnitCache = private.UnitCache
 
@@ -16,6 +16,7 @@ local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetRealmName = GetRealmName
 local UnitClass = UnitClass
 local UnitNameUnmodified = UnitNameUnmodified
+local issecretvalue = issecretvalue
 
 -------------
 --- Cache ---
@@ -68,7 +69,7 @@ local function validate_cache(cache)
   local is_valid_name = type(cache.name) == "string"
   local is_valid_nickname = type(cache.nickname) == "string"
   local is_valid_realm = type(cache.realm) == "string"
-  local is_valid_class = ( type(cache.class) == "string" ) and ( private.colors.class_colors[cache.class] ~= nil )
+  local is_valid_class = ( type(cache.class) == "string" ) and ( RAID_CLASS_COLORS[cache.class] ~= nil )
   return is_valid_name and is_valid_nickname and is_valid_realm and is_valid_class
 end
 
@@ -131,6 +132,9 @@ update_frame:SetScript("OnEvent", function(self, event, ...)
   if event == "UNIT_NAME_UPDATE" then
     local unit_token = ...
     local guid = UnitGUID(unit_token)
+    if issecretvalue(guid) then
+      return
+    end
     if unit_cache[guid] then
       local new_name, new_realm_name = UnitNameUnmodified(unit_token)
       if not new_realm_name then

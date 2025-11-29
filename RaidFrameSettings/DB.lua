@@ -3,10 +3,14 @@ local addon_name, private = ...
 local defaults = {
   profile = {
     ["*"] = {
+      enabled = true,
       ["*"] = {
         gradient_start = {0,0,0,1},
         gradient_end = {1,1,1,1},
       },
+    },
+    modules = {
+      ["*"] = true,
     },
     health_bars = {
       fg = {
@@ -51,8 +55,8 @@ local defaults = {
           THICK = "THICK",
           MONOCHROME = "MONOCHROME",
         },
-        point = "frame_point_top_left",
-        relative_point = "frame_point_top_left",
+        point = "TOPLEFT",
+        relative_point = "TOPLEFT",
         offset_x = 2,
         offset_y = 2,
       },
@@ -66,8 +70,8 @@ local defaults = {
           THICK = "THICK",
           MONOCHROME = "MONOCHROME",
         },
-        point = "frame_point_center",
-        relative_point = "frame_point_center",
+        point = "CENTER",
+        relative_point = "CENTER",
         offset_x = 0,
         offset_y = 0,
       },

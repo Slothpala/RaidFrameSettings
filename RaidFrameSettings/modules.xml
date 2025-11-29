@@ -1,0 +1,6 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+  <Script file="Modules\HealthBars\Foreground\HealthBarForeground_Texture.lua"/>
+  <Script file="Modules\HealthBars\Foreground\HealthBarForeground_Color.lua"/>
+
+  <Script file="Modules\CleanHighlight.lua"/>
+</Ui>

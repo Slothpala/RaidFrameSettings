@@ -1,12 +1,19 @@
 local addon_name, private = ...
+local addon = _G[addon_name]
 
 local function init_addon()
   -- Init Database
   private:InitDatabase()
+
+
 end
 
 local function load_addon()
-
+  for _, module in addon:IterateModules() do
+    if addon.db.profile.modules[module:GetName()] then
+      module:Enable()
+    end
+  end
 end
 
 

@@ -55,3 +55,6 @@ L["outline"] = "Outline"
 L["thick"] = "Thick"
 L["monochrome"] = "Monochrome"
 L["font_height"] = "Height"
+
+-- Modules.
+L["clean_borders"] = "Clean Highlight"

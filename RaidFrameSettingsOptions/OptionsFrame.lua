@@ -30,8 +30,8 @@ ScrollUtil.InitScrollBoxListWithScrollBar(frame.inset_frame.scroll_box, frame.in
 frame.Bg:SetColorTexture(0.1,0.1,0.1,0.95)
 frame:SetFrameStrata("DIALOG") -- @TODO: Check best options.
 table.insert(UISpecialFrames, frame:GetName())
-frame:SetSize(850,500)
-frame:SetResizeBounds(700, 400)
+frame:SetSize(925,525)
+frame:SetResizeBounds(925, 400)
 frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 frame:SetMovable(true)
 frame:SetResizable(true)

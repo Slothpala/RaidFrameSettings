@@ -25,6 +25,6 @@ UITestingRange.lua
 OptionsFrame.lua
 
 
-GeneralOptions\GeneralOptionsDataProvider.lua
+DataProvider\GeneralOptionsDataProvider.lua
 OptionsFactory.lua
 

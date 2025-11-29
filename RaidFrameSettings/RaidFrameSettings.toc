@@ -6,6 +6,13 @@
 ## X-Curse-Project-ID: 688930
 
 Init.lua
+Framework\framework.xml
+InitAddon.lua
 
 DB.lua
+
+modules.xml
+
+Utils\RosterIterator.lua
+
 RaidFrameSettings.lua

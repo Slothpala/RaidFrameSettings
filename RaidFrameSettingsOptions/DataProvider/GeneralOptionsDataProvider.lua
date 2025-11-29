@@ -24,6 +24,7 @@ data_provider:Insert(colors_title)
 local colors_health_bar_fg = {
   template = "RaidFrameSettings_ColorModeTemplate",
   associated_modules = {
+    "HealthBarForeground_Color",
   },
   settings_text = L["health_bar_fg"],
   db_obj = addon.db.profile.health_bars.fg,
@@ -95,6 +96,7 @@ local texture_health_bar_fg = {
   settings_text = L["health_bar_fg"],
   db_obj = addon.db.profile.health_bars.fg,
   associated_modules = {
+    "HealthBarForeground_Texture"
   },
 }
 data_provider:Insert(texture_health_bar_fg)
@@ -171,10 +173,22 @@ local blizzard_raid_frames_title = {
 }
 data_provider:Insert(blizzard_raid_frames_title)
 
+local module_clean_borders = {
+  template = "RaidFrameSettings_ToggleTemplate",
+  settings_text = L["clean_borders"],
+  db_obj = addon.db.profile.modules,
+  db_key = "CleanHighlight",
+  associated_modules = {
+    "CleanHighlight",
+  },
+}
+data_provider:Insert(module_clean_borders)
+
 local blizzard_display_pets = {
   template = "RaidFrameSettings_ToggleTemplate",
   settings_text = L["display_pets"],
-  db_key = addon.db.profile.cvars.raidOptionDisplayPets,
+  db_obj = addon.db.profile.cvars,
+  db_key = "raidOptionDisplayPets",
   associated_modules = {
   },
 }

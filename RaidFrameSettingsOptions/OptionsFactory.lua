@@ -7,8 +7,9 @@ local options_frame = private.GetOptionsFrame()
 local scroll_view = options_frame.scroll_view
 
 local function reload_associated_modules(tbl)
-  for _, module in pairs(tbl) do
-    print("Realoding: ", module)
+  for _, module_name in pairs(tbl) do
+    print("Reloading: ", module_name)
+    addon:ReloadModule(module_name)
   end
 end
 
@@ -33,11 +34,11 @@ local function toggle_initializer(widget, node)
   widget.settings_text:SetText(data.settings_text)
 
   -- Set the initial toggle state.
-  widget.toggle:SetChecked(data.db_key)
+  widget.toggle:SetChecked(data.db_obj[data.db_key])
 
   -- Set the click behavior.
   widget.toggle:SetScript("OnClick", function(self)
-    data.db_key = self:GetChecked()
+    data.db_obj[data.db_key]= self:GetChecked()
     reload_associated_modules(data.associated_modules)
   end)
 end
@@ -128,6 +129,8 @@ local function color_mode_initializer(widget, node)
       local function on_cancel()
         color_picker.button.background_texture:SetColorTexture(old_r, old_g, old_b, old_a)
         data.db_obj[color_option] = {old_r, old_g, old_b, old_a}
+        reload_associated_modules(data.associated_modules)
+        update_color_mode_widget(widget, data)
       end
 
       -- Setup the color picker options.
@@ -182,20 +185,20 @@ local function anchor_initializer(widget, node)
     end
 
     MenuUtil.CreateRadioMenu(dropdown, is_selected, set_selected,
-      {L["frame_point_top_left"], "frame_point_top_left"},
-      {L["frame_point_top"], "frame_point_top"},
-      {L["frame_point_top_right"], "frame_point_top_right"},
-      {L["frame_point_right"], "frame_point_right"},
-      {L["frame_point_bottom_right"], "frame_point_bottom_right"},
-      {L["frame_point_bottom"], "frame_point_bottom"},
-      {L["frame_point_bottom_left"], "frame_point_bottom_left"},
-      {L["frame_point_left"], "frame_point_left"},
-      {L["frame_point_center"], "frame_point_center"}
+      {L["frame_point_top_left"], "TOPLEFT"},
+      {L["frame_point_top"], "TOP"},
+      {L["frame_point_top_right"], "TOPRIGHT"},
+      {L["frame_point_right"], "RIGHT"},
+      {L["frame_point_bottom_right"], "BOTTOMRIGHT"},
+      {L["frame_point_bottom"], "BOTTOM"},
+      {L["frame_point_bottom_left"], "BOTTOMLEFT"},
+      {L["frame_point_left"], "LEFT"},
+      {L["frame_point_center"], "CENTER"}
     )
   end
 
   -- Setup the offset sliders.
-  local min_value, max_value = 0, 50
+  local min_value, max_value = -25, 25
   for _, v in pairs({
     "offset_x",
     "offset_y",

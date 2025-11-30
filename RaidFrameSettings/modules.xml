@@ -2,5 +2,19 @@
   <Script file="Modules\HealthBars\Foreground\HealthBarForeground_Texture.lua"/>
   <Script file="Modules\HealthBars\Foreground\HealthBarForeground_Color.lua"/>
 
+  <Script file="Modules\PowerBars\Foreground\PowerBarForeground_Texture.lua"/>
+
   <Script file="Modules\CleanHighlight.lua"/>
+
+
+
+
+
+
+
+
+
+
+
+   <Script file="Modules\CVars\CVar_raidOptionDisplayPets.lua"/>
 </Ui>

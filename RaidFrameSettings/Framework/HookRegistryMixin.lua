@@ -155,7 +155,7 @@ function HookRegistryMixin:HookFunc_CUF_Filtered(arg1, arg2, arg3)
   if not is_hooked(obj, func_name) then
     hooksecurefunc(obj, func_name, function(frame, ...)
       -- TODO Filter frames here
-      -- Filter out protected frames in this case friendly nameplates in instanced content.
+      -- Filter out forbidden frames in this case friendly nameplates in instanced content.
       if not frame or not frame.unit or frame:IsForbidden() then
         return
       end

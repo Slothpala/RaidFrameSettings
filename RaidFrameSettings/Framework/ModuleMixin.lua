@@ -4,6 +4,9 @@ private.Mixins.ModuleMixin = {}
 local module_mixin = private.Mixins.ModuleMixin
 
 function module_mixin:Enable()
+  if self:IsEnabled() then
+    return
+  end
   self.enabled = true
   self:OnEnable()
 end

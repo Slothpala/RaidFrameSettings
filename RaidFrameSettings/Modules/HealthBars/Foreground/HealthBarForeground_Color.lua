@@ -50,7 +50,6 @@ function module:OnEnable()
       if should_skip_update(cuf_frame) then
         return
       end
-      print(UnitIsPlayer(cuf_frame.unit))
       local guid = UnitGUID(cuf_frame.unit)
       local unit_cache = UnitCache:Get(guid)
       local color = addon:GetColor(unit_cache.class)

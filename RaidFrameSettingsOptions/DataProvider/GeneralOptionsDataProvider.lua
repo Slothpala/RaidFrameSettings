@@ -115,6 +115,7 @@ local texture_power_bar_fg = {
   settings_text = L["power_bar_fg"],
   db_obj = addon.db.profile.power_bars.fg,
   associated_modules = {
+    "PowerBarForeground_Texture",
   },
 }
 data_provider:Insert(texture_power_bar_fg)
@@ -190,6 +191,7 @@ local blizzard_display_pets = {
   db_obj = addon.db.profile.cvars,
   db_key = "raidOptionDisplayPets",
   associated_modules = {
+    "CVar_raidOptionDisplayPets"
   },
 }
 data_provider:Insert(blizzard_display_pets)

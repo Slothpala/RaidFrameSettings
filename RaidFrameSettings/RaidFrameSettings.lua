@@ -12,6 +12,7 @@ local function load_addon()
   for _, module in addon:IterateModules() do
     if addon.db.profile.modules[module:GetName()] then
       module:Enable()
+      print(module:GetName(), addon.db.profile.modules[module:GetName()])
     end
   end
 end
@@ -19,12 +20,12 @@ end
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
-frame:RegisterEvent("PLAYER_LOGIN")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 frame:SetScript("OnEvent", function(self, event, name)
   if event == "ADDON_LOADED" and name == addon_name then
     init_addon()
-  elseif event == "PLAYER_LOGIN" then
+  elseif event == "PLAYER_ENTERING_WORLD" then
     load_addon()
   end
 end)

@@ -23,13 +23,14 @@ function module:OnEnable()
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_highlight_texture)
   private.IterateRoster(set_highlight_texture)
   if C_CVar.GetCVar("raidOptionDisplayPets") == "1" or C_CVar.GetCVar("raidOptionDisplayMainTankAndAssist") == "1" then
-    self:HookFunc("DefaultCompactMiniFrameSetup", set_highlight_texture)
+    self:HookFunc_CUF_Filtered("DefaultCompactMiniFrameSetup", set_highlight_texture)
     private.IterateMiniRoster(set_highlight_texture)
   end
 end
 
 function module:OnDisable()
   local function restore_defaults(cuf_frame)
+    print("Restoring")
     cuf_frame.selectionHighlight:SetTexture("Interface\\RaidFrame\\Raid-FrameHighlights")
     cuf_frame.selectionHighlight:SetTexCoord(unpack(highlight_tex_coords["Raid-TargetFrame"]))
     cuf_frame.selectionHighlight:SetAllPoints(cuf_frame)

@@ -30,7 +30,7 @@ function module:OnEnable()
       cuf_frame.healthBar:SetStatusBarTexture(texture_path)
       cuf_frame.healthBar:GetStatusBarTexture():SetDrawLayer("BORDER")
     end
-    self:HookFunc("DefaultCompactMiniFrameSetup", set_mini_frame_textures)
+    self:HookFunc_CUF_Filtered("DefaultCompactMiniFrameSetup", set_mini_frame_textures)
     private.IterateMiniRoster(set_mini_frame_textures)
   end
 end

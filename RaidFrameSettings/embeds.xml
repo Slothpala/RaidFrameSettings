@@ -4,5 +4,6 @@
   <Script file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
   <Script file="Libs\AceLocale-3.0\AceLocale-3.0.lua"/>
   <Script file="Libs\AceDB-3.0\AceDB-3.0.lua"/>
+  <Script file="Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua"/>
 @end-non-debug@-->
 </Ui>

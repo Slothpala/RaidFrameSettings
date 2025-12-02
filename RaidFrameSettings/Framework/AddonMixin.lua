@@ -7,7 +7,7 @@ local modules = {}
 function addon_mixin:CreateModule(name)
   local module = {}
   module.name = name
-  Mixin(module, private.Mixins.HookRegistryMixin, private.Mixins.ModuleMixin)
+  Mixin(module, private.Mixins.HookRegistryMixin, private.Mixins.ModuleMixin, private.Mixins.EventRegistry)
   modules[name] = module
   return module
 end

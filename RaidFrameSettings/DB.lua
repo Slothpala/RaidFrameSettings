@@ -14,8 +14,13 @@ local defaults = {
       ["*"] = true,
     },
     health_bars = {
+      health_colors = {
+        max_health   = {0, 1, 0, 1},
+        mid_health   = {1, 1, 0, 1},
+        low_health   = {1, 0, 0, 1},
+      },
       fg = {
-        color_mode = 1,
+        color_mode = 5,
         static_color = {0, 0, 0, 1},
         gradient_start = {0, 0, 0, 1},
         gradient_end = {1, 1, 1, 1},

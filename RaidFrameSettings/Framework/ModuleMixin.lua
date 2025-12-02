@@ -22,6 +22,7 @@ end
 function module_mixin:Disable()
   self.enabled = false
   self:DisableHooks()
+  self:UnregisterFromAllEvents()
   self:OnDisable()
 end
 

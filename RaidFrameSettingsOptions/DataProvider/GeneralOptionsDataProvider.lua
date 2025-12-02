@@ -33,7 +33,7 @@ local colors_health_bar_fg = {
     {color_mode_options_health[2], 2},
     {color_mode_options_health[3], 3},
     {color_mode_options_health[4], 4},
-    {color_mode_options_health[5], 6},
+    {color_mode_options_health[5], 5},
   },
 }
 data_provider:Insert(colors_health_bar_fg)

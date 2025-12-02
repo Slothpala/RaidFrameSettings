@@ -37,7 +37,7 @@ function module:OnEnable()
   -- Get the data.
   local db_obj = addon.db.profile.health_bars.fg
   local color_mode = db_obj.color_mode
-
+  print(color_mode)
   if color_mode == 1 then -- Class
     -- For static class colors, simply set the default settings and let the game handle the rest.
     if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
@@ -86,7 +86,26 @@ function module:OnEnable()
     self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)
     private.IterateRoster(update_color)
   elseif color_mode == 5 then
-    -- coming soon.
+    local color_points = addon.db.profile.health_bars.health_colors
+    local curve = C_CurveUtil.CreateColorCurve()
+    curve:ClearPoints()
+    curve:AddPoint(0.3, CreateColor(unpack(color_points.low_health)))
+    curve:AddPoint(0.7, CreateColor(unpack(color_points.mid_health)))
+    curve:AddPoint(1.0, CreateColor(unpack(color_points.max_health)))
+
+    local function update_color(cuf_frame)
+      if should_skip_update(cuf_frame) then
+        return
+      end
+      local color = UnitHealthPercentColor(cuf_frame.unit, curve)
+      local texture = cuf_frame.healthBar:GetStatusBarTexture()
+      texture:SetVertexColor(color:GetRGB())
+      --cuf_frame.healthBar:SetStatusBarColor(color:GetRGB()) -- For whatever reason SetStatusBarColor does not accept secret values.
+    end
+    -- This always gets called after CompactUnitFrame_UpdateHealth which gets called once per frame by CompactUnitFrame_OnUpdate due to UNIT_HEALTH calling CompactUnitFrame_SetHealthDirty.
+    self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)
+    private.IterateRoster(update_color)
+    --private.IterateMiniRoster(update_color)
   end
 
 end

@@ -47,8 +47,9 @@ local defaults = {
     },
     fonts = {
       name = {
-        color_mode = 2,
-        static_color = {0, 0, 0, 1},
+        color_mode = 3,
+        static_color = {1, 1, 1, 1},
+        npc_color = {1, 1, 1, 1},
         font = "",
         height = 12,
         flags = {
@@ -62,8 +63,9 @@ local defaults = {
         offset_y = 2,
       },
       status = {
-        color_mode = 2,
-        static_color = {0, 0, 0, 1},
+        color_mode = 3,
+        static_color = {1, 1, 1, 1},
+        npc_color = {1, 1, 1, 1},
         font = "",
         height = 12,
         flags = {

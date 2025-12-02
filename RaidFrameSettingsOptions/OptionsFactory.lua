@@ -43,6 +43,55 @@ local function toggle_initializer(widget, node)
   end)
 end
 
+--------------------
+--- Color Picker ---
+--------------------
+
+local function color_picker_initializer(widget, node)
+  -- Get the node data.
+  local data = node:GetData()
+
+  -- Set the name of the setting.
+  widget.settings_text:SetText(data.settings_text)
+
+  -- Callback on color change.
+  local color_picker = widget.color_picker
+
+  color_picker.button:SetScript("OnClick", function(self)
+    local function on_color_changed()
+      local r, g, b = ColorPickerFrame:GetColorRGB()
+      local a = ColorPickerFrame:GetColorAlpha()
+      color_picker.button.background_texture:SetColorTexture(r, g, b, a)
+      data.db_obj[data.db_key] = {r, g, b, a}
+      reload_associated_modules(data.associated_modules)
+    end
+
+    -- Save the old colors to restore and set the inital color picker color.
+    local old_r, old_g, old_b, old_a = unpack(data.db_obj[data.db_key])
+    local function on_cancel()
+      color_picker.button.background_texture:SetColorTexture(old_r, old_g, old_b, old_a)
+      data.db_obj[data.db_key] = {old_r, old_g, old_b, old_a}
+      reload_associated_modules(data.associated_modules)
+    end
+
+    -- Setup the color picker options.
+    local color_picker_options = {
+      swatchFunc = on_color_changed,
+      opacityFunc = on_color_changed,
+      cancelFunc = on_cancel,
+      hasOpacity = false,
+      r = old_r,
+      g = old_g,
+      b = old_b,
+      opacity = old_a,
+    }
+
+    -- Show the color picker frame.
+    ColorPickerFrame:Hide() -- In case an old picker is still open.
+    ColorPickerFrame:SetupColorPickerAndShow(color_picker_options)
+  end)
+end
+
 ------------------
 --- Color Mode ---
 ------------------
@@ -419,6 +468,8 @@ local function custom_element_factory(factory, node)
     factory(data.template, anchor_initializer)
   elseif data.template == "RaidFrameSettings_FontSelectionTemplate" then
     factory(data.template, font_selection_initializer)
+  elseif data.template == "RaidFrameSettings_SingleChoiceColorPicker" then
+    factory(data.template, color_picker_initializer)
   end
 end
 

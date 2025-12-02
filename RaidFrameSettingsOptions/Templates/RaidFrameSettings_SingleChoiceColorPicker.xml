@@ -13,7 +13,7 @@
     <Frames>
       <Button parentKey="color_picker" inherits="RaidFrameSettings_ColorPickerTemplate">
         <Anchors>
-          <Anchor point="LEFT" x="200" y="0"/>
+          <Anchor point="LEFT" x="175" y="0"/>
         </Anchors>
       </Button>
 		</Frames>

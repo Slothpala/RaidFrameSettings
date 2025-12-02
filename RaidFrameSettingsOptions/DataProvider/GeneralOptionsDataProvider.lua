@@ -141,6 +141,7 @@ local fonts_name_font = {
   settings_text = L["name_font"],
   db_obj = addon.db.profile.fonts.name,
   associated_modules = {
+    "Font_Name",
   },
 }
 data_provider:Insert(fonts_name_font)
@@ -149,6 +150,7 @@ local fonts_name_color = {
   template = "RaidFrameSettings_ColorModeTemplate",
   settings_text = L["name_color"],
   associated_modules = {
+    "Font_Name",
   },
   db_obj = addon.db.profile.fonts.name,
   color_modes = {
@@ -158,11 +160,23 @@ local fonts_name_color = {
 }
 data_provider:Insert(fonts_name_color)
 
+local fonts_npc_color = {
+  template = "RaidFrameSettings_SingleChoiceColorPicker",
+  settings_text = L["npc_color"],
+  db_obj = addon.db.profile.fonts.name,
+  db_key = "npc_color",
+  associated_modules = {
+    "Font_Name",
+  },
+}
+data_provider:Insert(fonts_npc_color)
+
 local fonts_name_pos = {
   template = "RaidFrameSettings_AnchorTemplate",
   settings_text = L["name_pos"],
   db_obj = addon.db.profile.fonts.name,
   associated_modules = {
+    "Font_Name",
   },
 }
 data_provider:Insert(fonts_name_pos)

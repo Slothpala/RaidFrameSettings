@@ -4,8 +4,6 @@ local addon = _G[addon_name]
 local function init_addon()
   -- Init Database
   private:InitDatabase()
-
-
 end
 
 local function load_addon()

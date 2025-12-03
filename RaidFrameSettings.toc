@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 110207
 ## Version: @project-version@
 ## Title: RaidFrameSettings
 ## Author: Slothpala

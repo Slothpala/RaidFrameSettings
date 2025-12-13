@@ -41,6 +41,7 @@ data_provider:Insert(colors_health_bar_fg)
 local colors_health_bar_bg = {
   template = "RaidFrameSettings_ColorModeTemplate",
   associated_modules = {
+    "HealthBarBackground_Color"
   },
   settings_text = L["health_bar_bg"],
   db_obj = addon.db.profile.health_bars.bg,
@@ -49,7 +50,6 @@ local colors_health_bar_bg = {
     {color_mode_options_health[2], 2},
     {color_mode_options_health[3], 3},
     {color_mode_options_health[4], 4},
-    {color_mode_options_health[5], 6},
   },
 }
 data_provider:Insert(colors_health_bar_bg)
@@ -106,6 +106,7 @@ local texture_health_bar_bg = {
   settings_text = L["health_bar_bg"],
   db_obj = addon.db.profile.health_bars.bg,
   associated_modules = {
+    "HealthBarBackground_Texture",
   },
 }
 data_provider:Insert(texture_health_bar_bg)

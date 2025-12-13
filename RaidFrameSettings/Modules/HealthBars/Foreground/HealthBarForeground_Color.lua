@@ -11,6 +11,13 @@
 local addon_name, private = ...
 local addon = _G[addon_name]
 
+--
+local UnitGUID = UnitGUID
+local C_CurveUtil_CreateColorCurve = C_CurveUtil.CreateColorCurve
+local UnitHealthPercent = UnitHealthPercent
+local UnitIsPlayer = UnitIsPlayer
+local UnitTreatAsPlayerForDisplay = UnitTreatAsPlayerForDisplay
+
 -- Create a module.
 local module = addon:CreateModule("HealthBarForeground_Color")
 
@@ -19,17 +26,21 @@ local UnitCache = private.UnitCache
 
 -- We just do the same checks blizzard does and only overwrite it if needed.
 local function should_skip_update(cuf_frame)
+  if not cuf_frame.unit then
+    return true
+  end
+  --print(cuf_frame.unit)
 	local unit_is_connected = UnitIsConnected(cuf_frame.unit)
 	local unit_is_dead = unit_is_connected and UnitIsDead(cuf_frame.unit)
-	local unit_is_player = UnitIsPlayer(cuf_frame.unit) or UnitIsPlayer(cuf_frame.displayedUnit)
-	local unit_is_active_player = UnitIsUnit(cuf_frame.unit, "player") or UnitIsUnit(cuf_frame.displayedUnit, "player")
-
-  if ( not unit_is_connected or (unit_is_dead and not unit_is_player) ) then
+  if not unit_is_connected or unit_is_dead then
     return true
-  else
-    -- @TODO add all the exceptions.
   end
   return false
+end
+
+local function treat_unit_as_player(unit_id)
+  -- UnitTreatAsPlayerForDisplay return false for "player"
+  return UnitIsPlayer(unit_id) or UnitTreatAsPlayerForDisplay(unit_id)
 end
 
 -- Setup the module.
@@ -37,77 +48,94 @@ function module:OnEnable()
   -- Get the data.
   local db_obj = addon.db.profile.health_bars.fg
   local color_mode = db_obj.color_mode
-  print(color_mode)
-  if color_mode == 1 then -- Class
-    -- For static class colors, simply set the default settings and let the game handle the rest.
-    if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
-      C_CVar.SetCVar("raidFramesDisplayClassColor", "0")
-    end
-    C_CVar.SetCVar("raidFramesDisplayClassColor", "1")
-  elseif color_mode == 2 then -- Class Gradient
-    local orientation = "HORIZONTAL" -- @TODO Add orientation based on orientation and fill style.
-    local function update_color(cuf_frame)
+
+  local update_color = function() end
+  module.update_function = update_color
+
+  if color_mode == 1 then -- Class.
+    update_color = function (cuf_frame)
       if should_skip_update(cuf_frame) then
         return
       end
-      local guid = UnitGUID(cuf_frame.unit)
-      local unit_cache = UnitCache:Get(guid)
-      local color = addon:GetColor(unit_cache.class)
+      local color
+      local unit_is_player = treat_unit_as_player(cuf_frame.unit) or treat_unit_as_player(cuf_frame.displayedUnit)
+      if unit_is_player then
+        local guid = UnitGUID(cuf_frame.unit)
+        local unit_cache = UnitCache:Get(guid)
+        color = addon:GetColor(unit_cache.class)
+      else
+        if UnitIsEnemy("player", cuf_frame.unit) then
+          color = addon:GetColor("HOSTILE")
+        else
+          color = addon:GetColor("FRIENDLY")
+        end
+      end
+      cuf_frame.healthBar:SetStatusBarColor(unpack(color.normal_color))
+    end
+  elseif color_mode == 2 then -- Class Gradient.
+    local orientation = "HORIZONTAL" -- @TODO Add orientation based on orientation and fill style.
+    update_color = function (cuf_frame)
+      if should_skip_update(cuf_frame) then
+        return
+      end
+      local color
+      local unit_is_player = treat_unit_as_player(cuf_frame.unit) or treat_unit_as_player(cuf_frame.displayedUnit)
+      if unit_is_player then
+        local guid = UnitGUID(cuf_frame.unit)
+        local unit_cache = UnitCache:Get(guid)
+        color = addon:GetColor(unit_cache.class)
+      else
+        if UnitIsEnemy("player", cuf_frame.unit) then
+          color = addon:GetColor("HOSTILE")
+        else
+          color = addon:GetColor("FRIENDLY")
+        end
+      end
       local texture = cuf_frame.healthBar:GetStatusBarTexture()
       texture:SetGradient(orientation, color.gradient_start, color.gradient_end)
     end
-      self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)
-      private.IterateRoster(update_color)
-  elseif color_mode == 3 then -- Static
-    -- For static colors, we can also rely on the Blizzard setting. Since Midnight, you can now set the color via a new CVar.
-    -- Disable class color first, otherwise raidFramesHealthBarColor will be ignored.
-    if C_CVar.GetCVar("raidFramesDisplayClassColor") == "1" then
-      C_CVar.SetCVar("raidFramesDisplayClassColor", "0")
+  elseif color_mode == 3 then -- Static.
+    local color = db_obj.static_color
+    update_color = function (cuf_frame)
+      if should_skip_update(cuf_frame) then
+        return
+      end
+      cuf_frame.healthBar:SetStatusBarColor(unpack(color))
     end
-    local color = CreateColor(unpack(db_obj.static_color))
-    local hex_color = color:GenerateHexColor()
-    -- When changing from gradient static to static color, the CVar may not trigger an update.
-    -- To ensure the frames refresh correctly, we temporarily set the color to white.
-    if C_CVar.GetCVar("raidFramesHealthBarColor") == hex_color then
-      C_CVar.SetCVar("raidFramesHealthBarColor", "ffffffff")
-    end
-    C_CVar.SetCVar("raidFramesHealthBarColor", hex_color)
-  elseif color_mode == 4 then -- Static Gradient
+  elseif color_mode == 4 then -- Static Gradient.
     local gradient_start = CreateColor(unpack(db_obj.gradient_start))
     local gradient_end = CreateColor(unpack(db_obj.gradient_end))
     local orientation = "HORIZONTAL" -- @TODO Add orientation based on orientation and fill style.
-    local function update_color(cuf_frame)
+    update_color = function (cuf_frame)
       if should_skip_update(cuf_frame) then
         return
       end
       local texture = cuf_frame.healthBar:GetStatusBarTexture()
       texture:SetGradient(orientation, gradient_start, gradient_end)
     end
-    self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)
-    private.IterateRoster(update_color)
-  elseif color_mode == 5 then
+  elseif color_mode == 5 then -- HP Value.
+    -- Why does this work ?
+    -- CompactUnitFrame_UpdateHealthColor always gets called after CompactUnitFrame_UpdateHealth which gets called once per frame by CompactUnitFrame_OnUpdate due to UNIT_HEALTH calling CompactUnitFrame_SetHealthDirty.
     local color_points = addon.db.profile.health_bars.health_colors
-    local curve = C_CurveUtil.CreateColorCurve()
+    local curve = C_CurveUtil_CreateColorCurve()
     curve:ClearPoints()
     curve:AddPoint(0.3, CreateColor(unpack(color_points.low_health)))
     curve:AddPoint(0.7, CreateColor(unpack(color_points.mid_health)))
     curve:AddPoint(1.0, CreateColor(unpack(color_points.max_health)))
 
-    local function update_color(cuf_frame)
+    update_color = function (cuf_frame)
       if should_skip_update(cuf_frame) then
         return
       end
-      local color = UnitHealthPercentColor(cuf_frame.unit, curve)
+      local color = UnitHealthPercent(cuf_frame.unit, true, curve)
       local texture = cuf_frame.healthBar:GetStatusBarTexture()
       texture:SetVertexColor(color:GetRGB())
       --cuf_frame.healthBar:SetStatusBarColor(color:GetRGB()) -- For whatever reason SetStatusBarColor does not accept secret values.
     end
-    -- This always gets called after CompactUnitFrame_UpdateHealth which gets called once per frame by CompactUnitFrame_OnUpdate due to UNIT_HEALTH calling CompactUnitFrame_SetHealthDirty.
-    self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)
-    private.IterateRoster(update_color)
-    --private.IterateMiniRoster(update_color)
   end
-
+  self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)
+  private.IterateRoster(update_color)
+  private.IterateMiniRoster(update_color)
 end
 
 function module:OnDisable()

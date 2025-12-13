@@ -6,7 +6,8 @@ local color_mixin = private.Mixins.ColorMixin
 local color_cache = {}
 
 local function create_colors(key)
-  local db_obj = _G[addon_name].db.profile.colors[key]
+  local db_obj = _G[addon_name].db.profile.colors.class[key] or
+                 _G[addon_name].db.profile.colors.npc[key]
   color_cache[key] = {
     gradient_start = CreateColor(unpack(db_obj["gradient_start"])),
     gradient_end = CreateColor(unpack(db_obj["gradient_end"])),

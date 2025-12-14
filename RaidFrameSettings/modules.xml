@@ -1,12 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
   <Script file="Modules\HealthBars\Foreground\HealthBarForeground_Color.lua"/>
-  <Script file="Modules\HealthBars\Background\HealthBarBackground_Color.lua"/>
-
-
   <Script file="Modules\HealthBars\Foreground\HealthBarForeground_Texture.lua"/>
+  <Script file="Modules\HealthBars\Background\HealthBarBackground_Color.lua"/>
   <Script file="Modules\HealthBars\Background\HealthBarBackground_Texture.lua"/>
 
+
+
+  <Script file="Modules\PowerBars\Foreground\PowerBarForeground_Color.lua"/>
   <Script file="Modules\PowerBars\Foreground\PowerBarForeground_Texture.lua"/>
 
   <Script file="Modules\CleanHighlight.lua"/>

@@ -57,6 +57,7 @@ data_provider:Insert(colors_health_bar_bg)
 local colors_power_bar_fg = {
   template = "RaidFrameSettings_ColorModeTemplate",
   associated_modules = {
+    "PowerBarForeground_Color",
   },
   settings_text = L["power_bar_fg"],
   db_obj = addon.db.profile.power_bars.fg,

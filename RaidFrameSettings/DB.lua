@@ -168,6 +168,53 @@ local defaults = {
           normal_color   = {0.78, 0.61, 0.43},
         },
       },
+      power = {
+        MANA = {
+          gradient_start = {0, 0, 1, 1},
+          gradient_end   = {0, 0, 0.7, 1},
+          normal_color   = {0, 0, 1, 1},
+        },
+        RAGE = {
+          gradient_start = {1, 0, 0, 1},
+          gradient_end   = {0.7, 0, 0, 1},
+          normal_color   = {1, 0, 0, 1},
+        },
+        FOCUS = {
+          gradient_start = {1, 0.5, 0.25, 1},
+          gradient_end   = {0.7, 0.35, 0.175, 1},
+          normal_color   = {1, 0.5, 0.25, 1},
+        },
+        ENERGY = {
+          gradient_start = {1, 1, 0, 1},
+          gradient_end   = {0.7, 0.7, 0, 1},
+          normal_color   = {1, 1, 0, 1},
+        },
+        RUNIC_POWER = {
+          gradient_start = {0, 0.82, 1, 1},
+          gradient_end   = {0, 0.574, 0.7, 1},
+          normal_color   = {0, 0.82, 1, 1},
+        },
+        LUNAR_POWER = {
+          gradient_start = {0.3, 0.52, 0.9, 1},
+          gradient_end   = {0.21, 0.364, 0.63, 1},
+          normal_color   = {0.3, 0.52, 0.9, 1},
+        },
+        MAELSTROM = {
+          gradient_start = {0, 0.5, 1, 1},
+          gradient_end   = {0, 0.35, 0.7, 1},
+          normal_color   = {0, 0.5, 1, 1},
+        },
+        FURY = {
+          gradient_start = {0.788, 0.259, 0.992, 1},
+          gradient_end   = {0.5516, 0.1813, 0.6944, 1},
+          normal_color   = {0.788, 0.259, 0.992, 1},
+        },
+        INSANITY = {
+          gradient_start = {0.4, 0, 0.8, 1},
+          gradient_end   = {0.28, 0, 0.56, 1},
+          normal_color   = {0.4, 0, 0.8, 1},
+        },
+      },
       npc = {
         HOSTILE = {
           gradient_start = {1, 0, 0},

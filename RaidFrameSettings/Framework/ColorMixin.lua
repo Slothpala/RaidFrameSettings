@@ -5,9 +5,17 @@ local color_mixin = private.Mixins.ColorMixin
 -- ColorMixin object that can be shared between modules.
 local color_cache = {}
 
+local fallback_color = {
+  gradient_start = {1, 1, 1, 1},
+  gradient_end   = {1, 1, 1, 1},
+  normal_color   = {1, 1, 1, 1},
+}
+
 local function create_colors(key)
   local db_obj = _G[addon_name].db.profile.colors.class[key] or
-                 _G[addon_name].db.profile.colors.npc[key]
+                 _G[addon_name].db.profile.colors.power[key] or
+                 _G[addon_name].db.profile.colors.npc[key] or
+                 fallback_color
   color_cache[key] = {
     gradient_start = CreateColor(unpack(db_obj["gradient_start"])),
     gradient_end = CreateColor(unpack(db_obj["gradient_end"])),

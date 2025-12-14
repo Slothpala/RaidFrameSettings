@@ -96,7 +96,9 @@ local defaults = {
       },
     },
     cvars = {
-      raidOptionDisplayPets = true,
+      raidOptionDisplayPets = false,
+      raidFramesDisplayPowerBars = true,
+      raidFramesDisplayOnlyHealerPowerBars = true,
     },
     colors = {
       class = {

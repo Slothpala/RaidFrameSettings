@@ -222,6 +222,28 @@ local blizzard_display_pets = {
 }
 data_provider:Insert(blizzard_display_pets)
 
+local raif_frame_display_power_bars = {
+  template = "RaidFrameSettings_ToggleTemplate",
+  settings_text = L["display_power_bars"],
+  db_obj = addon.db.profile.cvars,
+  db_key = "raidFramesDisplayPowerBars",
+  associated_modules = {
+    "CVar_raidFramesDisplayPowerBars"
+  },
+}
+data_provider:Insert(raif_frame_display_power_bars)
+
+local raif_frame_display_power_bars_healer_only = {
+  template = "RaidFrameSettings_ToggleTemplate",
+  settings_text = L["display_power_bars_healer_only"],
+  db_obj = addon.db.profile.cvars,
+  db_key = "raidFramesDisplayOnlyHealerPowerBars",
+  associated_modules = {
+    "CVar_raidFramesDisplayOnlyHealerPowerBars"
+  },
+}
+data_provider:Insert(raif_frame_display_power_bars_healer_only)
+
 function private.GetDataProvider_GeneralOptions()
   return data_provider
 end

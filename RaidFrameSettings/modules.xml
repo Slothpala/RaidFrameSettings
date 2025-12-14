@@ -22,4 +22,6 @@
 
 
    <Script file="Modules\CVars\CVar_raidOptionDisplayPets.lua"/>
+   <Script file="Modules\CVars\CVar_raidFramesDisplayPowerBars.lua"/>
+   <Script file="Modules\CVars\CVar_raidFramesDisplayOnlyHealerPowerBars.lua"/>
 </Ui>

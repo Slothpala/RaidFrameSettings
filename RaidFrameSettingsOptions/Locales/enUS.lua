@@ -37,6 +37,8 @@ L["gradient_end"] = "Gradient End"
 
 -- CVars
 L["display_pets"] = "Display Pets"
+L["display_power_bars"] = "Display Power Bars"
+L["display_power_bars_healer_only"] = "Display Only Healer Power Bars"
 
 -- Anchors
 L["to_frames"] = "to frames"

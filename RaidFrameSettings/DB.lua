@@ -10,8 +10,18 @@ local defaults = {
         normal_color   = {0, 0, 0, 1},
       },
     },
-    modules = {
+    module_status = {
       ["*"] = true,
+    },
+    module_data = {
+      UnitFrameBorder = {
+        border_color = {1, 1, 1, 1},
+        edge_file = "Interface\\Buttons\\WHITE8X8",
+        tile = false,
+        tile_edge = true,
+        edge_size = 1, -- Has to be at least 1 or the background will show through.
+        insets = { left = 1, right = 1, top = 1, bottom = 1},
+      },
     },
     health_bars = {
       health_colors = {

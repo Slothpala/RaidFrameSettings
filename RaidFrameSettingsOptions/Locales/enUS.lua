@@ -19,6 +19,7 @@ L["name_font"] = "Name font"
 L["name_pos"] = "Name position"
 L["status_font"] = "Status font"
 L["status_pos"] = "Name position"
+L["border_color"] = "Border color"
 
 -- Color Options.
 L["class"] = "Class"

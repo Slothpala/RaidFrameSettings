@@ -54,8 +54,9 @@ local function color_picker_initializer(widget, node)
   -- Set the name of the setting.
   widget.settings_text:SetText(data.settings_text)
 
-  -- Callback on color change.
+  -- Setup the color picker.
   local color_picker = widget.color_picker
+  color_picker.button.background_texture:SetColorTexture(unpack(data.db_obj[data.db_key]))
 
   color_picker.button:SetScript("OnClick", function(self)
     local function on_color_changed()
@@ -434,7 +435,7 @@ local function font_selection_initializer(widget, node)
   )
 
   -- Setup the font height slider.
-  local min_value, max_value = 0, 30
+  local min_value, max_value = 1, 30
   local slider = widget.height_slider
   slider:SetWidth(150)
   slider.TopText:SetText(L["font_height"] .." (" .. data.db_obj.height .. ")")

@@ -262,7 +262,7 @@ local function anchor_initializer(widget, node)
     slider.MaxText:SetText(max_value)
     slider.MaxText:Show()
 
-    slider:Init(data.db_obj[v], min_value, max_value, max_value / 1)
+    slider:Init(data.db_obj[v], min_value, max_value, (math.abs(min_value) + max_value) / 1)
 
     slider.Slider:SetScript("OnValueChanged", function(_, value)
       data.db_obj[v] = value
@@ -445,7 +445,7 @@ local function font_selection_initializer(widget, node)
   slider.MaxText:SetText(max_value)
   slider.MaxText:Show()
 
-  slider:Init(data.db_obj.height, min_value, max_value, max_value / 1)
+  slider:Init(data.db_obj.height, min_value, max_value, (max_value - min_value) / 1)
 
   slider.Slider:SetScript("OnValueChanged", function(_, value)
     data.db_obj.height = value

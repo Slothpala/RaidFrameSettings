@@ -84,6 +84,17 @@ local colors_power_bar_bg = {
 }
 data_provider:Insert(colors_power_bar_bg)
 
+local border_color = {
+  template = "RaidFrameSettings_SingleChoiceColorPicker",
+  settings_text = L["border_color"],
+  db_obj = addon.db.profile.module_data.UnitFrameBorder,
+  db_key = "border_color",
+  associated_modules = {
+    "UnitFrameBorder",
+  },
+}
+data_provider:Insert(border_color)
+
 -- Category: Textures
 local textures_title = {
   template = "RaidFrameSettings_HeaderTemplate",

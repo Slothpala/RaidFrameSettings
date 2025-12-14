@@ -8,9 +8,9 @@ end
 
 local function load_addon()
   for _, module in addon:IterateModules() do
-    if addon.db.profile.modules[module:GetName()] then
+    if addon.db.profile.module_status[module:GetName()] then
       module:Enable()
-      print(module:GetName(), addon.db.profile.modules[module:GetName()])
+      print(module:GetName(), addon.db.profile.module_status[module:GetName()])
     end
   end
 end

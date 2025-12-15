@@ -212,6 +212,23 @@ local fonts_name_horizontal_justification = {
 }
 data_provider:Insert(fonts_name_horizontal_justification)
 
+local fonts_name_max_length = {
+  template = "RaidFrameSettings_SliderTemplate",
+  settings_text = L["max_length"],
+  db_obj = addon.db.profile.fonts.name,
+  db_key = "max_length",
+  associated_modules = {
+    "Font_Name",
+  },
+  slider_options = {
+    min_value = 0.5,
+    max_value = 2,
+    steps = 15,
+    decimals = 1,
+  },
+}
+data_provider:Insert(fonts_name_max_length)
+
 --[[
 -- Currently not needed as the font strings height is always the fonts height.
 local fonts_name_vertical_justification = {

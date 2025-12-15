@@ -16,7 +16,6 @@ local media = LibStub("LibSharedMedia-3.0")
 local UnitCache = private.UnitCache
 
 -- Speed references.
-local math_abs = math.abs
 
 -- Setup the module.
 function module:OnEnable()
@@ -35,7 +34,7 @@ function module:OnEnable()
     name_text:ClearAllPoints()
     name_text:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
     name_text:SetFont(font_path, db_obj.height, flags)
-    name_text:SetWidth(cuf_frame_width + math_abs(db_obj.offset_x))
+    name_text:SetWidth(cuf_frame_width * db_obj.max_length )
   end
 
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_font_and_anchors)

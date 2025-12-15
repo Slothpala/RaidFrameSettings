@@ -2,7 +2,7 @@ local addonName = ...
 
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true, true)
 
--- Category Tiltes.
+-- Category Titles.
 L["colors"] = "Colors"
 L["textures"] = "Textures"
 L["fonts"] = "Fonts"
@@ -67,6 +67,7 @@ L["text_vertical_justification"] = "Vertical Justification"
 L["text_horizontal_justification_option_top"] = "Top"
 L["text_horizontal_justification_option_middle"] = "Middle"
 L["text_horizontal_justification_option_bottom"] = "Bottom"
+L["max_length"] = "Length"
 
 -- Modules.
 L["clean_borders"] = "Clean Highlight"

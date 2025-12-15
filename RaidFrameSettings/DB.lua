@@ -80,6 +80,7 @@ local defaults = {
         offset_y = 2,
         horizontal_justification = "LEFT", -- LEFT, CENTER, RIGHT
         vertical_justification = "MIDDLE",-- TOP, MIDDLE, BOTTOM
+        max_length = 1,
       },
       status = {
         color_mode = 3,

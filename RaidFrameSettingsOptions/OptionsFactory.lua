@@ -8,7 +8,6 @@ local scroll_view = options_frame.scroll_view
 
 local function reload_associated_modules(tbl)
   for _, module_name in pairs(tbl) do
-    print("Reloading: ", module_name)
     addon:ReloadModule(module_name)
   end
 end
@@ -65,6 +64,43 @@ local function dropdown_initializer(widget, node)
   end
 
   MenuUtil.CreateRadioMenu(widget.dropdown, is_selected, set_selected, unpack(data.options))
+end
+
+--------------
+--- Slider ---
+--------------
+
+local function slider_initializer(widget, node)
+  -- Get the node data.
+  local data = node:GetData()
+
+  -- Set the name of the setting.
+  widget.settings_text:SetText(data.settings_text)
+
+  -- Setup the slider.
+  local min_value, max_value = data.slider_options.min_value, data.slider_options.max_value
+  local slider = widget.slider
+  slider:SetObeyStepOnDrag(true)
+  slider:SetWidth(150)
+  slider.TopText:SetText(data.db_obj[data.db_key])
+  slider.TopText:Show()
+  slider.MinText:SetText(min_value)
+  slider.MinText:Show()
+  slider.MaxText:SetText(max_value)
+  slider.MaxText:Show()
+
+  slider:Init(data.db_obj[data.db_key], min_value, max_value, data.slider_options.steps)
+
+  local function round(number)
+    return (("%%.%df"):format(data.slider_options.decimals)):format(number)
+  end
+
+  slider.Slider:SetScript("OnValueChanged", function(_, raw_value)
+    local value = round(raw_value)
+    data.db_obj[data.db_key] = value
+    slider.TopText:SetText(value)
+    reload_associated_modules(data.associated_modules)
+  end)
 end
 
 --------------------
@@ -497,6 +533,8 @@ local function custom_element_factory(factory, node)
     factory(data.template, color_picker_initializer)
   elseif data.template == "RaidFrameSettings_DropdownSelectionTemplate" then
     factory(data.template, dropdown_initializer)
+  elseif data.template == "RaidFrameSettings_SliderTemplate" then
+    factory(data.template, slider_initializer)
   end
 end
 

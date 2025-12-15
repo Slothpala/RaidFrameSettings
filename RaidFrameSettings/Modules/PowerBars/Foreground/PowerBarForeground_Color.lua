@@ -62,7 +62,7 @@ function module:OnEnable()
         return
       end
       local power_token = select(2, UnitPowerType(cuf_frame.unit))
-      local color_obj = addon:GetColor(power_token)
+      local color_obj = addon:GetColor(power_token or "MANA")
       cuf_frame.powerBar:SetStatusBarColor(unpack(color_obj.normal_color))
     end
   elseif color_mode == 7 then -- Power type gradient.

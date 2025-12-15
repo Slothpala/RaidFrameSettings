@@ -29,7 +29,7 @@ function addon_mixin:ReloadModule(name)
   if module:IsEnabled() then
     module:Disable()
   end
-  if self.db.profile.modules[module:GetName()] then
+  if self.db.profile.module_status[module:GetName()] then
     module:Enable()
   end
 end

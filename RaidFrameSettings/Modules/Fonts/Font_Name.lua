@@ -15,6 +15,9 @@ local module = addon:CreateModule("Font_Name")
 local media = LibStub("LibSharedMedia-3.0")
 local UnitCache = private.UnitCache
 
+-- Speed references.
+local math_abs = math.abs
+
 -- Setup the module.
 function module:OnEnable()
   local db_obj = addon.db.profile.fonts.name
@@ -25,10 +28,14 @@ function module:OnEnable()
   local is_tanks_shown = C_CVar.GetCVar("raidOptionDisplayMainTankAndAssist") == "1"
 
   local function set_font_and_anchors(cuf_frame)
+    local cuf_frame_width = cuf_frame:GetWidth() or 0
     local name_text = cuf_frame.name
+    name_text:SetJustifyH(db_obj.horizontal_justification)
+    -- name_text:SetJustifyV(db_obj.vertical_justification) In this scenario it does nothing as the font strings height is alwys the font height.
     name_text:ClearAllPoints()
     name_text:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
     name_text:SetFont(font_path, db_obj.height, flags)
+    name_text:SetWidth(cuf_frame_width + math_abs(db_obj.offset_x))
   end
 
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_font_and_anchors)

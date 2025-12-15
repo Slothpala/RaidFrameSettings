@@ -194,6 +194,41 @@ local fonts_name_pos = {
 }
 data_provider:Insert(fonts_name_pos)
 
+local fonts_name_horizontal_justification = {
+  template = "RaidFrameSettings_DropdownSelectionTemplate",
+  settings_text = L["text_horizontal_justification"],
+  db_obj = addon.db.profile.fonts.name,
+  db_key = "horizontal_justification",
+  associated_modules = {
+    "Font_Name",
+  },
+  options = {
+    {L["text_horizontal_justification_option_left"] , "LEFT"},
+    {L["text_horizontal_justification_option_center"] , "CENTER"},
+    {L["text_horizontal_justification_option_right"] , "RIGHT"},
+  },
+}
+data_provider:Insert(fonts_name_horizontal_justification)
+
+--[[
+-- Currently not needed as the font strings height is always the fonts height.
+local fonts_name_vertical_justification = {
+  template = "RaidFrameSettings_DropdownSelectionTemplate",
+  settings_text = L["text_vertical_justification"],
+  db_obj = addon.db.profile.fonts.name,
+  db_key = "vertical_justification",
+  associated_modules = {
+    "Font_Name",
+  },
+  options = {
+    {L["text_horizontal_justification_option_top"] , "TOP"},
+    {L["text_horizontal_justification_option_middle"] , "MIDDLE"},
+    {L["text_horizontal_justification_option_bottom"] , "BOTTOM"},
+  },
+}
+data_provider:Insert(fonts_name_vertical_justification)
+]]
+
 -- Category: Blizzard Settings - Raid Frames
 local blizzard_raid_frames_title = {
   template = "RaidFrameSettings_HeaderTemplate",
@@ -204,7 +239,7 @@ data_provider:Insert(blizzard_raid_frames_title)
 local module_clean_borders = {
   template = "RaidFrameSettings_ToggleTemplate",
   settings_text = L["clean_borders"],
-  db_obj = addon.db.profile.modules,
+  db_obj = addon.db.profile.module_status,
   db_key = "CleanHighlight",
   associated_modules = {
     "CleanHighlight",
@@ -223,7 +258,7 @@ local blizzard_display_pets = {
 }
 data_provider:Insert(blizzard_display_pets)
 
-local raif_frame_display_power_bars = {
+local raid_frame_display_power_bars = {
   template = "RaidFrameSettings_ToggleTemplate",
   settings_text = L["display_power_bars"],
   db_obj = addon.db.profile.cvars,
@@ -232,9 +267,9 @@ local raif_frame_display_power_bars = {
     "CVar_raidFramesDisplayPowerBars"
   },
 }
-data_provider:Insert(raif_frame_display_power_bars)
+data_provider:Insert(raid_frame_display_power_bars)
 
-local raif_frame_display_power_bars_healer_only = {
+local raid_frame_display_power_bars_healer_only = {
   template = "RaidFrameSettings_ToggleTemplate",
   settings_text = L["display_power_bars_healer_only"],
   db_obj = addon.db.profile.cvars,
@@ -243,7 +278,7 @@ local raif_frame_display_power_bars_healer_only = {
     "CVar_raidFramesDisplayOnlyHealerPowerBars"
   },
 }
-data_provider:Insert(raif_frame_display_power_bars_healer_only)
+data_provider:Insert(raid_frame_display_power_bars_healer_only)
 
 function private.GetDataProvider_GeneralOptions()
   return data_provider

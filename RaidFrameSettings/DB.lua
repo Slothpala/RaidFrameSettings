@@ -77,6 +77,8 @@ local defaults = {
         relative_point = "TOPLEFT",
         offset_x = 2,
         offset_y = 2,
+        horizontal_justification = "LEFT", -- LEFT, CENTER, RIGHT
+        vertical_justification = "MIDDLE",-- TOP, MIDDLE, BOTTOM
       },
       status = {
         color_mode = 3,

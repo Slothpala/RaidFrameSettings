@@ -55,6 +55,7 @@ local defaults = {
       },
       bg = {
         color_mode = 3,
+        darkening_factor = 0.3,
         static_color = {0, 0, 0, 1},
         gradient_start = {0, 0, 0, 1},
         gradient_end = {1, 1, 1, 1},

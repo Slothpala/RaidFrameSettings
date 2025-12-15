@@ -10,6 +10,9 @@
   <Script file="Modules\PowerBars\Foreground\PowerBarForeground_Color.lua"/>
   <Script file="Modules\PowerBars\Foreground\PowerBarForeground_Texture.lua"/>
 
+  <Script file="Modules\PowerBars\Background\PowerBarBackground_Color.lua"/>
+  <Script file="Modules\PowerBars\Background\PowerBarBackground_Texture.lua"/>
+
   <Script file="Modules\CleanHighlight.lua"/>
   <Script file="Modules\UnitFrameBorder.lua"/>
 

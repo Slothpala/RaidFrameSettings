@@ -73,6 +73,7 @@ data_provider:Insert(colors_power_bar_fg)
 local colors_power_bar_bg = {
   template = "RaidFrameSettings_ColorModeTemplate",
   associated_modules = {
+    "PowerBarBackground_Color",
   },
   settings_text = L["power_bar_bg"],
   db_obj = addon.db.profile.power_bars.bg,
@@ -138,6 +139,7 @@ local texture_power_bar_bg = {
   settings_text = L["power_bar_bg"],
   db_obj = addon.db.profile.power_bars.bg,
   associated_modules = {
+    "PowerBarBackground_Texture",
   },
 }
 data_provider:Insert(texture_power_bar_bg)

@@ -43,6 +43,30 @@ local function toggle_initializer(widget, node)
   end)
 end
 
+----------------
+--- Dropdown ---
+----------------
+
+local function dropdown_initializer(widget, node)
+  -- Get the node data.
+  local data = node:GetData()
+
+  -- Set the name of the setting.
+  widget.settings_text:SetText(data.settings_text)
+
+  -- Feed the dropdown.
+  local function is_selected(value)
+    return data.db_obj[data.db_key] == value
+  end
+
+  local function set_selected(value)
+    data.db_obj[data.db_key] = value
+    reload_associated_modules(data.associated_modules)
+  end
+
+  MenuUtil.CreateRadioMenu(widget.dropdown, is_selected, set_selected, unpack(data.options))
+end
+
 --------------------
 --- Color Picker ---
 --------------------
@@ -471,6 +495,8 @@ local function custom_element_factory(factory, node)
     factory(data.template, font_selection_initializer)
   elseif data.template == "RaidFrameSettings_SingleChoiceColorPicker" then
     factory(data.template, color_picker_initializer)
+  elseif data.template == "RaidFrameSettings_DropdownSelectionTemplate" then
+    factory(data.template, dropdown_initializer)
   end
 end
 

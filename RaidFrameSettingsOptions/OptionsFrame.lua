@@ -83,6 +83,7 @@ for k, category in pairs({
   local text_width = tab.Text:GetWidth() + 20
   tab:SetWidth(math.max(min_width, text_width))
   frame.tab_system.tabs[category] = tab
+  frame.tab_system:SetTab(1) -- On first start show "General".
 end
 
 --
@@ -97,7 +98,6 @@ frame.tab_system.tabs[L["text_settings"]]:HookScript("OnClick", function()
   private.SetDataProvider(data_provider)
 end)
 
--- On first start show General.
 function private.GetOptionsFrame()
   return frame
 end

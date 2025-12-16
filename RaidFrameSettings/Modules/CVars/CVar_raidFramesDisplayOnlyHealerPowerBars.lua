@@ -11,7 +11,11 @@ local module = addon:CreateModule("CVar_raidFramesDisplayOnlyHealerPowerBars")
 
 -- Setup the module.
 function module:OnEnable()
-  C_CVar.SetCVar("raidFramesDisplayOnlyHealerPowerBars", addon.db.profile.cvars.raidFramesDisplayOnlyHealerPowerBars and "1" or "0")
+  local power_bar_display_mode = addon.db.profile.module_data.power_bar_display_mode
+  local cvar_value = power_bar_display_mode == 2 and "1" or "0"
+  if C_CVar.GetCVar("raidFramesDisplayOnlyHealerPowerBars") ~= cvar_value then
+    C_CVar.SetCVar("raidFramesDisplayOnlyHealerPowerBars", cvar_value)
+  end
 end
 
 

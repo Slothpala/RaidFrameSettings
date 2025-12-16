@@ -22,6 +22,7 @@ local defaults = {
         edge_size = 1, -- Has to be at least 1 or the background will show through.
         insets = { left = 1, right = 1, top = 1, bottom = 1},
       },
+      power_bar_display_mode = 2, -- 1 Show, 2 = Healer only, 3 = hide,
     },
     health_bars = {
       health_colors = {
@@ -101,8 +102,6 @@ local defaults = {
     },
     cvars = {
       raidOptionDisplayPets = false,
-      raidFramesDisplayPowerBars = true,
-      raidFramesDisplayOnlyHealerPowerBars = true,
     },
     colors = {
       class = {

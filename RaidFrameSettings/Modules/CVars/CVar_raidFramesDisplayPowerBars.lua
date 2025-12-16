@@ -11,6 +11,10 @@ local module = addon:CreateModule("CVar_raidFramesDisplayPowerBars")
 
 -- Setup the module.
 function module:OnEnable()
-  C_CVar.SetCVar("raidFramesDisplayPowerBars", addon.db.profile.cvars.raidFramesDisplayPowerBars and "1" or "0")
+  local power_bar_display_mode = addon.db.profile.module_data.power_bar_display_mode
+  local cvar_value = (power_bar_display_mode == 1 or power_bar_display_mode == 2) and "1" or "0"
+  if C_CVar.GetCVar("raidFramesDisplayPowerBars") ~= cvar_value then
+    C_CVar.SetCVar("raidFramesDisplayPowerBars", cvar_value)
+  end
 end
 

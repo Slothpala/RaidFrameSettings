@@ -24,7 +24,9 @@ UITestingRange.lua
 
 OptionsFrame.lua
 
+DataProvider\DataHandler.lua
+DataProvider\GeneralSettingsDataProvider.lua
+DataProvider\TextSettingsDataProvider.lua
 
-DataProvider\GeneralOptionsDataProvider.lua
 OptionsFactory.lua
 

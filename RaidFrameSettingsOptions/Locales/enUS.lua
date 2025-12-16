@@ -2,24 +2,35 @@ local addonName = ...
 
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true, true)
 
--- Category Titles.
-L["colors"] = "Colors"
+-- Categories.
+L["general_settings"] = "General"
+L["text_settings"] = "Text"
+L["aura_frame_settings"] = "Auras"
+
+-- Titles.
+L["title_colors"] = "Colors"
 L["textures"] = "Textures"
 L["fonts"] = "Fonts"
-L["blizzard_settings_raid_frames"] = "Raid Frames"
+L["blizzard_settings_unit_frames"] = "Unit Frames"
+L["title_name"] = "Name"
 
 -- Settings.
 L["health_bar_fg"] = "Health bar foreground"
 L["health_bar_bg"] = "Health bar background"
 L["power_bar_fg"] = "Power bar foreground"
 L["power_bar_bg"] = "Power bar background"
-L["name_color"] = "Name color"
-L["npc_color"] = "Npc color"
-L["name_font"] = "Name font"
-L["name_pos"] = "Name position"
-L["status_font"] = "Status font"
-L["status_pos"] = "Name position"
+
+L["option_font"] = "Font"
+L["option_player_color"] = "Player Color"
+L["option_npc_color"] = "NPC Color"
+L["option_anchor"] = "Position"
+
 L["border_color"] = "Border color"
+
+L["option_power_bars"] = "Power Bars"
+L["option_show"] = "Show"
+L["option_hide"] = "Hide"
+L["option_healer_only"] = "Only Healers"
 
 -- Color Options.
 L["class"] = "Class"
@@ -37,8 +48,7 @@ L["gradient_end"] = "Gradient End"
 
 -- CVars
 L["display_pets"] = "Display Pets"
-L["display_power_bars"] = "Display Power Bars"
-L["display_power_bars_healer_only"] = "Display Only Healer Power Bars"
+
 
 -- Anchors
 L["to_frames"] = "to frames"

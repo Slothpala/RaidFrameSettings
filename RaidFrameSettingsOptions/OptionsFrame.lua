@@ -1,4 +1,5 @@
-local _, private = ...
+local addon_name, private = ...
+local L = LibStub("AceLocale-3.0"):GetLocale(addon_name)
 
 -- Main Frame
 local frame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
@@ -65,7 +66,38 @@ frame.resizeHandle:SetScript("OnMouseUp", function(_, button)
   end
 end)
 
+-- Tab System.
+frame.tab_system = CreateFrame("Frame", nil, frame, "TabSystemTemplate")
+frame.tab_system:SetFrameStrata("DIALOG")
+frame.tab_system.tabs = {}
+frame.tab_system:SetTabSelectedCallback(function()end)
+frame.tab_system:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 15, 2)
+for k, category in pairs({
+  L["general_settings"],
+  L["text_settings"],
+  L["aura_frame_settings"],
+}) do
+  frame.tab_system:AddTab(category)
+  local tab = frame.tab_system:GetTabButton(k)
+  local min_width = tab.Left:GetWidth() + tab.Middle:GetWidth() + tab.Right:GetWidth()
+  local text_width = tab.Text:GetWidth() + 20
+  tab:SetWidth(math.max(min_width, text_width))
+  frame.tab_system.tabs[category] = tab
+end
+
 --
+frame.tab_system.tabs[L["general_settings"]]:HookScript("OnClick", function()
+  local data_provider = private.DataHandler.GetDataProvider("general_settings")
+  private.SetDataProvider(data_provider)
+end)
+
+-- text_settings
+frame.tab_system.tabs[L["text_settings"]]:HookScript("OnClick", function()
+  local data_provider = private.DataHandler.GetDataProvider("text_settings")
+  private.SetDataProvider(data_provider)
+end)
+
+-- On first start show General.
 function private.GetOptionsFrame()
   return frame
 end

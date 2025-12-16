@@ -18,7 +18,7 @@ end
 
 local function header_initializer(widget, node)
   local data = node:GetData()
-  widget.title:SetText(data.title)
+  widget.title:SetText(data.settings_text)
 end
 
 -----------------
@@ -517,31 +517,33 @@ end
 
 local function custom_element_factory(factory, node)
   local data = node:GetData()
-  if data.template == "RaidFrameSettings_HeaderTemplate" then
-    factory(data.template, header_initializer)
-  elseif data.template == "RaidFrameSettings_ColorModeTemplate" then
-    factory(data.template, color_mode_initializer)
-  elseif data.template == "RaidFrameSettings_DropdownSelectionTemplate_Texture" then
-    factory(data.template, texture_selection_initializer)
-  elseif data.template == "RaidFrameSettings_ToggleTemplate" then
-    factory(data.template, toggle_initializer)
-  elseif data.template == "RaidFrameSettings_AnchorTemplate" then
-    factory(data.template, anchor_initializer)
-  elseif data.template == "RaidFrameSettings_FontSelectionTemplate" then
-    factory(data.template, font_selection_initializer)
-  elseif data.template == "RaidFrameSettings_SingleChoiceColorPicker" then
-    factory(data.template, color_picker_initializer)
-  elseif data.template == "RaidFrameSettings_DropdownSelectionTemplate" then
-    factory(data.template, dropdown_initializer)
-  elseif data.template == "RaidFrameSettings_SliderTemplate" then
-    factory(data.template, slider_initializer)
+  if data.type == "title" then
+    factory("RaidFrameSettings_HeaderTemplate", header_initializer)
+  elseif data.type == "color_mode" then
+    factory("RaidFrameSettings_ColorModeTemplate", color_mode_initializer)
+  elseif data.type == "lsm_texture" then
+    factory("RaidFrameSettings_DropdownSelectionTemplate_Texture", texture_selection_initializer)
+  elseif data.type == "toggle" then
+    factory("RaidFrameSettings_ToggleTemplate", toggle_initializer)
+  elseif data.type == "anchor" then
+    factory("RaidFrameSettings_AnchorTemplate", anchor_initializer)
+  elseif data.type == "font_selection" then
+    factory("RaidFrameSettings_FontSelectionTemplate", font_selection_initializer)
+  elseif data.type == "color" then
+    factory("RaidFrameSettings_SingleChoiceColorPicker", color_picker_initializer)
+  elseif data.type == "dropdown" then
+    factory("RaidFrameSettings_DropdownSelectionTemplate", dropdown_initializer)
+  elseif data.type == "slider" then
+    factory("RaidFrameSettings_SliderTemplate", slider_initializer)
   end
 end
+scroll_view:SetElementFactory(custom_element_factory)
 
-function private:SetOptionsToGeneral()
-  scroll_view:SetElementFactory(custom_element_factory)
-  scroll_view:SetDataProvider(self.GetDataProvider_GeneralOptions())
+function private.SetDataProvider(data_provider)
+  scroll_view:SetDataProvider(data_provider)
 end
 
 
-private:SetOptionsToGeneral()
+-- On first launch set to general.
+local data_provider = private.DataHandler.GetDataProvider("general_settings")
+private.SetDataProvider(data_provider)

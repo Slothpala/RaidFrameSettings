@@ -22,6 +22,12 @@ local defaults = {
         edge_size = 1, -- Has to be at least 1 or the background will show through.
         insets = { left = 1, right = 1, top = 1, bottom = 1},
       },
+      RoleIcon = {
+        point = "TOPRIGHT",
+        relative_point = "TOPRIGHT",
+        offset_x = -2,
+        offset_y = -2,
+      },
       power_bar_display_mode = 2, -- 1 Show, 2 = Healer only, 3 = hide,
       health_text_display_mode = "perc",
     },

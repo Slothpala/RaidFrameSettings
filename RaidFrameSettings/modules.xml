@@ -14,7 +14,7 @@
   <Script file="Modules\PowerBars\Background\PowerBarBackground_Texture.lua"/>
 
   <Script file="Modules\UnitFrameBorder.lua"/>
-
+  <Script file="Modules\RoleIcon.lua"/>
 
 
   <Script file="Modules\Fonts\Font_Name.lua"/>

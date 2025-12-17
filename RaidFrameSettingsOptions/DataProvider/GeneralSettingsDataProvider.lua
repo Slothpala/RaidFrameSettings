@@ -192,15 +192,29 @@ local options = {
         "CVar_pvpFramesHealthText",
       },
     },
+    role_icon_pos = {
+      order = 5,
+      type = "anchor",
+      settings_text = L["role_icon"],
+      db_obj = data_base.profile.module_data.RoleIcon,
+      associated_modules = {
+        "RoleIcon",
+      },
+    },
   },
 }
 
 for _, category in ipairs(options) do
   local order_tbl = {}
+  local count = 1
   for _, option in pairs(category) do
     order_tbl[option.order or #order_tbl] = option
+    count = count + 1
   end
-  for _, option in ipairs(order_tbl) do
-    data_provider:Insert(option)
+  for i = 1, count do
+    local option = order_tbl[i]
+    if option then
+      data_provider:Insert(option)
+    end
   end
 end

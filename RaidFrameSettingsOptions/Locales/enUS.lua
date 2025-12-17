@@ -90,4 +90,4 @@ L["max_length"] = "Length"
 
 -- Modules.
 L["clean_borders"] = "Clean Highlight"
-L["s"] = "Role Icon"
+L["role_icon"] = "Role Icon"

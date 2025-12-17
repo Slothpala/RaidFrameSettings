@@ -324,10 +324,15 @@ local function anchor_initializer(widget, node)
 
     slider:Init(data.db_obj[v], min_value, max_value, (math.abs(min_value) + max_value) / 1)
 
-    slider.Slider:SetScript("OnValueChanged", function(_, value)
+    slider.Slider:SetScript("OnValueChanged", function(_, value, user_input)
       data.db_obj[v] = value
       slider.TopText:SetText(L[v] .." (" .. value.. ")")
       reload_associated_modules(data.associated_modules)
+    end)
+
+    -- OnValueChanged will fire when the widget is reused.
+    slider.Slider:SetScript("OnHide", function(self)
+      self:SetScript("OnValueChanged", nil)
     end)
   end
 
@@ -507,10 +512,15 @@ local function font_selection_initializer(widget, node)
 
   slider:Init(data.db_obj.height, min_value, max_value, (max_value - min_value) / 1)
 
-  slider.Slider:SetScript("OnValueChanged", function(_, value)
+  slider.Slider:SetScript("OnValueChanged", function(_, value, user_input)
     data.db_obj.height = value
     slider.TopText:SetText(L["font_height"] .." (" .. value.. ")")
     reload_associated_modules(data.associated_modules)
+  end)
+
+  -- OnValueChanged will fire when the widget is reused.
+  slider.Slider:SetScript("OnHide", function(self)
+    self:SetScript("OnValueChanged", nil)
   end)
 end
 

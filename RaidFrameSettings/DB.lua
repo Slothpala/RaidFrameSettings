@@ -23,6 +23,7 @@ local defaults = {
         insets = { left = 1, right = 1, top = 1, bottom = 1},
       },
       power_bar_display_mode = 2, -- 1 Show, 2 = Healer only, 3 = hide,
+      health_text_display_mode = "perc",
     },
     health_bars = {
       health_colors = {
@@ -98,6 +99,9 @@ local defaults = {
         relative_point = "CENTER",
         offset_x = 0,
         offset_y = 0,
+        horizontal_justification = "CENTER", -- LEFT, CENTER, RIGHT
+        vertical_justification = "MIDDLE",-- TOP, MIDDLE, BOTTOM
+        max_length = 1,
       },
     },
     cvars = {

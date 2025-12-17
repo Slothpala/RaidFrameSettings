@@ -17,7 +17,8 @@ local color_mode_options = {
 }
 
 local options = {
-  name_text = {
+  -- Name text.
+  [1] = {
     title = {
       order = 1,
       type = "title",
@@ -96,14 +97,89 @@ local options = {
       },
     },
   },
+  -- Status text.
+  [2] = {
+    title = {
+      order = 1,
+      type = "title",
+      settings_text = L["title_status"],
+    },
+    font = {
+      order = 2,
+      type = "font_selection",
+      settings_text = L["option_font"],
+      db_obj = data_base.profile.fonts.status,
+      associated_modules = {
+        "Font_Status",
+      },
+    },
+    player_color = {
+      order = 3,
+      type = "color_mode",
+      settings_text = L["option_player_color"],
+      associated_modules = {
+        "Font_Status",
+      },
+      db_obj = data_base.profile.fonts.status,
+      color_modes = {
+        {color_mode_options[1], 1},
+        {color_mode_options[3], 3},
+      },
+    },
+    anchor = {
+      order = 5,
+      type = "anchor",
+      settings_text = L["option_anchor"],
+      db_obj = data_base.profile.fonts.status,
+      associated_modules = {
+        "Font_Status",
+      },
+    },
+    horizontal_justification = {
+      order = 6,
+      type = "dropdown",
+      settings_text = L["text_horizontal_justification"],
+      db_obj = data_base.profile.fonts.status,
+      db_key = "horizontal_justification",
+      associated_modules = {
+        "Font_Status",
+      },
+      options = {
+        {L["text_horizontal_justification_option_left"] , "LEFT"},
+        {L["text_horizontal_justification_option_center"] , "CENTER"},
+        {L["text_horizontal_justification_option_right"] , "RIGHT"},
+      },
+    },
+    max_length = {
+      order = 7,
+      type = "slider",
+      settings_text = L["max_length"],
+      db_obj = data_base.profile.fonts.status,
+      db_key = "max_length",
+      associated_modules = {
+        "Font_Status",
+      },
+      slider_options = {
+        min_value = 0.5,
+        max_value = 2,
+        steps = 15,
+        decimals = 1,
+      },
+    },
+  },
 }
 
-for _, category in pairs(options) do
+for _, category in ipairs(options) do
   local order_tbl = {}
+  local count = 1
   for _, option in pairs(category) do
     order_tbl[option.order or #order_tbl] = option
+    count = count + 1
   end
-  for _, option in ipairs(order_tbl) do
-    data_provider:Insert(option)
+  for i = 1, count do
+    local option = order_tbl[i]
+    if option then
+      data_provider:Insert(option)
+    end
   end
 end

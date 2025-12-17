@@ -171,6 +171,25 @@ local options = {
       associated_modules = {
         "CVar_raidFramesDisplayPowerBars",
         "CVar_raidFramesDisplayOnlyHealerPowerBars",
+        "CVar_pvpFramesDisplayPowerBars",
+        "CVar_pvpFramesDisplayOnlyHealerPowerBars",
+      },
+    },
+    health_text_display_mode = {
+      order = 4,
+      type = "dropdown",
+      settings_text = L["option_health_text_display_mode"],
+      db_obj = data_base.profile.module_data,
+      db_key = "health_text_display_mode",
+      options = {
+        {L["option_health_none"] , "none"},
+        {L["option_health_health"] , "health"},
+        {L["option_health_lost"] , "losthealth"},
+        {L["option_health_perc"] , "perc"},
+      },
+      associated_modules = {
+        "CVar_raidFramesHealthText",
+        "CVar_pvpFramesHealthText",
       },
     },
   },

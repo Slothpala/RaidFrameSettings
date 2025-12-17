@@ -13,6 +13,7 @@ L["textures"] = "Textures"
 L["fonts"] = "Fonts"
 L["blizzard_settings_unit_frames"] = "Unit Frames"
 L["title_name"] = "Name"
+L["title_status"] = "Status"
 
 -- Settings.
 L["health_bar_fg"] = "Health bar foreground"
@@ -31,6 +32,14 @@ L["option_power_bars"] = "Power Bars"
 L["option_show"] = "Show"
 L["option_hide"] = "Hide"
 L["option_healer_only"] = "Only Healers"
+
+-- Display Health
+L["option_health_text_display_mode"] = "Display Health Text"
+L["option_health_none"] = "None"
+L["option_health_health"] = "Health Remaining"
+L["option_health_lost"] = "Health Lost"
+L["option_health_perc"] = "Health Percentage"
+
 
 -- Color Options.
 L["class"] = "Class"

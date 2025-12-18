@@ -5,6 +5,7 @@
   3 = Static color.
   4 = Static gradient color.
   5 = Health value color.
+  8 = Class to HP Value.
 --]]
 
 -- Setup the env.
@@ -116,12 +117,12 @@ function module:OnEnable()
   elseif color_mode == 5 then -- HP Value.
     -- Why does this work ?
     -- CompactUnitFrame_UpdateHealthColor always gets called after CompactUnitFrame_UpdateHealth which gets called once per frame by CompactUnitFrame_OnUpdate due to UNIT_HEALTH calling CompactUnitFrame_SetHealthDirty.
-    local color_points = addon.db.profile.health_bars.health_colors
+    local health_value_colors = addon.db.profile.health_bars.health_value_colors
     local curve = C_CurveUtil_CreateColorCurve()
     curve:ClearPoints()
-    curve:AddPoint(0.3, CreateColor(unpack(color_points.low_health)))
-    curve:AddPoint(0.7, CreateColor(unpack(color_points.mid_health)))
-    curve:AddPoint(1.0, CreateColor(unpack(color_points.max_health)))
+    curve:AddPoint(0.3, CreateColor(unpack(health_value_colors.low_health)))
+    curve:AddPoint(0.7, CreateColor(unpack(health_value_colors.mid_health)))
+    curve:AddPoint(1.0, CreateColor(unpack(health_value_colors.max_health)))
 
     update_color = function (cuf_frame)
       if should_skip_update(cuf_frame) then
@@ -131,6 +132,47 @@ function module:OnEnable()
       local texture = cuf_frame.healthBar:GetStatusBarTexture()
       texture:SetVertexColor(color:GetRGB())
       --cuf_frame.healthBar:SetStatusBarColor(color:GetRGB()) -- For whatever reason SetStatusBarColor does not accept secret values.
+    end
+  elseif color_mode == 8 then -- Class -> HP Value
+    local color_curves = {}
+    local class_colors = addon.db.profile.colors.class
+    local health_value_colors = addon.db.profile.health_bars.health_value_colors
+
+    -- Create the class color curves.
+    for class, color_obj in pairs(class_colors) do
+      local curve = C_CurveUtil_CreateColorCurve()
+      curve:ClearPoints()
+      curve:AddPoint(0.3, CreateColor(unpack(health_value_colors.low_health)))
+      curve:AddPoint(0.7, CreateColor(unpack(health_value_colors.mid_health)))
+      curve:AddPoint(1.0, CreateColor(unpack(color_obj.normal_color)))
+      color_curves[class] = curve
+    end
+
+    -- Create a fall back curve for non player units.
+    local fallback_curve = C_CurveUtil_CreateColorCurve()
+    fallback_curve:ClearPoints()
+    fallback_curve:AddPoint(0.3, CreateColor(unpack(health_value_colors.low_health)))
+    fallback_curve:AddPoint(0.7, CreateColor(unpack(health_value_colors.mid_health)))
+    fallback_curve:AddPoint(1.0, CreateColor(unpack(health_value_colors.max_health)))
+
+    update_color = function (cuf_frame)
+      if should_skip_update(cuf_frame) then
+        return
+      end
+
+      local curve
+      local unit_is_player = treat_unit_as_player(cuf_frame.unit) or treat_unit_as_player(cuf_frame.displayedUnit)
+      if unit_is_player then
+        local guid = UnitGUID(cuf_frame.unit)
+        local unit_cache = UnitCache:Get(guid)
+        curve = color_curves[unit_cache.class]
+      else
+        curve = fallback_curve
+      end
+
+      local color = UnitHealthPercent(cuf_frame.unit, true, curve)
+      local texture = cuf_frame.healthBar:GetStatusBarTexture()
+      texture:SetVertexColor(color:GetRGB())
     end
   end
   self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateHealthColor", update_color)

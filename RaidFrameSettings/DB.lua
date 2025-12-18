@@ -32,7 +32,7 @@ local defaults = {
       health_text_display_mode = "perc",
     },
     health_bars = {
-      health_colors = {
+      health_value_colors = {
         max_health   = {0, 1, 0, 1},
         mid_health   = {1, 1, 0, 1},
         low_health   = {1, 0, 0, 1},

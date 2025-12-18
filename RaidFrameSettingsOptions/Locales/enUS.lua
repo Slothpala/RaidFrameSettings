@@ -50,6 +50,7 @@ L["static_gradient"] = "Gradient Static"
 L["health_value"] = "HP Value"
 L["power_type"] = "Power Type"
 L["power_type_gradient"] = "Gradient Power Type"
+L["class_to_health_value"] = "Class -> HP Value"
 
 -- Colors.
 L["static_color"] = "Color"

@@ -14,6 +14,7 @@ local color_mode_options = {
   [5] = L["health_value"],
   [6] = L["power_type"],
   [7] = L["power_type_gradient"],
+  [8] = L["class_to_health_value"],
 }
 
 local options = {
@@ -35,6 +36,7 @@ local options = {
         {color_mode_options[3], 3},
         {color_mode_options[4], 4},
         {color_mode_options[5], 5},
+        {color_mode_options[8], 8},
       },
       associated_modules = {
         "HealthBarForeground_Color",

@@ -8,6 +8,7 @@ local scroll_view = options_frame.scroll_view
 local current_data_provider = "general_settings"
 
 -- Only toggles and dropdowns etc. should update the scroll_view.
+-- So menu items that could have an impact on the visibility state of others.
 local function update_scroll_view_content()
   -- We have to set a new provider to retain scroll position.
   local data_provider = private.DataHandler.GetDataProvider(current_data_provider)

@@ -105,6 +105,26 @@ local options = {
         "PowerBarBackground_Color",
       },
     },
+    power_bar_bg_darkening_factor = {
+      order = 5.1,
+      type = "slider",
+      settings_text = L["option_darkening_factor"],
+      db_obj = data_base.profile.power_bars.bg,
+      db_key = "darkening_factor",
+      associated_modules = {
+        "PowerBarBackground_Color",
+      },
+      slider_options = {
+        min_value = 0.1,
+        max_value = 0.9,
+        steps = 8,
+        decimals = 1,
+      },
+      hide = function()
+        local color_mode = data_base.profile.power_bars.bg.color_mode
+        return color_mode == 3 or color_mode == 4
+      end,
+    },
     border_color = {
       order = 6,
       type = "color",
@@ -229,21 +249,22 @@ data_manager.get_data_provider = function ()
 
   for _, category in ipairs(options) do
     local order_tbl = {}
-    local count = 1
+
+    -- Exclude hidden objects.
     for _, option in pairs(category) do
-      if option.hide and option.hide() == true then
-        -- continue
-      else
-        local pos = option.order * 100
-        order_tbl[pos] = option
-        count = count > pos and count or pos
+      if not (option.hide and option.hide() == true) then
+        table.insert(order_tbl, option)
       end
     end
-    for i = 1, count do
-      local option = order_tbl[i]
-      if option then
-        data_provider:Insert(option)
-      end
+
+    -- Sort by order key.
+    table.sort(order_tbl, function(a, b)
+      return (a.order or 0) < (b.order or 0)
+    end)
+
+    -- Add them to the data provider.
+    for _, option in ipairs(order_tbl) do
+      data_provider:Insert(option)
     end
   end
 

@@ -32,6 +32,7 @@ L["option_power_bars"] = "Power Bars"
 L["option_show"] = "Show"
 L["option_hide"] = "Hide"
 L["option_healer_only"] = "Only Healers"
+L["option_darkening_factor"] = "Darkening Factor"
 
 -- Display Health
 L["option_health_text_display_mode"] = "Display Health Text"

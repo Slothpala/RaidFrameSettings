@@ -88,14 +88,12 @@ end
 
 --
 frame.tab_system.tabs[L["general_settings"]]:HookScript("OnClick", function()
-  local data_provider = private.DataHandler.GetDataProvider("general_settings")
-  private.SetDataProvider(data_provider)
+  private.SetDataProvider("general_settings")
 end)
 
 -- text_settings
 frame.tab_system.tabs[L["text_settings"]]:HookScript("OnClick", function()
-  local data_provider = private.DataHandler.GetDataProvider("text_settings")
-  private.SetDataProvider(data_provider)
+  private.SetDataProvider("text_settings")
 end)
 
 function private.GetOptionsFrame()

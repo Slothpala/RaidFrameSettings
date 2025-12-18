@@ -3,8 +3,8 @@ local main_addon = _G["RaidFrameSettings"]
 local data_base = main_addon.db
 local L = LibStub("AceLocale-3.0"):GetLocale(addon_name)
 
-local data_provider = CreateTreeDataProvider()
-private.DataHandler.RegisterDataProvider("general_settings", data_provider)
+local data_manager = {}
+private.DataHandler.RegisterDataManager("general_settings", data_manager)
 
 local color_mode_options = {
   [1] = L["class"],
@@ -54,6 +54,26 @@ local options = {
       associated_modules = {
         "HealthBarBackground_Color"
       },
+    },
+    health_bar_bg_darkening_factor = {
+      order = 3.1,
+      type = "slider",
+      settings_text = L["option_darkening_factor"],
+      db_obj = data_base.profile.health_bars.bg,
+      db_key = "darkening_factor",
+      associated_modules = {
+        "HealthBarBackground_Color",
+      },
+      slider_options = {
+        min_value = 0.1,
+        max_value = 0.9,
+        steps = 8,
+        decimals = 1,
+      },
+      hide = function()
+        local color_mode = data_base.profile.health_bars.bg.color_mode
+        return color_mode == 3 or color_mode == 4
+      end,
     },
     power_bar_fg = {
       order = 4,
@@ -204,17 +224,29 @@ local options = {
   },
 }
 
-for _, category in ipairs(options) do
-  local order_tbl = {}
-  local count = 1
-  for _, option in pairs(category) do
-    order_tbl[option.order or #order_tbl] = option
-    count = count + 1
-  end
-  for i = 1, count do
-    local option = order_tbl[i]
-    if option then
-      data_provider:Insert(option)
+data_manager.get_data_provider = function ()
+  local data_provider = CreateTreeDataProvider()
+
+  for _, category in ipairs(options) do
+    local order_tbl = {}
+    local count = 1
+    for _, option in pairs(category) do
+      if option.hide and option.hide() == true then
+        -- continue
+      else
+        local pos = option.order * 100
+        order_tbl[pos] = option
+        count = count > pos and count or pos
+      end
+    end
+    for i = 1, count do
+      local option = order_tbl[i]
+      if option then
+        data_provider:Insert(option)
+      end
     end
   end
+
+  return data_provider
 end
+

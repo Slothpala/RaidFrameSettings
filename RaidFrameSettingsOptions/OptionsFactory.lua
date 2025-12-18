@@ -5,6 +5,14 @@ local media = LibStub("LibSharedMedia-3.0")
 
 local options_frame = private.GetOptionsFrame()
 local scroll_view = options_frame.scroll_view
+local current_data_provider = "general_settings"
+
+-- Only toggles and dropdowns etc. should update the scroll_view.
+local function update_scroll_view_content()
+  -- We have to set a new provider to retain scroll position.
+  local data_provider = private.DataHandler.GetDataProvider(current_data_provider)
+  scroll_view:SetDataProvider(data_provider, ScrollBoxConstants.RetainScrollPosition)
+end
 
 local function reload_associated_modules(tbl)
   for _, module_name in pairs(tbl) do
@@ -39,6 +47,7 @@ local function toggle_initializer(widget, node)
   widget.toggle:SetScript("OnClick", function(self)
     data.db_obj[data.db_key]= self:GetChecked()
     reload_associated_modules(data.associated_modules)
+    update_scroll_view_content()
   end)
 end
 
@@ -61,6 +70,7 @@ local function dropdown_initializer(widget, node)
   local function set_selected(value)
     data.db_obj[data.db_key] = value
     reload_associated_modules(data.associated_modules)
+    update_scroll_view_content()
   end
 
   MenuUtil.CreateRadioMenu(widget.dropdown, is_selected, set_selected, unpack(data.options))
@@ -210,6 +220,7 @@ local function color_mode_initializer(widget, node)
     data.db_obj.color_mode = index
     update_color_mode_widget(widget, data)
     reload_associated_modules(data.associated_modules)
+    update_scroll_view_content()
   end
 
   widget.dropdown:SetWidth(150)
@@ -549,11 +560,13 @@ local function custom_element_factory(factory, node)
 end
 scroll_view:SetElementFactory(custom_element_factory)
 
-function private.SetDataProvider(data_provider)
+function private.SetDataProvider(data_provider_name)
+  local data_provider = private.DataHandler.GetDataProvider(data_provider_name)
+  current_data_provider = data_provider_name
+  scroll_view:Flush() -- This will make it jump back to the start of the scroll view.
   scroll_view:SetDataProvider(data_provider)
 end
 
 
 -- On first launch set to general.
-local data_provider = private.DataHandler.GetDataProvider("general_settings")
-private.SetDataProvider(data_provider)
+private.SetDataProvider("general_settings")

@@ -2,12 +2,13 @@ local _, private = ...
 local data_handler = {}
 private.DataHandler = data_handler
 
-local data_providers = {}
+local data_managers = {}
 
-function data_handler.RegisterDataProvider(name, data_provider)
-  data_providers[name] = data_provider
+function data_handler.RegisterDataManager(name, data_manager)
+  data_managers[name] = data_manager
 end
 
 function data_handler.GetDataProvider(name)
-  return data_providers[name]
+  local data_manager = data_managers[name]
+  return data_manager.get_data_provider()
 end

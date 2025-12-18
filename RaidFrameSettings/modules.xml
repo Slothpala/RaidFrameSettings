@@ -20,7 +20,7 @@
   <Script file="Modules\Fonts\Font_Name.lua"/>
   <Script file="Modules\Fonts\Font_Status.lua"/>
 
-
+  <Script file="Modules\AuraFrames\DebuffFrame.lua"/>
 
 
 

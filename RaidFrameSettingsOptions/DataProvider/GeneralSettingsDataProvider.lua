@@ -272,18 +272,8 @@ local options = {
         "RaidMark",
       },
     },
-    display_aggro_highlight = {
-      order = 8,
-      type = "toggle",
-      settings_text = L["display_aggro_highlight"],
-      db_obj = data_base.profile.cvars,
-      db_key = "raidFramesDisplayAggroHighlight",
-      associated_modules = {
-        "CVar_raidFramesDisplayAggroHighlight"
-      },
-    },
     raid_mark_scale = {
-      order = 9,
+      order = 8,
       type = "slider",
       settings_text = L["raid_mark_scale"],
       db_obj = data_base.profile.module_data.RaidMark,
@@ -296,6 +286,16 @@ local options = {
         max_value = 2,
         steps = 15,
         decimals = 1,
+      },
+    },
+    display_aggro_highlight = {
+      order = 9,
+      type = "toggle",
+      settings_text = L["display_aggro_highlight"],
+      db_obj = data_base.profile.cvars,
+      db_key = "raidFramesDisplayAggroHighlight",
+      associated_modules = {
+        "CVar_raidFramesDisplayAggroHighlight"
       },
     },
     center_big_defensive = {

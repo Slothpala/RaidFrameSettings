@@ -112,6 +112,11 @@ local function slider_initializer(widget, node)
     slider.TopText:SetText(value)
     reload_associated_modules(data.associated_modules)
   end)
+
+  -- OnValueChanged will fire when the widget is reused.
+  slider.Slider:SetScript("OnHide", function(self)
+    self:SetScript("OnValueChanged", nil)
+  end)
 end
 
 --------------------

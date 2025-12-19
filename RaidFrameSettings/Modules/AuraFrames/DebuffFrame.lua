@@ -15,7 +15,7 @@ function module:OnEnable()
   local function on_frame_setup(cuf_frame)
     for _, v in pairs(cuf_frame.debuffFrames) do
       base_width = v:GetWidth()
-      print("Base width is: ",base_width)
+
     end
   end
 
@@ -23,10 +23,8 @@ function module:OnEnable()
   private.IterateRoster(on_frame_setup)
 
   local function on_set_debuff(debuffFrame, aura)
-    local width = debuffFrame:GetWidth()
-    if width > base_width then
-      print("Is Boss Aura")
-    end
+
+
   end
 
   self:HookFunc("CompactUnitFrame_UtilSetDebuff", on_set_debuff)

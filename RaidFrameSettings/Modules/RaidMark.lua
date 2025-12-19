@@ -8,6 +8,8 @@ local CR = private.CallbackRegistry
 -- Create a module.
 local module = addon:CreateModule("RaidMark")
 
+-- Local references
+local SetRaidTargetIconTexture = SetRaidTargetIconTexture
 
 -- Setup the module.
 function module:OnEnable()

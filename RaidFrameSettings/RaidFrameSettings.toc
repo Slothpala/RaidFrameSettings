@@ -9,6 +9,9 @@
 ## X-Curse-Project-ID: 688930
 
 embeds.xml
+
+SharedMedia\RegisterMedia.lua
+
 Init.lua
 Framework\framework.xml
 InitAddon.lua

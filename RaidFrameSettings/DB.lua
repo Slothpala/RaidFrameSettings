@@ -15,7 +15,7 @@ local defaults = {
     },
     module_data = {
       UnitFrameBorder = {
-        border_color = {1, 1, 1, 1},
+        border_color = {0.2, 0.2, 0.2, 0.8},
         edge_file = "Interface\\Buttons\\WHITE8X8",
         tile = false,
         tile_edge = true,
@@ -29,7 +29,7 @@ local defaults = {
         offset_y = -2,
       },
       power_bar_display_mode = 2, -- 1 Show, 2 = Healer only, 3 = hide,
-      health_text_display_mode = "perc",
+      health_text_display_mode = "none",
     },
     health_bars = {
       health_value_colors = {
@@ -38,19 +38,19 @@ local defaults = {
         low_health   = {1, 0, 0, 1},
       },
       fg = {
-        color_mode = 5,
+        color_mode = 8,
         static_color = {0, 0, 0, 1},
         gradient_start = {0, 0, 0, 1},
         gradient_end = {1, 1, 1, 1},
-        texture = "Blizzard",
+        texture = "RFS StatusBar",
       },
       bg = {
-        color_mode = 3,
+        color_mode = 1,
         darkening_factor = 0.3,
         static_color = {0, 0, 0, 1},
         gradient_start = {0, 0, 0, 1},
         gradient_end = {1, 1, 1, 1},
-        texture = "Blizzard",
+        texture = "RFS StatusBar",
       },
     },
     power_bars = {
@@ -59,15 +59,15 @@ local defaults = {
         static_color = {0, 0, 0, 1},
         gradient_start = {0, 0, 0, 1},
         gradient_end = {1,1,1,1},
-        texture = "Blizzard",
+        texture = "RFS StatusBar",
       },
       bg = {
-        color_mode = 3,
+        color_mode = 6,
         darkening_factor = 0.3,
         static_color = {0, 0, 0, 1},
         gradient_start = {0, 0, 0, 1},
         gradient_end = {1, 1, 1, 1},
-        texture = "Blizzard",
+        texture = "RFS StatusBar",
       },
     },
     fonts = {
@@ -75,36 +75,36 @@ local defaults = {
         color_mode = 3,
         static_color = {1, 1, 1, 1},
         npc_color = {1, 1, 1, 1},
-        font = "",
+        font = "2002",
         height = 12,
         flags = {
           OUTLINE = "OUTLINE",
-          THICK = "THICK",
-          MONOCHROME = "MONOCHROME",
+          THICK = "", -- THICK
+          MONOCHROME = "", -- MONOCHROME
         },
         point = "TOPLEFT",
         relative_point = "TOPLEFT",
-        offset_x = 2,
-        offset_y = 2,
+        offset_x = 3,
+        offset_y = -3,
         horizontal_justification = "LEFT", -- LEFT, CENTER, RIGHT
         vertical_justification = "MIDDLE",-- TOP, MIDDLE, BOTTOM
-        max_length = 1,
+        max_length = 0.8,
       },
       status = {
         color_mode = 3,
         static_color = {1, 1, 1, 1},
         npc_color = {1, 1, 1, 1},
-        font = "",
+        font = "2002",
         height = 12,
         flags = {
           OUTLINE = "OUTLINE",
-          THICK = "THICK",
-          MONOCHROME = "MONOCHROME",
+          THICK = "", -- THICK
+          MONOCHROME = "", -- MONOCHROME
         },
         point = "CENTER",
         relative_point = "CENTER",
         offset_x = 0,
-        offset_y = 0,
+        offset_y = -5,
         horizontal_justification = "CENTER", -- LEFT, CENTER, RIGHT
         vertical_justification = "MIDDLE",-- TOP, MIDDLE, BOTTOM
         max_length = 1,

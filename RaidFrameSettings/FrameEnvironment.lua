@@ -4,9 +4,10 @@ local addon = _G[addon_name]
 local CR = private.CallbackRegistry
 
 
-local function create_frame_env()
+local function create_frame_env(cuf_frame)
   local env = {
-    event_frame = CreateFrame("Frame"),
+    frame = CreateFrame("Frame", nil, cuf_frame),
+    module_data = {},
     callback_table = {}
   }
 
@@ -15,7 +16,7 @@ local function create_frame_env()
     if not self.callback_table[event] then
       self.callback_table[event] = {}
     end
-    self.event_frame:RegisterEvent(event)
+    self.frame:RegisterEvent(event)
     self.callback_table[event][name] = callback
   end
 
@@ -23,7 +24,7 @@ local function create_frame_env()
     if not self.callback_table[event] then
       self.callback_table[event] = {}
     end
-    self.event_frame:RegisterUnitEvent(event, unit)
+    self.frame:RegisterUnitEvent(event, unit)
     self.callback_table[event][name] = callback
   end
 
@@ -33,12 +34,12 @@ local function create_frame_env()
     end
     self.callback_table[event][name] = nil
     if next(self.callback_table[event]) == nil then
-      self.event_frame:UnregisterEvent(event)
+      self.frame:UnregisterEvent(event)
     end
   end
 
   function env:Start()
-    self.event_frame:SetScript("OnEvent", function(_, event, ...)
+    self.frame:SetScript("OnEvent", function(_, event, ...)
       for _, callback in pairs(self.callback_table[event]) do
         callback(...)
       end
@@ -46,26 +47,28 @@ local function create_frame_env()
   end
 
   function env:Stop()
-    self.event_frame:SetScript("OnEvent", nil)
+    self.frame:SetScript("OnEvent", nil)
   end
 
+  CR.Fire("FRAME_ENV_CREATED", cuf_frame)
   return env
 end
 
 function private.CreateOrUpdateFrameEnv()
   local function create_or_update_frame_env(cuf_frame)
     if not cuf_frame.RFS_FrameEnvironment then
-      cuf_frame.RFS_FrameEnvironment = create_frame_env()
+      cuf_frame.RFS_FrameEnvironment = create_frame_env(cuf_frame)
     end
-  end
 
-  -- Fire an event that notifies other modules that the frame environment has been updated.
-  CR:Fire("FRAME_ENV_UPDATED", cuf_frame)
+    if cuf_frame.unit then
+      cuf_frame.RFS_FrameEnvironment:Start()
+    else
+      cuf_frame.RFS_FrameEnvironment:Stop()
+    end
 
-  if cuf_frame.unit then
-    cuf_frame.RFS_FrameEnvironment:Start()
-  else
-    cuf_frame.RFS_FrameEnvironment:Stop()
+    -- Fire an event that notifies other modules that the frame environment has been updated.
+    CR.Fire("FRAME_ENV_UPDATED", cuf_frame)
+    --print("Frame Env Update for: ", cuf_frame:GetName())
   end
 
   CompactRaidFrameContainer:ApplyToFrames("normal", create_or_update_frame_env)

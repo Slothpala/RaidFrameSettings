@@ -7,6 +7,7 @@ local function init_addon()
 end
 
 local function load_addon()
+  private.CreateOrUpdateFrameEnv()
   for _, module in addon:IterateModules() do
     if addon.db.profile.module_status[module:GetName()] == true then
       module:Enable()
@@ -18,9 +19,12 @@ end
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 
 frame:SetScript("OnEvent", function(self, event, name)
-  if event == "ADDON_LOADED" and name == addon_name then
+  if event == "GROUP_ROSTER_UPDATE" then
+    private.CreateOrUpdateFrameEnv()
+  elseif event == "ADDON_LOADED" and name == addon_name then
     init_addon()
   elseif event == "PLAYER_ENTERING_WORLD" then
     load_addon()

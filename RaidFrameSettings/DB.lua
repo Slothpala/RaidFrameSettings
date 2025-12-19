@@ -37,6 +37,7 @@ local defaults = {
       },
       power_bar_display_mode = 2, -- 1 Show, 2 = Healer only, 3 = hide,
       health_text_display_mode = "none",
+      dispel_indicator_mode = "1" -- 0 = Disabled, 1 = Dispellable By Me, 2 = Show All
     },
     health_bars = {
       health_value_colors = {
@@ -119,6 +120,11 @@ local defaults = {
     },
     cvars = {
       raidOptionDisplayPets = false,
+      raidFramesDisplayAggroHighlight = true,
+      raidFramesCenterBigDefensive = true,
+      raidFramesDispelIndicatorOverlay = true,
+      raidFramesDisplayIncomingHeals = true,
+      raidOptionDisplayMainTankAndAssist = true,
     },
     colors = {
       class = {

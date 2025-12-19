@@ -234,6 +234,16 @@ local options = {
         "CVar_pvpFramesHealthText",
       },
     },
+    display_incoming_heals = {
+      order = 4.1,
+      type = "toggle",
+      settings_text = L["display_incoming_heals"],
+      db_obj = data_base.profile.cvars,
+      db_key = "raidFramesDisplayIncomingHeals",
+      associated_modules = {
+        "CVar_raidFramesDisplayIncomingHeals"
+      },
+    },
     role_icon_pos = {
       order = 5,
       type = "anchor",
@@ -243,8 +253,18 @@ local options = {
         "RoleIcon",
       },
     },
-    raid_mark_pos = {
+    display_main_tank_and_assist = {
       order = 6,
+      type = "toggle",
+      settings_text = L["display_main_tank_and_assist"],
+      db_obj = data_base.profile.cvars,
+      db_key = "raidOptionDisplayMainTankAndAssist",
+      associated_modules = {
+        "CVar_raidOptionDisplayMainTankAndAssist"
+      },
+    },
+    raid_mark_pos = {
+      order = 7,
       type = "anchor",
       settings_text = L["raid_mark_pos"],
       db_obj = data_base.profile.module_data.RaidMark,
@@ -252,8 +272,18 @@ local options = {
         "RaidMark",
       },
     },
+    display_aggro_highlight = {
+      order = 8,
+      type = "toggle",
+      settings_text = L["display_aggro_highlight"],
+      db_obj = data_base.profile.cvars,
+      db_key = "raidFramesDisplayAggroHighlight",
+      associated_modules = {
+        "CVar_raidFramesDisplayAggroHighlight"
+      },
+    },
     raid_mark_scale = {
-      order = 7,
+      order = 9,
       type = "slider",
       settings_text = L["raid_mark_scale"],
       db_obj = data_base.profile.module_data.RaidMark,
@@ -267,7 +297,46 @@ local options = {
         steps = 15,
         decimals = 1,
       },
-    }
+    },
+    center_big_defensive = {
+      order = 10,
+      type = "toggle",
+      settings_text = L["center_big_defensive"],
+      db_obj = data_base.profile.cvars,
+      db_key = "raidFramesCenterBigDefensive",
+      associated_modules = {
+        "CVar_raidFramesCenterBigDefensive"
+      },
+    },
+    dispellable_debuff_indicator = {
+      order = 11,
+      type = "dropdown",
+      settings_text = L["dispellable_debuff_indicator"],
+      db_obj = data_base.profile.module_data,
+      db_key = "dispel_indicator_mode",
+      options = {
+        {L["option_disabled"] , "0"},
+        {L["option_dispellable_by_me"] , "1"},
+        {L["option_show_all"] , "2"},
+      },
+      associated_modules = {
+        "CVar_raidFramesDispelIndicatorType",
+        "CVar_raidFramesDispelIndicatorOverlay",
+      },
+    },
+    dispellable_debuff_color = {
+      order = 12,
+      type = "toggle",
+      settings_text = L["dispellable_debuff_color"],
+      db_obj = data_base.profile.cvars,
+      db_key = "raidFramesDispelIndicatorOverlay",
+      associated_modules = {
+        "CVar_raidFramesDispelIndicatorOverlay"
+      },
+      hide = function()
+        return data_base.profile.module_data.dispel_indicator_mode == "0"
+      end,
+    },
   },
 }
 

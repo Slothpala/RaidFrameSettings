@@ -33,6 +33,9 @@ L["option_show"] = "Show"
 L["option_hide"] = "Hide"
 L["option_healer_only"] = "Only Healers"
 L["option_darkening_factor"] = "Darkening Factor"
+L["option_disabled"] = "Disabled"
+L["option_dispellable_by_me"] = "Dispellable By Me"
+L["option_show_all"] = "Show All"
 
 -- Display Health
 L["option_health_text_display_mode"] = "Display Health Text"
@@ -59,6 +62,12 @@ L["gradient_end"] = "Gradient End"
 
 -- CVars
 L["display_pets"] = "Display Pets"
+L["display_aggro_highlight"] = "Display Aggro Highlight"
+L["display_incoming_heals"] = "Display Incoming Heals"
+L["display_main_tank_and_assist"] = "Display Main Tank and Assist"
+L["center_big_defensive"] = "Center Big Defensives"
+L["dispellable_debuff_indicator"] = "Dispellable Debuff Indicator"
+L["dispellable_debuff_color"] = "Dispellable Debuff Color"
 
 
 -- Anchors

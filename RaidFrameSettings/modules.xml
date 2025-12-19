@@ -31,4 +31,10 @@
   <Script file="Modules\CVars\CVar_pvpFramesDisplayOnlyHealerPowerBars.lua"/>
   <Script file="Modules\CVars\CVar_raidFramesHealthText.lua"/>
   <Script file="Modules\CVars\CVar_pvpFramesHealthText.lua"/>
+  <Script file="Modules\CVars\CVar_raidFramesDisplayAggroHighlight.lua"/>
+  <Script file="Modules\CVars\CVar_raidFramesDisplayIncomingHeals.lua"/>
+  <Script file="Modules\CVars\CVar_raidOptionDisplayMainTankAndAssist.lua"/>
+  <Script file="Modules\CVars\CVar_raidFramesCenterBigDefensive.lua"/>
+  <Script file="Modules\CVars\CVar_raidFramesDispelIndicatorType.lua"/>
+  <Script file="Modules\CVars\CVar_raidFramesDispelIndicatorOverlay.lua"/>
 </Ui>

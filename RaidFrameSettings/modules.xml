@@ -15,7 +15,7 @@
 
   <Script file="Modules\UnitFrameBorder.lua"/>
   <Script file="Modules\RoleIcon.lua"/>
-
+  <Script file="Modules\RaidMark.lua"/>
 
   <Script file="Modules\Fonts\Font_Name.lua"/>
   <Script file="Modules\Fonts\Font_Status.lua"/>

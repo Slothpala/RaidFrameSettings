@@ -25,8 +25,15 @@ local defaults = {
       RoleIcon = {
         point = "TOPRIGHT",
         relative_point = "TOPRIGHT",
-        offset_x = -2,
-        offset_y = -2,
+        offset_x = -3,
+        offset_y = -3,
+      },
+      RaidMark = {
+        point = "TOP",
+        relative_point = "TOP",
+        offset_x = 0,
+        offset_y = -3,
+        scale = 0.8,
       },
       power_bar_display_mode = 2, -- 1 Show, 2 = Healer only, 3 = hide,
       health_text_display_mode = "none",

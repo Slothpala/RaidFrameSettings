@@ -243,6 +243,31 @@ local options = {
         "RoleIcon",
       },
     },
+    raid_mark_pos = {
+      order = 6,
+      type = "anchor",
+      settings_text = L["raid_mark_pos"],
+      db_obj = data_base.profile.module_data.RaidMark,
+      associated_modules = {
+        "RaidMark",
+      },
+    },
+    raid_mark_scale = {
+      order = 7,
+      type = "slider",
+      settings_text = L["raid_mark_scale"],
+      db_obj = data_base.profile.module_data.RaidMark,
+      db_key = "scale",
+      associated_modules = {
+        "RaidMark",
+      },
+      slider_options = {
+        min_value = 0.5,
+        max_value = 2,
+        steps = 15,
+        decimals = 1,
+      },
+    }
   },
 }
 

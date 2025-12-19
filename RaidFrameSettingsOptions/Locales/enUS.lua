@@ -93,3 +93,5 @@ L["max_length"] = "Length"
 -- Modules.
 L["clean_borders"] = "Clean Highlight"
 L["role_icon"] = "Role Icon"
+L["raid_mark_pos"] = "Raid Mark Position"
+L["raid_mark_scale"] = "Raid Mark Scale"

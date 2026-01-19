@@ -75,7 +75,6 @@ frame.tab_system:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 15, 2)
 for k, category in pairs({
   L["general_settings"],
   L["text_settings"],
-  L["aura_frame_settings"],
 }) do
   frame.tab_system:AddTab(category)
   local tab = frame.tab_system:GetTabButton(k)

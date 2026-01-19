@@ -1,3 +1,4 @@
 # **Changelog**
-### Version [4.0.0-Alpha] - 2025-12-13
-* New Api New AddOn
+### Version [4.0.0] - 2025-01-20
+* Initial Release of version 4.0.0 for the Midnight pre-patch.
+

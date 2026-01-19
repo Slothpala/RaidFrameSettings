@@ -1,48 +1,31 @@
-## Interface: 110207
+## Interface: 120000
 ## Version: @project-version@
 ## Title: RaidFrameSettings
 ## Author: Slothpala
+## AddonCompartmentFunc: RaidFrameSettings_OpenSettings
+## IconTexture: Interface\AddOns\RaidFrameSettings\Data\Textures\Icon.tga
 ## SavedVariables: RaidFrameSettingsDB
-## AddonCompartmentFunc: RaidFrameSettings_AddOnCompartmentEntry
-## IconTexture: Interface\AddOns\RaidFrameSettings\Textures\Icon.tga
-## OptionalDeps: Ace3, LibDeflate, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDDI-1.0, AceGUI-3.0_SFX-Widgets, LibCanDispel-1.0, LibDBIcon-1.0, LibCustomGLow-1.0, LibGroupInSpecT-1.1
+## OptionalDeps: Ace3, LibSharedMedia-3.0
 ## X-Curse-Project-ID: 688930
 
 embeds.xml
-Locales\locales.xml
 
 SharedMedia\RegisterMedia.lua
 
-Core.lua
-DataBase.lua
-
-Utils\Animation.lua
-Utils\GroupType.lua
-Utils\ClassCooldowns.lua
-Utils\HookRegistryMixin.lua
-Utils\AuraSpellKnown.lua
-Utils\DB_Transition.lua
-Utils\AuraGroupPresets\AuraGroupPreset.xml
-
-Templates\AuraIndicatorTemplate.xml
-Templates\AuraFrame.lua
+Init.lua
+Framework\framework.xml
+InitAddon.lua
 
 UnitCache.lua
 CallbackRegistry.lua
-AddonColors.lua
-AuraScanner.lua
 FrameEnvironment.lua
-Roster.lua
-GroupProfileLoader.lua
-HealthColor.lua
-PowerColor.lua
+
+DB.lua
 
 modules.xml
 
-Options\options.xml
-Options\OptionsFrame.lua
-Options\PopUpFrame.lua
 
 
+Utils\RosterIterator.lua
 
-
+RaidFrameSettings.lua

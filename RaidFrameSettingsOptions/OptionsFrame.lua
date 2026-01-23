@@ -75,6 +75,7 @@ frame.tab_system:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 15, 2)
 for k, category in pairs({
   L["general_settings"],
   L["text_settings"],
+  L["profiles_settings"],
 }) do
   frame.tab_system:AddTab(category)
   local tab = frame.tab_system:GetTabButton(k)
@@ -93,6 +94,11 @@ end)
 -- text_settings
 frame.tab_system.tabs[L["text_settings"]]:HookScript("OnClick", function()
   private.SetDataProvider("text_settings")
+end)
+
+-- profiles_settings
+frame.tab_system.tabs[L["profiles_settings"]]:HookScript("OnClick", function()
+  private.SetDataProvider("profiles_settings")
 end)
 
 function private.GetOptionsFrame()

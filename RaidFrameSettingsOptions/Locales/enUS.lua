@@ -6,6 +6,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true, true)
 L["general_settings"] = "General"
 L["text_settings"] = "Text"
 L["aura_frame_settings"] = "Auras"
+L["profiles_settings"] = "Profiles"
 
 -- Titles.
 L["title_colors"] = "Colors"
@@ -104,3 +105,6 @@ L["clean_borders"] = "Clean Highlight"
 L["role_icon"] = "Role Icon"
 L["raid_mark_pos"] = "Raid Mark Position"
 L["raid_mark_scale"] = "Raid Mark Scale"
+
+-- Profiles
+L["profiles_header_1"] = "Profiles - Current Profile:"

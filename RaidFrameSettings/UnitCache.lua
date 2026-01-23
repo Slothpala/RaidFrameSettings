@@ -15,7 +15,7 @@ local UnitGUID = UnitGUID
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetRealmName = GetRealmName
 local UnitClass = UnitClass
-local UnitNameUnmodified = UnitNameUnmodified
+local UnitName = UnitName
 local issecretvalue = issecretvalue
 
 -------------
@@ -78,9 +78,6 @@ local my_realm_name = GetRealmName():gsub("[%s%-]", "")
 ---@param guid string the GUID of the unit.
 ---@return table unit_cache the new unit cache entry or fallback.
 local function new_unit_cache(guid)
-  if not guid then
-    return fallback_cache_entry
-  end
   -- This data appears to be cached by the game and may not always be immediately available.
   local _, english_class, _, _, _, name, realm_name = GetPlayerInfoByGUID(guid)
   -- If the data isn't available jet find the designated unit token and use this.
@@ -90,7 +87,7 @@ local function new_unit_cache(guid)
       return fallback_cache_entry
     else
       english_class = select(2, UnitClass(unit_token))
-      name, realm_name = UnitNameUnmodified(unit_token)
+      name, realm_name = UnitName(unit_token)
     end
   end
   -- realm_name is an empty string if the player is from the same realm.
@@ -114,12 +111,15 @@ end
 --- Get a units cache by GUID or build one if not existing.
 ---@param guid string The GUID of the unit.
 ---@return table unit_cache The cached data for the unit
-function UnitCache:Get(guid)
+function UnitCache.Get(guid)
+  if not guid or issecretvalue(guid) then
+    return fallback_cache_entry
+  end
   return unit_cache[guid] or new_unit_cache(guid)
 end
 
 --- Dump the cache
-function UnitCache:Dump()
+function UnitCache.Dump()
   unit_cache = {}
 end
 
@@ -132,11 +132,11 @@ update_frame:SetScript("OnEvent", function(self, event, ...)
   if event == "UNIT_NAME_UPDATE" then
     local unit_token = ...
     local guid = UnitGUID(unit_token)
-    if issecretvalue(guid) then
+    if not guid or issecretvalue(guid) then
       return
     end
     if unit_cache[guid] then
-      local new_name, new_realm_name = UnitNameUnmodified(unit_token)
+      local new_name, new_realm_name = UnitName(unit_token)
       if not new_realm_name then
         new_realm_name = my_realm_name
       end

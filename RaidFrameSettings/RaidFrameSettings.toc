@@ -27,5 +27,8 @@ modules.xml
 
 
 Utils\RosterIterator.lua
+Utils\GroupType.lua
+Utils\ProfileLoader.lua
+
 
 RaidFrameSettings.lua

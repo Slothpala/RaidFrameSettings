@@ -255,6 +255,14 @@ local defaults = {
       }
     },
   },
+  global = {
+    ["**"] = {
+      party_profile = "Default",
+      raid_profile = "Default",
+      arena_profile = "Default",
+      battleground_profile = "Default",
+    },
+  },
 }
 
 function private:InitDatabase()

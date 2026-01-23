@@ -43,3 +43,7 @@ function RaidFrameSettings_OpenSettings()
 
   RaidFrameSettingsOptions:Show()
 end
+
+-- Register slash commands.
+SLASH_RAID_FRAME_SETTINGS1 = "/rfs"
+SlashCmdList.RAID_FRAME_SETTINGS = RaidFrameSettings_OpenSettings

@@ -50,7 +50,6 @@ local function create_frame_env(cuf_frame)
     self.frame:SetScript("OnEvent", nil)
   end
 
-  CR.Fire("FRAME_ENV_CREATED", cuf_frame)
   return env
 end
 
@@ -58,6 +57,7 @@ function private.CreateOrUpdateFrameEnv()
   local function create_or_update_frame_env(cuf_frame)
     if not cuf_frame.RFS_FrameEnvironment then
       cuf_frame.RFS_FrameEnvironment = create_frame_env(cuf_frame)
+      CR.Fire("FRAME_ENV_CREATED", cuf_frame)
     end
 
     if cuf_frame.unit then

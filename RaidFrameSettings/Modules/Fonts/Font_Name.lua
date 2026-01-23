@@ -48,7 +48,7 @@ function module:OnEnable()
     local name_text = cuf_frame.name
     if is_player then
       local guid = UnitGUID(cuf_frame.unit)
-      local unit_cache = UnitCache:Get(guid)
+      local unit_cache = UnitCache.Get(guid)
       name_text:SetText(unit_cache.nickname) -- nickname defaults to name if not set.
       if db_obj.color_mode == 1 then -- class
         local color = addon:GetColor(unit_cache.class)

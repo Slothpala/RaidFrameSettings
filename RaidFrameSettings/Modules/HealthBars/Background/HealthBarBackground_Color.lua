@@ -59,7 +59,7 @@ function module:OnEnable()
       local unit_is_player = treat_unit_as_player(cuf_frame.unit) or treat_unit_as_player(cuf_frame.displayedUnit)
       if unit_is_player then
         local guid = UnitGUID(cuf_frame.unit)
-        local unit_cache = UnitCache:Get(guid)
+        local unit_cache = UnitCache.Get(guid)
         color = darkened_colors[unit_cache.class]
       else
         if UnitIsEnemy("player", cuf_frame.unit) then
@@ -80,7 +80,7 @@ function module:OnEnable()
       local unit_is_player = treat_unit_as_player(cuf_frame.unit) or treat_unit_as_player(cuf_frame.displayedUnit)
       if unit_is_player then
         local guid = UnitGUID(cuf_frame.unit)
-        local unit_cache = UnitCache:Get(guid)
+        local unit_cache = UnitCache.Get(guid)
         color = darkened_colors[unit_cache.class]
       else
         if UnitIsEnemy("player", cuf_frame.unit) then

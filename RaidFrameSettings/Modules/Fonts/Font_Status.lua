@@ -44,7 +44,7 @@ function module:OnEnable()
     status_text:SetWidth(cuf_frame_width * db_obj.max_length)
     if db_obj.color_mode == 1 then -- class
       local guid = UnitGUID(cuf_frame.unit)
-      local unit_cache = UnitCache:Get(guid)
+      local unit_cache = UnitCache.Get(guid)
       local color = addon:GetColor(unit_cache.class)
       status_text:SetTextColor(unpack(color.normal_color))
     else -- static

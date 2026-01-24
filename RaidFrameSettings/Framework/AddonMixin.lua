@@ -37,3 +37,9 @@ end
 function addon_mixin:IterateModules()
   return pairs(modules)
 end
+
+function addon_mixin:ReloadAllModules()
+  for _, module in self:IterateModules() do
+    self:ReloadModule(module:GetName())
+  end
+end

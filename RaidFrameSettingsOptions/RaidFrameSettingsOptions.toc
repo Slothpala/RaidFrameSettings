@@ -22,8 +22,6 @@ Templates\RaidFrameSettings_SliderTemplate.xml
 Templates\RaidFrameSettings_EditBoxAndButtonTemplate.xml
 Templates\RaidFrameSettings_ButtonTemplate.xml
 
-UITestingRange.lua
-
 OptionsFrame.lua
 
 DataProvider\DataHandler.lua

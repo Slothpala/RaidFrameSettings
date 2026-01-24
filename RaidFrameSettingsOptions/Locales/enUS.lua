@@ -70,7 +70,6 @@ L["center_big_defensive"] = "Center Big Defensives"
 L["dispellable_debuff_indicator"] = "Dispellable Debuff Indicator"
 L["dispellable_debuff_color"] = "Dispellable Debuff Color"
 
-
 -- Anchors
 L["to_frames"] = "to frames"
 L["offset_x"] = "Offset x"
@@ -108,3 +107,15 @@ L["raid_mark_scale"] = "Raid Mark Scale"
 
 -- Profiles
 L["profiles_header_1"] = "Profiles - Current Profile:"
+L["create_profile"] = "Create new profile"
+L["reset_profile"] = "Reset profile"
+L["delete_profile"] = "Delete profile"
+L["copy_profile"] = "Copy profile"
+L["party_profile"] = "Party"
+L["raid_profile"] = "Raid"
+L["arena_profile"] = "Arena"
+L["battleground_profile"] = "Battleground"
+
+-- Labels
+L["label_create"] = "Create"
+L["label_reset"] = "Reset"

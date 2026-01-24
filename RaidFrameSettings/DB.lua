@@ -256,16 +256,22 @@ local defaults = {
     },
   },
   global = {
-    ["**"] = {
-      party_profile = "Default",
-      raid_profile = "Default",
-      arena_profile = "Default",
-      battleground_profile = "Default",
+    profiles = {
+      ["**"] = {
+        party_profile = "Default",
+        raid_profile = "Default",
+        arena_profile = "Default",
+        battleground_profile = "Default",
+      },
     },
   },
 }
 
 function private:InitDatabase()
-  _G[addon_name].db= LibStub("AceDB-3.0"):New(addon_name .. "DB", defaults)
+  local addon = _G[addon_name]
+  addon.db = LibStub("AceDB-3.0"):New(addon_name .. "DB", defaults, true)
+  addon.db.RegisterCallback(addon, "OnProfileChanged", "ReloadAllModules")
+  addon.db.RegisterCallback(addon, "OnProfileCopied", "ReloadAllModules")
+  addon.db.RegisterCallback(addon, "OnProfileReset", "ReloadAllModules")
 end
 

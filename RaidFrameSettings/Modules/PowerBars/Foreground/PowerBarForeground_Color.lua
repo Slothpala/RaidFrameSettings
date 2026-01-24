@@ -26,7 +26,7 @@ end
 -- Setup the module.
 function module:OnEnable()
   -- Get the data.
-  local db_obj = addon.db.profile.power_bars.fg
+  local db_obj = CopyTable(addon.db.profile.power_bars.fg)
   local color_mode = db_obj.color_mode
 
   local update_color = function() end

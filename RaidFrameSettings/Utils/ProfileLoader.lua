@@ -22,7 +22,7 @@ local function check_group_profile()
   if new_group_type == group_type then
     return
   end
-  local new_profile = addon.db.global[spec_id][group_profiles[new_group_type]]
+  local new_profile = addon.db.global.profiles[spec_id][group_profiles[new_group_type]]
   local current_profile = addon.db:GetCurrentProfile()
   if current_profile == new_profile then
     return
@@ -51,6 +51,6 @@ end)
 
 function addon:LoadGroupProfile()
   group_type = self.GetGroupType()
-  local profile = self.db.global[spec_id][group_profiles[group_type]]
+  local profile = self.db.global.profiles[spec_id][group_profiles[group_type]]
   self.db:SetProfile(profile)
 end

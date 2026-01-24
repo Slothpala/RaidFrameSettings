@@ -13,7 +13,7 @@ local SetRaidTargetIconTexture = SetRaidTargetIconTexture
 
 -- Setup the module.
 function module:OnEnable()
-  local db_obj = addon.db.profile.module_data.RaidMark
+  local db_obj = CopyTable(addon.db.profile.module_data.RaidMark)
 
   local function update_raid_mark(cuf_frame)
     local unit = cuf_frame.unit

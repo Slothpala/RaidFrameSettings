@@ -16,10 +16,11 @@ local function create_colors(key)
                  _G[addon_name].db.profile.colors.power[key] or
                  _G[addon_name].db.profile.colors.npc[key] or
                  fallback_color
+  local pres_db_obj = CopyTable(db_obj)
   color_cache[key] = {
-    gradient_start = CreateColor(unpack(db_obj["gradient_start"])),
-    gradient_end = CreateColor(unpack(db_obj["gradient_end"])),
-    normal_color = db_obj.normal_color,
+    gradient_start = CreateColor(unpack(pres_db_obj["gradient_start"])),
+    gradient_end = CreateColor(unpack(pres_db_obj["gradient_end"])),
+    normal_color = pres_db_obj.normal_color,
   }
 end
 

@@ -19,6 +19,8 @@ Templates\RaidFrameSettings_AnchorTemplate.xml
 Templates\RaidFrameSettings_FontSelectionTemplate.xml
 Templates\RaidFrameSettings_SingleChoiceColorPicker.xml
 Templates\RaidFrameSettings_SliderTemplate.xml
+Templates\RaidFrameSettings_EditBoxAndButtonTemplate.xml
+Templates\RaidFrameSettings_ButtonTemplate.xml
 
 UITestingRange.lua
 

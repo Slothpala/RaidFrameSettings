@@ -7,7 +7,7 @@ local module = addon:CreateModule("UnitFrameBorder")
 
 -- Setup the module.
 function module:OnEnable()
-  local db_obj = addon.db.profile.module_data.UnitFrameBorder
+  local db_obj = CopyTable(addon.db.profile.module_data.UnitFrameBorder)
 
   local backdrop_info = {
     edgeFile = db_obj.edge_file,

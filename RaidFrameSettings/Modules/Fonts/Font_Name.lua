@@ -19,7 +19,7 @@ local UnitCache = private.UnitCache
 
 -- Setup the module.
 function module:OnEnable()
-  local db_obj = addon.db.profile.fonts.name
+  local db_obj = CopyTable(addon.db.profile.fonts.name)
   local font_path = media:Fetch("font", db_obj.font)
   local flags = db_obj.flags.THICK .. db_obj.flags.OUTLINE .. "," .. db_obj.flags.MONOCHROME
 

@@ -15,9 +15,13 @@ local function update_scroll_view_content()
   scroll_view:SetDataProvider(data_provider, ScrollBoxConstants.RetainScrollPosition)
 end
 
-local function reload_associated_modules(tbl)
-  for _, module_name in pairs(tbl) do
-    addon:ReloadModule(module_name)
+local function reload_associated_modules(associated_modules)
+  if type(associated_modules) == "table" then
+    for _, module_name in pairs(associated_modules) do
+      addon:ReloadModule(module_name)
+    end
+  elseif type(associated_modules) == "function" then
+    associated_modules()
   end
 end
 
@@ -469,7 +473,6 @@ local function font_selection_initializer(widget, node)
   local max_characters = 12
   local max_sroll_extent = extent * max_characters
 
-
   widget.dropdown:SetWidth(150)
   widget.dropdown:SetupMenu(function(dropdown, root_description)
     root_description:SetScrollMode(max_sroll_extent)
@@ -497,15 +500,22 @@ local function font_selection_initializer(widget, node)
 
   -- Set up flags selection dropdown.
   local function is_choosen(flag)
-    return data.db_obj.flags[flag] == flag
+    local flags = data.db_obj and data.db_obj.flags
+    return flags and flags[flag] == flag or false
   end
 
   local function set_choosen(flag)
-    if data.db_obj.flags[flag] ~= "" then
-        data.db_obj.flags[flag] = ""
-    else
-        data.db_obj.flags[flag] = flag
+    local flags = data.db_obj and data.db_obj.flags
+    if not flags then
+        return
     end
+
+    if flags[flag] ~= "" then
+        flags[flag] = ""
+    else
+        flags[flag] = flag
+    end
+
     reload_associated_modules(data.associated_modules)
   end
 
@@ -541,6 +551,45 @@ local function font_selection_initializer(widget, node)
   end)
 end
 
+-----------------------------
+--- Input box with button ---
+-----------------------------
+
+local function input_with_button_initializer(widget, node)
+  -- Get the node data.
+  local data = node:GetData()
+
+  -- Set the name of the setting.
+  widget.settings_text:SetText(data.settings_text)
+
+  -- Set the button text.
+  widget.button:SetText(data.button_text)
+
+  -- Set the button on click behavior.
+  widget.button:SetScript("OnClick", function()
+    local input = widget.editbox:GetText()
+    data.button_callback(input)
+    update_scroll_view_content()
+  end)
+end
+
+--------------
+--- Button ---
+--------------
+
+local function button_initializer(widget, node)
+  -- Get the node data.
+  local data = node:GetData()
+
+  -- Set the name of the setting.
+  widget.settings_text:SetText(data.settings_text)
+
+  -- Set the button text.
+  widget.button:SetText(data.button_text)
+
+  -- Set the button on click behavior.
+  widget.button:SetScript("OnClick", data.button_callback)
+end
 
 local function custom_element_factory(factory, node)
   local data = node:GetData()
@@ -562,6 +611,10 @@ local function custom_element_factory(factory, node)
     factory("RaidFrameSettings_DropdownSelectionTemplate", dropdown_initializer)
   elseif data.type == "slider" then
     factory("RaidFrameSettings_SliderTemplate", slider_initializer)
+  elseif data.type == "input_with_button" then
+    factory("RaidFrameSettings_EditBoxAndButtonTemplate", input_with_button_initializer)
+  elseif data.type == "button" then
+    factory("RaidFrameSettings_ButtonTemplate", button_initializer)
   end
 end
 scroll_view:SetElementFactory(custom_element_factory)

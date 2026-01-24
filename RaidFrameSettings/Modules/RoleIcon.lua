@@ -7,7 +7,7 @@ local module = addon:CreateModule("RoleIcon")
 
 -- Setup the module.
 function module:OnEnable()
-  local db_obj = addon.db.profile.module_data.RoleIcon
+  local db_obj = CopyTable(addon.db.profile.module_data.RoleIcon)
 
   local function update_pos(cuf_frame)
     local role_icon = cuf_frame.roleIcon

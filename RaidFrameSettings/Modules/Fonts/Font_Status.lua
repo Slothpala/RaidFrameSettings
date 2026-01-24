@@ -26,7 +26,7 @@ end
 
 -- Setup the module.
 function module:OnEnable()
-  local db_obj = addon.db.profile.fonts.status
+  local db_obj = CopyTable(addon.db.profile.fonts.status)
   local font_path = media:Fetch("font", db_obj.font)
   local flags = db_obj.flags.THICK .. db_obj.flags.OUTLINE .. "," .. db_obj.flags.MONOCHROME
 

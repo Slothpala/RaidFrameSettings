@@ -12,6 +12,7 @@ local defaults = {
     },
     module_status = {
       ["*"] = true,
+      SoloFrame = false,
     },
     module_data = {
       UnitFrameBorder = {

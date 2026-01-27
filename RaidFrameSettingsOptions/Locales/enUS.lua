@@ -104,6 +104,7 @@ L["clean_borders"] = "Clean Highlight"
 L["role_icon"] = "Role Icon"
 L["raid_mark_pos"] = "Raid Mark Position"
 L["raid_mark_scale"] = "Raid Mark Scale"
+L["settings_text_solo_frame"] = "Display when solo"
 
 -- Profiles
 L["profiles_header_1"] = "Profiles - Current Profile:"

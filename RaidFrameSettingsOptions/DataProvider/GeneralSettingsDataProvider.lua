@@ -338,6 +338,16 @@ local function generate_options_tbl()
           return data_base.profile.module_data.dispel_indicator_mode == "0"
         end,
       },
+      display_solo_frame = {
+        order = 13,
+        type = "toggle",
+        settings_text = L["settings_text_solo_frame"],
+        db_obj = data_base.profile.module_status,
+        db_key = "SoloFrame",
+        associated_modules = {
+          "SoloFrame"
+        },
+      },
     },
   }
   return options

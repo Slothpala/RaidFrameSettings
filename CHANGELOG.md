@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.2.0] - 2026-01-27
+#### Added
+* Added new module: SoloFrame. Displays the party frames even when playing solo.
+
 ### Version [4.1.0] - 2026-01-24
 #### Added
 * Added support for profiles.

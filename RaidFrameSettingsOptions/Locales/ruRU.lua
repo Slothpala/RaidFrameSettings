@@ -105,6 +105,7 @@ L["clean_borders"] = "Чистое выделение"
 L["role_icon"] = "Значок роли"
 L["raid_mark_pos"] = "Позиция метки рейда"
 L["raid_mark_scale"] = "Масштаб меток рейда"
+L["settings_text_solo_frame"] = "Отображать, когда соло"
 
 -- Profiles
 L["profiles_header_1"] = "Профили - Текущий профиль:"

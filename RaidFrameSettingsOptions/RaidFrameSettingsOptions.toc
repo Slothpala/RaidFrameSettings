@@ -1,6 +1,7 @@
 ## Interface: 120000
 ## Version: @project-version@
 ## Title: RaidFrameSettings Options
+## Notes-ruRU: Аддон для фреймов групп/рейдов, улучшающий стандартные фреймы WoW, добавляя множество параметров настройки и индикаторов
 ## LoadOnDemand: 1
 ## Dependencies: RaidFrameSettings
 ## OptionalDeps: Ace3
@@ -30,4 +31,3 @@ DataProvider\TextSettingsDataProvider.lua
 DataProvider\ProfilesSettingsDataProvider.lua
 
 OptionsFactory.lua
-

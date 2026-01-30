@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.2.2] - 2026-01-**
+#### Added
+* Added a notification message and a check to ensure that the RaidFrameSettingsOptions addon is enabled before attempting to load it.
+
 ### Version [4.2.1] - 2026-01-30
 #### Added
 * Added the option to select for which class the user want to see role icons.

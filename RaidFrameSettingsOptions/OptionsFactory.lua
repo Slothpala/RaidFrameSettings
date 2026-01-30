@@ -67,18 +67,36 @@ local function dropdown_initializer(widget, node)
   -- Set the name of the setting.
   widget.settings_text:SetText(data.settings_text)
 
-  -- Feed the dropdown.
-  local function is_selected(value)
-    return data.db_obj[data.db_key] == value
-  end
+    -- Feed the dropdown.
+  if data.is_multiple_choice then
+    local function is_choosen(key)
+      return data.db_obj and data.db_obj[key] or false
+    end
 
-  local function set_selected(value)
-    data.db_obj[data.db_key] = value
-    reload_associated_modules(data.associated_modules)
-    update_scroll_view_content()
-  end
+    local function set_choosen(key)
+      if not data.db_obj then
+        return
+      end
 
-  MenuUtil.CreateRadioMenu(widget.dropdown, is_selected, set_selected, unpack(data.options))
+      data.db_obj[key] = not data.db_obj[key]
+
+      reload_associated_modules(data.associated_modules)
+    end
+
+    MenuUtil.CreateCheckboxMenu(widget.dropdown, is_choosen, set_choosen, unpack(data.options))
+  else
+    local function is_selected(value)
+      return data.db_obj[data.db_key] == value
+    end
+
+    local function set_selected(value)
+      data.db_obj[data.db_key] = value
+      reload_associated_modules(data.associated_modules)
+      update_scroll_view_content()
+    end
+
+    MenuUtil.CreateRadioMenu(widget.dropdown, is_selected, set_selected, unpack(data.options))
+  end
 end
 
 --------------

@@ -103,7 +103,11 @@ L["max_length"] = "Длина"
 -- Modules.
 L["clean_borders"] = "Чистое выделение"
 L["role_icon"] = "Значок роли"
-L["raid_mark_pos"] = "Позиция метки рейда"
+L["role_icon_slection"] = "Показывать значок роли для"
+L["unit_group_role_tank"] = "Танк"
+L["unit_group_role_heal"] = "Целитель"
+L["unit_group_role_dps"] = "Нанесение урона"
+L["raid_mark_pos"] = "Положение метки рейда"
 L["raid_mark_scale"] = "Масштаб меток рейда"
 L["settings_text_solo_frame"] = "Отображать, когда соло"
 

@@ -28,6 +28,9 @@ local defaults = {
         relative_point = "TOPRIGHT",
         offset_x = -3,
         offset_y = -3,
+        show_for_tank = true,
+        show_for_heal = true,
+        show_for_dps = false,
       },
       RaidMark = {
         point = "TOP",

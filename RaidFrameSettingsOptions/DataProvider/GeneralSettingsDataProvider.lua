@@ -254,6 +254,21 @@ local function generate_options_tbl()
           "RoleIcon",
         },
       },
+      role_icon_slection = {
+        order = 5.1,
+        type = "dropdown",
+        settings_text = L["role_icon_slection"],
+        db_obj = data_base.profile.module_data.RoleIcon,
+        is_multiple_choice = true,
+        options = {
+          {L["unit_group_role_tank"], "show_for_tank"},
+          {L["unit_group_role_heal"], "show_for_heal"},
+          {L["unit_group_role_dps"], "show_for_dps"},
+        },
+        associated_modules = {
+          "RoleIcon",
+        },
+      },
       display_main_tank_and_assist = {
         order = 6,
         type = "toggle",

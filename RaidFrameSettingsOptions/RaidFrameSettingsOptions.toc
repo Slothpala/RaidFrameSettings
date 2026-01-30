@@ -3,6 +3,7 @@
 ## Title: RaidFrameSettings Options
 ## LoadOnDemand: 1
 ## Dependencies: RaidFrameSettings
+## IconTexture: Interface\AddOns\RaidFrameSettings\Data\Textures\Icon.tga
 ## OptionalDeps: Ace3
 ## Author: Slothpala
 

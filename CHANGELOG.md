@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.2.1] - 2026-01-30
+#### Added
+* Added the option to select for which class the user want to see role icons.
+
 ### Version [4.2.0] - 2026-01-27
 #### Added
 * Added new module: SoloFrame. Displays the party frames even when playing solo.

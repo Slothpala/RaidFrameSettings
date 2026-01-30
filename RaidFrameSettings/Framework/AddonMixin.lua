@@ -1,4 +1,4 @@
-local _, private = ...
+local addon_name, private = ...
 private.Mixins.AddonMixin = {}
 local addon_mixin = private.Mixins.AddonMixin
 
@@ -42,4 +42,8 @@ function addon_mixin:ReloadAllModules()
   for _, module in self:IterateModules() do
     self:ReloadModule(module:GetName())
   end
+end
+
+function addon_mixin:Print(msg)
+  print(WrapTextInColorCode(addon_name, "FFFFA600") .. ": " .. msg)
 end

@@ -1,5 +1,6 @@
 local addon_name, private = ...
 local addon = _G[addon_name]
+local L = LibStub("AceLocale-3.0"):GetLocale(addon_name)
 
 local function init_addon()
   -- Init Database
@@ -33,7 +34,17 @@ end)
 
 -- Also used by addon compartment.
 function RaidFrameSettings_OpenSettings()
+
   if InCombatLockdown() then
+    addon:Print(L["combat_lockdown_msg"])
+    return
+  end
+
+  local guid = UnitGUID("player")
+  local rfs_options_state = C_AddOns.GetAddOnEnableState("RaidFrameSettingsOptions", guid)
+  if rfs_options_state ~= 2 then
+    addon:Print(L["rfs_option_not_enabled_msg"])
+    --C_AddOns.EnableAddOn("RaidFrameSettingsOptions")
     return
   end
 
@@ -42,6 +53,7 @@ function RaidFrameSettings_OpenSettings()
   end
 
   RaidFrameSettingsOptions:Show()
+
 end
 
 -- Register slash commands.

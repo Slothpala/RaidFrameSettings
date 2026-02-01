@@ -9,7 +9,7 @@ local module = addon:CreateModule("RoleIcon")
 function module:OnEnable()
   local db_obj = CopyTable(addon.db.profile.module_data.RoleIcon)
 
-  local function update_pos(cuf_frame)
+  local function update_role_icon_position_and_visibility(cuf_frame)
     local role_icon = cuf_frame.roleIcon
 
     if not role_icon then
@@ -28,10 +28,10 @@ function module:OnEnable()
     role_icon:ClearAllPoints()
     role_icon:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
   end
-  module.update_function = update_pos
+  module.update_function = update_role_icon_position_and_visibility
 
-  self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", update_pos)
-  private.IterateRoster(update_pos)
+  self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateRoleIcon", update_role_icon_position_and_visibility)
+  private.IterateRoster(update_role_icon_position_and_visibility)
 end
 
 function module:OnDisable()

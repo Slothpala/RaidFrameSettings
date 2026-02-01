@@ -2,6 +2,9 @@
 local addon_name, private = ...
 local addon = _G[addon_name]
 
+-- Local references
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+
 -- Create a module.
 local module = addon:CreateModule("RoleIcon")
 

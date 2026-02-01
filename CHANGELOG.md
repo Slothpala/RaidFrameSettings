@@ -2,6 +2,8 @@
 ### Version [4.2.2] - 2026-01-**
 #### Added
 * Added a notification message and a check to ensure that the RaidFrameSettingsOptions addon is enabled before attempting to load it.
+#### Fixes
+* Fixed an issue that cuased the role icon to dissapear on CompactUnitFrame_UpdateRoleIcon.
 
 ### Version [4.2.1] - 2026-01-30
 #### Added

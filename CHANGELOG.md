@@ -1,5 +1,5 @@
 # **Changelog**
-### Version [4.2.2] - 2026-01-**
+### Version [4.2.2] - 2026-02-03
 #### Added
 * Added a notification message and a check to ensure that the RaidFrameSettingsOptions addon is enabled before attempting to load it.
 #### Fixes

@@ -30,6 +30,7 @@ function module:OnEnable()
 
     role_icon:ClearAllPoints()
     role_icon:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
+    role_icon:SetScale(db_obj.scale or 1)
   end
   module.update_function = update_role_icon_position_and_visibility
 
@@ -46,6 +47,7 @@ function module:OnDisable()
     end
 
     cuf_frame.roleIcon:Show()
+    cuf_frame.roleIcon:SetScale(1)
   end
 
   private.IterateRoster(show_role_icon)

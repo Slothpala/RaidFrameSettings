@@ -31,6 +31,7 @@ local defaults = {
         show_for_tank = true,
         show_for_heal = true,
         show_for_dps = false,
+        scale = 1,
       },
       RaidMark = {
         point = "TOP",

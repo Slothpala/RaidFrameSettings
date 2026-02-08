@@ -269,6 +269,22 @@ local function generate_options_tbl()
           "RoleIcon",
         },
       },
+      role_icon_scale = {
+        order = 5.2,
+        type = "slider",
+        settings_text = L["role_icon_scale"],
+        db_obj = data_base.profile.module_data.RoleIcon,
+        db_key = "scale",
+        associated_modules = {
+          "RoleIcon",
+        },
+        slider_options = {
+          min_value = 0.5,
+          max_value = 2,
+          steps = 15,
+          decimals = 1,
+        },
+      },
       display_main_tank_and_assist = {
         order = 6,
         type = "toggle",

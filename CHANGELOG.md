@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.2.3] - 2026-02-08
+#### Added
+* Added a slider to scale the role icon.
+
 ### Version [4.2.2] - 2026-02-03
 #### Added
 * Added a notification message and a check to ensure that the RaidFrameSettingsOptions addon is enabled before attempting to load it.

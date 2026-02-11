@@ -28,6 +28,7 @@ OptionsFrame.lua
 DataProvider\DataHandler.lua
 DataProvider\GeneralSettingsDataProvider.lua
 DataProvider\TextSettingsDataProvider.lua
+DataProvider\AuraSettingsDataProvider.lua
 DataProvider\ProfilesSettingsDataProvider.lua
 
 OptionsFactory.lua

@@ -112,6 +112,12 @@ L["raid_mark_scale"] = "Raid Mark Scale"
 L["settings_text_solo_frame"] = "Display when solo"
 L["out_of_range_alpha"] = "Out of Range Alpha"
 
+-- Auras
+L["title_buffs"] = "Buffs"
+L["title_debuffs"] = "Debuffs"
+L["aura_border_color"] = "Border Color"
+L["aura_border_size"] = "Border Size"
+
 -- Profiles
 L["profiles_header_1"] = "Profiles - Current Profile:"
 L["create_profile"] = "Create new profile"

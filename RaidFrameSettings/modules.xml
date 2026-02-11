@@ -23,6 +23,8 @@
   <Script file="Modules\Fonts\Font_Status.lua"/>
 
   <Script file="Modules\AuraFrames\DebuffFrame.lua"/>
+  <Script file="Modules\AuraFrames\AuraBorder_Buffs.lua"/>
+  <Script file="Modules\AuraFrames\AuraBorder_Debuffs.lua"/>
 
 
 

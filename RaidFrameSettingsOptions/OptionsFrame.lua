@@ -75,6 +75,7 @@ frame.tab_system:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 15, 2)
 for k, category in pairs({
   L["general_settings"],
   L["text_settings"],
+  L["aura_frame_settings"],
   L["profiles_settings"],
 }) do
   frame.tab_system:AddTab(category)
@@ -94,6 +95,11 @@ end)
 -- text_settings
 frame.tab_system.tabs[L["text_settings"]]:HookScript("OnClick", function()
   private.SetDataProvider("text_settings")
+end)
+
+-- aura_settings
+frame.tab_system.tabs[L["aura_frame_settings"]]:HookScript("OnClick", function()
+  private.SetDataProvider("aura_settings")
 end)
 
 -- profiles_settings

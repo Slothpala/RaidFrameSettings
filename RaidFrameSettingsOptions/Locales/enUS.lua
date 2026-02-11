@@ -109,6 +109,7 @@ L["unit_group_role_dps"] = "DPS"
 L["raid_mark_pos"] = "Raid Mark Position"
 L["raid_mark_scale"] = "Raid Mark Scale"
 L["settings_text_solo_frame"] = "Display when solo"
+L["out_of_range_alpha"] = "Out of Range Alpha"
 
 -- Profiles
 L["profiles_header_1"] = "Profiles - Current Profile:"

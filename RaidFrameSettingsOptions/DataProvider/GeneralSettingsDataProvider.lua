@@ -363,6 +363,22 @@ local function generate_options_tbl()
           "SoloFrame"
         },
       },
+      out_of_range_alpha = {
+        order = 14,
+        type = "slider",
+        settings_text = L["out_of_range_alpha"],
+        db_obj = data_base.profile.module_data.Range,
+        db_key = "out_of_range_alpha",
+        associated_modules = {
+          "Range",
+        },
+        slider_options = {
+          min_value = 0.1,
+          max_value = 1,
+          steps = 9,
+          decimals = 1,
+        },
+      },
     },
   }
   return options

@@ -1,11 +1,4 @@
 # **Changelog**
-### Version [4.3.0] - 2026-02-10
-#### Added
-* Added new module: Range. Customize the out of range alpha of unit frames.
-
-#### Fixes
-* OptionsFactory.lua: Fixed slider widget storing values as strings instead of numbers in the database, which caused errors with strict WoW API functions like SetAlpha.
-
 ### Version [4.2.2] - 2026-02-03
 #### Added
 * Added a notification message and a check to ensure that the RaidFrameSettingsOptions addon is enabled before attempting to load it.

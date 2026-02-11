@@ -1,16 +1,17 @@
 # **Changelog**
-<<<<<<< HEAD
 ### Version [4.3.0] - 2026-02-10
 #### Added
 * Added new module: Range. Customize the out of range alpha of unit frames.
 
 #### Fixes
 * OptionsFactory.lua: Fixed slider widget storing values as strings instead of numbers in the database, which caused errors with strict WoW API functions like SetAlpha.
-=======
+
+#### Updated
+* Added 120001 as supported Interface version.
+
 ### Version [4.2.3] - 2026-02-08
 #### Added
 * Added a slider to scale the role icon.
->>>>>>> 6ca65fb57366ef5fdff4796cd2e251a30e4889e8
 
 ### Version [4.2.2] - 2026-02-03
 #### Added

@@ -125,7 +125,7 @@ local function slider_initializer(widget, node)
   slider:Init(data.db_obj[data.db_key], min_value, max_value, data.slider_options.steps)
 
   local function round(number)
-    return (("%%.%df"):format(data.slider_options.decimals)):format(number)
+    return tonumber((("%%.%df"):format(data.slider_options.decimals)):format(number))
   end
 
   slider.Slider:SetScript("OnValueChanged", function(_, raw_value)

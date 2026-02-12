@@ -3,11 +3,11 @@ local addon_name, private = ...
 local addon = _G[addon_name]
 
 -- Create a module.
-local module = addon:CreateModule("AuraBorder_Buffs")
+local module = addon:CreateModule("AuraSkin_Debuffs")
 
 -- Setup the module.
 function module:OnEnable()
-  local db_obj = CopyTable(addon.db.profile.module_data.AuraBorder_Buffs)
+  local db_obj = CopyTable(addon.db.profile.module_data.AuraSkin_Debuffs)
   local border_color = db_obj.border_color
   local border_size = db_obj.border_size
 
@@ -42,8 +42,8 @@ function module:OnEnable()
     return edges
   end
 
-  local function style_buff_frame(buff_frame)
-    local icon = buff_frame.icon
+  local function style_debuff_frame(debuff_frame)
+    local icon = debuff_frame.icon
     if not icon then
       return
     end
@@ -51,8 +51,13 @@ function module:OnEnable()
     -- Crop the icon to hide the default border.
     icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 
+    -- Hide the default Blizzard debuff type border if it exists.
+    if debuff_frame.border then
+      debuff_frame.border:Hide()
+    end
+
     -- Create or reuse the border edge textures.
-    local edges = create_border_edges(buff_frame)
+    local edges = create_border_edges(debuff_frame)
 
     -- Apply color and size to all edges.
     for _, edge in pairs(edges) do
@@ -66,21 +71,20 @@ function module:OnEnable()
 
     -- Push the icon inward by border_size so the border edges are visible.
     icon:ClearAllPoints()
-    icon:SetPoint("TOPLEFT", buff_frame, "TOPLEFT", border_size, -border_size)
-    icon:SetPoint("BOTTOMRIGHT", buff_frame, "BOTTOMRIGHT", -border_size, border_size)
+    icon:SetPoint("TOPLEFT", debuff_frame, "TOPLEFT", border_size, -border_size)
+    icon:SetPoint("BOTTOMRIGHT", debuff_frame, "BOTTOMRIGHT", -border_size, border_size)
 
     -- Make sure cooldown frame matches the icon.
-    local cooldown = buff_frame.cooldown
+    local cooldown = debuff_frame.cooldown
     if cooldown then
       cooldown:ClearAllPoints()
       cooldown:SetAllPoints(icon)
     end
-    --cooldown:SetHideCountdownNumbers(false) TODO implement toggle.
   end
 
   local function on_frame_setup(cuf_frame)
-    for _, buff_frame in pairs(cuf_frame.buffFrames) do
-      style_buff_frame(buff_frame)
+    for _, debuff_frame in pairs(cuf_frame.debuffFrames) do
+      style_debuff_frame(debuff_frame)
     end
   end
 

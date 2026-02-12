@@ -46,13 +46,15 @@ local defaults = {
       Range = {
         out_of_range_alpha = 0.3,
       },
-      AuraBorder_Buffs = {
-        border_color = {0.0, 0.6, 0.0, 1},
+      AuraSkin_Buffs = {
+        border_color = {0.8, 0.8, 0.8, 1},
         border_size = 1,
+        show_countdown = true,
       },
-      AuraBorder_Debuffs = {
+      AuraSkin_Debuffs = {
         border_color = {0.6, 0.0, 0.0, 1},
         border_size = 1,
+        show_countdown = true,
       },
     },
     health_bars = {

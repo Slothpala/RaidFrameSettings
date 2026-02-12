@@ -22,9 +22,8 @@
   <Script file="Modules\Fonts\Font_Name.lua"/>
   <Script file="Modules\Fonts\Font_Status.lua"/>
 
-  <Script file="Modules\AuraFrames\DebuffFrame.lua"/>
-  <Script file="Modules\AuraFrames\AuraBorder_Buffs.lua"/>
-  <Script file="Modules\AuraFrames\AuraBorder_Debuffs.lua"/>
+  <Script file="Modules\AuraFrames\AuraSkin_Buffs.lua"/>
+  <Script file="Modules\AuraFrames\AuraSkin_Debuffs.lua"/>
 
 
 

@@ -117,6 +117,7 @@ L["title_buffs"] = "Buffs"
 L["title_debuffs"] = "Debuffs"
 L["aura_border_color"] = "Border Color"
 L["aura_border_size"] = "Border Size"
+L["aura_show_countdown_numbers"] = "Show Countdown"
 
 -- Profiles
 L["profiles_header_1"] = "Profiles - Current Profile:"

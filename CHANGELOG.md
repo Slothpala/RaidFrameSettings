@@ -3,6 +3,7 @@
 #### Added
 * Added new category: Auras.
 * Added two new modules: AurSkin_Buffs, AuraSkin_Debuffs.lua
+* Added Traditional Chinese (zhTW) translation by @BlueNightSky
 
 ### Version [4.3.0] - 2026-02-10
 #### Added

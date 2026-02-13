@@ -1,4 +1,9 @@
 # **Changelog**
+### Version [4.4.0] - 2026-02-13
+#### Added
+* Added new category: Auras.
+* Added two new modules: AurSkin_Buffs, AuraSkin_Debuffs.lua
+
 ### Version [4.3.0] - 2026-02-10
 #### Added
 * Added new module: Range. Customize the out of range alpha of unit frames.

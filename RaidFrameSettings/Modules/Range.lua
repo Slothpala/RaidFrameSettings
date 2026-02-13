@@ -19,7 +19,7 @@ function module:OnEnable()
 
   module.update_function = update_in_range
 
-  self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateInRange", update_in_range)
+  self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateCenterStatusIcon", update_in_range)
 
   private.IterateRoster(update_in_range)
   private.IterateMiniRoster(update_in_range)

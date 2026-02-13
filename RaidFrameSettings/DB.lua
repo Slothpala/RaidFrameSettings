@@ -52,9 +52,10 @@ local defaults = {
         show_countdown = true,
       },
       AuraSkin_Debuffs = {
-        border_color = {0.6, 0.0, 0.0, 1},
-        border_size = 1,
+        border_color = {0.1, 0.1, 0.1, 1},
+        border_size = 2,
         show_countdown = true,
+        show_dispel_type_border = true,
       },
     },
     health_bars = {
@@ -257,6 +258,33 @@ local defaults = {
           gradient_start = {0.4, 0, 0.8, 1},
           gradient_end   = {0.28, 0, 0.56, 1},
           normal_color   = {0.4, 0, 0.8, 1},
+        },
+      },
+      debuffs = {
+        Curse = {
+          gradient_start = {0.6, 0, 1},
+          gradient_end   = {0.5, 0, 0.9},
+          normal_color   = {0.6, 0, 1},
+        },
+        Magic = {
+          gradient_start = {0.2, 0.6, 1},
+          gradient_end   = {0.1, 0.5, 0.9},
+          normal_color   = {0.2, 0.6, 1},
+        },
+        Poison = {
+          gradient_start = {0, 0.6, 0},
+          gradient_end   = {0, 0.5, 0},
+          normal_color   = {0, 0.6, 0},
+        },
+        Disease = {
+          gradient_start = {0.6, 0.4, 0},
+          gradient_end   = {0.5, 0.3, 0},
+          normal_color   = {0.6, 0.4, 0},
+        },
+        Bleed = {
+          gradient_start = {0.8, 0, 0},
+          gradient_end   = {0.8, 0, 0},
+          normal_color   = {0.8, 0, 0},
         },
       },
       npc = {

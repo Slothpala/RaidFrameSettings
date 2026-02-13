@@ -41,6 +41,7 @@ local function generate_options_tbl()
           decimals = 1,
         },
       },
+      --[[
       buffs_show_countdown_numbers = {
         order = 4,
         type = "toggle",
@@ -51,6 +52,7 @@ local function generate_options_tbl()
           "AuraSkin_Buffs"
         },
       },
+      --]]
     },
     -- Debuffs.
     [2] = {

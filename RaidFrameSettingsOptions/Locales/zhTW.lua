@@ -110,10 +110,18 @@ L["unit_group_role_dps"] = "傷害輸出"
 L["raid_mark_pos"] = "團隊標記位置"
 L["raid_mark_scale"] = "團隊標記縮放"
 L["settings_text_solo_frame"] = "單人時顯示"
+L["out_of_range_alpha"] = "超出範圍的透明度"
+
+-- Auras
+L["title_buffs"] = "增益"
+L["title_debuffs"] = "減益"
+L["aura_border_color"] = "邊框顏色"
+L["aura_border_size"] = "邊框大小"
+L["aura_show_countdown_numbers"] = "顯示倒數"
 
 -- Profiles
 L["profiles_header_1"] = "設定檔 - 當前設定檔："
-L["create_profile"] = "建立新設定檔"
+L["create_profile"] = "創建新設定檔"
 L["reset_profile"] = "重置設定檔"
 L["delete_profile"] = "刪除設定檔"
 L["copy_profile"] = "複製設定檔"

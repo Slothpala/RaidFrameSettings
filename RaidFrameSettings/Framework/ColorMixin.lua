@@ -15,6 +15,7 @@ local function create_colors(key)
   local db_obj = _G[addon_name].db.profile.colors.class[key] or
                  _G[addon_name].db.profile.colors.power[key] or
                  _G[addon_name].db.profile.colors.npc[key] or
+                 _G[addon_name].db.profile.colors.debuffs[key] or
                  fallback_color
   local pres_db_obj = CopyTable(db_obj)
   color_cache[key] = {

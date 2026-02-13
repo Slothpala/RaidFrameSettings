@@ -1,4 +1,13 @@
 # **Changelog**
+### Version [4.4.1] - 2026-02-13
+#### Added
+* AuraSkin_Debuffs: Added an option to color the border based on the auras dispel type.
+
+#### Fixes
+* Range: Fixed an issue where the add-on’s alpha setting was being overwritten by the game.
+* AurSkin_Buffs & AuraSkin_Debuffs: Added corner textures to avoid visual overlap when the unit frame alpha drops below a certain threshold.
+  Border textures now have a texture applied via SetTexture to improve performance when colors change frequently.
+
 ### Version [4.4.0] - 2026-02-13
 #### Added
 * Added new category: Auras.

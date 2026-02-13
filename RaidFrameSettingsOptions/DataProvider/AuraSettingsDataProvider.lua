@@ -71,8 +71,18 @@ local function generate_options_tbl()
           "AuraSkin_Debuffs",
         },
       },
-      debuff_border_size = {
+      debuff_show_dispel_type_border = {
         order = 3,
+        type = "toggle",
+        settings_text = L["aura_show_dispel_type_border"],
+        db_obj = data_base.profile.module_data.AuraSkin_Debuffs,
+        db_key = "show_dispel_type_border",
+        associated_modules = {
+          "AuraSkin_Debuffs"
+        },
+      },
+      debuff_border_size = {
+        order = 4,
         type = "slider",
         settings_text = L["aura_border_size"],
         db_obj = data_base.profile.module_data.AuraSkin_Debuffs,

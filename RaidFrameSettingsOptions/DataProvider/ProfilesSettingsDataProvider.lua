@@ -86,6 +86,24 @@ local function generate_options_tbl()
           data_base:CopyProfile(copy_delete_tbl.profile_name)
         end
       },
+      export_profile = {
+        order = 6,
+        type = "button",
+        settings_text = L["export_profile"],
+        button_text = L["label_export"],
+        button_callback = function()
+          private.ShowExportFrame()
+        end,
+      },
+      import_profile = {
+        order = 7,
+        type = "button",
+        settings_text = L["import_profile"],
+        button_text = L["label_import"],
+        button_callback = function()
+          private.ShowImportFrame()
+        end,
+      },
     },
   }
 

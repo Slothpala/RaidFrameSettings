@@ -131,6 +131,19 @@ L["raid_profile"] = "Raid"
 L["arena_profile"] = "Arena"
 L["battleground_profile"] = "Battleground"
 
+-- Import / Export
+L["export_profile"] = "Export Profile"
+L["import_profile"] = "Import Profile"
+L["label_export"] = "Share"
+L["label_import"] = "Import"
+L["import_hint"] = "Paste an import string below and click Import."
+L["export_hint"] = "Press Ctrl+A to select all, then Ctrl+C to copy."
+L["import_empty_string_error"] = "Import failed: The input is empty."
+L["import_decoding_failed_error"] = "Import failed: Could not decode the string."
+L["import_decompression_failed_error"] = "Import failed: Could not decompress the data."
+L["import_deserialization_failed_error"] = "Import failed: The data is invalid."
+L["import_success"] = "Profile imported successfully."
+
 -- Labels
 L["label_create"] = "Create"
 L["label_reset"] = "Reset"

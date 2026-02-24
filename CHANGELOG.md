@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.4.2] - 2026-02-24
+#### Added
+* Added profile export/import functionality
+
 ### Version [4.4.1] - 2026-02-13
 #### Added
 * AuraSkin_Debuffs: Added an option to color the border based on the auras dispel type.

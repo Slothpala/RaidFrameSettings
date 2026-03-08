@@ -119,6 +119,8 @@ L["aura_border_color"] = "Border Color"
 L["aura_border_size"] = "Border Size"
 L["aura_show_countdown_numbers"] = "Show Countdown"
 L["aura_show_dispel_type_border"] = "Debuff Type Border"
+L["title_big_defensive"] = "Big Defensives"
+L["aura_indicator_scale"] = "Indicator Scale"
 
 -- Profiles
 L["profiles_header_1"] = "Profiles - Current Profile:"

@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [4.5.0] - 2026-03-08
+#### Added
+* Added new module: AuraSkin_BigDefensives.
+#### Updated
+* Fixed a strata issue where the profile import and export windows appeared below the main options frame.
+
 ### Version [4.4.2] - 2026-02-24
 #### Added
 * Added profile export/import functionality

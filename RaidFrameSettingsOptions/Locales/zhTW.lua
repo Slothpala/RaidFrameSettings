@@ -110,6 +110,15 @@ L["unit_group_role_dps"] = "傷害輸出"
 L["raid_mark_pos"] = "團隊標記位置"
 L["raid_mark_scale"] = "團隊標記縮放"
 L["settings_text_solo_frame"] = "單人時顯示"
+L["out_of_range_alpha"] = "超出距離透明度"
+
+-- Auras
+L["title_buffs"] = "增益"
+L["title_debuffs"] = "減益"
+L["aura_border_color"] = "邊框顏色"
+L["aura_border_size"] = "邊框大小"
+L["aura_show_countdown_numbers"] = "顯示冷卻"
+L["aura_show_dispel_type_border"] = "減益類型邊框"
 
 -- Profiles
 L["profiles_header_1"] = "設定檔 - 當前設定檔："
@@ -121,6 +130,19 @@ L["party_profile"] = "小隊"
 L["raid_profile"] = "團隊"
 L["arena_profile"] = "競技場"
 L["battleground_profile"] = "戰場"
+
+-- Import / Export
+L["export_profile"] = "匯出設定檔"
+L["import_profile"] = "匯入設定檔"
+L["label_export"] = "分享"
+L["label_import"] = "匯入"
+L["import_hint"] = "在下方貼上一個匯入字串並點擊匯入。"
+L["export_hint"] = "按下 Ctrl+A 來全選，然後 Ctrl+C 來複製。"
+L["import_empty_string_error"] = "匯入失敗: 輸入為空。"
+L["import_decoding_failed_error"] = "匯入失敗: 無法解析字串。"
+L["import_decompression_failed_error"] = "匯入失敗: 無法解壓縮數據。"
+L["import_deserialization_failed_error"] = "匯入失敗: 數據無效。"
+L["import_success"] = "設定檔已成功匯入。"
 
 -- Labels
 L["label_create"] = "建立"

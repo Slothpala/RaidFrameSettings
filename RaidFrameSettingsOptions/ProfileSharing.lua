@@ -57,11 +57,11 @@ end
 
 local function CreateDialogFrame(name, title_text, width, height)
   local frame = CreateFrame("Frame", name, UIParent, "PortraitFrameTemplate")
+  frame:SetFrameStrata("FULLSCREEN_DIALOG")
   frame:SetSize(width, height)
   frame:SetPoint("CENTER")
   frame:SetMovable(true)
   frame:SetClampedToScreen(true)
-  frame:SetFrameStrata("DIALOG")
   frame:Hide()
 
   -- Portrait and title.
@@ -81,12 +81,14 @@ local function CreateDialogFrame(name, title_text, width, height)
 
   -- Inset frame for content area.
   local inset = CreateFrame("Frame", nil, frame, "InsetFrameTemplate")
+  inset:SetFrameStrata("FULLSCREEN_DIALOG")
   inset:SetPoint("TOPLEFT", frame, "TOPLEFT", 15, -60)
   inset:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -15, 45)
   frame.inset = inset
 
   -- Scrollable edit box.
   local input_scroll = CreateFrame("ScrollFrame", name .. "InputScroll", inset, "InputScrollFrameTemplate")
+  input_scroll:SetFrameStrata("FULLSCREEN_DIALOG")
   input_scroll:SetPoint("TOPLEFT", inset, "TOPLEFT", 6, -6)
   input_scroll:SetPoint("BOTTOMRIGHT", inset, "BOTTOMRIGHT", -6, 6)
   input_scroll.CharCount:Hide()

@@ -3,6 +3,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addon_name)
 
 -- Main Frame
 local frame = CreateFrame("Frame", "RaidFrameSettingsOptions", UIParent, "PortraitFrameTemplate")
+frame:SetFrameStrata("DIALOG")
 
 -- Icon
 RaidFrameSettingsOptionsPortrait:SetTexture("Interface\\AddOns\\RaidFrameSettings\\Data\\Textures\\Icon.tga")
@@ -32,7 +33,6 @@ frame.scroll_view:SetPadding(10, 10, 10, 10, 4)
 ScrollUtil.InitScrollBoxListWithScrollBar(frame.inset_frame.scroll_box, frame.inset_frame.scroll_bar, frame.scroll_view)
 
 frame.Bg:SetColorTexture(0.1,0.1,0.1,0.95)
-frame:SetFrameStrata("DIALOG") -- @TODO: Check best options.
 table.insert(UISpecialFrames, frame:GetName())
 frame:SetSize(925,525)
 frame:SetResizeBounds(925, 400)

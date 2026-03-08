@@ -57,6 +57,11 @@ local defaults = {
         show_countdown = true,
         show_dispel_type_border = true,
       },
+      AuraSkin_BigDefensives = {
+        border_color = {0, 0.8, 0, 1},
+        border_size = 2,
+        indicator_scale = 0.8,
+      },
     },
     health_bars = {
       health_value_colors = {

@@ -54,8 +54,58 @@ local function generate_options_tbl()
       },
       --]]
     },
-    -- Debuffs.
+    -- Big Defensive
     [2] = {
+      title = {
+        order = 1,
+        type = "title",
+        settings_text = L["title_big_defensive"],
+      },
+      big_defensive_border_color = {
+        order = 2,
+        type = "color",
+        settings_text = L["aura_border_color"],
+        db_obj = data_base.profile.module_data.AuraSkin_BigDefensives,
+        db_key = "border_color",
+        associated_modules = {
+          "AuraSkin_BigDefensives",
+        },
+      },
+      big_defensive_border_size = {
+        order = 3,
+        type = "slider",
+        settings_text = L["aura_border_size"],
+        db_obj = data_base.profile.module_data.AuraSkin_BigDefensives,
+        db_key = "border_size",
+        associated_modules = {
+          "AuraSkin_BigDefensives",
+        },
+        slider_options = {
+          min_value = 0.5,
+          max_value = 3,
+          steps = 5,
+          decimals = 1,
+        },
+      },
+      big_defensive_indicator_scale = {
+        order = 4,
+        type = "slider",
+        settings_text = L["aura_indicator_scale"],
+        db_obj = data_base.profile.module_data.AuraSkin_BigDefensives,
+        db_key = "indicator_scale",
+        associated_modules = {
+          "AuraSkin_BigDefensives",
+        },
+        slider_options = {
+          min_value = 0.5,
+          max_value = 2,
+          steps = 15,
+          decimals = 1,
+        },
+      },
+    },
+    -- Debuffs.
+    [3] = {
       title = {
         order = 1,
         type = "title",

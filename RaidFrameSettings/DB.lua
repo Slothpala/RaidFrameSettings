@@ -62,6 +62,30 @@ local defaults = {
         border_size = 2,
         indicator_scale = 0.8,
       },
+      AuraIndicators = {
+        indicator_size = 28,
+        cooldown_text_size = 12,
+        show_cooldown = true,
+        cooldown_reverse = true,
+        cooldown_draw_edge = true,
+        cooldown_draw_swipe = true,
+        cooldown_draw_bling = false,
+        hide_default_buffs = false,
+        border_color = {0.8, 0.8, 0.8, 1},
+        border_size = 1,
+        class_indicators = {
+          ["*"] = {
+            [1] = { spell_id = 0 }, -- TOPLEFT
+            [2] = { spell_id = 0 }, -- LEFT
+            [3] = { spell_id = 0 }, -- BOTTOMLEFT
+            [4] = { spell_id = 0 }, -- TOP
+            [5] = { spell_id = 0 }, -- BOTTOM
+            [6] = { spell_id = 0 }, -- TOPRIGHT
+            [7] = { spell_id = 0 }, -- RIGHT
+            [8] = { spell_id = 0 }, -- BOTTOMRIGHT
+          },
+        },
+      },
     },
     health_bars = {
       health_value_colors = {
@@ -325,4 +349,3 @@ function private:InitDatabase()
   addon.db.RegisterCallback(addon, "OnProfileCopied", "ReloadAllModules")
   addon.db.RegisterCallback(addon, "OnProfileReset", "ReloadAllModules")
 end
-

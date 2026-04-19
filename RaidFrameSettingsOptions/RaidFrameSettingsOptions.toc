@@ -24,6 +24,7 @@ Templates\RaidFrameSettings_EditBoxAndButtonTemplate.xml
 Templates\RaidFrameSettings_ButtonTemplate.xml
 
 OptionsFrame.lua
+IndicatorsFrame.lua
 ProfileSharing.lua
 
 DataProvider\DataHandler.lua

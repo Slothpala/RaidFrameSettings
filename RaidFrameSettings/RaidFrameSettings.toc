@@ -24,6 +24,8 @@ FrameEnvironment.lua
 
 DB.lua
 
+Data\AuraIndicatorSpells.lua
+
 modules.xml
 
 

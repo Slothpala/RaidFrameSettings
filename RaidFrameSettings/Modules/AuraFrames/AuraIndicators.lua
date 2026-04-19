@@ -19,15 +19,6 @@ local INDICATOR_POSITIONS = {
 
 local border_texture = "Interface\\Buttons\\WHITE8X8"
 
-local function restore_default_buff_frames(cuf_frame)
-  if cuf_frame.buffFrames then
-    for _, buff_frame in pairs(cuf_frame.buffFrames) do
-      buff_frame:Show()
-      buff_frame:SetAlpha(1)
-    end
-  end
-end
-
 -- Setup the module.
 function module:OnEnable()
   local db = addon.db.profile.module_data.AuraIndicators
@@ -61,7 +52,7 @@ function module:OnEnable()
     end
   end
 
-  if not has_any then
+  if not has_any and not hide_default_buffs then
     return
   end
 
@@ -221,15 +212,12 @@ function module:OnEnable()
   end
 
   local function hide_default_buff_frames(cuf_frame)
-    if not hide_default_buffs then
-      restore_default_buff_frames(cuf_frame)
+    if not hide_default_buffs or not cuf_frame.buffFrames then
       return
     end
-    if cuf_frame.buffFrames then
-      for _, buff_frame in pairs(cuf_frame.buffFrames) do
-        buff_frame:Hide()
-        buff_frame:SetAlpha(0)
-      end
+
+    for _, buff_frame in pairs(cuf_frame.buffFrames) do
+      buff_frame:Hide()
     end
   end
 
@@ -244,9 +232,6 @@ function module:OnEnable()
   end
 
   local function setup_indicators(cuf_frame)
-    -- Hide default buff frames if requested.
-    hide_default_buff_frames(cuf_frame)
-
     -- Hide any existing indicators first so removed assignments stay hidden.
     hide_all_indicators(cuf_frame)
 
@@ -317,17 +302,43 @@ function module:OnEnable()
     end
   end
 
-  local function on_aura_update(cuf_frame)
-    hide_default_buff_frames(cuf_frame)
-    update_indicators(cuf_frame)
+  local on_frame_setup
+  if has_any and hide_default_buffs then
+    on_frame_setup = function(cuf_frame)
+      hide_default_buff_frames(cuf_frame)
+      setup_indicators(cuf_frame)
+    end
+  elseif has_any then
+    on_frame_setup = setup_indicators
+  else
+    on_frame_setup = hide_default_buff_frames
   end
 
-  self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", setup_indicators)
-  self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateAuras", on_aura_update)
+  local on_aura_update
+  if has_any and hide_default_buffs then
+    on_aura_update = function(cuf_frame)
+      hide_default_buff_frames(cuf_frame)
+      update_indicators(cuf_frame)
+    end
+  elseif has_any then
+    on_aura_update = update_indicators
+  else
+    on_aura_update = hide_default_buff_frames
+  end
+
+  if on_frame_setup then
+    self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", on_frame_setup)
+  end
+
+  if on_aura_update then
+    self:HookFunc_CUF_Filtered("CompactUnitFrame_UpdateAuras", on_aura_update)
+  end
 
   private.IterateRoster(function(cuf_frame)
-    setup_indicators(cuf_frame)
-    update_indicators(cuf_frame)
+    on_frame_setup(cuf_frame)
+    if has_any then
+      update_indicators(cuf_frame)
+    end
   end)
 end
 
@@ -340,6 +351,5 @@ function module:OnDisable()
         indicator:Hide()
       end
     end
-    restore_default_buff_frames(cuf_frame)
   end)
 end

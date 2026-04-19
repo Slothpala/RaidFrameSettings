@@ -14,6 +14,7 @@ addon.AuraIndicatorSpells = {
       { id = 33763 },  -- Lifebloom
       { id = 48438 },  -- Wild Growth
       { id = 155777 }, -- Germination
+      { id = 1126 },   -- Mark of the Wild
     },
   },
   {

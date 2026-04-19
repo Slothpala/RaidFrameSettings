@@ -18,6 +18,34 @@ local INDICATOR_POSITIONS = {
 }
 
 local border_texture = "Interface\\Buttons\\WHITE8X8"
+local fallback_icon = "Interface\\Icons\\INV_Misc_QuestionMark"
+local DEFAULT_DISPLAY_MODE = "present"
+local MISSING_ICON_VERTEX = 0.75
+
+local function normalize_display_mode(mode)
+  if mode == "missing" or mode == "both" then
+    return mode
+  end
+
+  return DEFAULT_DISPLAY_MODE
+end
+
+local function reset_indicator(indicator)
+  indicator:Hide()
+
+  if indicator.cooldown then
+    indicator.cooldown:Clear()
+  end
+
+  if indicator.count then
+    indicator.count:Hide()
+  end
+
+  if indicator.icon then
+    indicator.icon:SetDesaturated(false)
+    indicator.icon:SetVertexColor(1, 1, 1)
+  end
+end
 
 -- Setup the module.
 function module:OnEnable()
@@ -39,10 +67,21 @@ function module:OnEnable()
   -- Build spell lookup for the player's class only.
   local spell_lookup = {}
   local configured_indices = {}
+  local indicator_configs = {}
   local has_any = false
   for i = 1, 8 do
-    local spell_id = player_indicators[i] and player_indicators[i].spell_id or 0
+    local indicator_data = player_indicators[i]
+    local spell_id = indicator_data and indicator_data.spell_id or 0
     if spell_id and spell_id > 0 then
+      local display_mode = normalize_display_mode(indicator_data and indicator_data.display_mode)
+      local spell_info = C_Spell.GetSpellInfo(spell_id)
+
+      indicator_configs[i] = {
+        spell_id = spell_id,
+        display_mode = display_mode,
+        icon = spell_info and spell_info.iconID or fallback_icon,
+      }
+
       if not spell_lookup[spell_id] then
         spell_lookup[spell_id] = {}
       end
@@ -176,6 +215,7 @@ function module:OnEnable()
 
       indicator.count = indicator:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
       indicator.count:SetPoint("BOTTOMRIGHT", indicator, "BOTTOMRIGHT", 1, -1)
+      indicator.count:Hide()
 
       cuf_frame[key] = indicator
     end
@@ -211,6 +251,41 @@ function module:OnEnable()
     return indicator
   end
 
+  local function hide_indicator(indicator)
+    reset_indicator(indicator)
+  end
+
+  local function show_present_indicator(indicator, aura_data, config)
+    indicator.icon:SetTexture(aura_data.icon or config.icon or fallback_icon)
+    indicator.icon:SetDesaturated(false)
+    indicator.icon:SetVertexColor(1, 1, 1)
+
+    if aura_data.duration and aura_data.duration > 0 then
+      local start_time = aura_data.expirationTime - aura_data.duration
+      indicator.cooldown:SetCooldown(start_time, aura_data.duration)
+    else
+      indicator.cooldown:Clear()
+    end
+
+    if aura_data.applications and aura_data.applications > 1 then
+      indicator.count:SetText(aura_data.applications)
+      indicator.count:Show()
+    else
+      indicator.count:Hide()
+    end
+
+    indicator:Show()
+  end
+
+  local function show_missing_indicator(indicator, config)
+    indicator.icon:SetTexture(config.icon or fallback_icon)
+    indicator.icon:SetDesaturated(true)
+    indicator.icon:SetVertexColor(MISSING_ICON_VERTEX, MISSING_ICON_VERTEX, MISSING_ICON_VERTEX)
+    indicator.cooldown:Clear()
+    indicator.count:Hide()
+    indicator:Show()
+  end
+
   local function hide_default_buff_frames(cuf_frame)
     if not hide_default_buffs or not cuf_frame.buffFrames then
       return
@@ -226,7 +301,7 @@ function module:OnEnable()
       local key = "RFS_AuraIndicator" .. i
       local indicator = cuf_frame[key]
       if indicator then
-        indicator:Hide()
+        hide_indicator(indicator)
       end
     end
   end
@@ -239,8 +314,9 @@ function module:OnEnable()
     for _, i in ipairs(configured_indices) do
       local indicator = create_indicator(cuf_frame, i)
       if indicator then
-        indicator:Hide()
-        indicator.spell_id = nil
+        hide_indicator(indicator)
+        indicator.spell_id = indicator_configs[i].spell_id
+        indicator.display_mode = indicator_configs[i].display_mode
       end
     end
   end
@@ -250,12 +326,14 @@ function module:OnEnable()
       return
     end
 
+    local active_auras = {}
+
     -- Hide configured indicators first.
     for _, i in ipairs(configured_indices) do
       local key = "RFS_AuraIndicator" .. i
       local indicator = cuf_frame[key]
       if indicator then
-        indicator:Hide()
+        hide_indicator(indicator)
       end
     end
 
@@ -274,29 +352,24 @@ function module:OnEnable()
       end
       if indices then
         for _, idx in ipairs(indices) do
-          local key = "RFS_AuraIndicator" .. idx
-          local indicator = cuf_frame[key]
-          if indicator then
-            if aura_data.icon then
-              indicator.icon:SetTexture(aura_data.icon)
-            end
+          active_auras[idx] = aura_data
+        end
+      end
+    end
 
-            if aura_data.duration and aura_data.duration > 0 then
-              local start_time = aura_data.expirationTime - aura_data.duration
-              indicator.cooldown:SetCooldown(start_time, aura_data.duration)
-            else
-              indicator.cooldown:Clear()
-            end
+    for _, idx in ipairs(configured_indices) do
+      local config = indicator_configs[idx]
+      local key = "RFS_AuraIndicator" .. idx
+      local indicator = cuf_frame[key]
+      local aura_data = active_auras[idx]
 
-            if aura_data.applications and aura_data.applications > 1 then
-              indicator.count:SetText(aura_data.applications)
-              indicator.count:Show()
-            else
-              indicator.count:Hide()
-            end
-
-            indicator:Show()
+      if indicator and config then
+        if aura_data then
+          if config.display_mode ~= "missing" then
+            show_present_indicator(indicator, aura_data, config)
           end
+        elseif config.display_mode ~= "present" then
+          show_missing_indicator(indicator, config)
         end
       end
     end
@@ -348,7 +421,7 @@ function module:OnDisable()
       local key = "RFS_AuraIndicator" .. i
       local indicator = cuf_frame[key]
       if indicator then
-        indicator:Hide()
+        reset_indicator(indicator)
       end
     end
   end)

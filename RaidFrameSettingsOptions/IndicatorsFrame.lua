@@ -40,9 +40,11 @@ local CLASS_COLORS = {
 -- The container frame for the Indicators tab content.
 local indicators_frame = nil
 local spell_popup = nil
+local visibility_popup = nil
 local selected_class = select(2, UnitClass("player")) or "DRUID"
 local DEFAULT_FRAME_SIZE = { width = 72, height = 36 }
 local PREVIEW_FRAME_SIZE = { width = 216, height = 108 }
+local DEFAULT_DISPLAY_MODE = "present"
 
 local CLASS_IDS = {
   WARRIOR = 1,
@@ -60,11 +62,52 @@ local CLASS_IDS = {
   EVOKER = 13,
 }
 
+local DISPLAY_MODE_OPTIONS = {
+  { value = "present", label = L["indicator_visibility_present"] },
+  { value = "missing", label = L["indicator_visibility_missing"] },
+  { value = "both", label = L["indicator_visibility_both"] },
+}
+
 -- ========================================
 -- Helper: Get class indicators table for selected class
 -- ========================================
 local function get_class_indicators()
   return addon.db.profile.module_data.AuraIndicators.class_indicators[selected_class]
+end
+
+local function normalize_display_mode(mode)
+  if mode == "missing" or mode == "both" then
+    return mode
+  end
+
+  return DEFAULT_DISPLAY_MODE
+end
+
+local function get_indicator_entry(index)
+  local indicators = get_class_indicators()
+  return indicators and indicators[index] or nil
+end
+
+local function get_indicator_spell_id(index)
+  local entry = get_indicator_entry(index)
+  return entry and entry.spell_id or 0
+end
+
+local function get_indicator_display_mode(index)
+  local entry = get_indicator_entry(index)
+  return normalize_display_mode(entry and entry.display_mode)
+end
+
+local function get_display_mode_label(mode)
+  local normalized_mode = normalize_display_mode(mode)
+
+  for _, option in ipairs(DISPLAY_MODE_OPTIONS) do
+    if option.value == normalized_mode then
+      return option.label
+    end
+  end
+
+  return L["indicator_visibility_present"]
 end
 
 local function get_localized_class_name(class_token)
@@ -335,6 +378,90 @@ local function populate_spell_popup(popup, slot_index, on_spell_selected)
   popup.title:SetText(L["indicator_click_to_assign"])
 end
 
+local function create_visibility_popup(parent)
+  local popup = CreateFrame("Frame", "RFS_IndicatorVisibilityPopup", parent, "BackdropTemplate")
+  popup:SetSize(280, 162)
+  popup:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+  popup:SetFrameStrata("FULLSCREEN_DIALOG")
+  popup:SetMovable(true)
+  popup:EnableMouse(true)
+  popup:SetBackdrop({
+    bgFile = "Interface\\Buttons\\WHITE8X8",
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+    edgeSize = 14,
+    insets = { left = 3, right = 3, top = 3, bottom = 3 },
+  })
+  popup:SetBackdropColor(0.1, 0.1, 0.1, 0.95)
+  popup:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
+
+  popup.title_bar = CreateFrame("Frame", nil, popup)
+  popup.title_bar:SetPoint("TOPLEFT", popup, "TOPLEFT", 0, 0)
+  popup.title_bar:SetPoint("TOPRIGHT", popup, "TOPRIGHT", 0, 0)
+  popup.title_bar:SetHeight(28)
+  popup.title_bar:EnableMouse(true)
+  popup.title_bar:RegisterForDrag("LeftButton")
+  popup.title_bar:SetScript("OnDragStart", function() popup:StartMoving() end)
+  popup.title_bar:SetScript("OnDragStop", function() popup:StopMovingOrSizing() end)
+
+  popup.title = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+  popup.title:SetPoint("TOP", popup, "TOP", 0, -8)
+  popup.title:SetText(L["indicator_visibility_title"])
+
+  popup.close_button = CreateFrame("Button", nil, popup, "UIPanelCloseButton")
+  popup.close_button:SetPoint("TOPRIGHT", popup, "TOPRIGHT", -2, -2)
+  popup.close_button:SetScript("OnClick", function() popup:Hide() end)
+
+  popup.selection_text = popup:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+  popup.selection_text:SetPoint("TOPLEFT", popup, "TOPLEFT", 18, -38)
+  popup.selection_text:SetPoint("TOPRIGHT", popup, "TOPRIGHT", -18, -38)
+  popup.selection_text:SetJustifyH("LEFT")
+
+  popup.mode_label = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+  popup.mode_label:SetPoint("TOPLEFT", popup.selection_text, "BOTTOMLEFT", 0, -16)
+  popup.mode_label:SetText(L["indicator_visibility_mode"])
+
+  popup.mode_dropdown = CreateFrame("DropdownButton", nil, popup, "WowStyle1DropdownTemplate")
+  popup.mode_dropdown:SetPoint("TOPLEFT", popup.mode_label, "BOTTOMLEFT", -2, -10)
+  popup.mode_dropdown:SetWidth(220)
+
+  popup.mode_value = DEFAULT_DISPLAY_MODE
+  popup.slot_index = nil
+  popup.on_mode_selected = nil
+
+  popup.mode_dropdown:SetupMenu(function(_, root_description)
+    for _, option in ipairs(DISPLAY_MODE_OPTIONS) do
+      local function is_selected()
+        return popup.mode_value == option.value
+      end
+
+      local function set_selected()
+        popup.mode_value = option.value
+        if popup.on_mode_selected and popup.slot_index then
+          popup.on_mode_selected(popup.slot_index, option.value)
+        end
+        popup:Hide()
+      end
+
+      root_description:CreateRadio(option.label, is_selected, set_selected)
+    end
+  end)
+
+  popup:Hide()
+  return popup
+end
+
+local function populate_visibility_popup(popup, slot_index, on_mode_selected)
+  local spell_id = get_indicator_spell_id(slot_index)
+  local spell_info = spell_id > 0 and C_Spell.GetSpellInfo(spell_id) or nil
+  local spell_name = spell_info and spell_info.name or L["indicator_no_spell"]
+
+  popup.slot_index = slot_index
+  popup.on_mode_selected = on_mode_selected
+  popup.mode_value = get_indicator_display_mode(slot_index)
+  popup.selection_text:SetText(INDICATOR_POSITIONS[slot_index].label .. " - " .. spell_name)
+  popup.title:SetText(L["indicator_visibility_title"])
+end
+
 -- ========================================
 -- Indicators Tab Content Frame
 -- ========================================
@@ -343,6 +470,7 @@ local function create_indicator_slot(parent, index, health_bar, on_click)
   local slot = CreateFrame("Button", nil, health_bar, "BackdropTemplate")
   slot:SetFrameLevel(health_bar:GetFrameLevel() + 10)
   slot.health_bar = health_bar
+  slot:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   slot:SetBackdropColor(0, 0, 0, 0.6)
   slot:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
 
@@ -361,8 +489,7 @@ local function create_indicator_slot(parent, index, health_bar, on_click)
   slot:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:SetText(INDICATOR_POSITIONS[index].label, 1, 1, 1)
-    local indicators = get_class_indicators()
-    local spell_id = indicators[index].spell_id
+    local spell_id = get_indicator_spell_id(index)
     if spell_id and spell_id > 0 then
       local spell_info = C_Spell.GetSpellInfo(spell_id)
       if spell_info then
@@ -371,22 +498,26 @@ local function create_indicator_slot(parent, index, health_bar, on_click)
     else
       GameTooltip:AddLine(L["indicator_no_spell"], 0.5, 0.5, 0.5)
     end
+    GameTooltip:AddLine(string.format(L["indicator_visibility_current"], get_display_mode_label(get_indicator_display_mode(index))), 0.8, 0.8, 1)
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine(L["indicator_left_click_assign"], 0.7, 0.7, 0.7)
+    GameTooltip:AddLine(L["indicator_right_click_visibility"], 0.7, 0.7, 0.7)
     GameTooltip:Show()
   end)
   slot:SetScript("OnLeave", function()
     GameTooltip:Hide()
   end)
 
-  slot:SetScript("OnClick", function()
-    on_click(index)
+  slot:SetScript("OnClick", function(_, button)
+    on_click(index, button)
   end)
 
   return slot
 end
 
 local function update_slot_display(slot, index)
-  local indicators = get_class_indicators()
-  local spell_id = indicators[index].spell_id
+  local spell_id = get_indicator_spell_id(index)
+  local display_mode = get_indicator_display_mode(index)
   local border_color = addon.db.profile.module_data.AuraIndicators.border_color
   slot:SetBackdropBorderColor(unpack(border_color))
   apply_preview_cooldown_settings(slot.cooldown)
@@ -394,11 +525,22 @@ local function update_slot_display(slot, index)
     local spell_info = C_Spell.GetSpellInfo(spell_id)
     if spell_info and spell_info.iconID then
       slot.icon:SetTexture(spell_info.iconID)
-      slot.icon:SetDesaturated(false)
+    else
+      slot.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+    end
+    slot.icon:SetDesaturated(display_mode == "missing")
+    if display_mode == "missing" then
+      slot.icon:SetVertexColor(0.75, 0.75, 0.75)
+    else
       slot.icon:SetVertexColor(1, 1, 1)
     end
-    slot:SetBackdropColor(0, 0, 0, 0.2)
-    slot.cooldown:SetCooldown(GetTime() - 6, 18)
+    if display_mode == "missing" then
+      slot:SetBackdropColor(0, 0, 0, 0.45)
+      slot.cooldown:Clear()
+    else
+      slot:SetBackdropColor(0, 0, 0, 0.2)
+      slot.cooldown:SetCooldown(GetTime() - 6, 18)
+    end
   else
     slot.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
     slot.icon:SetDesaturated(true)
@@ -899,13 +1041,39 @@ local function create_indicators_frame(options_frame)
   ui.settings_panel, ui.settings_content = create_indicator_settings_panel(frame)
 
   frame.slots = {}
-  local function on_slot_click(index)
+  local function on_slot_click(index, button)
+    if button == "RightButton" then
+      if not visibility_popup then
+        visibility_popup = create_visibility_popup(options_frame)
+      end
+      if spell_popup then
+        spell_popup:Hide()
+      end
+
+      populate_visibility_popup(visibility_popup, index, function(slot_idx, display_mode)
+        local indicators = get_class_indicators()
+        indicators[slot_idx] = indicators[slot_idx] or {}
+        indicators[slot_idx].display_mode = normalize_display_mode(display_mode)
+        update_slot_display(frame.slots[slot_idx], slot_idx)
+        frame:Refresh()
+        addon:ReloadModule("AuraIndicators")
+      end)
+      visibility_popup:Show()
+      return
+    end
+
     if not spell_popup then
       spell_popup = create_spell_popup(options_frame)
     end
+    if visibility_popup then
+      visibility_popup:Hide()
+    end
+
     populate_spell_popup(spell_popup, index, function(slot_idx, spell_id)
       local indicators = get_class_indicators()
+      indicators[slot_idx] = indicators[slot_idx] or {}
       indicators[slot_idx].spell_id = spell_id
+      indicators[slot_idx].display_mode = normalize_display_mode(indicators[slot_idx].display_mode)
       update_slot_display(frame.slots[slot_idx], slot_idx)
       frame:Refresh()
       addon:ReloadModule("AuraIndicators")
@@ -983,6 +1151,13 @@ function private.ShowIndicatorsFrame()
 end
 
 function private.HideIndicatorsFrame()
+  if spell_popup then
+    spell_popup:Hide()
+  end
+  if visibility_popup then
+    visibility_popup:Hide()
+  end
+
   if indicators_frame then
     indicators_frame:Hide()
   end

@@ -75,14 +75,14 @@ local defaults = {
         border_size = 1,
         class_indicators = {
           ["*"] = {
-            [1] = { spell_id = 0 }, -- TOPLEFT
-            [2] = { spell_id = 0 }, -- LEFT
-            [3] = { spell_id = 0 }, -- BOTTOMLEFT
-            [4] = { spell_id = 0 }, -- TOP
-            [5] = { spell_id = 0 }, -- BOTTOM
-            [6] = { spell_id = 0 }, -- TOPRIGHT
-            [7] = { spell_id = 0 }, -- RIGHT
-            [8] = { spell_id = 0 }, -- BOTTOMRIGHT
+            [1] = { spell_id = 0, display_mode = "present" }, -- TOPLEFT
+            [2] = { spell_id = 0, display_mode = "present" }, -- LEFT
+            [3] = { spell_id = 0, display_mode = "present" }, -- BOTTOMLEFT
+            [4] = { spell_id = 0, display_mode = "present" }, -- TOP
+            [5] = { spell_id = 0, display_mode = "present" }, -- BOTTOM
+            [6] = { spell_id = 0, display_mode = "present" }, -- TOPRIGHT
+            [7] = { spell_id = 0, display_mode = "present" }, -- RIGHT
+            [8] = { spell_id = 0, display_mode = "present" }, -- BOTTOMRIGHT
           },
         },
       },

@@ -75,8 +75,8 @@ frame.tab_system:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 15, 2)
 for k, category in pairs({
   L["general_settings"],
   L["text_settings"],
-  L["aura_frame_settings"],
-  L["indicator_settings"],
+  --L["aura_frame_settings"],
+  --L["indicator_settings"],
   L["profiles_settings"],
 }) do
   frame.tab_system:AddTab(category)
@@ -90,16 +90,18 @@ end
 
 --
 frame.tab_system.tabs[L["general_settings"]]:HookScript("OnClick", function()
-  private.HideIndicatorsFrame()
+  --private.HideIndicatorsFrame()
   private.SetDataProvider("general_settings")
 end)
 
 -- text_settings
 frame.tab_system.tabs[L["text_settings"]]:HookScript("OnClick", function()
-  private.HideIndicatorsFrame()
+  --private.HideIndicatorsFrame()
   private.SetDataProvider("text_settings")
 end)
 
+--[=====[
+As of version 12.0.5, aura functions are no longer accessible.
 -- aura_settings
 frame.tab_system.tabs[L["aura_frame_settings"]]:HookScript("OnClick", function()
   private.HideIndicatorsFrame()
@@ -111,9 +113,11 @@ frame.tab_system.tabs[L["indicator_settings"]]:HookScript("OnClick", function()
   private.ShowIndicatorsFrame()
 end)
 
+--]=====]
+
 -- profiles_settings
 frame.tab_system.tabs[L["profiles_settings"]]:HookScript("OnClick", function()
-  private.HideIndicatorsFrame()
+  --private.HideIndicatorsFrame()
   private.SetDataProvider("profiles_settings")
 end)
 

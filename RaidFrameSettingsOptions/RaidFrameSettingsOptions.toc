@@ -24,13 +24,13 @@ Templates\RaidFrameSettings_EditBoxAndButtonTemplate.xml
 Templates\RaidFrameSettings_ButtonTemplate.xml
 
 OptionsFrame.lua
-IndicatorsFrame.lua
+##IndicatorsFrame.lua
 ProfileSharing.lua
 
 DataProvider\DataHandler.lua
 DataProvider\GeneralSettingsDataProvider.lua
 DataProvider\TextSettingsDataProvider.lua
-DataProvider\AuraSettingsDataProvider.lua
+## DataProvider\AuraSettingsDataProvider.lua
 DataProvider\ProfilesSettingsDataProvider.lua
 
 OptionsFactory.lua

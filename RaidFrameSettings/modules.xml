@@ -22,11 +22,12 @@
   <Script file="Modules\Fonts\Font_Name.lua"/>
   <Script file="Modules\Fonts\Font_Status.lua"/>
 
+  <!--
   <Script file="Modules\AuraFrames\AuraSkin_Buffs.lua"/>
   <Script file="Modules\AuraFrames\AuraSkin_Debuffs.lua"/>
   <Script file="Modules\AuraFrames\AuraSkin_BigDefensives.lua"/>
   <Script file="Modules\AuraFrames\AuraIndicators.lua"/>
-
+  -->
 
   <Script file="Modules\CVars\CVar_raidOptionDisplayPets.lua"/>
   <Script file="Modules\CVars\CVar_raidFramesDisplayPowerBars.lua"/>

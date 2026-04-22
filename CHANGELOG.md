@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.6.0] - 2026-04-22
+#### Fixes
+* Removed all modules that modified the default aura frames, as they are no longer accessible to addons.
+
 ### Version [4.5.0] - 2026-03-08
 #### Added
 * Added new module: AuraSkin_BigDefensives.

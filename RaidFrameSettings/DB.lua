@@ -137,6 +137,7 @@ local defaults = {
           OUTLINE = "OUTLINE",
           THICK = "", -- THICK
           MONOCHROME = "", -- MONOCHROME
+          SLUG = "", -- SLUG
         },
         point = "TOPLEFT",
         relative_point = "TOPLEFT",
@@ -156,6 +157,7 @@ local defaults = {
           OUTLINE = "OUTLINE",
           THICK = "", -- THICK
           MONOCHROME = "", -- MONOCHROME
+          SLUG = "", -- SLUG
         },
         point = "CENTER",
         relative_point = "CENTER",

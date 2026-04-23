@@ -21,7 +21,8 @@ local UnitCache = private.UnitCache
 function module:OnEnable()
   local db_obj = CopyTable(addon.db.profile.fonts.name)
   local font_path = media:Fetch("font", db_obj.font)
-  local flags = db_obj.flags.THICK .. db_obj.flags.OUTLINE .. "," .. db_obj.flags.MONOCHROME
+  local font_height = private.NormalizeFontHeight(db_obj.height)
+  local flags = private.BuildFontFlags(db_obj.flags)
 
   local is_pets_shown = C_CVar.GetCVar("raidOptionDisplayPets") == "1"
   local is_tanks_shown = C_CVar.GetCVar("raidOptionDisplayMainTankAndAssist") == "1"
@@ -33,7 +34,7 @@ function module:OnEnable()
     -- name_text:SetJustifyV(db_obj.vertical_justification) In this scenario it does nothing as the font strings height is alwys the font height.
     name_text:ClearAllPoints()
     name_text:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
-    name_text:SetFont(font_path, db_obj.height, flags)
+    name_text:SetFont(font_path, font_height, flags)
     name_text:SetWidth(cuf_frame_width * db_obj.max_length )
   end
 

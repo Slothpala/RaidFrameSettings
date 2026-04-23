@@ -1,4 +1,11 @@
 # **Changelog**
+### Version [2.6.1] - 2026-04-23
+#### Fixes
+* Fixed font flag handling for the Name and Status text modules to avoid SetFont errors with invalid flag combinations.
+
+#### Added
+* Added support for the SLUG font flag in the text settings options.
+
 ### Version [4.6.0] - 2026-04-22
 #### Fixes
 * Removed all modules that modified the default aura frames, as they are no longer accessible to addons.
@@ -74,4 +81,3 @@
 
 ### Version [4.0.0] - 2026-01-20
 * Initial Release of version 4.0.0 for the Midnight pre-patch.
-

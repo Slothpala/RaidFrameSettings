@@ -28,7 +28,8 @@ end
 function module:OnEnable()
   local db_obj = CopyTable(addon.db.profile.fonts.status)
   local font_path = media:Fetch("font", db_obj.font)
-  local flags = db_obj.flags.THICK .. db_obj.flags.OUTLINE .. "," .. db_obj.flags.MONOCHROME
+  local font_height = private.NormalizeFontHeight(db_obj.height)
+  local flags = private.BuildFontFlags(db_obj.flags)
 
   local function set_font_anchors_and_color(cuf_frame)
     if not cuf_frame.unit or not treat_unit_as_player(cuf_frame.unit) then
@@ -40,7 +41,7 @@ function module:OnEnable()
     -- status_text:SetJustifyV(db_obj.vertical_justification) In this scenario it does nothing as the font strings height is alwys the font height.
     status_text:ClearAllPoints()
     status_text:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
-    status_text:SetFont(font_path, db_obj.height, flags)
+    status_text:SetFont(font_path, font_height, flags)
     status_text:SetWidth(cuf_frame_width * db_obj.max_length)
     if db_obj.color_mode == 1 then -- class
       local guid = UnitGUID(cuf_frame.unit)

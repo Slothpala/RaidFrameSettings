@@ -32,6 +32,7 @@ modules.xml
 
 Utils\RosterIterator.lua
 Utils\GroupType.lua
+Utils\Font.lua
 Utils\ProfileLoader.lua
 
 

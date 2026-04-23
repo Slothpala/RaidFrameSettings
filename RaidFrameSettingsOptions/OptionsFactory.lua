@@ -541,7 +541,8 @@ local function font_selection_initializer(widget, node)
   MenuUtil.CreateCheckboxMenu(widget.flags_dropdown, is_choosen, set_choosen,
     {L["outline"], "OUTLINE"},
     {L["thick"], "THICK"},
-    {L["monochrome"], "MONOCHROME"}
+    {L["monochrome"], "MONOCHROME"},
+    {L["slug"], "SLUG"}
   )
 
   -- Setup the font height slider.

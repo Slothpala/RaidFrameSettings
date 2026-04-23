@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.6.2] - 2026-04-24
+#### Updated
+* Updated the supported interface version to 120005.
+
 ### Version [4.6.1] - 2026-04-23
 #### Fixes
 * Fixed font flag handling for the Name and Status text modules to avoid SetFont errors with invalid flag combinations.

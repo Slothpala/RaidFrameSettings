@@ -1,5 +1,5 @@
 # **Changelog**
-### Version [2.6.1] - 2026-04-23
+### Version [4.6.1] - 2026-04-23
 #### Fixes
 * Fixed font flag handling for the Name and Status text modules to avoid SetFont errors with invalid flag combinations.
 

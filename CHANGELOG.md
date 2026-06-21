@@ -1,4 +1,8 @@
 # **Changelog**
+### Version [4.6.3] - 2026-04-24
+#### Updated
+* Updated the supported interface version to 120007.
+
 ### Version [4.6.2] - 2026-04-24
 #### Updated
 * Updated the supported interface version to 120005.

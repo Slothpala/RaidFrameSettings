@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [4.6.4] - 2026-08-09
+#### Fixes
+* Module PowerBarForeground_Texture: Removed the is_power_bar_shown check as an underlying function "CompactUnitFrame_GetOptionDisplayPowerBar" is now of local scope.
+#### Updated
+* Updated the supported interface version to 120100.
+
 ### Version [4.6.3] - 2026-06-21
 #### Updated
 * Updated the supported interface version to 120007.

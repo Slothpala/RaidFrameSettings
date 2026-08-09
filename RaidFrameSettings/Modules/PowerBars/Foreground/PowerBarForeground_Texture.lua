@@ -19,19 +19,8 @@ function module:OnEnable()
   if texture_name == DEFAULT_TEXTURE then return end
   local texture_path = media:Fetch("statusbar", texture_name)
 
-  local function is_power_bar_shown(cuf_frame)
-    if not cuf_frame.powerBar then
-      return false
-    end
-    local options = DefaultCompactUnitFrameSetupOptions
-    local display_power_bar = CompactUnitFrame_GetOptionDisplayPowerBar(cuf_frame, options)
-    local display_only_healer_power_bars = CompactUnitFrame_GetOptionDisplayOnlyHealerPowerBars(cuf_frame, options)
-    local role = UnitGroupRolesAssigned(cuf_frame.unit)
-    return display_power_bar and (not display_only_healer_power_bars or role == "HEALER")
-  end
-
   local function set_statusbar_texture(cuf_frame)
-    if is_power_bar_shown(cuf_frame) then
+    if cuf_frame.powerBar then
       cuf_frame.powerBar:SetStatusBarTexture(texture_path)
       cuf_frame.powerBar:GetStatusBarTexture():SetDrawLayer("BORDER")
     end

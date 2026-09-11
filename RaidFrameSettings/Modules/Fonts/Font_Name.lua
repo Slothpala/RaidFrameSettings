@@ -35,7 +35,10 @@ function module:OnEnable()
     name_text:ClearAllPoints()
     name_text:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
     name_text:SetFont(font_path, font_height, flags)
-    name_text:SetWidth(cuf_frame_width * db_obj.max_length )
+    -- Midnight: frame width can be a secret value (e.g. arena), and arithmetic on it errors.
+    if not (issecretvalue and issecretvalue(cuf_frame_width)) then
+      name_text:SetWidth(cuf_frame_width * db_obj.max_length )
+    end
   end
 
   self:HookFunc_CUF_Filtered("DefaultCompactUnitFrameSetup", set_font_and_anchors)

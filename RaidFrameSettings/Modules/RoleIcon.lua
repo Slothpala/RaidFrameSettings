@@ -21,7 +21,11 @@ function module:OnEnable()
 
       -- The unit and the displayedUnit differ, for example, when a unit is in a vehicle, as in Wintergrasp BG.
     local role = UnitGroupRolesAssigned(cuf_frame.displayedUnit)
-    local should_hide_icon = ( role == "DAMAGER" and not db_obj.show_for_dps ) or ( role == "HEALER" and not db_obj.show_for_heal ) or ( role == "TANK" and not db_obj.show_for_tank )
+    -- Midnight: the role can be a secret value (e.g. arena, LFR), and comparing it errors. Keep Blizzard's visibility then.
+    local should_hide_icon = false
+    if not (issecretvalue and issecretvalue(role)) then
+      should_hide_icon = ( role == "DAMAGER" and not db_obj.show_for_dps ) or ( role == "HEALER" and not db_obj.show_for_heal ) or ( role == "TANK" and not db_obj.show_for_tank )
+    end
 
     if should_hide_icon then
       cuf_frame.roleIcon:Hide()

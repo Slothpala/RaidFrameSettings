@@ -42,7 +42,10 @@ function module:OnEnable()
     status_text:ClearAllPoints()
     status_text:SetPoint(db_obj.point, cuf_frame, db_obj.relative_point, db_obj.offset_x, db_obj.offset_y)
     status_text:SetFont(font_path, font_height, flags)
-    status_text:SetWidth(cuf_frame_width * db_obj.max_length)
+    -- Midnight: frame width can be a secret value (e.g. arena), and arithmetic on it errors.
+    if not (issecretvalue and issecretvalue(cuf_frame_width)) then
+      status_text:SetWidth(cuf_frame_width * db_obj.max_length)
+    end
     if db_obj.color_mode == 1 then -- class
       local guid = UnitGUID(cuf_frame.unit)
       local unit_cache = UnitCache.Get(guid)

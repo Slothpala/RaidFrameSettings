@@ -184,6 +184,10 @@ function module:OnEnable()
   local function get_indicator_size(cuf_frame)
     local frame_width = cuf_frame:GetWidth() or 0
     local frame_height = cuf_frame:GetHeight() or 0
+    -- Midnight: frame size can be a secret value (e.g. arena), and arithmetic on it errors.
+    if issecretvalue and (issecretvalue(frame_width) or issecretvalue(frame_height)) then
+      return db.indicator_size
+    end
     local base_size = math.min(frame_width, frame_height)
     if base_size <= 0 then
       return db.indicator_size

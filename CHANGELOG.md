@@ -1,4 +1,10 @@
 # **Changelog**
+### Version [4.6.5] - 2026-09-20
+#### Fixes
+* Modules Font_Name, Font_Status, AuraIndicators and RoleIcon: Fixed the Lua errors that fired on arena, LFR and premade raid frames when the frame width, the frame height or the assigned group role came back as a secret value. These values are now checked with issecretvalue and fall back to the default behavior instead of erroring. Fix by @hasuwini77.
+#### Updated
+* Updated the Traditional Chinese (zhTW) translation by @BlueNightSky: added the missing strings for the out of range alpha, the Auras category and the profile import/export windows.
+
 ### Version [4.6.4] - 2026-08-09
 #### Fixes
 * Module PowerBarForeground_Texture: Removed the is_power_bar_shown check as an underlying function "CompactUnitFrame_GetOptionDisplayPowerBar" is now of local scope.
